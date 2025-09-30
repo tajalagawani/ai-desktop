@@ -43,6 +43,8 @@ export const Tabs = ({
           "flex flex-row items-center justify-start [perspective:1000px] relative overflow-auto sm:overflow-visible no-visible-scrollbar max-w-full w-full",
           containerClassName
         )}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
       >
         {propTabs.map((tab, idx) => (
           <button
@@ -50,8 +52,6 @@ export const Tabs = ({
             onClick={() => {
               moveSelectedTabToTop(idx);
             }}
-            onMouseEnter={() => setHovering(true)}
-            onMouseLeave={() => setHovering(false)}
             className={cn("relative px-4 py-2 rounded-full", tabClassName)}
             style={{
               transformStyle: "preserve-3d",
@@ -62,7 +62,7 @@ export const Tabs = ({
                 layoutId="clickedbutton"
                 transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
                 className={cn(
-                  "absolute inset-0 bg-gray-200 dark:bg-zinc-800 rounded-full ",
+                  "absolute inset-0 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-full ",
                   activeTabClassName
                 )}
               />
@@ -110,6 +110,10 @@ export const FadeInDiv = ({
             top: hovering ? idx * -50 : 0,
             zIndex: -idx,
             opacity: idx < 3 ? 1 - idx * 0.1 : 0,
+          }}
+          transition={{
+            duration: 0.3,
+            ease: "easeInOut"
           }}
           animate={{
             y: isActive(tab) ? [0, 40, 0] : 0,

@@ -33,6 +33,7 @@ export function WorkflowCanvas() {
       status: "idle",
     },
     {
+      
       id: "openai-1",
       type: "openai",
       name: "Generate Summary",

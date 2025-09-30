@@ -59,7 +59,7 @@ export function TwoFactorAuth({ onAuthenticated }: TwoFactorAuthProps) {
 
   return (
     <div className="h-screen w-full bg-background relative flex flex-col items-center justify-center antialiased overflow-hidden">
-      <BackgroundBeams />
+      <BackgroundBeams paused={!showLogin} />
 
       {!showLogin ? (
         // Show ORCHA text hover effect first
