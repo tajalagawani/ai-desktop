@@ -9,9 +9,16 @@ const SAFE_ROOT = process.env.FILE_MANAGER_ROOT || '/tmp'
 
 // Ensure path is within safe directory
 function validatePath(filePath: string): string {
+  // If path is just '/', use SAFE_ROOT
+  if (filePath === '/' || filePath === '') {
+    return SAFE_ROOT
+  }
+
   const normalizedPath = path.normalize(filePath)
+
+  // Always join with SAFE_ROOT to ensure we're inside it
   const absolutePath = path.isAbsolute(normalizedPath)
-    ? normalizedPath
+    ? path.join(SAFE_ROOT, normalizedPath)
     : path.join(SAFE_ROOT, normalizedPath)
 
   if (!absolutePath.startsWith(SAFE_ROOT)) {
