@@ -539,19 +539,11 @@ export const INSTALLABLE_SERVICES: ServiceConfig[] = [
   }
 ]
 
-// Import additional services
-import { ALL_SERVICES } from './all-services'
-
-// Merge base services with additional services
-INSTALLABLE_SERVICES.push(...ALL_SERVICES)
-
 export const SERVICE_CATEGORIES = [
   { id: 'database', name: 'Databases', icon: 'Database' },
   { id: 'web-server', name: 'Web Servers', icon: 'Server' },
   { id: 'runtime', name: 'Runtimes', icon: 'Code' },
   { id: 'tool', name: 'Tools', icon: 'Wrench' },
   { id: 'queue', name: 'Message Queues', icon: 'Layers' },
-  { id: 'search', name: 'Search Engines', icon: 'Search' },
-  { id: 'communication', name: 'Communication', icon: 'MessageSquare' },
-  { id: 'media', name: 'Media', icon: 'Film' }
+  { id: 'search', name: 'Search Engines', icon: 'Search' }
 ]

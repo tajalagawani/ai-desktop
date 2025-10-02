@@ -92,22 +92,24 @@ export async function POST(request: NextRequest) {
 
     if (action === 'install') {
       // Build Docker run command
-      const ports = service.ports?.map(p => `-p ${p}:${p}`).join(' ') || ''
+      // IMPORTANT: Bind to 0.0.0.0 to expose on all network interfaces
+      const ports = service.ports?.map(p => `-p 0.0.0.0:${p}:${p}`).join(' ') || ''
       const volumes = service.volumes?.map(v => `-v ${containerName}${v}:${v}`).join(' ') || ''
       const env = Object.entries(service.environment || {})
-        .map(([key, val]) => `-e ${key}=${val}`)
+        .map(([key, val]) => `-e ${key}="${val}"`)
         .join(' ')
 
-      const command = `docker run -d --name ${containerName} --label ai-desktop-service=true ${ports} ${volumes} ${env} ${service.dockerImage}`
+      const command = `docker run -d --name ${containerName} --label ai-desktop-service=true --restart unless-stopped ${ports} ${volumes} ${env} ${service.dockerImage}`
 
       console.log('Installing service:', command)
       const { stdout, stderr } = await execAsync(command)
 
       return NextResponse.json({
         success: true,
-        message: `${service.name} installed successfully`,
+        message: `${service.name} installed successfully. Access it at http://YOUR_VPS_IP:${service.ports?.[0] || 'PORT'}`,
         output: stdout,
-        containerName
+        containerName,
+        accessUrl: service.ports?.[0] ? `http://YOUR_VPS_IP:${service.ports[0]}` : null
       })
     }
 
