@@ -17,6 +17,10 @@ A modern, web-based desktop environment built with Next.js, featuring workflow a
 - 🤖 **AI Chat Interface** - Built-in AI assistant
 - 🎨 **Dark/Light Mode** - Theme switching
 - 🔐 **2FA Authentication** - Two-factor authentication (UI only, backend needed)
+- 📦 **Version Management** - Semantic versioning (v1.0.0) with build tracking
+- 🔄 **Auto-Update System** - One-click updates with GitHub integration
+- 📝 **Changelog Viewer** - In-app changelog with version comparison
+- 🔔 **Update Notifications** - Visual indicators when updates are available
 
 ## 🚀 Quick Start
 
@@ -143,6 +147,20 @@ Run the PM2 startup command it outputs, then visit `http://your-vps-ip`
 
 ### Update Deployed App
 
+**Option 1: In-App Update (Recommended)**
+1. Open the app in browser
+2. Click Power button → "Recent Updates"
+3. View changelog and version info
+4. Click "Update Now" button when available
+5. App automatically updates and reloads
+
+**Option 2: Auto-Update Script**
+```bash
+cd /var/www/ai-desktop
+./deployment/auto-update.sh
+```
+
+**Option 3: Manual Update**
 ```bash
 cd /var/www/ai-desktop
 git pull origin main
@@ -159,6 +177,40 @@ pm2 logs ai-desktop     # View logs
 pm2 restart ai-desktop  # Restart app
 pm2 monit              # Monitor resources
 ```
+
+## 📦 Version Management & Updates
+
+### Current Version: v1.0.0
+
+The app uses **semantic versioning** (MAJOR.MINOR.PATCH) and includes:
+
+- **Version Tracking:** `version.json` file stores current version, build date, and commit SHA
+- **Update Detection:** Automatically compares local version with GitHub latest commit
+- **Visual Indicators:** "Update Available" badge appears when new version is detected
+- **One-Click Updates:** "Update Now" button triggers VPS update script
+- **Changelog Viewer:** Full-screen window showing all commits with details
+
+### How Updates Work
+
+1. **Check for Updates:** App queries `/api/changelog` to compare versions
+2. **Visual Notification:** Badge shows "Update Available" when new commits exist
+3. **Version Comparison:** Shows current SHA → latest SHA
+4. **Trigger Update:** Click "Update Now" button
+5. **Execute Script:** Calls `/api/update` which runs `auto-update.sh`
+6. **Auto Reload:** App reloads automatically after successful update
+
+### Accessing Changelog
+
+- **Power Menu:** Click Power button (top-right) → "Recent Updates"
+- **Full-Screen Window:** Opens as maximized window
+- **Version Info:** Shows current version, build date, commit SHA
+- **Recent Commits:** Last 10 commits with author, date, and GitHub links
+- **Update Button:** Prominent "Update Now" button when updates available
+
+### API Endpoints
+
+- `GET /api/changelog` - Returns version info, commit history, and update availability
+- `POST /api/update` - Triggers VPS update script execution
 
 ## 🛠️ Development
 

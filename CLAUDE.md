@@ -30,14 +30,19 @@ pm2 restart ai-desktop # Manual restart on VPS
 ### Current State (Organized for VPS)
 ```
 app/
-├── api/                    # Future: API routes (Next.js SSR/API)
-│   └── .gitkeep
+├── api/                    # API routes (Next.js SSR/API)
+│   ├── changelog/         # Version & changelog endpoint
+│   │   └── route.ts
+│   └── update/            # Update trigger endpoint
+│       └── route.ts
 ├── page.tsx                # Entry point → renders Desktop
-└── layout.tsx              # Root layout
+├── layout.tsx              # Root layout
+└── globals.css             # Global styles (neutral color palette)
 
 components/
 ├── apps/                   # Desktop applications
 │   ├── app-store.tsx
+│   ├── changelog.tsx      # ✨ NEW: Version management & updates
 │   ├── chat-interface.tsx
 │   ├── file-manager.tsx
 │   ├── installed-apps.tsx
@@ -66,9 +71,13 @@ data/
 └── installed-apps-data.ts  # Installed apps data
 
 deployment/                 # VPS deployment files
+├── auto-update.sh         # ✨ Auto-update script (polls GitHub)
 ├── deploy.sh              # Deployment script
-├── ecosystem.config.js    # PM2 config
-└── nginx.conf             # Nginx template
+├── ecosystem.config.js    # PM2 config (runs on port 80)
+├── nginx.conf             # Nginx template (deprecated)
+└── SETUP_AUTO_UPDATE.md   # Auto-update setup guide
+
+version.json                # ✨ Version tracking (semantic versioning)
 
 hooks/
 ├── use-desktop.ts          # Window management
@@ -164,6 +173,26 @@ Frontend (Next.js Client) → app/api routes (SSR) → PostgreSQL
   - Backend file storage (S3, local filesystem with permissions)
   - Upload/download endpoints
   - User-isolated directories
+
+### 6. Version Management & Update System ✨ NEW
+- **Semantic Versioning:** v1.0.0 format (MAJOR.MINOR.PATCH)
+- **Version Tracking:** `version.json` stores version, build date, current SHA
+- **Auto-Detection:** Compares local SHA with GitHub latest commit
+- **Visual Indicators:** "Update Available" badge when new version exists
+- **One-Click Updates:** "Update Now" button triggers VPS script
+- **Changelog Viewer:** Full-screen window (Power → Recent Updates)
+  - Shows version badge, build info, commit SHA
+  - Displays last 10 commits with author, date, GitHub links
+  - Version comparison (current → latest SHA)
+  - Update progress with loading states
+  - Success/error messages with auto-reload
+- **API Endpoints:**
+  - `GET /api/changelog` - Version info & update availability
+  - `POST /api/update` - Triggers `auto-update.sh` script on VPS
+- **Auto-Update Script:** `deployment/auto-update.sh`
+  - Polls GitHub for new commits every 5 min (cron job)
+  - Executes: git pull → npm install → build → PM2 restart
+  - Logs all activities to `logs/auto-update.log`
 
 ---
 
