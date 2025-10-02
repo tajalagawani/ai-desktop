@@ -25,6 +25,7 @@ import {
   Copy
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface ServiceWithStatus extends ServiceConfig {
   installed: boolean
@@ -44,6 +45,8 @@ export function ServiceManager(_props: ServiceManagerProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedService, setSelectedService] = useState<ServiceWithStatus | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [logs, setLogs] = useState<string>("")
+  const [logsLoading, setLogsLoading] = useState(false)
 
   const loadServices = useCallback(async () => {
     setLoading(true)
@@ -100,6 +103,25 @@ export function ServiceManager(_props: ServiceManagerProps) {
     }
   }
 
+
+  const loadLogs = async (serviceId: string) => {
+    setLogsLoading(true)
+    try {
+      const response = await fetch('/api/services', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logs', serviceId })
+      })
+      const data = await response.json()
+      if (data.success) {
+        setLogs(data.logs)
+      }
+    } catch (error) {
+      console.error('Failed to load logs:', error)
+    } finally {
+      setLogsLoading(false)
+    }
+  }
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -450,12 +472,13 @@ export function ServiceManager(_props: ServiceManagerProps) {
               {/* Action Buttons */}
               {!selectedService.installed ? (
                 <Button
+                  size="sm"
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   onClick={() => handleServiceAction(selectedService.id, 'install')}
                   disabled={actionLoading === selectedService.id}
                 >
-                  <Download className="mr-2 h-4 w-4" />
-                  {actionLoading === selectedService.id ? 'Installing...' : 'Install Service'}
+                  <Download className="mr-2 h-3 w-3" />
+                  {actionLoading === selectedService.id ? 'Installing...' : 'Install'}
                 </Button>
               ) : (
                 <div className="space-y-2">
