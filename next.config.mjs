@@ -18,6 +18,24 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+
+  // Webpack config
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Ignore optional macOS dependencies on Linux VPS
+      config.externals = config.externals || []
+      config.externals.push({
+        'osx-temperature-sensor': 'commonjs osx-temperature-sensor'
+      })
+    }
+
+    // Ignore warnings for optional dependencies
+    config.ignoreWarnings = [
+      { module: /osx-temperature-sensor/ }
+    ]
+
+    return config
+  },
 }
 
 export default nextConfig
