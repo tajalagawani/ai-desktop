@@ -110,6 +110,43 @@ export async function POST(request: NextRequest) {
       console.log('Installing service:', command)
 
       try {
+        // Open firewall ports BEFORE starting container
+        if (service.ports && service.ports.length > 0) {
+          console.log('Opening firewall ports:', service.ports)
+          for (const port of service.ports) {
+            try {
+              // Try UFW first (Ubuntu/Debian)
+              await execAsync(`sudo ufw allow ${port}/tcp`)
+            } catch (ufwError) {
+              console.log(`UFW failed for port ${port}, trying firewalld...`)
+              try {
+                // Try firewalld (CentOS/RHEL)
+                await execAsync(`sudo firewall-cmd --permanent --add-port=${port}/tcp`)
+              } catch (firewalldError) {
+                console.log(`firewalld failed for port ${port}, trying iptables...`)
+                try {
+                  // Fallback to iptables
+                  await execAsync(`sudo iptables -A INPUT -p tcp --dport ${port} -j ACCEPT`)
+                } catch (iptablesError) {
+                  console.warn(`Could not open port ${port} with any firewall tool`)
+                }
+              }
+            }
+          }
+
+          // Reload firewall to apply changes
+          try {
+            await execAsync('sudo ufw reload')
+          } catch {
+            try {
+              await execAsync('sudo firewall-cmd --reload')
+            } catch {
+              console.log('Firewall reload skipped')
+            }
+          }
+        }
+
+        // Now install the Docker container
         const { stdout, stderr } = await execAsync(command, { timeout: 300000 }) // 5 min timeout for large images
 
         return NextResponse.json({
