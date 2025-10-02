@@ -72,6 +72,7 @@ export const createNewWindow = (
 ): WindowState => {
   const config = getWindowConfig(id)
   const isMobile = screenSize.width < 768
+  const shouldMaximize = isMobile || config.openMaximized
   const responsiveSize = getResponsiveWindowSize(
     config.defaultWidth,
     config.defaultHeight,
@@ -83,9 +84,11 @@ export const createNewWindow = (
     title,
     component,
     isMinimized: false,
-    isMaximized: isMobile,
-    position: calculateWindowPosition(windowIndex, screenSize, isMobile),
-    size: isMobile
+    isMaximized: shouldMaximize,
+    position: shouldMaximize
+      ? { x: 0, y: 0 }
+      : calculateWindowPosition(windowIndex, screenSize, isMobile),
+    size: shouldMaximize
       ? { width: screenSize.width, height: screenSize.height - 64 }
       : responsiveSize,
     minSize: { width: config.minWidth, height: config.minHeight },

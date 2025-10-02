@@ -22,6 +22,7 @@ export interface WindowConfig {
   maximizable: boolean
   minimizable: boolean
   closable: boolean
+  openMaximized?: boolean
 }
 
 export interface DesktopFolder {
@@ -204,6 +205,7 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     maximizable: true,
     minimizable: true,
     closable: true,
+    openMaximized: true,
   },
   default: {
     defaultWidth: 800,

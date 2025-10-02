@@ -1,15 +1,30 @@
 "use client"
 
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Widget } from "@/components/desktop/widget"
-import { INSTALLABLE_SERVICES, SERVICE_CATEGORIES, ServiceConfig } from "@/data/installable-services"
+import { Card } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { SERVICE_CATEGORIES, ServiceConfig } from "@/data/installable-services"
 import { getIcon } from "@/utils/icon-mapper"
-import { Play, Square, RotateCw, Trash2, Download, ExternalLink, Terminal, Eye } from "lucide-react"
-import { ServiceViewer } from "./service-viewer"
+import {
+  Play,
+  Square,
+  RotateCw,
+  Trash2,
+  Download,
+  ArrowLeft,
+  AlertCircle,
+  Check,
+  ExternalLink,
+  Terminal as TerminalIcon,
+  Key,
+  Globe,
+  Copy
+} from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface ServiceWithStatus extends ServiceConfig {
   installed: boolean
@@ -18,16 +33,16 @@ interface ServiceWithStatus extends ServiceConfig {
 }
 
 interface ServiceManagerProps {
-  openWindow?: (id: string, title: string, component: React.ReactNode) => void
-  toggleMaximizeWindow?: (id: string) => void
-  bringToFront?: (id: string) => void
+  // Props are available for future use
 }
 
-export function ServiceManager({ openWindow, toggleMaximizeWindow, bringToFront }: ServiceManagerProps) {
+// Main Component
+export function ServiceManager(_props: ServiceManagerProps) {
   const [services, setServices] = useState<ServiceWithStatus[]>([])
   const [loading, setLoading] = useState(true)
   const [dockerInstalled, setDockerInstalled] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedService, setSelectedService] = useState<ServiceWithStatus | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   const loadServices = useCallback(async () => {
@@ -68,8 +83,15 @@ export function ServiceManager({ openWindow, toggleMaximizeWindow, bringToFront 
         throw new Error(data.error || 'Service action failed')
       }
 
-      // Reload services to update status
       await loadServices()
+
+      // Refresh selected service if it's currently selected
+      if (selectedService?.id === serviceId) {
+        const updatedService = services.find(s => s.id === serviceId)
+        if (updatedService) {
+          setSelectedService({ ...updatedService })
+        }
+      }
     } catch (error: any) {
       console.error('Service action error:', error)
       alert(error.message || 'Failed to perform action')
@@ -78,27 +100,97 @@ export function ServiceManager({ openWindow, toggleMaximizeWindow, bringToFront 
     }
   }
 
-  const filteredServices = selectedCategory === 'all'
-    ? services
-    : services.filter(s => s.category === selectedCategory)
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'running':
-        return <Badge className="bg-green-500">Running</Badge>
-      case 'exited':
-        return <Badge variant="secondary">Stopped</Badge>
-      case 'not-installed':
-        return <Badge variant="outline">Not Installed</Badge>
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
+  }
+
+  const getAccessUrl = (service: ServiceWithStatus) => {
+    const port = service.ports?.[0]
+    if (!port) return null
+    if (typeof window !== 'undefined') {
+      return `http://${window.location.hostname}:${port}`
+    }
+    return null
+  }
+
+  const getConnectionString = (service: ServiceWithStatus) => {
+    const { id, defaultCredentials } = service
+    const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost'
+    const port = defaultCredentials?.port || service.ports?.[0]
+    const user = defaultCredentials?.username || 'root'
+    const pass = defaultCredentials?.password || 'changeme'
+
+    switch (id) {
+      case 'mysql':
+      case 'mysql57':
+      case 'mariadb':
+        return `mysql -h ${host} -P ${port} -u ${user} -p${pass}`
+      case 'postgresql':
+        return `psql -h ${host} -p ${port} -U ${user} -d postgres`
+      case 'mongodb':
+        return `mongodb://${host}:${port}`
+      case 'redis':
+      case 'keydb':
+        return `redis-cli -h ${host} -p ${port}`
+      case 'neo4j':
+        return `bolt://${host}:7687`
       default:
-        return <Badge variant="outline">{status}</Badge>
+        return null
     }
   }
 
+  // Filtered services
+  const filteredServices = useMemo(() => {
+    return selectedCategory === 'all'
+      ? services
+      : services.filter(s => s.category === selectedCategory)
+  }, [services, selectedCategory])
+
+  // Statistics
+  const stats = useMemo(() => {
+    return {
+      total: services.length,
+      installed: services.filter(s => s.installed).length,
+      running: services.filter(s => s.status === 'running').length,
+      available: services.filter(s => !s.installed).length,
+    }
+  }, [services])
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-muted-foreground">Loading services...</p>
+      <div className="h-full bg-background">
+        <div className="grid h-full grid-cols-[320px_1fr]">
+          {/* Left side skeleton */}
+          <div className="border-r p-6 flex flex-col">
+            <Skeleton className="h-8 w-48 mb-6" />
+            <div className="space-y-4">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+            </div>
+            <div className="flex-1" />
+            <div className="flex flex-col gap-3">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          </div>
+          {/* Right side skeleton */}
+          <div className="p-8">
+            <Skeleton className="h-8 w-48 mb-6" />
+            <div className="space-y-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 p-4">
+                  <Skeleton className="h-12 w-12 rounded-xl" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-48" />
+                  </div>
+                  <Skeleton className="h-9 w-24" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -106,187 +198,395 @@ export function ServiceManager({ openWindow, toggleMaximizeWindow, bringToFront 
   if (!dockerInstalled) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8">
-        <h2 className="text-2xl font-bold mb-4">Docker Required</h2>
-        <p className="text-muted-foreground mb-6 text-center max-w-md">
-          Docker is required to install and manage services. Please install Docker on your VPS first.
-        </p>
-        <Button asChild>
-          <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener noreferrer">
-            Install Docker
-          </a>
-        </Button>
+        <Alert className="max-w-2xl">
+          <AlertCircle className="h-5 w-5" />
+          <AlertTitle className="text-xl font-bold mb-2">Docker Required</AlertTitle>
+          <AlertDescription className="space-y-4">
+            <p>
+              Docker is required to install and manage services. Please install Docker on your VPS first.
+            </p>
+            <Button asChild className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90">
+              <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener noreferrer">
+                <Download className="mr-2 h-4 w-4" />
+                Install Docker
+              </a>
+            </Button>
+          </AlertDescription>
+        </Alert>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Service Manager</h1>
-            <p className="text-sm text-muted-foreground">Install and manage VPS services</p>
+    <div className="h-full bg-background">
+      <div className="grid h-full grid-cols-[320px_1fr]">
+        {/* Left Panel - Static Info */}
+        <div className="relative overflow-hidden border-r bg-background p-6 h-full flex flex-col">
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold mb-2">Service Manager</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Install and manage Docker services on your VPS.
+            </p>
           </div>
-          <Button onClick={loadServices} variant="outline" size="sm">
-            <RotateCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
+
+          {/* Statistics Cards */}
+          <div className="grid grid-cols-2 gap-2 mb-6">
+            <Card className="p-3 border bg-card">
+              <div className="text-xl font-bold text-foreground">{stats.total}</div>
+              <div className="text-xs text-muted-foreground">Total</div>
+            </Card>
+
+            <Card className="p-3 border bg-card">
+              <div className="text-xl font-bold text-foreground">{stats.running}</div>
+              <div className="text-xs text-muted-foreground">Running</div>
+            </Card>
+
+            <Card className="p-3 border bg-card">
+              <div className="text-xl font-bold text-foreground">{stats.installed}</div>
+              <div className="text-xs text-muted-foreground">Installed</div>
+            </Card>
+
+            <Card className="p-3 border bg-card">
+              <div className="text-xl font-bold text-foreground">{stats.available}</div>
+              <div className="text-xs text-muted-foreground">Available</div>
+            </Card>
+          </div>
+
+          <div className="flex-1" />
+
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={loadServices} className="flex-1 bg-transparent">
+              <RotateCw className="h-3 w-3" />
+            </Button>
+            <Button size="sm" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
+              <span>→</span>
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {/* Category Tabs */}
-      <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="flex-1 flex flex-col">
-        <div className="border-b px-6">
-          <TabsList className="w-full justify-start">
-            <TabsTrigger value="all">All Services</TabsTrigger>
-            {SERVICE_CATEGORIES.map(cat => (
-              <TabsTrigger key={cat.id} value={cat.id}>
-                {cat.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </div>
+        {/* Right Panel - Dynamic Content */}
+        <div className="bg-background p-8 h-full overflow-y-auto">
+          {selectedService ? (
+            // Service Detail View
+            <div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mb-6 -ml-2"
+                onClick={() => setSelectedService(null)}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to services
+              </Button>
 
-        <TabsContent value={selectedCategory} className="flex-1 overflow-auto p-6 mt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredServices.map(service => {
-              const Icon = getIcon(service.icon)
-              const isLoading = actionLoading === service.id
+              <div className="mb-6 flex items-start gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm">
+                  {(() => {
+                    const Icon = getIcon(selectedService.icon)
+                    return <Icon className="h-8 w-8 text-primary" />
+                  })()}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h2 className="text-2xl font-semibold">{selectedService.name}</h2>
+                    {selectedService.status === 'running' ? (
+                      <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Check className="mr-1 h-3 w-3" />
+                        Running
+                      </Badge>
+                    ) : selectedService.installed ? (
+                      <Badge variant="secondary">Stopped</Badge>
+                    ) : null}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {SERVICE_CATEGORIES.find(c => c.id === selectedService.category)?.name || selectedService.category}
+                  </p>
+                </div>
+              </div>
 
-              return (
-                <Widget key={service.id} icon={Icon} title={service.name}>
-                  <div className="space-y-3">
-                    {/* Status Badge */}
-                    <div className="flex items-center justify-between">
-                      {getStatusBadge(service.status)}
-                      <span className="text-xs text-muted-foreground">
-                        {service.category}
-                      </span>
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {service.description}
-                    </p>
-
-                    {/* Credentials (if installed) */}
-                    {service.installed && service.defaultCredentials && (
-                      <div className="text-xs space-y-1 p-2 bg-muted/50 rounded">
-                        {service.defaultCredentials.port && (
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Port:</span>
-                            <span className="font-mono">{service.defaultCredentials.port}</span>
-                          </div>
-                        )}
-                        {service.defaultCredentials.username && (
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">User:</span>
-                            <span className="font-mono">{service.defaultCredentials.username}</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-col gap-2 pt-2">
-                      {!service.installed ? (
+              {selectedService.installed && selectedService.defaultCredentials && (
+                <div className="mb-6 p-4 bg-muted/50 rounded-lg space-y-2">
+                  <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
+                    <Key className="h-4 w-4" />
+                    Connection Details
+                  </h3>
+                  {selectedService.defaultCredentials.port && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Port:</span>
+                      <div className="flex items-center gap-2">
+                        <code className="font-mono bg-background px-3 py-1 rounded">
+                          {selectedService.defaultCredentials.port}
+                        </code>
                         <Button
                           size="sm"
-                          className="w-full"
-                          onClick={() => handleServiceAction(service.id, 'install')}
-                          disabled={isLoading}
+                          variant="ghost"
+                          className="h-7 w-7 p-0"
+                          onClick={() => copyToClipboard(selectedService.defaultCredentials!.port!.toString())}
                         >
-                          <Download className="h-3 w-3 mr-2" />
-                          {isLoading ? 'Installing...' : 'Install'}
+                          <Copy className="h-3 w-3" />
                         </Button>
-                      ) : (
-                        <>
+                      </div>
+                    </div>
+                  )}
+                  {selectedService.defaultCredentials.username && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Username:</span>
+                      <div className="flex items-center gap-2">
+                        <code className="font-mono bg-background px-3 py-1 rounded">
+                          {selectedService.defaultCredentials.username}
+                        </code>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0"
+                          onClick={() => copyToClipboard(selectedService.defaultCredentials!.username!)}
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  {selectedService.defaultCredentials.password && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Password:</span>
+                      <div className="flex items-center gap-2">
+                        <code className="font-mono bg-background px-3 py-1 rounded">
+                          {selectedService.defaultCredentials.password}
+                        </code>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0"
+                          onClick={() => copyToClipboard(selectedService.defaultCredentials!.password!)}
+                        >
+                          <Copy className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* CLI Connection */}
+              {selectedService.installed && getConnectionString(selectedService) && (
+                <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+                  <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
+                    <TerminalIcon className="h-4 w-4" />
+                    CLI Connection
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 p-2 bg-background rounded text-sm font-mono overflow-x-auto">
+                      {getConnectionString(selectedService)}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyToClipboard(getConnectionString(selectedService)!)}
+                    >
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Web Access */}
+              {selectedService.installed && getAccessUrl(selectedService) && (
+                <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+                  <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
+                    <Globe className="h-4 w-4" />
+                    Web Access
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={getAccessUrl(selectedService)!}
+                      readOnly
+                      className="flex-1 p-2 bg-background rounded text-sm"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => copyToClipboard(getAccessUrl(selectedService)!)}
+                    >
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => window.open(getAccessUrl(selectedService)!, '_blank')}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Open
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-6">
+                <h3 className="mb-2 font-medium">About</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {selectedService.description}
+                </p>
+              </div>
+
+              {/* Environment Variables */}
+              {selectedService.environment && Object.keys(selectedService.environment).length > 0 && (
+                <div className="mb-6">
+                  <h3 className="mb-3 font-medium">Environment Variables</h3>
+                  <div className="space-y-2">
+                    {Object.entries(selectedService.environment).map(([key, value]) => (
+                      <div key={key} className="flex items-center justify-between p-2 bg-muted/50 rounded text-sm">
+                        <code className="font-semibold">{key}</code>
+                        <code className="text-muted-foreground">{value}</code>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              {!selectedService.installed ? (
+                <Button
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={() => handleServiceAction(selectedService.id, 'install')}
+                  disabled={actionLoading === selectedService.id}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  {actionLoading === selectedService.id ? 'Installing...' : 'Install Service'}
+                </Button>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    {selectedService.status === 'running' ? (
+                      <Button
+                        variant="secondary"
+                        className="flex-1"
+                        onClick={() => handleServiceAction(selectedService.id, 'stop')}
+                        disabled={actionLoading === selectedService.id}
+                      >
+                        <Square className="mr-2 h-4 w-4" />
+                        Stop
+                      </Button>
+                    ) : (
+                      <Button
+                        className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+                        onClick={() => handleServiceAction(selectedService.id, 'start')}
+                        disabled={actionLoading === selectedService.id}
+                      >
+                        <Play className="mr-2 h-4 w-4" />
+                        Start
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      onClick={() => handleServiceAction(selectedService.id, 'restart')}
+                      disabled={actionLoading === selectedService.id}
+                    >
+                      <RotateCw className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleServiceAction(selectedService.id, 'remove')}
+                      disabled={actionLoading === selectedService.id}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            // Services List View
+            <div>
+              <div className="mb-6">
+                <h2 className="mb-2 text-lg font-semibold">Available Services</h2>
+                <p className="text-sm text-muted-foreground">
+                  Choose from a variety of services to install on your VPS.
+                </p>
+              </div>
+
+              {/* Category Tabs */}
+              <div className="mb-6 flex gap-2 border-b overflow-x-auto">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={cn(
+                    "px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px",
+                    selectedCategory === 'all'
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  View all
+                </button>
+                {SERVICE_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={cn(
+                      "px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px",
+                      selectedCategory === cat.id
+                        ? "border-primary text-primary"
+                        : "border-transparent text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Services List */}
+              <ScrollArea className="h-[calc(100vh-280px)]">
+                <div className="space-y-3 pr-4">
+                  {filteredServices.map((service) => {
+                    const Icon = getIcon(service.icon)
+                    return (
+                      <div
+                        key={service.id}
+                        onClick={() => setSelectedService(service)}
+                        className="flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                      >
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex-shrink-0">
+                          <Icon className="w-6 h-6 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-medium">{service.name}</h3>
+                          </div>
+                          <p className="text-sm text-muted-foreground line-clamp-1">
+                            {service.description}
+                          </p>
+                        </div>
+                        {service.status === 'running' ? (
+                          <Badge className="bg-primary text-primary-foreground hover:bg-primary/90 flex-shrink-0">
+                            <Check className="mr-1 h-3 w-3" />
+                            Running
+                          </Badge>
+                        ) : service.installed ? (
+                          <Badge variant="secondary" className="flex-shrink-0">
+                            Stopped
+                          </Badge>
+                        ) : (
                           <Button
                             size="sm"
-                            variant="secondary"
-                            className="w-full"
-                            onClick={() => {
-                              if (openWindow && toggleMaximizeWindow && bringToFront) {
-                                const windowId = `service-${service.id}`
-                                openWindow(
-                                  windowId,
-                                  service.name,
-                                  <ServiceViewer service={service} />
-                                )
-                                // Maximize and bring to front after a short delay
-                                setTimeout(() => {
-                                  toggleMaximizeWindow(windowId)
-                                  bringToFront(windowId)
-                                }, 100)
-                              }
+                            variant="outline"
+                            className="flex-shrink-0 bg-transparent"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleServiceAction(service.id, 'install')
                             }}
+                            disabled={actionLoading === service.id}
                           >
-                            <Eye className="h-3 w-3 mr-2" />
-                            Open Dashboard
+                            {actionLoading === service.id ? 'Installing...' : 'Install'}
                           </Button>
-
-                          <div className="flex gap-2">
-                            {service.status === 'running' ? (
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                className="flex-1"
-                                onClick={() => handleServiceAction(service.id, 'stop')}
-                                disabled={isLoading}
-                              >
-                                <Square className="h-3 w-3 mr-1" />
-                                Stop
-                              </Button>
-                            ) : (
-                              <Button
-                                size="sm"
-                                variant="default"
-                                className="flex-1"
-                                onClick={() => handleServiceAction(service.id, 'start')}
-                                disabled={isLoading}
-                              >
-                                <Play className="h-3 w-3 mr-1" />
-                                Start
-                              </Button>
-                            )}
-
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleServiceAction(service.id, 'restart')}
-                              disabled={isLoading}
-                              title="Restart"
-                            >
-                              <RotateCw className="h-3 w-3" />
-                            </Button>
-
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleServiceAction(service.id, 'remove')}
-                              disabled={isLoading}
-                              title="Remove"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </Widget>
-              )
-            })}
-          </div>
-
-          {filteredServices.length === 0 && (
-            <div className="flex items-center justify-center h-64">
-              <p className="text-muted-foreground">No services in this category</p>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </ScrollArea>
             </div>
           )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   )
 }
