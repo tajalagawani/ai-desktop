@@ -91,7 +91,7 @@ export function FloatingDockDemo({ openWindow, openWindows, dockApps, onDrop, on
     return {
       title: app.name,
       icon: (
-        <IconComponent className={`h-full w-full ${openWindows.includes(app.id) ? "text-blue-500" : "text-neutral-500 dark:text-neutral-300"}`} />
+        <IconComponent className={`h-full w-full ${openWindows.includes(app.id) ? "text-white" : "text-neutral-500 dark:text-neutral-300"}`} />
       ),
       href: "#",
       onClick: () => {
@@ -213,7 +213,7 @@ export function FloatingDockDemo({ openWindow, openWindows, dockApps, onDrop, on
             <Button
               variant="ghost"
               size="sm"
-              className="text-teal-400 hover:text-teal-300 hover:bg-neutral-800 font-medium h-5 px-1"
+              className="text-slate-300 hover:text-white hover:bg-neutral-800 font-medium h-5 px-1"
               style={{ fontSize: '10px' }}
             >
               Upgrade Plan

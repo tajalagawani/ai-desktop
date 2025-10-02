@@ -128,7 +128,7 @@ export function Taskbar({ windows, activeWindow, onWindowAction }: TaskbarProps)
           <span className="hidden sm:inline">Apps</span>
           <span className="sm:hidden">{openWindows.length}</span>
           {openWindows.length > 0 && (
-            <span className="ml-1 px-1.5 py-0.5 text-xs bg-blue-500 text-white rounded-full">
+            <span className="ml-1 px-1.5 py-0.5 text-xs bg-slate-600 text-white rounded-full">
               {openWindows.length}
             </span>
           )}
