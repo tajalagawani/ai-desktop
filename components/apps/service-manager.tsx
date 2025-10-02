@@ -330,21 +330,8 @@ export function ServiceManager(_props: ServiceManagerProps) {
                 </div>
               </div>
 
-              {/* Tabs for Overview, Config, Logs, Web UI */}
-              <Tabs defaultValue="overview" className="flex-1 flex flex-col min-h-0">
-                <TabsList className="mb-4">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  {selectedService.installed && <TabsTrigger value="config">Configuration</TabsTrigger>}
-                  {selectedService.installed && selectedService.status === 'running' && (
-                    <TabsTrigger value="logs" onClick={() => loadLogs(selectedService.id)}>Logs</TabsTrigger>
-                  )}
-                  {selectedService.installed && getAccessUrl(selectedService) && (
-                    <TabsTrigger value="ui">Web UI</TabsTrigger>
-                  )}
-                </TabsList>
-
-                {/* Overview Tab */}
-                <TabsContent value="overview" className="flex-1 overflow-auto space-y-4 mt-0">
+              {/* Overview Content - Always Visible */}
+              <div className="mb-4 space-y-4 overflow-auto flex-1">
                   {selectedService.installed && selectedService.defaultCredentials && (
                     <div className="p-4 bg-muted/50 rounded-lg space-y-2">
                       <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
@@ -536,64 +523,74 @@ export function ServiceManager(_props: ServiceManagerProps) {
                       </Button>
                     </div>
                   )}
-                </TabsContent>
+                </div>
 
-                {/* Configuration Tab */}
+                {/* Tabs for Config, Logs, Web UI */}
                 {selectedService.installed && (
-                  <TabsContent value="config" className="flex-1 overflow-auto space-y-4 mt-0">
-                    <Card className="p-4">
-                      <h3 className="font-semibold mb-3">Docker Configuration</h3>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-muted-foreground">Container Name:</span>
-                          <code>{selectedService.containerName}</code>
-                        </div>
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-muted-foreground">Image:</span>
-                          <code>{selectedService.dockerImage}</code>
-                        </div>
-                        <div className="flex justify-between py-2 border-b">
-                          <span className="text-muted-foreground">Volumes:</span>
-                          <code>{selectedService.volumes?.join(', ') || 'None'}</code>
-                        </div>
-                        <div className="flex justify-between py-2">
-                          <span className="text-muted-foreground">Method:</span>
-                          <code>{selectedService.installMethod}</code>
-                        </div>
-                      </div>
-                    </Card>
-                  </TabsContent>
-                )}
+                  <Tabs defaultValue="config" className="flex-1 flex flex-col mt-4">
+                    <TabsList className="mb-4">
+                      <TabsTrigger value="config">Configuration</TabsTrigger>
+                      {selectedService.status === 'running' && (
+                        <TabsTrigger value="logs" onClick={() => loadLogs(selectedService.id)}>
+                          Logs
+                        </TabsTrigger>
+                      )}
+                      {getAccessUrl(selectedService) && (
+                        <TabsTrigger value="ui">Web UI</TabsTrigger>
+                      )}
+                    </TabsList>
 
-                {/* Logs Tab */}
-                {selectedService.installed && selectedService.status === 'running' && (
-                  <TabsContent value="logs" className="flex-1 overflow-auto mt-0">
-                    <Card className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-semibold">Container Logs</h3>
-                        <Button size="sm" onClick={() => loadLogs(selectedService.id)} disabled={logsLoading}>
-                          <RotateCw className={cn("h-3 w-3 mr-2", logsLoading && "animate-spin")} />
-                          Refresh
-                        </Button>
-                      </div>
-                      <pre className="p-4 bg-black text-green-400 rounded font-mono text-xs overflow-auto max-h-96">
-                        {logs || 'No logs available. Click Refresh to load logs.'}
-                      </pre>
-                    </Card>
-                  </TabsContent>
-                )}
+                    {/* Configuration Tab */}
+                    <TabsContent value="config" className="flex-1 overflow-auto space-y-4 mt-0">
+                      <Card className="p-4">
+                        <h3 className="font-semibold mb-3">Docker Configuration</h3>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between py-2 border-b">
+                            <span className="text-muted-foreground">Container Name:</span>
+                            <code>{selectedService.containerName}</code>
+                          </div>
+                          <div className="flex justify-between py-2 border-b">
+                            <span className="text-muted-foreground">Image:</span>
+                            <code>{selectedService.dockerImage}</code>
+                          </div>
+                          <div className="flex justify-between py-2 border-b">
+                            <span className="text-muted-foreground">Volumes:</span>
+                            <code>{selectedService.volumes?.join(', ') || 'None'}</code>
+                          </div>
+                          <div className="flex justify-between py-2">
+                            <span className="text-muted-foreground">Method:</span>
+                            <code>{selectedService.installMethod}</code>
+                          </div>
+                        </div>
+                      </Card>
+                    </TabsContent>
 
-                {/* Web UI Tab */}
-                {selectedService.installed && getAccessUrl(selectedService) && (
-                  <TabsContent value="ui" className="flex-1 p-0 m-0 h-full">
-                    <iframe
-                      src={getAccessUrl(selectedService)!}
-                      className="w-full h-full border-0 rounded"
-                      title={`${selectedService.name} Web UI`}
-                    />
-                  </TabsContent>
+                    {/* Logs Tab */}
+                    <TabsContent value="logs" className="flex-1 overflow-auto mt-0">
+                      <Card className="p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-semibold">Container Logs</h3>
+                          <Button size="sm" onClick={() => loadLogs(selectedService.id)} disabled={logsLoading}>
+                            <RotateCw className={cn("h-3 w-3 mr-2", logsLoading && "animate-spin")} />
+                            Refresh
+                          </Button>
+                        </div>
+                        <pre className="p-4 bg-black text-green-400 rounded font-mono text-xs overflow-auto max-h-96">
+                          {logs || 'No logs available. Click Refresh to load logs.'}
+                        </pre>
+                      </Card>
+                    </TabsContent>
+
+                    {/* Web UI Tab */}
+                    <TabsContent value="ui" className="flex-1 p-0 m-0 h-full">
+                      <iframe
+                        src={getAccessUrl(selectedService)!}
+                        className="w-full h-full border-0 rounded"
+                        title={`${selectedService.name} Web UI`}
+                      />
+                    </TabsContent>
+                  </Tabs>
                 )}
-              </Tabs>
             </div>
           ) : (
             // Services List View
