@@ -8,7 +8,8 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { INSTALLABLE_SERVICES, SERVICE_CATEGORIES, ServiceConfig } from "@/data/installable-services"
 import { getIcon } from "@/utils/icon-mapper"
-import { Play, Square, RotateCw, Trash2, Download, ExternalLink, Terminal } from "lucide-react"
+import { Play, Square, RotateCw, Trash2, Download, ExternalLink, Terminal, Eye } from "lucide-react"
+import { ServiceViewer } from "./service-viewer"
 
 interface ServiceWithStatus extends ServiceConfig {
   installed: boolean
@@ -16,7 +17,11 @@ interface ServiceWithStatus extends ServiceConfig {
   containerName: string
 }
 
-export function ServiceManager() {
+interface ServiceManagerProps {
+  openWindow?: (id: string, title: string, component: React.ReactNode) => void
+}
+
+export function ServiceManager({ openWindow }: ServiceManagerProps) {
   const [services, setServices] = useState<ServiceWithStatus[]>([])
   const [loading, setLoading] = useState(true)
   const [dockerInstalled, setDockerInstalled] = useState(false)
@@ -173,7 +178,7 @@ export function ServiceManager() {
 
                       <Separator className="my-3" />
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         {!service.installed ? (
                           <Button
                             size="sm"
@@ -185,6 +190,23 @@ export function ServiceManager() {
                           </Button>
                         ) : (
                           <>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => {
+                                if (openWindow) {
+                                  openWindow(
+                                    `service-${service.id}`,
+                                    service.name,
+                                    <ServiceViewer service={service} />
+                                  )
+                                }
+                              }}
+                            >
+                              <Eye className="h-3 w-3 mr-2" />
+                              Open
+                            </Button>
+
                             {service.status === 'running' ? (
                               <Button
                                 size="sm"
