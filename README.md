@@ -2,6 +2,8 @@
 
 A modern, web-based desktop environment built with Next.js, featuring workflow automation, file management, terminal access, and an integrated app ecosystem.
 
+**🌐 Live Demo:** http://92.112.181.127
+
 ![AI Desktop](public/placeholder.jpg)
 
 ## ✨ Features
@@ -22,7 +24,7 @@ A modern, web-based desktop environment built with Next.js, featuring workflow a
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/ai-desktop.git
+git clone https://github.com/tajalagawani/ai-desktop.git
 cd ai-desktop
 
 # Install dependencies
@@ -34,14 +36,20 @@ npm run dev
 # Open http://localhost:3000
 ```
 
-### Build for Production
+### Production Deployment
+
+**See [CLEAN_DEPLOY.md](CLEAN_DEPLOY.md) for the simplest deployment method (runs directly on port 80)**
 
 ```bash
-# Create production build
+# Quick deploy on VPS
+ssh root@your-vps
+cd /var/www
+git clone https://github.com/tajalagawani/ai-desktop.git
+cd ai-desktop
+npm install
 npm run build
-
-# Start production server
-npm start
+pm2 start deployment/ecosystem.config.js
+pm2 save
 ```
 
 ## 📁 Project Structure
@@ -107,109 +115,50 @@ export const siteConfig = {
 
 ## 🌐 VPS Deployment
 
-### Prerequisites
+**⚡ Quick Deploy:** See [CLEAN_DEPLOY.md](CLEAN_DEPLOY.md) for the fastest method (5 minutes)
 
-- Ubuntu 20.04+ VPS
-- Node.js 18+ installed
-- PM2 installed globally: `npm install -g pm2`
-- Nginx installed: `sudo apt install nginx`
-- Domain name (optional but recommended)
+**📚 Detailed Guide:** See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step instructions
 
-### Initial VPS Setup
+### Simple VPS Setup (Port 80 Direct)
 
 ```bash
-# 1. SSH into your VPS
-ssh user@your-vps-ip
-
-# 2. Install Node.js
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs
-
-# 3. Install PM2
-sudo npm install -g pm2
-
-# 4. Install Nginx
-sudo apt install -y nginx
-
-# 5. Clone your repository
-sudo mkdir -p /var/www
-sudo chown $USER:$USER /var/www
+ssh root@your-vps
+apt update && apt upgrade -y
+curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+apt install -y nodejs git
+npm install -g pm2
+mkdir -p /var/www
 cd /var/www
-git clone https://github.com/yourusername/ai-desktop.git
+git clone https://github.com/tajalagawani/ai-desktop.git
 cd ai-desktop
-
-# 6. Install dependencies and build
 npm install
 npm run build
-
-# 7. Configure PM2
+mkdir -p logs
 pm2 start deployment/ecosystem.config.js
 pm2 save
-pm2 startup
-
-# 8. Configure Nginx
-sudo cp deployment/nginx.conf /etc/nginx/sites-available/ai-desktop
-# Edit the file and replace your-domain.com with your actual domain
-sudo ln -s /etc/nginx/sites-available/ai-desktop /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
-
-# 9. Your app should now be running!
-# Visit http://your-vps-ip or http://your-domain.com
+pm2 startup systemd
 ```
 
-### GitHub Actions CI/CD
+Run the PM2 startup command it outputs, then visit `http://your-vps-ip`
 
-This project includes automated deployment via GitHub Actions.
-
-**Setup:**
-
-1. Generate SSH key on your VPS:
-   ```bash
-   ssh-keygen -t ed25519 -C "github-actions"
-   cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
-   cat ~/.ssh/id_ed25519  # Copy this private key
-   ```
-
-2. Add secrets to your GitHub repository:
-   - Go to: Repository → Settings → Secrets and variables → Actions
-   - Add these secrets:
-     - `VPS_HOST`: Your VPS IP or domain
-     - `VPS_USER`: SSH username (e.g., `ubuntu`, `deploy`)
-     - `VPS_SSH_KEY`: The private key from step 1
-     - `VPS_PORT`: SSH port (optional, default is 22)
-
-3. Push to main branch:
-   ```bash
-   git push origin main
-   # Deployment will trigger automatically!
-   ```
-
-### Manual Deployment
+### Update Deployed App
 
 ```bash
-# SSH into your VPS
-ssh user@your-vps-ip
-
-# Run the deployment script
 cd /var/www/ai-desktop
-bash deployment/deploy.sh
+git pull origin main
+npm install
+npm run build
+pm2 restart ai-desktop
 ```
 
-## 🔒 SSL Certificate (HTTPS)
+### Useful Commands
 
 ```bash
-# Install Certbot
-sudo apt install certbot python3-certbot-nginx
-
-# Generate certificate
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
-
-# Auto-renewal is set up automatically
-# Test renewal: sudo certbot renew --dry-run
+pm2 status              # Check app status
+pm2 logs ai-desktop     # View logs
+pm2 restart ai-desktop  # Restart app
+pm2 monit              # Monitor resources
 ```
-
-After SSL is set up, uncomment the HTTPS server block in `/etc/nginx/sites-available/ai-desktop`.
 
 ## 🛠️ Development
 
@@ -235,7 +184,7 @@ After SSL is set up, uncomment the HTTPS server block in `/etc/nginx/sites-avail
 - **UI Components:** Radix UI + shadcn/ui
 - **Icons:** Lucide React
 - **Animation:** Framer Motion
-- **Deployment:** PM2 + Nginx on VPS
+- **Deployment:** PM2 on VPS (runs directly on port 80)
 
 ## 🎯 Roadmap
 

@@ -42,11 +42,29 @@ Copy and run the PM2 startup command it outputs, then:
 pm2 status
 ```
 
-**Done!** Visit: http://92.112.181.127
+**Done!** Visit: http://your-vps-ip
 
 ---
 
-## Quick Restart Commands
+## Optional: Setup Auto-Updates
+
+Enable automatic deployment when you push to GitHub:
+
+```bash
+# Make script executable
+chmod +x deployment/auto-update.sh
+
+# Setup cron job (checks every 5 minutes)
+crontab -e
+# Add this line:
+# */5 * * * * /var/www/ai-desktop/deployment/auto-update.sh >> /var/www/ai-desktop/logs/auto-update.log 2>&1
+```
+
+**See [SETUP_AUTO_UPDATE.md](deployment/SETUP_AUTO_UPDATE.md) for complete guide**
+
+---
+
+## Manual Update Commands
 
 ```bash
 cd /var/www/ai-desktop
@@ -61,4 +79,7 @@ pm2 restart ai-desktop
 ```bash
 pm2 status
 pm2 logs ai-desktop
+
+# Check auto-update logs (if enabled)
+tail -f /var/www/ai-desktop/logs/auto-update.log
 ```

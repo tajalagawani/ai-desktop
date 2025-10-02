@@ -2,6 +2,10 @@
 
 Complete guide to deploying AI Desktop on your VPS.
 
+**⚡ For the fastest deployment, see [CLEAN_DEPLOY.md](CLEAN_DEPLOY.md) instead!**
+
+This guide covers the detailed setup with Nginx reverse proxy. If you just want the app running quickly on port 80, use CLEAN_DEPLOY.md.
+
 ## ✅ Pre-Deployment Checklist
 
 ### 1. VPS Requirements
