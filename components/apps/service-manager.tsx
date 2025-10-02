@@ -313,7 +313,24 @@ export function ServiceManager(_props: ServiceManagerProps) {
                   )}
                 </div>
 
-                {/* Action Buttons - Right after icon */}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h2 className="text-2xl font-semibold">{selectedService.name}</h2>
+                    {selectedService.status === 'running' ? (
+                      <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Check className="mr-1 h-3 w-3" />
+                        Running
+                      </Badge>
+                    ) : selectedService.installed ? (
+                      <Badge variant="secondary">Stopped</Badge>
+                    ) : null}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {SERVICE_CATEGORIES.find(c => c.id === selectedService.category)?.name || selectedService.category}
+                  </p>
+                </div>
+
+                {/* Action Buttons - Right side of header */}
                 {selectedService.installed && (
                   <div className="flex gap-2 items-center flex-shrink-0">
                     {selectedService.status === 'running' ? (
@@ -357,23 +374,6 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     </Button>
                   </div>
                 )}
-
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h2 className="text-2xl font-semibold">{selectedService.name}</h2>
-                    {selectedService.status === 'running' ? (
-                      <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
-                        <Check className="mr-1 h-3 w-3" />
-                        Running
-                      </Badge>
-                    ) : selectedService.installed ? (
-                      <Badge variant="secondary">Stopped</Badge>
-                    ) : null}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {SERVICE_CATEGORIES.find(c => c.id === selectedService.category)?.name || selectedService.category}
-                  </p>
-                </div>
               </div>
 
               {/* Overview Content - Always Visible */}
