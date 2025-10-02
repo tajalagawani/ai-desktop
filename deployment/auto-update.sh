@@ -41,6 +41,14 @@ update_app() {
   git fetch origin main
   git reset --hard origin/main
 
+  # Clean old build artifacts and dependencies
+  log "🧹 Cleaning old build artifacts..."
+  rm -rf node_modules package-lock.json .next
+
+  # Install dependencies
+  log "📦 Installing dependencies..."
+  npm install
+
   # Build application
   log "🔨 Building application..."
   npm run build
