@@ -38,16 +38,16 @@ export interface ProjectItem {
 // Quick Access Items
 export const QUICK_ACCESS_ITEMS: QuickAccessItem[] = [
   {
-    id: "home",
-    name: "Home",
-    icon: "Home",
-    path: "/",
-  },
-  {
     id: "tmp",
     name: "Temp",
     icon: "FolderOpen",
-    path: "/tmp",
+    path: "/",
+  },
+  {
+    id: "home",
+    name: "Home",
+    icon: "Home",
+    path: "/home",
   },
   {
     id: "var",

@@ -47,14 +47,18 @@ export function FileManager() {
   const [loading, setLoading] = React.useState(true)
   const [newFolderMode, setNewFolderMode] = React.useState(false)
   const [newFolderName, setNewFolderName] = React.useState('')
+  const [error, setError] = React.useState<string | null>(null)
 
   const loadFiles = React.useCallback(async (path: string) => {
     setLoading(true)
+    setError(null)
     try {
       const items = await listFiles(path)
       setFiles(items)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load files:', error)
+      setError(error.message || 'Failed to load files')
+      setFiles([])
     } finally {
       setLoading(false)
     }
@@ -83,9 +87,11 @@ export function FileManager() {
       await createFolder(currentPath, newFolderName)
       setNewFolderName('')
       setNewFolderMode(false)
+      setError(null)
       await loadFiles(currentPath)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create folder:', error)
+      setError(error.message || 'Failed to create folder')
     }
   }
 
@@ -93,12 +99,14 @@ export function FileManager() {
     if (confirm(`Are you sure you want to delete ${item.name}?`)) {
       try {
         await deleteItem(item.path)
+        setError(null)
         await loadFiles(currentPath)
         if (selectedFile?.id === item.id) {
           setSelectedFile(null)
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to delete item:', error)
+        setError(error.message || 'Failed to delete item')
       }
     }
   }
@@ -157,6 +165,13 @@ export function FileManager() {
                 setNewFolderMode(false)
                 setNewFolderName('')
               }}>Cancel</Button>
+            </div>
+          )}
+
+          {/* Error Message */}
+          {error && (
+            <div className="px-4 py-2 bg-destructive/10 border-b border-destructive/20">
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
 

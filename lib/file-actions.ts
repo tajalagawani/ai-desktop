@@ -4,7 +4,8 @@ import fs from 'fs/promises'
 import path from 'path'
 import { stat } from 'fs/promises'
 
-const SAFE_ROOT = process.env.FILE_MANAGER_ROOT || '/home'
+// Default to /tmp for safety - it always exists and is world-writable
+const SAFE_ROOT = process.env.FILE_MANAGER_ROOT || '/tmp'
 
 // Ensure path is within safe directory
 function validatePath(filePath: string): string {
@@ -32,32 +33,50 @@ export interface FileItem {
 export async function listFiles(dirPath: string = '/'): Promise<FileItem[]> {
   try {
     const safePath = validatePath(dirPath)
+
+    // Check if directory exists and is accessible
+    try {
+      const stats = await stat(safePath)
+      if (!stats.isDirectory()) {
+        throw new Error(`Path is not a directory: ${safePath}`)
+      }
+    } catch (err: any) {
+      console.error('Directory access error:', err)
+      throw new Error(`Cannot access directory: ${err.message}`)
+    }
+
     const entries = await fs.readdir(safePath, { withFileTypes: true })
 
     const items = await Promise.all(
       entries.map(async (entry) => {
-        const fullPath = path.join(safePath, entry.name)
-        const stats = await stat(fullPath)
+        try {
+          const fullPath = path.join(safePath, entry.name)
+          const stats = await stat(fullPath)
 
-        return {
-          id: fullPath,
-          name: entry.name,
-          type: entry.isDirectory() ? 'folder' as const : 'file' as const,
-          size: stats.size,
-          modified: stats.mtime.toISOString(),
-          path: fullPath.replace(SAFE_ROOT, '') || '/'
+          return {
+            id: fullPath,
+            name: entry.name,
+            type: entry.isDirectory() ? 'folder' as const : 'file' as const,
+            size: stats.size,
+            modified: stats.mtime.toISOString(),
+            path: fullPath.replace(SAFE_ROOT, '') || '/'
+          }
+        } catch (err) {
+          // Skip files we can't access
+          return null
         }
       })
     )
 
-    // Sort: folders first, then files, alphabetically
-    return items.sort((a, b) => {
+    // Filter out null items and sort
+    const validItems = items.filter(item => item !== null) as FileItem[]
+    return validItems.sort((a, b) => {
       if (a.type !== b.type) return a.type === 'folder' ? -1 : 1
       return a.name.localeCompare(b.name)
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error listing files:', error)
-    throw new Error('Failed to list files')
+    throw new Error(`Failed to list files: ${error.message}`)
   }
 }
 
@@ -65,9 +84,9 @@ export async function createFolder(dirPath: string, folderName: string): Promise
   try {
     const safePath = validatePath(path.join(dirPath, folderName))
     await fs.mkdir(safePath, { recursive: true })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating folder:', error)
-    throw new Error('Failed to create folder')
+    throw new Error(`Failed to create folder: ${error.message}`)
   }
 }
 
@@ -81,9 +100,9 @@ export async function deleteItem(itemPath: string): Promise<void> {
     } else {
       await fs.unlink(safePath)
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting item:', error)
-    throw new Error('Failed to delete item')
+    throw new Error(`Failed to delete item: ${error.message}`)
   }
 }
 
@@ -94,9 +113,9 @@ export async function renameItem(oldPath: string, newName: string): Promise<void
     const safeNewPath = validatePath(newPath)
 
     await fs.rename(safeOldPath, safeNewPath)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error renaming item:', error)
-    throw new Error('Failed to rename item')
+    throw new Error(`Failed to rename item: ${error.message}`)
   }
 }
 
@@ -105,9 +124,9 @@ export async function readFile(filePath: string): Promise<string> {
     const safePath = validatePath(filePath)
     const content = await fs.readFile(safePath, 'utf-8')
     return content
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error reading file:', error)
-    throw new Error('Failed to read file')
+    throw new Error(`Failed to read file: ${error.message}`)
   }
 }
 
@@ -115,8 +134,8 @@ export async function writeFile(filePath: string, content: string): Promise<void
   try {
     const safePath = validatePath(filePath)
     await fs.writeFile(safePath, content, 'utf-8')
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error writing file:', error)
-    throw new Error('Failed to write file')
+    throw new Error(`Failed to write file: ${error.message}`)
   }
 }
