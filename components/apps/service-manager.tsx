@@ -657,34 +657,79 @@ export function ServiceManager(_props: ServiceManagerProps) {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <h3 className="font-medium">{service.name}</h3>
+                            {service.status === 'running' ? (
+                              <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
+                                <Check className="mr-1 h-3 w-3" />
+                                Running
+                              </Badge>
+                            ) : service.installed ? (
+                              <Badge variant="secondary">Stopped</Badge>
+                            ) : null}
                           </div>
                           <p className="text-sm text-muted-foreground line-clamp-1">
                             {service.description}
                           </p>
                         </div>
-                        {service.status === 'running' ? (
-                          <Badge className="bg-primary text-primary-foreground hover:bg-primary/90 flex-shrink-0">
-                            <Check className="mr-1 h-3 w-3" />
-                            Running
-                          </Badge>
-                        ) : service.installed ? (
-                          <Badge variant="secondary" className="flex-shrink-0">
-                            Stopped
-                          </Badge>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="flex-shrink-0 bg-transparent"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleServiceAction(service.id, 'install')
-                            }}
-                            disabled={actionLoading === service.id}
-                          >
-                            {actionLoading === service.id ? 'Installing...' : 'Install'}
-                          </Button>
-                        )}
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {service.installed ? (
+                            <>
+                              {service.status === 'running' ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleServiceAction(service.id, 'stop')
+                                  }}
+                                  disabled={actionLoading === service.id}
+                                  title="Stop service"
+                                >
+                                  <Square className="h-3.5 w-3.5" />
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleServiceAction(service.id, 'start')
+                                  }}
+                                  disabled={actionLoading === service.id}
+                                  title="Start service"
+                                >
+                                  <Play className="h-3.5 w-3.5" />
+                                </Button>
+                              )}
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleServiceAction(service.id, 'remove')
+                                }}
+                                disabled={actionLoading === service.id}
+                                title="Delete service"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="bg-transparent"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleServiceAction(service.id, 'install')
+                              }}
+                              disabled={actionLoading === service.id}
+                            >
+                              {actionLoading === service.id ? 'Installing...' : 'Install'}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     )
                   })}
