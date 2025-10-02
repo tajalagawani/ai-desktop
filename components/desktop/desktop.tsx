@@ -34,6 +34,7 @@ import { Taskbar } from "@/components/desktop/taskbar"
 import { FileManager } from "@/components/apps/file-manager"
 import { Window } from "@/components/desktop/window"
 import { Widget } from "@/components/desktop/widget"
+import type { SystemStats } from "@/lib/system-stats"
 
 // Import data and utilities
 import {
@@ -60,30 +61,6 @@ const getAppComponent = (id: string): React.ReactNode => {
     "slack": <div>Slack</div>,
   }
   return componentMap[id] || null
-}
-
-
-interface SystemStats {
-  cpu: {
-    usage: number
-    cores: number
-    model: string
-  }
-  memory: {
-    total: number
-    used: number
-    free: number
-    usagePercent: number
-  }
-  disk: {
-    total: number
-    used: number
-    free: number
-    usagePercent: number
-  }
-  uptime: number
-  platform: string
-  hostname: string
 }
 
 export function Desktop() {

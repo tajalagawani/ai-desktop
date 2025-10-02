@@ -5,29 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Cpu, MemoryStick as Memory, HardDrive, Activity, Clock, CheckCircle, XCircle, AlertCircle, RefreshCw } from "lucide-react"
-
-interface SystemStats {
-  cpu: {
-    usage: number
-    cores: number
-    model: string
-  }
-  memory: {
-    total: number
-    used: number
-    free: number
-    usagePercent: number
-  }
-  disk: {
-    total: number
-    used: number
-    free: number
-    usagePercent: number
-  }
-  uptime: number
-  platform: string
-  hostname: string
-}
+import type { SystemStats } from "@/lib/system-stats"
 
 export function SystemMonitor() {
   const [stats, setStats] = useState<SystemStats | null>(null)
