@@ -29,28 +29,24 @@ interface SystemStats {
   hostname: string
 }
 
-interface PM2Process {
-  id: string
-  name: string
-  status: 'running' | 'stopped' | 'error' | 'idle'
-  uptime: string
-  cpu: string
-  memory: string
-  restarts: number
-}
-
-interface LogEntry {
-  time: string
-  level: 'info' | 'warn' | 'error'
-  message: string
-}
-
 export function SystemMonitor() {
   const [stats, setStats] = useState<SystemStats | null>(null)
-  const [processes, setProcesses] = useState<PM2Process[]>([])
-  const [logs, setLogs] = useState<LogEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const workflows = [
+    { id: "1", name: "PR → Slack Notification", status: "running", lastRun: "2 min ago" },
+    { id: "2", name: "Daily Report Generator", status: "success", lastRun: "1 hour ago" },
+    { id: "3", name: "Error Alert System", status: "idle", lastRun: "3 hours ago" },
+  ]
+
+  const logs = [
+    { time: "14:32:15", level: "info", message: "Slack node executed successfully" },
+    { time: "14:31:45", level: "info", message: "GitHub webhook received" },
+    { time: "14:30:22", level: "warn", message: "OpenAI rate limit approaching" },
+    { time: "14:28:10", level: "error", message: "Database connection timeout" },
+    { time: "14:25:33", level: "info", message: 'Workflow "PR → Slack" started' },
+  ]
 
   const fetchStats = async () => {
     try {
