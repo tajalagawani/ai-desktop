@@ -94,23 +94,39 @@ export async function POST(request: NextRequest) {
       // Build Docker run command
       // IMPORTANT: Bind to 0.0.0.0 to expose on all network interfaces
       const ports = service.ports?.map(p => `-p 0.0.0.0:${p}:${p}`).join(' ') || ''
-      const volumes = service.volumes?.map(v => `-v ${containerName}${v}:${v}`).join(' ') || ''
+
+      // Create named volumes for data persistence
+      const volumes = service.volumes?.map(v => {
+        const volumeName = `${containerName}-${v.replace(/\//g, '-')}`
+        return `-v ${volumeName}:${v}`
+      }).join(' ') || ''
+
       const env = Object.entries(service.environment || {})
-        .map(([key, val]) => `-e ${key}="${val}"`)
+        .map(([key, val]) => `-e "${key}=${val}"`)
         .join(' ')
 
       const command = `docker run -d --name ${containerName} --label ai-desktop-service=true --restart unless-stopped ${ports} ${volumes} ${env} ${service.dockerImage}`
 
       console.log('Installing service:', command)
-      const { stdout, stderr } = await execAsync(command)
 
-      return NextResponse.json({
-        success: true,
-        message: `${service.name} installed successfully. Access it at http://YOUR_VPS_IP:${service.ports?.[0] || 'PORT'}`,
-        output: stdout,
-        containerName,
-        accessUrl: service.ports?.[0] ? `http://YOUR_VPS_IP:${service.ports[0]}` : null
-      })
+      try {
+        const { stdout, stderr } = await execAsync(command, { timeout: 300000 }) // 5 min timeout for large images
+
+        return NextResponse.json({
+          success: true,
+          message: `${service.name} installed successfully. Access it at http://YOUR_VPS_IP:${service.ports?.[0] || 'PORT'}`,
+          output: stdout,
+          containerName,
+          accessUrl: service.ports?.[0] ? `http://YOUR_VPS_IP:${service.ports[0]}` : null
+        })
+      } catch (error: any) {
+        // Clean up failed container
+        try {
+          await execAsync(`docker rm -f ${containerName}`)
+        } catch {}
+
+        throw new Error(`Installation failed: ${error.message}`)
+      }
     }
 
     if (action === 'start') {
