@@ -16,10 +16,13 @@ function validatePath(filePath: string): string {
 
   const normalizedPath = path.normalize(filePath)
 
-  // Always join with SAFE_ROOT to ensure we're inside it
-  const absolutePath = path.isAbsolute(normalizedPath)
-    ? path.join(SAFE_ROOT, normalizedPath)
-    : path.join(SAFE_ROOT, normalizedPath)
+  // Strip leading slash if absolute, then join with SAFE_ROOT
+  // path.join ignores first arg if second is absolute
+  const relativePath = normalizedPath.startsWith('/')
+    ? normalizedPath.slice(1)
+    : normalizedPath
+
+  const absolutePath = path.join(SAFE_ROOT, relativePath)
 
   if (!absolutePath.startsWith(SAFE_ROOT)) {
     throw new Error('Access denied: Path is outside allowed directory')
