@@ -197,8 +197,8 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     closable: true,
   },
   "service-manager": {
-    defaultWidth: 1400,
-    defaultHeight: 900,
+    defaultWidth: 1600,
+    defaultHeight: 1000,
     minWidth: 1000,
     minHeight: 700,
     resizable: true,
