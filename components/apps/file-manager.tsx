@@ -28,8 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 
-// Import server actions and utilities
-import { listFiles, createFolder, deleteItem, renameItem, FileItem } from "@/lib/file-actions"
+// Import utilities
 import {
   QUICK_ACCESS_ITEMS,
   PROJECT_ITEMS,
@@ -38,6 +37,15 @@ import {
   USER_PROFILE,
 } from "@/data/file-manager-data"
 import { getIcon, getIconProps } from "@/utils/icon-mapper"
+
+interface FileItem {
+  id: string
+  name: string
+  type: 'file' | 'folder'
+  size: number
+  modified: string
+  path: string
+}
 
 export function FileManager() {
   const [sidebarOpen, setSidebarOpen] = React.useState(true)
@@ -53,8 +61,14 @@ export function FileManager() {
     setLoading(true)
     setError(null)
     try {
-      const items = await listFiles(path)
-      setFiles(items)
+      const response = await fetch(`/api/files?path=${encodeURIComponent(path)}`)
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to load files')
+      }
+
+      setFiles(data.items || [])
     } catch (error: any) {
       console.error('Failed to load files:', error)
       setError(error.message || 'Failed to load files')
@@ -84,7 +98,21 @@ export function FileManager() {
     if (!newFolderName.trim()) return
 
     try {
-      await createFolder(currentPath, newFolderName)
+      const response = await fetch('/api/files', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create-folder',
+          path: currentPath,
+          name: newFolderName
+        })
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create folder')
+      }
+
       setNewFolderName('')
       setNewFolderMode(false)
       setError(null)
@@ -98,7 +126,20 @@ export function FileManager() {
   const handleDelete = async (item: FileItem) => {
     if (confirm(`Are you sure you want to delete ${item.name}?`)) {
       try {
-        await deleteItem(item.path)
+        const response = await fetch('/api/files', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'delete',
+            path: item.path
+          })
+        })
+
+        const data = await response.json()
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to delete item')
+        }
+
         setError(null)
         await loadFiles(currentPath)
         if (selectedFile?.id === item.id) {
