@@ -5,6 +5,35 @@ import { INSTALLABLE_SERVICES } from '@/data/installable-services'
 
 const execAsync = promisify(exec)
 
+// UFW profile mapping for services
+const UFW_PROFILES: Record<string, string> = {
+  'mysql': 'AI-Desktop-MySQL',
+  'mysql57': 'AI-Desktop-MySQL57',
+  'mariadb': 'AI-Desktop-MariaDB',
+  'postgresql': 'AI-Desktop-PostgreSQL',
+  'timescaledb': 'AI-Desktop-TimescaleDB',
+  'mongodb': 'AI-Desktop-MongoDB',
+  'redis': 'AI-Desktop-Redis',
+  'keydb': 'AI-Desktop-KeyDB',
+  'couchdb': 'AI-Desktop-CouchDB',
+  'arangodb': 'AI-Desktop-ArangoDB',
+  'memcached': 'AI-Desktop-Memcached',
+  'neo4j': 'AI-Desktop-Neo4j',
+  'influxdb': 'AI-Desktop-InfluxDB',
+  'questdb': 'AI-Desktop-QuestDB',
+  'victoriametrics': 'AI-Desktop-VictoriaMetrics',
+  'cassandra': 'AI-Desktop-Cassandra',
+  'scylladb': 'AI-Desktop-ScyllaDB',
+  'clickhouse': 'AI-Desktop-ClickHouse',
+  'elasticsearch': 'AI-Desktop-Elasticsearch',
+  'nginx': 'AI-Desktop-Nginx',
+  'phpmyadmin': 'AI-Desktop-PHPMyAdmin',
+  'adminer': 'AI-Desktop-Adminer',
+  'rabbitmq': 'AI-Desktop-RabbitMQ',
+  'mssql': 'AI-Desktop-MSSQL',
+  'cockroachdb': 'AI-Desktop-CockroachDB'
+}
+
 // Check if Docker is installed
 async function checkDocker(): Promise<boolean> {
   try {
@@ -12,6 +41,83 @@ async function checkDocker(): Promise<boolean> {
     return true
   } catch {
     return false
+  }
+}
+
+// Check if UFW is installed and enabled
+async function checkUFW(): Promise<{installed: boolean, enabled: boolean}> {
+  try {
+    await execAsync('which ufw')
+    try {
+      const { stdout } = await execAsync('sudo ufw status')
+      const enabled = stdout.includes('Status: active')
+      return { installed: true, enabled }
+    } catch {
+      return { installed: true, enabled: false }
+    }
+  } catch {
+    return { installed: false, enabled: false }
+  }
+}
+
+// Open firewall port using UFW profile or raw port with rate limiting
+async function openFirewallPort(serviceId: string, ports: number[]): Promise<{success: boolean, method: string, message: string}> {
+  const ufwStatus = await checkUFW()
+
+  if (!ufwStatus.installed) {
+    return { success: false, method: 'none', message: 'UFW not installed' }
+  }
+
+  if (!ufwStatus.enabled) {
+    return { success: false, method: 'none', message: 'UFW not enabled' }
+  }
+
+  // Try UFW application profile first
+  const profileName = UFW_PROFILES[serviceId]
+  if (profileName) {
+    try {
+      await execAsync(`sudo ufw allow '${profileName}' comment 'AI Desktop - ${profileName}'`)
+      return { success: true, method: 'profile', message: `Opened using profile: ${profileName}` }
+    } catch (error: any) {
+      console.log(`Profile ${profileName} not found, falling back to raw ports`)
+    }
+  }
+
+  // Fallback to raw ports with rate limiting for security
+  try {
+    for (const port of ports) {
+      // Add rate limiting to prevent brute force attacks
+      await execAsync(`sudo ufw limit ${port}/tcp comment 'AI Desktop - ${serviceId}'`)
+    }
+    return { success: true, method: 'port', message: `Opened ports ${ports.join(', ')} with rate limiting` }
+  } catch (error: any) {
+    return { success: false, method: 'error', message: `Failed to open ports: ${error.message}` }
+  }
+}
+
+// Close firewall port
+async function closeFirewallPort(serviceId: string, ports: number[]): Promise<void> {
+  const ufwStatus = await checkUFW()
+  if (!ufwStatus.installed || !ufwStatus.enabled) return
+
+  // Try to delete by profile first
+  const profileName = UFW_PROFILES[serviceId]
+  if (profileName) {
+    try {
+      await execAsync(`sudo ufw delete allow '${profileName}'`)
+      return
+    } catch {}
+  }
+
+  // Fallback to deleting by port
+  for (const port of ports) {
+    try {
+      await execAsync(`sudo ufw delete limit ${port}/tcp`)
+    } catch {
+      try {
+        await execAsync(`sudo ufw delete allow ${port}/tcp`)
+      } catch {}
+    }
   }
 }
 
@@ -110,40 +216,11 @@ export async function POST(request: NextRequest) {
       console.log('Installing service:', command)
 
       try {
-        // Open firewall ports BEFORE starting container
+        // Open firewall ports BEFORE installing container
+        let firewallResult = { success: false, method: 'none', message: 'No firewall' }
         if (service.ports && service.ports.length > 0) {
-          console.log('Opening firewall ports:', service.ports)
-          for (const port of service.ports) {
-            try {
-              // Try UFW first (Ubuntu/Debian)
-              await execAsync(`sudo ufw allow ${port}/tcp`)
-            } catch (ufwError) {
-              console.log(`UFW failed for port ${port}, trying firewalld...`)
-              try {
-                // Try firewalld (CentOS/RHEL)
-                await execAsync(`sudo firewall-cmd --permanent --add-port=${port}/tcp`)
-              } catch (firewalldError) {
-                console.log(`firewalld failed for port ${port}, trying iptables...`)
-                try {
-                  // Fallback to iptables
-                  await execAsync(`sudo iptables -A INPUT -p tcp --dport ${port} -j ACCEPT`)
-                } catch (iptablesError) {
-                  console.warn(`Could not open port ${port} with any firewall tool`)
-                }
-              }
-            }
-          }
-
-          // Reload firewall to apply changes
-          try {
-            await execAsync('sudo ufw reload')
-          } catch {
-            try {
-              await execAsync('sudo firewall-cmd --reload')
-            } catch {
-              console.log('Firewall reload skipped')
-            }
-          }
+          firewallResult = await openFirewallPort(service.id, service.ports)
+          console.log('Firewall result:', firewallResult)
         }
 
         // Now install the Docker container
@@ -151,10 +228,11 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          message: `${service.name} installed successfully. Access it at http://YOUR_VPS_IP:${service.ports?.[0] || 'PORT'}`,
+          message: `${service.name} installed successfully. ${firewallResult.message}`,
           output: stdout,
           containerName,
-          accessUrl: service.ports?.[0] ? `http://YOUR_VPS_IP:${service.ports[0]}` : null
+          accessUrl: service.ports?.[0] ? `http://YOUR_VPS_IP:${service.ports[0]}` : null,
+          firewall: firewallResult
         })
       } catch (error: any) {
         // Clean up failed container
@@ -191,10 +269,17 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'remove') {
+      // Remove Docker container
       await execAsync(`docker rm -f ${containerName}`)
+
+      // Close firewall ports for security
+      if (service.ports && service.ports.length > 0) {
+        await closeFirewallPort(service.id, service.ports)
+      }
+
       return NextResponse.json({
         success: true,
-        message: `${service.name} removed`
+        message: `${service.name} removed and firewall ports closed`
       })
     }
 
