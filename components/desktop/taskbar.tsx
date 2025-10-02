@@ -159,9 +159,14 @@ export function Taskbar({ windows, activeWindow, onWindowAction }: TaskbarProps)
             >
               <div className="h-full w-full p-8">
                 <div className="flex items-center justify-between mb-8">
-                  <h1 className="text-3xl font-bold text-neutral-700 dark:text-white">
-                    Open Applications
-                  </h1>
+                  <div>
+                    <h1 className="text-3xl font-bold text-neutral-700 dark:text-white">
+                      Open Applications
+                    </h1>
+                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                      ORCHA Desktop v1.0.0
+                    </p>
+                  </div>
                   <Button
                     variant="ghost"
                     size="lg"
