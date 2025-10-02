@@ -294,7 +294,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="mb-4 -ml-2"
+                className="mb-4 -ml-2 w-fit"
                 onClick={() => setSelectedService(null)}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -533,7 +533,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                 {/* Tabs for Config, Logs, Web UI */}
                 {selectedService.installed && (
                   <Tabs defaultValue="config" className="flex-1 flex flex-col mt-2">
-                    <TabsList className="mb-2">
+                    <TabsList className="mb-2 justify-start w-auto">
                       <TabsTrigger value="config">Configuration</TabsTrigger>
                       {selectedService.status === 'running' && (
                         <TabsTrigger value="logs" onClick={() => loadLogs(selectedService.id)}>
