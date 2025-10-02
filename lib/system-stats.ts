@@ -1,129 +1,143 @@
-import os from 'os'
-import { exec } from 'child_process'
-import { promisify } from 'util'
-
-const execAsync = promisify(exec)
+import si from 'systeminformation'
 
 export interface SystemStats {
   cpu: {
     usage: number
     cores: number
     model: string
+    speed: number
+    temperature?: number
+    loadPerCore: number[]
   }
   memory: {
     total: number
     used: number
     free: number
     usagePercent: number
+    available: number
+    active: number
   }
   disk: {
     total: number
     used: number
     free: number
     usagePercent: number
+    readSpeed?: number
+    writeSpeed?: number
+  }
+  network?: {
+    rx: number  // received bytes
+    tx: number  // transmitted bytes
+    rxSec: number  // received per second
+    txSec: number  // transmitted per second
+  }
+  processes?: {
+    all: number
+    running: number
+    blocked: number
+    sleeping: number
   }
   uptime: number
   platform: string
   hostname: string
 }
 
-// Calculate CPU usage
-async function getCPUUsage(): Promise<number> {
-  const cpus = os.cpus()
-
-  // Get CPU usage at two points in time
-  const startMeasure = cpus.map(cpu => {
-    const total = Object.values(cpu.times).reduce((acc, time) => acc + time, 0)
-    const idle = cpu.times.idle
-    return { total, idle }
-  })
-
-  // Wait 100ms
-  await new Promise(resolve => setTimeout(resolve, 100))
-
-  const endMeasure = os.cpus().map(cpu => {
-    const total = Object.values(cpu.times).reduce((acc, time) => acc + time, 0)
-    const idle = cpu.times.idle
-    return { total, idle }
-  })
-
-  // Calculate average CPU usage across all cores
-  let totalUsage = 0
-  for (let i = 0; i < startMeasure.length; i++) {
-    const totalDiff = endMeasure[i].total - startMeasure[i].total
-    const idleDiff = endMeasure[i].idle - startMeasure[i].idle
-    const usage = 100 - (100 * idleDiff / totalDiff)
-    totalUsage += usage
-  }
-
-  const avgUsage = totalUsage / startMeasure.length
-  return Math.min(Math.round(avgUsage), 100)
-}
-
-// Get disk usage (works on Linux/Unix)
-async function getDiskUsage(): Promise<{ total: number; used: number; free: number; usagePercent: number }> {
-  try {
-    // Try df command (Linux/Unix)
-    const { stdout } = await execAsync('df -k /')
-    const lines = stdout.trim().split('\n')
-
-    if (lines.length >= 2) {
-      const parts = lines[1].split(/\s+/)
-      const total = parseInt(parts[1]) * 1024 // Convert KB to bytes
-      const used = parseInt(parts[2]) * 1024
-      const free = parseInt(parts[3]) * 1024
-      const usagePercent = Math.round((used / total) * 100)
-
-      return { total, used, free, usagePercent }
-    }
-  } catch (error) {
-    console.error('Error getting disk usage:', error)
-  }
-
-  // Fallback if df command fails
-  return { total: 0, used: 0, free: 0, usagePercent: 0 }
-}
-
 export async function getSystemStats(): Promise<SystemStats> {
-  // Get CPU info
-  const cpuUsage = await getCPUUsage()
-  const cpus = os.cpus()
-  const cpuModel = cpus[0]?.model || 'Unknown'
+  try {
+    // Fetch all stats in parallel for maximum performance
+    const [
+      cpuLoad,
+      cpuInfo,
+      mem,
+      fsSize,
+      currentLoad,
+      osInfo,
+      networkStats,
+      processes,
+      cpuTemp
+    ] = await Promise.all([
+      si.currentLoad(),
+      si.cpu(),
+      si.mem(),
+      si.fsSize(),
+      si.currentLoad(),
+      si.osInfo(),
+      si.networkStats().catch(() => null), // Optional, may fail
+      si.processes().catch(() => null),     // Optional, may fail
+      si.cpuTemperature().catch(() => null) // Optional, may fail on some systems
+    ])
 
-  // Get memory info
-  const totalMem = os.totalmem()
-  const freeMem = os.freemem()
-  const usedMem = totalMem - freeMem
-  const memUsagePercent = Math.round((usedMem / totalMem) * 100)
+    // CPU stats
+    const cpuUsage = Math.round(currentLoad.currentLoad)
+    const loadPerCore = currentLoad.cpus.map(cpu => Math.round(cpu.load))
 
-  // Get disk info
-  const diskInfo = await getDiskUsage()
+    // Memory stats
+    const memUsagePercent = Math.round((mem.used / mem.total) * 100)
 
-  // Get system info
-  const uptime = os.uptime()
-  const platform = os.platform()
-  const hostname = os.hostname()
+    // Disk stats (use root filesystem)
+    const rootDisk = fsSize.find(disk => disk.mount === '/') || fsSize[0]
+    const diskUsagePercent = Math.round(rootDisk ? rootDisk.use : 0)
 
-  return {
-    cpu: {
-      usage: cpuUsage,
-      cores: cpus.length,
-      model: cpuModel
-    },
-    memory: {
-      total: totalMem,
-      used: usedMem,
-      free: freeMem,
-      usagePercent: memUsagePercent
-    },
-    disk: {
-      total: diskInfo.total,
-      used: diskInfo.used,
-      free: diskInfo.free,
-      usagePercent: diskInfo.usagePercent
-    },
-    uptime,
-    platform,
-    hostname
+    // Network stats (sum of all interfaces)
+    let networkData = undefined
+    if (networkStats && Array.isArray(networkStats)) {
+      const totalRx = networkStats.reduce((sum, iface) => sum + (iface.rx_bytes || 0), 0)
+      const totalTx = networkStats.reduce((sum, iface) => sum + (iface.tx_bytes || 0), 0)
+      const totalRxSec = networkStats.reduce((sum, iface) => sum + (iface.rx_sec || 0), 0)
+      const totalTxSec = networkStats.reduce((sum, iface) => sum + (iface.tx_sec || 0), 0)
+
+      networkData = {
+        rx: totalRx,
+        tx: totalTx,
+        rxSec: totalRxSec,
+        txSec: totalTxSec
+      }
+    }
+
+    // Process stats
+    let processData = undefined
+    if (processes) {
+      processData = {
+        all: processes.all || 0,
+        running: processes.running || 0,
+        blocked: processes.blocked || 0,
+        sleeping: processes.sleeping || 0
+      }
+    }
+
+    const stats: SystemStats = {
+      cpu: {
+        usage: cpuUsage,
+        cores: cpuInfo.cores,
+        model: cpuInfo.brand,
+        speed: cpuInfo.speed,
+        temperature: cpuTemp?.main || undefined,
+        loadPerCore
+      },
+      memory: {
+        total: mem.total,
+        used: mem.used,
+        free: mem.free,
+        usagePercent: memUsagePercent,
+        available: mem.available,
+        active: mem.active
+      },
+      disk: {
+        total: rootDisk?.size || 0,
+        used: rootDisk?.used || 0,
+        free: rootDisk?.available || 0,
+        usagePercent: diskUsagePercent
+      },
+      network: networkData,
+      processes: processData,
+      uptime: osInfo.uptime,
+      platform: osInfo.platform,
+      hostname: osInfo.hostname
+    }
+
+    return stats
+  } catch (error) {
+    console.error('Error fetching system stats:', error)
+    throw error
   }
 }

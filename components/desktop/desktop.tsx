@@ -16,6 +16,9 @@ import {
   Bell,
   MemoryStick as Memory,
   HardDrive,
+  Network,
+  Thermometer,
+  Activity as ProcessIcon,
 } from "lucide-react"
 import { MacAppStore } from "@/components/apps/mac-app-store"
 import { InstalledApps } from "@/components/apps/installed-apps"
@@ -343,6 +346,10 @@ function SystemWidgets({ systemStatus, recentActivity, systemStats }: any) {
     return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`
   }
 
+  const formatBytesPerSec = (bytesPerSec: number): string => {
+    return `${formatBytes(bytesPerSec)}/s`
+  }
+
   return (
     <div className="hidden lg:block absolute top-8 right-8 space-y-4 z-20">
       {/* CPU Widget */}
@@ -356,13 +363,20 @@ function SystemWidgets({ systemStatus, recentActivity, systemStats }: any) {
           </div>
           {systemStats && (
             <>
-              <div className="flex justify-between">
+              <div className="flex justify-between text-xs">
                 <span className="text-neutral-500 dark:text-neutral-400">Cores</span>
                 <span className="text-neutral-700 dark:text-white">{systemStats.cpu.cores}</span>
               </div>
-              <div className="text-xs text-neutral-500 dark:text-neutral-400 truncate" title={systemStats.cpu.model}>
-                {systemStats.cpu.model}
+              <div className="flex justify-between text-xs">
+                <span className="text-neutral-500 dark:text-neutral-400">Speed</span>
+                <span className="text-neutral-700 dark:text-white">{systemStats.cpu.speed} GHz</span>
               </div>
+              {systemStats.cpu.temperature && (
+                <div className="flex justify-between text-xs">
+                  <span className="text-neutral-500 dark:text-neutral-400">Temp</span>
+                  <span className="text-neutral-700 dark:text-white">{systemStats.cpu.temperature}°C</span>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -427,6 +441,54 @@ function SystemWidgets({ systemStatus, recentActivity, systemStats }: any) {
           )}
         </div>
       </Widget>
+
+      {/* Network Widget */}
+      {systemStats?.network && (
+        <Widget icon={Network} title="Network">
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between text-xs">
+              <span className="text-neutral-500 dark:text-neutral-400">↓ Down</span>
+              <span className="text-neutral-700 dark:text-white font-mono">
+                {formatBytesPerSec(systemStats.network.rxSec)}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-neutral-500 dark:text-neutral-400">↑ Up</span>
+              <span className="text-neutral-700 dark:text-white font-mono">
+                {formatBytesPerSec(systemStats.network.txSec)}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-neutral-500 dark:text-neutral-400">Total RX</span>
+              <span className="text-neutral-700 dark:text-white font-mono">
+                {formatBytes(systemStats.network.rx)}
+              </span>
+            </div>
+          </div>
+        </Widget>
+      )}
+
+      {/* Processes Widget */}
+      {systemStats?.processes && (
+        <Widget icon={ProcessIcon} title="Processes">
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-neutral-500 dark:text-neutral-400">Total</span>
+              <span className="text-neutral-700 dark:text-white font-mono">
+                {systemStats.processes.all}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-neutral-500 dark:text-neutral-400">Running</span>
+              <span className="text-neutral-700 dark:text-white">{systemStats.processes.running}</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-neutral-500 dark:text-neutral-400">Sleeping</span>
+              <span className="text-neutral-700 dark:text-white">{systemStats.processes.sleeping}</span>
+            </div>
+          </div>
+        </Widget>
+      )}
 
       {/* Recent Activity Widget */}
       <Widget icon={Clock} title="Recent Activity">
