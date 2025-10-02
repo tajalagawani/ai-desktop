@@ -281,10 +281,14 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
               <div className="mb-6 flex items-start gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm">
-                  {(() => {
-                    const Icon = getIcon(selectedService.icon)
-                    return <Icon className="h-8 w-8 text-primary" />
-                  })()}
+                  {selectedService.iconType === 'image' ? (
+                    <img src={selectedService.icon} alt={selectedService.name} className="h-10 w-10 object-contain" />
+                  ) : (
+                    (() => {
+                      const Icon = getIcon(selectedService.icon)
+                      return <Icon className="h-8 w-8 text-primary" />
+                    })()
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -537,7 +541,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
               <ScrollArea className="h-[calc(100vh-280px)]">
                 <div className="space-y-3 pr-4">
                   {filteredServices.map((service) => {
-                    const Icon = getIcon(service.icon)
+                    const Icon = service.iconType === 'image' ? null : getIcon(service.icon)
                     return (
                       <div
                         key={service.id}
@@ -545,7 +549,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
                         className="flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
                       >
                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex-shrink-0">
-                          <Icon className="w-6 h-6 text-primary" />
+                          {service.iconType === 'image' ? (
+                            <img src={service.icon} alt={service.name} className="h-8 w-8 object-contain" />
+                          ) : Icon && (
+                            <Icon className="w-6 h-6 text-primary" />
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
