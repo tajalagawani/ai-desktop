@@ -86,8 +86,8 @@ if [ -z "$LATEST" ]; then
 fi
 
 if [ -z "$CURRENT" ]; then
-  log "📝 First run - saving current commit: $LATEST"
-  echo "$LATEST" > "$STATE_FILE"
+  log "📝 First run - performing initial update..."
+  update_app
   exit 0
 fi
 
