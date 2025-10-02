@@ -43,7 +43,7 @@ update_app() {
 
   # Install dependencies
   log "📦 Installing dependencies..."
-  npm ci --production=false
+  npm ci
 
   # Build application
   log "🔨 Building application..."
