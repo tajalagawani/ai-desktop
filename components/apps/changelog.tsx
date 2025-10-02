@@ -179,11 +179,21 @@ export function Changelog() {
           {/* Not Deployed Banner */}
           {!updating && !currentSHA && (
             <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900 rounded-lg">
-              <div className="flex items-center gap-2">
-                <ExternalLink className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
-                <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
-                  Not deployed yet • Latest version {latestSHA} is available
-                </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ExternalLink className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                  <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
+                    Not deployed yet • Latest version {latestSHA} is available
+                  </p>
+                </div>
+                <Button
+                  onClick={handleUpdate}
+                  size="sm"
+                  className="gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Update Now
+                </Button>
               </div>
             </div>
           )}
