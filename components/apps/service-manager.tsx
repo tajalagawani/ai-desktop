@@ -331,140 +331,145 @@ export function ServiceManager(_props: ServiceManagerProps) {
               </div>
 
               {/* Overview Content - Always Visible */}
-              <div className="mb-4 space-y-4 overflow-auto flex-1">
-                  {selectedService.installed && selectedService.defaultCredentials && (
-                    <div className="p-4 bg-muted/50 rounded-lg space-y-2">
-                      <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
-                        <Key className="h-4 w-4" />
-                        Connection Details
-                      </h3>
-                      {selectedService.defaultCredentials.port && (
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-muted-foreground">Port:</span>
-                          <div className="flex items-center gap-2">
-                            <code className="font-mono bg-background px-3 py-1 rounded">
-                              {selectedService.defaultCredentials.port}
+              <div className="space-y-3 overflow-auto flex-1">
+                  {/* Unified Connection Info Card */}
+                  {selectedService.installed && (
+                    <div className="p-3 bg-muted/50 rounded-lg space-y-2.5">
+                      {selectedService.defaultCredentials && (
+                        <>
+                          <h3 className="font-medium text-sm flex items-center gap-2">
+                            <Key className="h-3.5 w-3.5" />
+                            Connection Details
+                          </h3>
+                          <div className="space-y-1.5">
+                            {selectedService.defaultCredentials.port && (
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="text-muted-foreground">Port:</span>
+                                <div className="flex items-center gap-1.5">
+                                  <code className="font-mono bg-background px-2 py-0.5 rounded text-xs">
+                                    {selectedService.defaultCredentials.port}
+                                  </code>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0"
+                                    onClick={() => copyToClipboard(selectedService.defaultCredentials!.port!.toString())}
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                            {selectedService.defaultCredentials.username && (
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="text-muted-foreground">Username:</span>
+                                <div className="flex items-center gap-1.5">
+                                  <code className="font-mono bg-background px-2 py-0.5 rounded text-xs">
+                                    {selectedService.defaultCredentials.username}
+                                  </code>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0"
+                                    onClick={() => copyToClipboard(selectedService.defaultCredentials!.username!)}
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                            {selectedService.defaultCredentials.password && (
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="text-muted-foreground">Password:</span>
+                                <div className="flex items-center gap-1.5">
+                                  <code className="font-mono bg-background px-2 py-0.5 rounded text-xs">
+                                    {selectedService.defaultCredentials.password}
+                                  </code>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0"
+                                    onClick={() => copyToClipboard(selectedService.defaultCredentials!.password!)}
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      )}
+
+                      {/* CLI Connection */}
+                      {getConnectionString(selectedService) && (
+                        <>
+                          <div className="border-t pt-2.5" />
+                          <h3 className="font-medium text-sm flex items-center gap-2">
+                            <TerminalIcon className="h-3.5 w-3.5" />
+                            CLI Connection
+                          </h3>
+                          <div className="flex items-center gap-1.5">
+                            <code className="flex-1 px-2 py-1 bg-background rounded text-xs font-mono overflow-x-auto">
+                              {getConnectionString(selectedService)}
                             </code>
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 w-7 p-0"
-                              onClick={() => copyToClipboard(selectedService.defaultCredentials!.port!.toString())}
+                              className="h-6 w-6 p-0"
+                              onClick={() => copyToClipboard(getConnectionString(selectedService)!)}
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
                           </div>
-                        </div>
+                        </>
                       )}
-                      {selectedService.defaultCredentials.username && (
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-muted-foreground">Username:</span>
-                          <div className="flex items-center gap-2">
-                            <code className="font-mono bg-background px-3 py-1 rounded">
-                              {selectedService.defaultCredentials.username}
-                            </code>
+
+                      {/* Web Access */}
+                      {getAccessUrl(selectedService) && (
+                        <>
+                          <div className="border-t pt-2.5" />
+                          <h3 className="font-medium text-sm flex items-center gap-2">
+                            <Globe className="h-3.5 w-3.5" />
+                            Web Access
+                          </h3>
+                          <div className="flex items-center gap-1.5">
+                            <input
+                              type="text"
+                              value={getAccessUrl(selectedService)!}
+                              readOnly
+                              className="flex-1 px-2 py-1 bg-background rounded text-xs"
+                            />
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 w-7 p-0"
-                              onClick={() => copyToClipboard(selectedService.defaultCredentials!.username!)}
+                              className="h-6 w-6 p-0"
+                              onClick={() => copyToClipboard(getAccessUrl(selectedService)!)}
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
-                          </div>
-                        </div>
-                      )}
-                      {selectedService.defaultCredentials.password && (
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-muted-foreground">Password:</span>
-                          <div className="flex items-center gap-2">
-                            <code className="font-mono bg-background px-3 py-1 rounded">
-                              {selectedService.defaultCredentials.password}
-                            </code>
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-7 w-7 p-0"
-                              onClick={() => copyToClipboard(selectedService.defaultCredentials!.password!)}
+                              className="h-6 w-6 p-0"
+                              onClick={() => window.open(getAccessUrl(selectedService)!, '_blank')}
                             >
-                              <Copy className="h-3 w-3" />
+                              <ExternalLink className="h-3 w-3" />
                             </Button>
                           </div>
-                        </div>
+                        </>
                       )}
                     </div>
                   )}
-
-                  {/* CLI Connection */}
-                  {selectedService.installed && getConnectionString(selectedService) && (
-                    <div className="p-4 bg-muted/50 rounded-lg">
-                      <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
-                        <TerminalIcon className="h-4 w-4" />
-                        CLI Connection
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        <code className="flex-1 p-2 bg-background rounded text-sm font-mono overflow-x-auto">
-                          {getConnectionString(selectedService)}
-                        </code>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => copyToClipboard(getConnectionString(selectedService)!)}
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Web Access */}
-                  {selectedService.installed && getAccessUrl(selectedService) && (
-                    <div className="p-4 bg-muted/50 rounded-lg">
-                      <h3 className="font-medium text-sm mb-2 flex items-center gap-2">
-                        <Globe className="h-4 w-4" />
-                        Web Access
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={getAccessUrl(selectedService)!}
-                          readOnly
-                          className="flex-1 p-2 bg-background rounded text-sm"
-                        />
-                        <Button
-                          size="sm"
-                          onClick={() => copyToClipboard(getAccessUrl(selectedService)!)}
-                        >
-                          <Copy className="h-4 w-4 mr-2" />
-                          Copy
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => window.open(getAccessUrl(selectedService)!, '_blank')}
-                        >
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          Open
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <h3 className="mb-2 font-medium">About</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {selectedService.description}
-                    </p>
-                  </div>
 
                   {/* Environment Variables */}
                   {selectedService.environment && Object.keys(selectedService.environment).length > 0 && (
-                    <div>
-                      <h3 className="mb-3 font-medium">Environment Variables</h3>
-                      <div className="space-y-2">
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <h3 className="mb-2 font-medium text-sm">Environment Variables</h3>
+                      <div className="space-y-1">
                         {Object.entries(selectedService.environment).map(([key, value]) => (
-                          <div key={key} className="flex items-center justify-between p-2 bg-muted/50 rounded text-sm">
-                            <code className="font-semibold">{key}</code>
-                            <code className="text-muted-foreground">{value}</code>
+                          <div key={key} className="flex items-center justify-between py-1 text-sm">
+                            <code className="font-semibold text-xs">{key}</code>
+                            <code className="text-muted-foreground text-xs">{value}</code>
                           </div>
                         ))}
                       </div>
@@ -527,8 +532,8 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
                 {/* Tabs for Config, Logs, Web UI */}
                 {selectedService.installed && (
-                  <Tabs defaultValue="config" className="flex-1 flex flex-col mt-4">
-                    <TabsList className="mb-4">
+                  <Tabs defaultValue="config" className="flex-1 flex flex-col mt-2">
+                    <TabsList className="mb-2">
                       <TabsTrigger value="config">Configuration</TabsTrigger>
                       {selectedService.status === 'running' && (
                         <TabsTrigger value="logs" onClick={() => loadLogs(selectedService.id)}>
@@ -541,25 +546,25 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     </TabsList>
 
                     {/* Configuration Tab */}
-                    <TabsContent value="config" className="flex-1 overflow-auto space-y-4 mt-0">
-                      <Card className="p-4">
-                        <h3 className="font-semibold mb-3">Docker Configuration</h3>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between py-2 border-b">
+                    <TabsContent value="config" className="flex-1 overflow-auto mt-0">
+                      <Card className="p-3">
+                        <h3 className="font-semibold mb-2 text-sm">Docker Configuration</h3>
+                        <div className="space-y-1.5 text-sm">
+                          <div className="flex justify-between py-1.5 border-b">
                             <span className="text-muted-foreground">Container Name:</span>
-                            <code>{selectedService.containerName}</code>
+                            <code className="text-xs">{selectedService.containerName}</code>
                           </div>
-                          <div className="flex justify-between py-2 border-b">
+                          <div className="flex justify-between py-1.5 border-b">
                             <span className="text-muted-foreground">Image:</span>
-                            <code>{selectedService.dockerImage}</code>
+                            <code className="text-xs">{selectedService.dockerImage}</code>
                           </div>
-                          <div className="flex justify-between py-2 border-b">
+                          <div className="flex justify-between py-1.5 border-b">
                             <span className="text-muted-foreground">Volumes:</span>
-                            <code>{selectedService.volumes?.join(', ') || 'None'}</code>
+                            <code className="text-xs">{selectedService.volumes?.join(', ') || 'None'}</code>
                           </div>
-                          <div className="flex justify-between py-2">
+                          <div className="flex justify-between py-1.5">
                             <span className="text-muted-foreground">Method:</span>
-                            <code>{selectedService.installMethod}</code>
+                            <code className="text-xs">{selectedService.installMethod}</code>
                           </div>
                         </div>
                       </Card>
@@ -567,15 +572,15 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
                     {/* Logs Tab */}
                     <TabsContent value="logs" className="flex-1 overflow-auto mt-0">
-                      <Card className="p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <h3 className="font-semibold">Container Logs</h3>
+                      <Card className="p-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold text-sm">Container Logs</h3>
                           <Button size="sm" onClick={() => loadLogs(selectedService.id)} disabled={logsLoading}>
-                            <RotateCw className={cn("h-3 w-3 mr-2", logsLoading && "animate-spin")} />
+                            <RotateCw className={cn("h-3 w-3 mr-1.5", logsLoading && "animate-spin")} />
                             Refresh
                           </Button>
                         </div>
-                        <pre className="p-4 bg-black text-green-400 rounded font-mono text-xs overflow-auto max-h-96">
+                        <pre className="p-3 bg-black text-green-400 rounded font-mono text-xs overflow-auto max-h-80">
                           {logs || 'No logs available. Click Refresh to load logs.'}
                         </pre>
                       </Card>
