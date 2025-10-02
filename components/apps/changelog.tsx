@@ -111,7 +111,7 @@ export function Changelog() {
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">Changelog</h1>
               <p className="text-muted-foreground">
-                {currentSHA ? `Currently on ${currentSHA}` : 'Not deployed'} • v{currentVersion}
+                {currentSHA ? `Currently on ${currentSHA}` : `Latest: ${latestSHA}`} • v{currentVersion}
               </p>
             </div>
             <Button
