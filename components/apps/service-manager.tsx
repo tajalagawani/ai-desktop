@@ -657,24 +657,24 @@ export function ServiceManager(_props: ServiceManagerProps) {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <h3 className="font-medium">{service.name}</h3>
-                            {service.status === 'running' ? (
-                              <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
-                                <Check className="mr-1 h-3 w-3" />
-                                Running
-                              </Badge>
-                            ) : service.installed ? (
-                              <Badge variant="secondary">Stopped</Badge>
-                            ) : null}
                           </div>
                           <p className="text-sm text-muted-foreground line-clamp-1">
                             {service.description}
                           </p>
                         </div>
 
-                        {/* Action Buttons */}
+                        {/* Status Badge & Action Buttons */}
                         <div className="flex items-center gap-2 flex-shrink-0">
                           {service.installed ? (
                             <>
+                              {service.status === 'running' ? (
+                                <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
+                                  <Check className="mr-1 h-3 w-3" />
+                                  Running
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary">Stopped</Badge>
+                              )}
                               {service.status === 'running' ? (
                                 <Button
                                   size="sm"
