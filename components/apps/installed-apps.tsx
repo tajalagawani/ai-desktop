@@ -116,7 +116,7 @@ export function InstalledApps() {
         <Sidebar
           categories={APP_CATEGORIES}
           currentCategory={filters.category}
-          onCategoryChange={(category) => setFilter("category", category as any)}
+          onCategoryChange={(category: string) => setFilter("category", category as any)}
           statistics={statistics}
         />
 

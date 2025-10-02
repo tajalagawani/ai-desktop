@@ -145,12 +145,12 @@ export const calculateResizedWindow = (
 
 export const getAppComponent = async (appId: string) => {
   const componentMap: Record<string, () => Promise<any>> = {
-    "app-store": () => import("@/components/mac-app-store"),
-    "installed": () => import("@/components/installed-apps"),
-    "workflows": () => import("@/components/workflow-canvas"),
-    "terminal": () => import("@/components/terminal"),
-    "monitor": () => import("@/components/system-monitor"),
-    "file-manager": () => import("@/components/file-manager"),
+    "app-store": () => import("@/components/apps/mac-app-store"),
+    "installed": () => import("@/components/apps/installed-apps"),
+    "workflows": () => import("@/components/apps/workflow-canvas"),
+    "terminal": () => import("@/components/apps/terminal"),
+    "monitor": () => import("@/components/apps/system-monitor"),
+    "file-manager": () => import("@/components/apps/file-manager"),
   }
 
   if (componentMap[appId]) {
