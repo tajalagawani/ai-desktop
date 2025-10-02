@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,14 +8,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Power, RotateCcw, Moon, LogOut, GitBranch } from "lucide-react"
-import { ChangelogModal } from "./changelog-modal"
 
 interface SystemControlMenuProps {
   onLogout: () => void
+  openWindow: (id: string, title: string) => void
 }
 
-export function SystemControlMenu({ onLogout }: SystemControlMenuProps) {
-  const [isChangelogOpen, setIsChangelogOpen] = useState(false)
+export function SystemControlMenu({ onLogout, openWindow }: SystemControlMenuProps) {
 
   const handleSleep = () => {
     // Simulate sleep mode
@@ -52,7 +50,7 @@ export function SystemControlMenu({ onLogout }: SystemControlMenuProps) {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48 mb-1">
-          <DropdownMenuItem onClick={() => setIsChangelogOpen(true)} className="cursor-pointer">
+          <DropdownMenuItem onClick={() => openWindow("changelog", "Recent Updates")} className="cursor-pointer">
             <GitBranch className="mr-2 h-4 w-4" />
             Recent Updates
           </DropdownMenuItem>
@@ -77,8 +75,6 @@ export function SystemControlMenu({ onLogout }: SystemControlMenuProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <ChangelogModal isOpen={isChangelogOpen} onClose={() => setIsChangelogOpen(false)} />
     </>
   )
 }

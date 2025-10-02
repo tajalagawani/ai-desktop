@@ -21,6 +21,7 @@ import { WorkflowCanvas } from "@/components/apps/workflow-canvas"
 import { SystemMonitor } from "@/components/apps/system-monitor"
 import { ChatInterface } from "@/components/apps/chat-interface"
 import { Terminal } from "@/components/apps/terminal"
+import { Changelog } from "@/components/apps/changelog"
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
@@ -48,6 +49,7 @@ const getAppComponent = (id: string): React.ReactNode => {
     "installed": <InstalledApps />,
     "workflows": <WorkflowCanvas />,
     "terminal": <Terminal />,
+    "changelog": <Changelog />,
     "monitor": <SystemMonitor />,
     "file-manager": <FileManager />,
     "github": <div>GitHub Desktop</div>,
@@ -89,6 +91,11 @@ export function Desktop() {
   const handleOpenWindow = (id: string, title: string) => {
     const component = getAppComponent(id)
     openWindow(id, title, component)
+
+    // Auto-maximize changelog window
+    if (id === "changelog") {
+      setTimeout(() => toggleMaximizeWindow(id), 100)
+    }
   }
 
   const handleTaskbarAction = (windowId: string, action: string) => {
@@ -200,12 +207,13 @@ export function Desktop() {
         </div>
 
         {/* Footer Bar */}
-        <FooterBar 
+        <FooterBar
           isDarkMode={isDarkMode}
           onToggleTheme={toggleTheme}
           activeWindow={activeWindow}
           windows={windows}
           onLogout={() => setIsAuthenticated(false)}
+          handleOpenWindow={handleOpenWindow}
         />
 
         {/* Desktop Folders */}
@@ -363,7 +371,7 @@ function SystemWidgets({ systemStatus, recentActivity }: any) {
   )
 }
 
-function FooterBar({ isDarkMode, onToggleTheme, activeWindow, windows, onLogout }: any) {
+function FooterBar({ isDarkMode, onToggleTheme, activeWindow, windows, onLogout, handleOpenWindow }: any) {
   return (
     <div className="absolute bottom-0 left-0 right-0 h-[28px] bg-gray-200/0 dark:bg-black/0 z-30 select-none">
       <div className="flex items-center justify-between h-full text-[11px] text-black dark:text-white px-2">
@@ -425,7 +433,7 @@ function FooterBar({ isDarkMode, onToggleTheme, activeWindow, windows, onLogout 
           </button>
           
           <div className="h-full hover:bg-black/10 dark:hover:bg-white/10">
-            <SystemControlMenu onLogout={onLogout} />
+            <SystemControlMenu onLogout={onLogout} openWindow={handleOpenWindow} />
           </div>
         </div>
       </div>

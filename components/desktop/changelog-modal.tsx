@@ -79,18 +79,18 @@ export function ChangelogModal({ isOpen, onClose }: ChangelogModalProps) {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]"
           />
 
-          {/* Modal */}
+          {/* Full Screen Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", duration: 0.3 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl max-h-[80vh] bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl z-[9999] overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[9999] bg-slate-950"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
+            <div className="flex items-center justify-between p-8 border-b border-slate-700/50 bg-slate-900/50 backdrop-blur-xl">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-slate-700/50 border border-slate-600/50">
+                <div className="p-2 rounded-lg  border-slate-600/50">
                   <GitCommit className="w-5 h-5 text-slate-300" />
                 </div>
                 <div>
@@ -172,7 +172,7 @@ export function ChangelogModal({ isOpen, onClose }: ChangelogModalProps) {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-slate-700/50 bg-slate-900/50">
+            <div className="p-4 border-t border-slate-700/50 bg-[#0f172a]/50">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-slate-500">
                   Auto-updates every 60 seconds

@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server'
+import fs from 'fs'
+import path from 'path'
 
 export async function GET() {
   try {
+    // Read current version from version.json
+    const versionPath = path.join(process.cwd(), 'version.json')
+    const versionData = JSON.parse(fs.readFileSync(versionPath, 'utf-8'))
+
     // Fetch recent commits from GitHub API
     const response = await fetch(
       'https://api.github.com/repos/tajalagawani/ai-desktop/commits?per_page=10',
@@ -28,10 +34,20 @@ export async function GET() {
       url: commit.html_url,
     }))
 
+    // Check if update is available (compare current SHA with latest)
+    const currentVersionSHA = versionData.currentSHA || null
+    const latestSHA = commits[0]?.sha.substring(0, 7) || null
+    const updateAvailable = currentVersionSHA !== latestSHA && currentVersionSHA !== null
+
     return NextResponse.json({
       success: true,
+      currentVersion: versionData.version,
+      buildDate: versionData.buildDate,
+      currentSHA: currentVersionSHA,
+      latestSHA,
+      updateAvailable,
       changelog,
-      latest: changelog[0]?.sha || null,
+      versionChangelog: versionData.changelog,
     })
   } catch (error) {
     return NextResponse.json(
