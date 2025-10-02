@@ -28,6 +28,8 @@ import { ChatInterface } from "@/components/apps/chat-interface"
 import { Terminal } from "@/components/apps/terminal"
 import { ClaudeCLI } from "@/components/apps/claude-cli"
 import { Changelog } from "@/components/apps/changelog"
+import { FileManager } from "@/components/apps/file-manager"
+import { ServiceManager } from "@/components/apps/service-manager"
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
@@ -35,7 +37,6 @@ import { FloatingDockDemo } from "@/components/desktop/floating-dock-demo"
 import { DesktopContextMenu } from "@/components/desktop/desktop-context-menu"
 import { DesktopIconContextMenu } from "@/components/desktop/desktop-icon-context-menu"
 import { Taskbar } from "@/components/desktop/taskbar"
-import { FileManager } from "@/components/apps/file-manager"
 import { Window } from "@/components/desktop/window"
 import { Widget } from "@/components/desktop/widget"
 import type { SystemStats } from "@/lib/system-stats"
@@ -61,6 +62,7 @@ const getAppComponent = (id: string): React.ReactNode => {
     "changelog": <Changelog />,
     "monitor": <SystemMonitor />,
     "file-manager": <FileManager />,
+    "service-manager": <ServiceManager />,
     "github": <div>GitHub Desktop</div>,
     "chatgpt": <div>ChatGPT</div>,
     "slack": <div>Slack</div>,

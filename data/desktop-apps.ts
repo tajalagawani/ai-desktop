@@ -87,6 +87,14 @@ export const DOCK_APPS: AppConfig[] = [
     isSystem: true,
     description: "Browse and manage files"
   },
+  {
+    id: "service-manager",
+    name: "Services",
+    icon: "Package",
+    category: "system",
+    isSystem: true,
+    description: "Install and manage VPS services"
+  },
 ]
 
 export const INSTALLED_APPS: AppConfig[] = [
@@ -182,6 +190,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     defaultHeight: 700,
     minWidth: 700,
     minHeight: 500,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "service-manager": {
+    defaultWidth: 1200,
+    defaultHeight: 800,
+    minWidth: 800,
+    minHeight: 600,
     resizable: true,
     maximizable: true,
     minimizable: true,
