@@ -1,0 +1,882 @@
+<!DOCTYPE html><!-- Last Published: Thu Oct 02 2025 20:50:32 GMT+0000 (Coordinated Universal Time) --><html data-wf-domain="www.redpanda.com" data-wf-page="6632a83042773c5a1a5f4457" data-wf-site="6632a83042773c5a1a5f4443" lang="en"><head><meta charset="utf-8"/><title>High-Performance Streaming Data Platform | Redpanda</title><meta content="Experience a Kafka-compatible streaming data platform with 10x lower latency and simplified operations—built for real-time analytics and AI." name="description"/><meta content="High-Performance Streaming Data Platform | Redpanda" property="og:title"/><meta content="Experience a Kafka-compatible streaming data platform with 10x lower latency and simplified operations—built for real-time analytics and AI." property="og:description"/><meta content="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/667df72570a3405cfe049d9a_social-card.webp" property="og:image"/><meta content="High-Performance Streaming Data Platform | Redpanda" property="twitter:title"/><meta content="Experience a Kafka-compatible streaming data platform with 10x lower latency and simplified operations—built for real-time analytics and AI." property="twitter:description"/><meta content="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/667df72570a3405cfe049d9a_social-card.webp" property="twitter:image"/><meta property="og:type" content="website"/><meta content="summary_large_image" name="twitter:card"/><meta content="width=device-width, initial-scale=1" name="viewport"/><link href="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/css/redpanda-data.shared.96acf5fb1.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link href="https://fonts.gstatic.com" rel="preconnect" crossorigin="anonymous"/><script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script><script type="text/javascript">WebFont.load({  google: {    families: ["Exo:100,100italic,200,200italic,300,300italic,400,400italic,500,500italic,600,600italic,700,700italic,800,800italic,900,900italic","Lato:100,100italic,300,300italic,400,400italic,700,700italic,900,900italic"]  }});</script><script type="text/javascript">!function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);</script><link href="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/6759c95528f2b2e150a69674_redpanda-logomark-favicon32x32.png" rel="shortcut icon" type="image/x-icon"/><link href="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/6759c95943024c2952bcec9e_redpanda-logomark-favicon256x256.png" rel="apple-touch-icon"/><link href="https://www.redpanda.com" rel="canonical"/><script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Redpanda",
+"alternateName":"Redpanda | The streaming data platform for developers",
+  "url": "https://www.redpanda.com/",
+"description":"Redpanda is a powerful, simple, and cost-efficient streaming data platform compatible with Kafka® APIs, eliminating Kafka complexity.",
+  "logo": "https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/6647694a827e35299ffead7f_redpanda-logo-red.svg",
+  "sameAs": [
+    "https://twitter.com/redpandadata",
+    "https://bsky.app/profile/redpanda.com",
+    "https://www.linkedin.com/company/redpanda-data",
+    "https://www.redpanda.com/slack",
+    "https://github.com/redpanda-data/redpanda",
+    "https://www.youtube.com/@RedpandaData"
+  ],
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "5758 Geary Blvd. #153",
+    "addressLocality": "San Francisco",
+    "addressRegion": "CA",
+    "postalCode": "94121",
+    "addressCountry": "US"
+  }
+}
+</script>
+
+
+<!-- Start VWO Async SmartCode mod to prevent staging -->
+<link rel="preconnect" href="https://dev.visualwebsiteoptimizer.com" />
+<script type='text/javascript' id='vwoCode'>
+if (!window.location.hostname.includes('webflow.io')) {
+    window._vwo_code || (function() {
+        var account_id=946582,
+        version=2.1,
+        settings_tolerance=2000,
+        hide_element='body',
+        hide_element_style = 'opacity:0 !important;filter:alpha(opacity=0) !important;background:none !important;transition:none !important;',
+        /* DO NOT EDIT BELOW THIS LINE */
+        f=false,w=window,d=document,v=d.querySelector('#vwoCode'),cK='_vwo_'+account_id+'_settings',cc={};try{var c=JSON.parse(localStorage.getItem('_vwo_'+account_id+'_config'));cc=c&&typeof c==='object'?c:{}}catch(e){}var stT=cc.stT==='session'?w.sessionStorage:w.localStorage;code={use_existing_jquery:function(){return typeof use_existing_jquery!=='undefined'?use_existing_jquery:undefined},library_tolerance:function(){return typeof library_tolerance!=='undefined'?library_tolerance:undefined},settings_tolerance:function(){return cc.sT||settings_tolerance},hide_element_style:function(){return'{'+(cc.hES||hide_element_style)+'}'},hide_element:function(){if(performance.getEntriesByName('first-contentful-paint')[0]){return''}return typeof cc.hE==='string'?cc.hE:hide_element},getVersion:function(){return version},finish:function(e){if(!f){f=true;var t=d.getElementById('_vis_opt_path_hides');if(t)t.parentNode.removeChild(t);if(e)(new Image).src='https://dev.visualwebsiteoptimizer.com/ee.gif?a='+account_id+e}},finished:function(){return f},addScript:function(e){var t=d.createElement('script');t.type='text/javascript';if(e.src){t.src=e.src}else{t.text=e.text}d.getElementsByTagName('head')[0].appendChild(t)},load:function(e,t){var i=this.getSettings(),n=d.createElement('script'),r=this;t=t||{};if(i){n.textContent=i;d.getElementsByTagName('head')[0].appendChild(n);if(!w.VWO||VWO.caE){stT.removeItem(cK);r.load(e)}}else{var o=new XMLHttpRequest;o.open('GET',e,true);o.withCredentials=!t.dSC;o.responseType=t.responseType||'text';o.onload=function(){if(t.onloadCb){return t.onloadCb(o,e)}if(o.status===200||o.status===304){_vwo_code.addScript({text:o.responseText})}else{_vwo_code.finish('&e=loading_failure:'+e)}};o.onerror=function(){if(t.onerrorCb){return t.onerrorCb(e)}_vwo_code.finish('&e=loading_failure:'+e)};o.send()}},getSettings:function(){try{var e=stT.getItem(cK);if(!e){return}e=JSON.parse(e);if(Date.now()>e.e){stT.removeItem(cK);return}return e.s}catch(e){return}},init:function(){if(d.URL.indexOf('__vwo_disable__')>-1)return;var e=this.settings_tolerance();w._vwo_settings_timer=setTimeout(function(){_vwo_code.finish();stT.removeItem(cK)},e);var t;if(this.hide_element()!=='body'){t=d.createElement('style');var i=this.hide_element(),n=i?i+this.hide_element_style():'',r=d.getElementsByTagName('head')[0];t.setAttribute('id','_vis_opt_path_hides');v&&t.setAttribute('nonce',v.nonce);t.setAttribute('type','text/css');if(t.styleSheet)t.styleSheet.cssText=n;else t.appendChild(d.createTextNode(n));r.appendChild(t)}else{t=d.getElementsByTagName('head')[0];var n=d.createElement('div');n.style.cssText='z-index: 2147483647 !important;position: fixed !important;left: 0 !important;top: 0 !important;width: 100% !important;height: 100% !important;background: white !important;';n.setAttribute('id','_vis_opt_path_hides');n.classList.add('_vis_hide_layer');t.parentNode.insertBefore(n,t.nextSibling)}var o=window._vis_opt_url||d.URL,s='https://dev.visualwebsiteoptimizer.com/j.php?a='+account_id+'&u='+encodeURIComponent(o)+'&vn='+version;if(w.location.search.indexOf('_vwo_xhr')!==-1){this.addScript({src:s})}else{this.load(s+'&x=true')}}};w._vwo_code=code;code.init();
+    })();
+}
+</script>
+<!-- End VWO Async SmartCode -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WB2CSV5');</script>
+<!-- End Google Tag Manager -->
+
+<script>document.addEventListener('DOMContentLoaded',function(){fetch('https://api.github.com/repos/redpanda-data/redpanda').then(response=>{if(!response.ok){throw new Error('Network response was not ok');}return response.json();}).then(data=>{const stargazersCount=data.stargazers_count;document.querySelectorAll('[github-repo="stargazers-count"]').forEach(element=>{element.textContent=formatGitHubStargazerCount(stargazersCount);});}).catch(()=>{});function formatGitHubStargazerCount(count){if(count>=1000000){const millionValue=count/1000000;return millionValue%1===0?`${Math.round(millionValue)}M`:`${millionValue.toFixed(1)}M`;}else if(count>=1000){const thousandValue=count/1000;return thousandValue%1===0?`${Math.round(thousandValue)}K`:`${thousandValue.toFixed(1)}K`;}else{return count.toString();}}});
+</script>
+
+<style>.nav2_announce_item{opacity:0;transition:opacity 1s ease-in-out;position:absolute;top:0;left:0;right:0;z-index:1;pointer-events:none}.nav2_announce_item.active{opacity:1;position:relative;z-index:2;pointer-events:auto}
+</style>
+
+<!-- Trigger by Hubspot onFormReady -->
+<script src="https://assets.slater.app/slater/10151/31533.js"></script>
+
+<script type="module" src="https://cloud.redpanda.com/external-sign-up.js"></script><meta name="google-site-verification" content="qtklisp_UjWijdspy1McyjAp9B3RjyZosg8rkMgdbDs" />
+<script>let v="1.0";document.addEventListener("DOMContentLoaded", function() {function loadanimatedtabs(e){let t=document.createElement("script");t.setAttribute("src",e),t.setAttribute("type","text/javascript"),document.body.appendChild(t),t.addEventListener("load",()=>{console.log("Slater loaded animated-tabs (Slater.app/9244/19957) 🤙")}),t.addEventListener("error",e=>{console.log("Error loading file",e)})}let src=window.location.host.includes("webflow.io")?"https://slater.app/9244/19957.js":"https://assets.slater.app/slater/9244/19957.js?v="+v;loadanimatedtabs(src);})</script>
+<script src="https://assets.slater.app/slater/9244/20250.js"></script>
+
+<style>
+  @keyframes textFadeIn {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes textFadeOut {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .fading-text-in {
+    animation: textFadeIn .5s;
+  }
+
+  .fading-text-out {
+    animation: textFadeOut .5s;
+  }
+</style><script src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443%2F6544eda5f000985a163a8687%2F68b147b52817f6674f0d432f%2Ffinsweetcomponentsconfig-1.0.34.js" type="module" async="" siteId="6632a83042773c5a1a5f4443" finsweet="components"></script></head><body><div class="page sepia-30"><div class="hide w-embed"><!-- Temp Comment Out for Styling updates
+<style>
+ .hbspt-form form input[type=text],
+ .hbspt-form form input[type=email],
+ .hbspt-form form input[type=password],
+ .hbspt-form form input[type=tel],
+ .hbspt-form form input[type=number],
+ .hbspt-form form input[type=file],
+ .hbspt-form form textarea {
+  display: inline-block;
+  width: 100%!important;
+  padding: 9px 10px;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.4rem;
+  color: #33475b;
+  border: 1px solid #cbd6e2;
+  box-sizing: border-box;
+  border-radius: 3px;
+  margin-bottom: 0.6rem;
+ }
+
+
+.hbspt-form form input:focus {
+  outline-color:#d23b19; 
+}
+
+
+
+ .hbspt-form form .hs-button  {
+ margin-top: 1rem;
+ width: 100%;
+ border-width: 0px;
+ color: #ffffff;
+ background-color: #d23b19;
+ padding-top: .625rem;
+ padding-bottom: .625rem;
+ font-size: 0.9rem;
+ font-weight: 400;
+ text-transform: uppercase;
+ line-height: 1.4rem;
+ transition-property: all;
+ transition-duration: .2s;
+ transition-timing-function: cubic-bezier(.4,0,.2,1);
+ cursor: pointer;
+ font-family: SimplonMono Medium S, sans-serif;
+ }
+
+ .hbspt-form fieldset.form-columns-2  {
+  max-width: unset!important;
+
+ }
+ .hbspt-form fieldset.form-columns-1  {
+  max-width: unset!important;
+
+ }
+
+ .hs_submit.hs-submit {
+  margin-right:8px!important;
+ }
+
+ .hbspt-form label {
+ font-weight: unset;
+ font-size: 1.1025rem;
+ color: #000000;
+ text-align: left;
+ font-weight: 500;
+ margin-top: 0.5rem;
+}
+
+.hbspt-form .hs-field-desc {
+    font-size: 0.9rem;
+    color: #161616;
+    text-align: left;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+   }
+
+   ul.no-list.hs-error-msgs.inputs-list {
+    padding-left: 0px;
+    list-style-type: none;
+       }
+
+   .hs-error-msg.hs-main-font-element {
+    font-size: 0.9rem;
+    color: #161616;
+    text-align: left;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+   }
+   </style>
+   
+   --></div><div class="hide"><div class="w-embed"><style>
+  html { font-size: 100%; }
+  body {
+    /*-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;*/
+  }
+  h1, h2, h3, h4, h5, h6, p {
+    font-family: inherit;
+    font-weight: inherit;
+    margin-bottom: inherit;
+    margin-top: inherit;
+  }
+
+  /* legal page tables */
+  .rte-legal table { border: 1px solid #111; width: 100%; }
+  .rte-legal table th { text-align: left; font-weight: 500; color: #101828; }
+  .rte-legal table td, table th { padding: 5px 10px; }
+
+  .faq__question-rte p:last-child  { margin-bottom: 0px; }
+
+  /* swiper styles */
+  .swiper-slide {
+    height: unset!important;
+  }
+
+  .swiper-pagination-bullet {
+    background: #101828;
+    border-radius: unset;
+    width: 2rem;
+    height: 5px;
+  }
+
+  .swiper-pagination {
+    position: unset;
+  }
+
+  .swiper-pagination.swiper-pagination-clickable.swiper-pagination-bullets.swiper-pagination-horizontal {
+    width: unset!important;
+  }
+
+  /* webflow overrides*/
+  .w-code-block {
+    font-size: 0.9rem!important;
+    margin: 16px 0px 16px 0px !important;
+  } 
+  .rte-blog code {
+    font-size: 0.9rem!important;
+    margin: 12px 0px 12px 0px !important;
+  }
+  
+  .rte-blog h2 code {
+    font-size: 1.8rem !important;
+    font-weight: 500;
+    margin: 12px 0px 12px 0px !important;
+  }
+  
+  .rte-blog pre {
+    margin-bottom: 2rem !important;
+  }
+
+  .w-lightbox-close {
+    background-color: #d13c0d;
+    border-radius: 500px;
+    width: 2.6em;
+    background-size: unset;
+    opacity: unset;
+    right: 20px;
+  }
+
+  li::marker {
+    font-size: 1.4rem!important;
+  }
+
+  .rte-legal ol li::marker {
+    font-size: 1rem!important;
+  }
+  .rte-blog ol li::marker {
+    font-size: 1rem!important;
+  }
+  .rte-blog ol li {
+    padding-bottom: 0.5rem;
+  }
+
+  .rte-blog figcaption {
+    font-size: 1rem;
+  }
+  
+.rte-blog code {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+
+  .blog-table {
+      overflow: auto;
+      width: 100%;
+      font-size: 1rem;
+      line-height: 1.1rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+  }
+
+  .table_component th {
+      border: 1px solid #030303;
+      background-color: #ffffff;
+      color: #000000;
+
+  }
+
+  .blog-table table {
+      border: 1px solid #030303;
+      height: 100%;
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 1px;
+      text-align: left;
+        min-width: 300px; 
+  }
+
+  .blog-table th {
+      border: 1px solid #030303;
+      background-color: #ffffff;
+      color: #000000;
+       padding: 10px 6px 6px 6px;
+      font-weight: 500;
+  }
+
+  .blog-table td {
+      border: 1px solid #030303;
+      background-color: #ffffff;
+      color: #555555;
+      padding: 10px 6px 6px 6px;
+  }
+
+	/* ---- FORM STYLES FOR CALCULATORS ---- */
+
+	/* The slider itself */
+  .big-form__range-slider input[type="range"] {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 5px; /* Specified height */
+    background: #fceae5; /* Grey background */
+    outline: none; /* Remove outline */
+  }
+
+  /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+  .big-form__range-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    width: 20px; /* Set a specific slider handle width */
+    height: 20px; /* Slider handle height */
+    border-radius: 100%;
+    background: #e2401b; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+
+  .big-form__range-slider input[type="range"]::-moz-range-thumb {
+    width: 20px; /* Set a specific slider handle width */
+    height: 20px; /* Slider handle height */
+    border-radius: 100%;
+    background: #e2401b; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+  }
+  
+  /* Chrome, Safari, Edge, Opera */
+  .big-form__range-input::-webkit-outer-spin-button,
+  .big-form__range-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  .big-form__range-input[type=number] {
+    -moz-appearance: textfield;
+  }
+  
+  .big-form__range-input #total {
+    -moz-appearance: textfield;
+  }
+  
+  .big-form__range-input[readonly] { background-color: var(--bg__pink-primary); !important; }
+
+  .z-index-10 {
+  	z-index: 10;
+  }
+  
+  .sr-only {
+	border: 0 !important;
+	clip: rect(1px, 1px, 1px, 1px) !important;
+	-webkit-clip-path: inset(50%) !important;
+	clip-path: inset(50%) !important;
+	height: 1px !important;
+	margin: -1px !important;
+	overflow: hidden !important;
+	padding: 0 !important;
+	position: absolute !important;
+	width: 1px !important;
+	white-space: nowrap !important;
+}
+
+/*	Use in conjunction with .sr-only to only display content when it's focused. */
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+	clip: auto !important;
+	-webkit-clip-path: none !important;
+	clip-path: none !important;
+	height: auto !important;
+	margin: auto !important;
+	overflow: visible !important;
+	width: auto !important;
+	white-space: normal !important;
+}
+  
+/* JasonR Hubspot Form Embed Styling */
+form {
+  margin-top: .75rem;
+  position: relative; /* Used for cookie-reset-container */
+}
+
+form .cookie-reset-container { /* Mostly for email only forms */
+  position: absolute;
+  top: -1.7em;
+  right: 0;
+}
+
+.hs-input[type="text"],
+.hs-input[type="email"] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+.inputs-list.multi-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+.inputs-list.multi-container li {
+    width: 50%;
+    box-sizing: border-box;
+}
+fieldset.form-columns-1,
+fieldset.form-columns-2 {
+    max-width: none !important;
+}
+ul[class*="hs-error-msgs"] {
+    padding-left: 0;
+}
+ul[class*="hs-error-msgs"] li {
+    list-style-type: none;
+    padding-left: 0;
+    overflow: hidden; /* Hide the marker */
+}
+input[type="checkbox"].hs-input {
+    width: auto;
+}
+input[type="radio"].hs-input {
+    width: auto;
+}
+.hs-input[type="checkbox"] {
+  accent-color: #e14226;
+}
+fieldset.form-columns-1 .hs-input {
+    width: 100% !important;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+  .modal_full-screen img {
+    max-width: 90vw;
+    max-height: 90vh;
+    cursor: auto;
+  }
+  /* Apply "..." after 3 lines of text */
+.text-style-3lines {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+/* Apply "..." after 2 lines of text */
+.text-style-2lines {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+  .z-index-1000 {
+    z-index: 1000;
+  }
+  .z-index-0 {
+  	z-index: 0;
+  }
+.border-none {border-top-style:none;border-top-width:1px;border-top-color:black;border-right-style:none;border-right-width:1px;border-right-color:black;border-bottom-style:none;border-bottom-width:1px;border-bottom-color:black;border-left-style:none;border-left-width:1px;border-left-color:black;}
+.gap-0 {
+	gap: 0;
+}
+.gap-8px {
+	gap: 8px;
+}
+.gap-1rem {
+	gap: 1rem;
+}
+.gap-2rem {
+	gap: 2rem;
+}
+.gap-3rem {
+	gap: 3rem;
+}
+.gap-4rem {
+	gap: 4rem;
+}
+.gap-6rem {
+	gap: 6rem;
+}
+.gap-small {
+    gap: 2rem;
+}
+.gap-xsmall {
+    gap: 1.25rem;
+}
+.background-transparent {
+    background-color: transparent !important;
+}
+
+@media (max-width: 767px) {
+    .gap-small {
+        gap: 1.5rem;
+    }
+    .gap-xsmall {
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 478px) {
+    .gap-small {
+        gap: 1rem;
+    }
+    .gap-xsmall {
+        gap: 0.5rem;
+    }
+}
+.padding-top-minus-medium {
+  margin-top: -5rem;
+}
+.padding-top-minus-medium:medium {
+  margin-top: -4rem;
+}
+.padding-top-minus-medium:small {
+  margin-top: -3rem;
+}
+.position-static {
+	position: static !important;
+}
+.text-label-white label {
+    color: #FFFFFF !important;
+}
+[component="dark-background"] label {
+    color: #FFFFFF !important;
+}
+
+[component="dark-background"] .submitted-message {
+    color: #FFFFFF !important;
+}
+[component="dark-background"] .cookie-reset-container {
+    color: #FFFFFF !important;
+}
+.txtshare {
+  z-index: 99;
+}
+.filter-saturate-0 {
+  filter: saturate(0%);
+}
+.hover-gray-to-color {
+  filter: saturate(0%);
+  transition-property:
+}
+.hover-gray-to-color:hover {
+  filter: saturate(100%);
+}
+.hide {display: none}
+</style></div></div><header nav2="parent-container" class="nav2"><div nav2="announce-wrapper" class="nav2_bar-wrapper announce-nav"><div class="nav2_container announce-nav"><div nav-container-announce="1" class="nav2_announce_wrapper w-dyn-list"><div role="list" class="w-dyn-items"><div role="listitem" class="nav2_announce_item w-dyn-item"><div class="hide w-embed"><div nav-announce-paths="definitions">
+includePaths: ""
+excludePaths: ""
+</div></div><div class="nav__announcement-wrap"><div class="contain"><div nav2-link-announcement="cms-dynamic" class="nav__announcement-rte w-richtext"><p>Join industry leaders for keynotes, demos, and technical sessions - <a href="/streamfest">save your seat at Streamfest 2025.</a></p></div></div></div></div><div role="listitem" class="nav2_announce_item w-dyn-item"><div class="hide w-embed"><div nav-announce-paths="definitions">
+includePaths: ""
+excludePaths: ""
+</div></div><div class="nav__announcement-wrap"><div class="contain"><div nav2-link-announcement="cms-dynamic" class="nav__announcement-rte w-richtext"><p>Get expert answers and live demos—reserve your spot for our upcoming <a href="https://www.redpanda.com/events/serverless-office-hours" target="_blank">Serverless Office Hours.</a></p></div></div></div></div></div></div></div></div><div nav2="secondary-nav" class="nav2_bar-wrapper"><div class="nav2_container"><div class="nav2_secondary"><a nav2-link-secondary="Cloud Login" aria-label="Cloud Login" href="https://cloud.redpanda.com/" class="nav2_secondary-link">CLOUD LOGIN</a><a nav2-link-secondary="Support" href="https://support.redpanda.com/hc/en-us" class="nav2_secondary-link">Support</a><a nav2-link-secondary="Slack" aria-label="link to slack" title="Link to Redpanda Slack" href="https://redpanda.com/slack" class="nav__slack w-inline-block"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/66956b3a393ea8488bd4aa39_slack__1_.svg" loading="lazy" aria-label="slack logo" alt="Slack Logo" class="nav__social-icon"/></a><a nav2-link-secondary="Github" aria-label="link to github" title="Link to Redpanda Github" href="https://github.com/redpanda-data/redpanda/" class="nav2_secondary-link w-inline-block"><div aria-label="GitHub Logo" class="nav__social-icon text-color-black w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><g clip-path="url(#a)"><path fill="currentColor" fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.563722 9.563722 0 0 1 10 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482 1.9913-.6679 3.7223-1.9447 4.9485-3.65 1.2261-1.7052 1.8854-3.7527 1.8845-5.853C20 4.484 15.522 0 10 0Z" clip-rule="evenodd"/></g><defs><clipPath id="a"><path fill="currentColor" d="M0 0h20v20H0z"/></clipPath></defs></svg></div><div github-repo="stargazers-count" class="text__header">9.3K</div></a></div></div></div><div data-collapse="medium" data-animation="default" data-duration="400" nav2="primary-nav" data-easing="ease" data-easing2="ease" role="banner" class="nav2_bar-wrapper w-nav"><div class="nav2_container primary-nav"><div class="nav2_primary-container"><div class="nav2_left"><a href="/" nav2-link-primary="logo" aria-current="page" class="nav2_logo-link w-nav-brand w--current"><img alt="Redpanda logo" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/6647694a827e35299ffead7f_redpanda-logo-red.svg" class="nav2_logo-image"/></a></div><nav role="navigation" class="nav2_menu w-nav-menu"><a nav2-link-primary="Why Redpanda" href="/why-redpanda" class="nav2_link">Why Redpanda</a><div data-delay="10" data-hover="true" class="nav2_dropdown w-dropdown"><div nav2-link-primary-dropdown="Products" class="nav2_link nav2_dropdown_toggle w-dropdown-toggle"><div class="nav2_dropdown_toggle-icon w-icon-dropdown-toggle"></div><div>Products</div><div class="nav2_dropdown-toggle-arrow-wrapper"><div class="nav2_dropdown-toggle-arrow"></div></div></div><nav class="nav2_dropdown_list w-dropdown-list"><div class="nav2_dropdown_list-wrapper"><div class="nav2_dropdown_list-column-wrapper"><div class="nav2_dropdown_list-column"><a nav2-link="Redpanda Serverless" href="/product/serverless" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.4842 5H5V9H15.1628L17.4842 5ZM17.4752 9H21V5H19.7966L17.4752 9ZM14.0021 11H5V15H11.6807L14.0021 11ZM13.9931 15H21V11H16.3145L13.9931 15ZM10.52 17H5V21H8.19864L10.52 17ZM10.511 21H21V17H12.8324L10.511 21Z" fill="currentColor"/>
+<path d="M18.4038 1.69238L20.1336 2.69627L7.58299 24.3222L5.85319 23.3183L18.4038 1.69238Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Redpanda Serverless</div><div class="nav2_dropdown_list-description">Explore Redpanda Serverless, the fastest way to get started</div></div></a><a nav2-link="Bring Your Own Cloud (BYOC)" href="/product/bring-your-own-cloud-byoc" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.35 7.04C19.67 3.59 16.64 1 13 1C10.11 1 7.6 2.64 6.35 5.04C3.34 5.36 1 7.91 1 11C1 14.31 3.69 17 7 17H20C22.76 17 25 14.76 25 12C25 9.36 22.95 7.22 20.35 7.04ZM20 15H7C4.79 15 3 13.21 3 11C3 8.95 4.53 7.24 6.56 7.03L7.63 6.92L8.13 5.97C9.08 4.14 10.94 3 13 3C15.62 3 17.88 4.86 18.39 7.43L18.69 8.93L20.22 9.04C21.78 9.14 23 10.45 23 12C23 13.65 21.65 15 20 15ZM17.5186 24H15.6818V20.9697H14.2002L16.6002 18L19.0002 20.9697H17.5186V24ZM8.48144 18H10.3182V21.0303H11.7998L9.3998 24L6.9998 21.0303H8.48144V18Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Bring Your Own Cloud (BYOC)</div><div class="nav2_dropdown_list-description">Run fully managed Redpanda clusters in your own cloud</div></div></a><a nav2-link="Products &gt; Sovereign AI" href="https://ai.redpanda.com/" target="_blank" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1617_4678)">
+<path d="M8.21598 1.51868V3.43223M3.43211 8.21611H1.51855M24.4812 8.21611H22.5676M3.43211 13H1.51855M24.4812 13H22.5676M3.43211 17.7839H1.51855M24.4812 17.7839H22.5676M8.21598 22.5677V24.4813M12.9999 1.51868V3.43223M12.9999 22.5677V24.4813M17.7837 1.51868V3.43223M17.7837 22.5677V24.4813M6.30243 22.5677H19.6973C21.2825 22.5677 22.5676 21.2827 22.5676 19.6974V6.30256C22.5676 4.71732 21.2825 3.43223 19.6973 3.43223H6.30243C4.7172 3.43223 3.43211 4.71732 3.43211 6.30255V19.6974C3.43211 21.2827 4.71719 22.5677 6.30243 22.5677ZM7.25921 7.25933H18.7405V18.7406H7.25921V7.25933Z" stroke="currentColor" stroke-width="1.64019" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_1617_4678">
+<rect width="26" height="26" fill="currentColor"/>
+</clipPath>
+</defs>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Agentic AI</div><div class="nav2_dropdown_list-description">Build secure, scalable, real-time enterprise AI agents</div></div></a><a nav2-link="Products &gt; Redpanda Connect" href="/connect" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="max-width:100%;max-height:100%" viewBox="0 0 26 26"><path fill="currentColor" d="M21.978 5.87295c1.3513 0 2.4467-1.09544 2.4467-2.44673S23.3293.97949 21.978.97949s-2.4467 1.09544-2.4467 2.44673 1.0954 2.44673 2.4467 2.44673Z"/><path fill="currentColor" fill-rule="evenodd" d="m9.1463 5.23362-2.82719-2.2971-.46287.56969 2.84049 2.3079c.13673-.20379.28702-.39772.44957-.58049Zm8.4255.47703c.141.19984.2686.4097.3818.62831l2.4126-1.28674-.3454-.64766-2.449 1.30609Zm.3563 5.61765c-.1152.2172-.2448.4255-.3876.6238l5.0092 3.3395.4072-.6108-5.0288-3.3525Zm-6.0647 2.7043a5.338623 5.338623 0 0 1-.6999-.2268l-2.58978 6.4746.68152.2726 2.60816-6.5204Zm-3.78177-3.4625c-.07943-.2295-.14376-.4662-.1918-.70864L3.20508 11.0327l.17802.7121 4.69853-1.1747Z" clip-rule="evenodd"/><path fill="currentColor" d="M13.1702 13.2125c2.4323 0 4.4041-1.9718 4.4041-4.40409 0-2.43233-1.9718-4.40412-4.4041-4.40412-2.4323 0-4.40412 1.97179-4.40412 4.40412 0 2.43229 1.97182 4.40409 4.40412 4.40409Zm10.276 4.4036c1.3513 0 2.4467-1.0954 2.4467-2.4467s-1.0954-2.4467-2.4467-2.4467-2.4467 1.0954-2.4467 2.4467 1.0954 2.4467 2.4467 2.4467ZM9.25533 22.9999c1.35127 0 2.44677-1.0954 2.44677-2.4467s-1.0955-2.4467-2.44677-2.4467c-1.35129 0-2.44673 1.0954-2.44673 2.4467s1.09544 2.4467 2.44673 2.4467ZM2.89351 13.701c1.35129 0 2.44673-1.0954 2.44673-2.4467 0-1.35129-1.09544-2.44673-2.44673-2.44673S.446777 9.90301.446777 11.2543c0 1.3513 1.095443 2.4467 2.446733 2.4467Zm2.44678-8.80754c1.35129 0 2.44673-1.09544 2.44673-2.44673S6.69158 0 5.34029 0 2.89356 1.09544 2.89356 2.44673 3.989 4.89346 5.34029 4.89346Z"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Redpanda Connect</div><div class="nav2_dropdown_list-description">Stream processing and connection framework</div></div></a></div><div class="nav2_dropdown_list-column border-left"><div class="nav2_dropdown_column-title">Comparisons</div><a nav2-link="Products &gt; Compare Confluent" href="/compare/redpanda-vs-confluent" class="nav2_dropdown_column-link">Redpanda vs Confluent</a><a nav2-link="Products &gt; Compare Kafka" href="/compare/redpanda-vs-kafka" class="nav2_dropdown_column-link">Redpanda vs Kafka</a><a nav2-link="Products &gt; Compare Amazon MSK" href="/compare/redpanda-vs-amazon-msk" class="nav2_dropdown_column-link">Redpanda vs Amazon MSK</a></div></div></div></nav></div><div data-delay="10" data-hover="true" class="nav2_dropdown w-dropdown"><div nav2-link-primary-dropdown="solutions" class="nav2_link nav2_dropdown_toggle w-dropdown-toggle"><div class="nav2_dropdown_toggle-icon w-icon-dropdown-toggle"></div><div>Solutions</div><div class="nav2_dropdown-toggle-arrow-wrapper"><div class="nav2_dropdown-toggle-arrow"></div></div></div><nav class="nav2_dropdown_list _2-center w-dropdown-list"><div class="nav2_dropdown_list-wrapper"><div class="nav2_dropdown_column-wrap"><div class="nav2_dropdown_list-column _50pct-tablet"><div class="nav2_dropdown_column"><div class="nav2_dropdown_column-title">Industries</div><a nav2-link="finance" href="/industry/finance" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.75 22.9988H24.75V24.7109H0.75V22.9988ZM22.1864 8.42852C22.6615 8.42852 23.0424 8.04308 23.0424 7.5725V4.99995C23.0424 4.63692 22.8139 4.31872 22.4777 4.19323L13.048 0.764654C12.8598 0.697427 12.6536 0.697427 12.4654 0.764654L3.03571 4.19323C2.6951 4.31423 2.47101 4.63692 2.47101 4.99995V7.5725C2.47101 8.04757 2.85644 8.42852 3.32703 8.42852H4.18305V19.5703H2.47101V21.2823H23.0424V19.5703H21.3304V8.42852H22.1864ZM4.18305 5.60051L12.7522 2.48118L21.3214 5.60051V6.71648H4.18305V5.60051ZM5.8951 19.5703V8.42852H19.6094V19.5703H5.8951Z" fill="currentColor"/>
+<path d="M12.7522 18.7546C12.2772 18.7546 11.8962 18.3691 11.8962 17.8985V17.3518C11.2195 17.168 10.6279 16.7915 10.2514 16.2941C9.96905 15.9176 10.0452 15.3798 10.4217 15.0929C10.7982 14.8106 11.336 14.8868 11.6228 15.2633C11.829 15.5411 12.2861 15.7383 12.7612 15.7607H12.7836C13.1198 15.7742 13.429 15.689 13.5814 15.5411C13.6396 15.4873 13.7113 15.3887 13.7113 15.1691C13.7113 14.9495 13.6979 15.0257 13.5903 14.954C13.3887 14.824 13.0301 14.7254 12.6805 14.6313C12.2099 14.5013 11.7214 14.3714 11.3001 14.1025C10.6996 13.7215 10.3814 13.1478 10.3814 12.4442C10.3814 11.7406 10.713 11.149 10.9954 10.8801C11.2419 10.6425 11.5466 10.4677 11.8962 10.3691V10.0285C11.8962 9.55345 12.2817 9.1725 12.7522 9.1725C13.2228 9.1725 13.6083 9.55793 13.6083 10.0285V10.3871C14.2133 10.5439 14.7825 10.8487 15.1724 11.2386C15.5085 11.5747 15.5085 12.117 15.1724 12.4487C14.8363 12.7848 14.294 12.7848 13.9623 12.4487C13.7024 12.1887 13.1825 11.9915 12.7298 11.9781C12.4878 11.9736 12.2861 12.0229 12.1965 12.1081C12.1338 12.1708 12.1024 12.2829 12.1024 12.4442C12.1024 12.6055 12.1158 12.5876 12.2234 12.6548C12.4251 12.7848 12.7836 12.8834 13.1332 12.9775C13.6038 13.1075 14.0923 13.2375 14.5136 13.5064C15.1141 13.8873 15.4324 14.461 15.4324 15.1647C15.4324 15.8683 15.2038 16.3568 14.778 16.7691C14.4688 17.0649 14.0699 17.2756 13.6172 17.3831V17.8851C13.6172 18.3602 13.2318 18.7411 12.7612 18.7411L12.7522 18.7546Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Finance</div></div></a><a nav2-link="retail_ecommerce" href="/industry/retail-e-commerce" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2Zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2Zm-1.45-5c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.0843-.15157.1275-.32253.1254-.49594-.002-.17342-.0494-.34329-.1373-.4928-.0878-.14951-.2133-.27348-.3638-.35964A.995978.995978 0 0 0 20.01 4H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45ZM6.16 6h12.15l-2.76 5H8.53L6.16 6Z"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Retail / E-Commerce</div></div></a><a nav2-link="software_technology" href="/industry/software-technology" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="m7.37498 16.781 1.25-1.562L4.60098 12l4.024-3.219-1.25-1.562-5 4c-.11715.0937-.21173.2125-.27673.3477A1.00018 1.00018 0 0 0 1.99951 12c0 .15.03375.2981.09874.4333.065.1352.15958.254.27673.3477l5 4ZM16.625 7.219l-1.25 1.562L19.399 12l-4.024 3.219 1.25 1.562 5-4c.1171-.0937.2117-.2125.2767-.3477.065-.1352.0988-.2833.0988-.4333 0-.15-.0338-.2981-.0988-.4333-.065-.1352-.1596-.254-.2767-.3477l-5-4Zm-1.649-4.003-4 18-1.95302-.434 4.00002-18 1.953.434Z"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Software &amp; Technology</div></div></a><a href="#" class="nav2_dropdown_list-link hide w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.5 14.25H19.5V11.25H18V18H6V6H12.75V4.5H9.75V1.5H8.25V4.5H6C5.60218 4.5 5.22064 4.65804 4.93934 4.93934C4.65804 5.22064 4.5 5.60218 4.5 6V8.25H1.5V9.75H4.5V14.25H1.5V15.75H4.5V18C4.5 18.3978 4.65804 18.7794 4.93934 19.0607C5.22064 19.342 5.60218 19.5 6 19.5H8.25V22.5H9.75V19.5H14.25V22.5H15.75V19.5H18C18.3976 19.4994 18.7788 19.3412 19.06 19.06C19.3412 18.7788 19.4994 18.3976 19.5 18V15.75H22.5V14.25Z" fill="currentColor"/>
+<path d="M15.75 15.75H8.25V8.25H15.75V15.75ZM9.75 14.25H14.25V9.75H9.75V14.25ZM23.25 9.75H21.75C21.748 7.76149 20.9572 5.85498 19.5511 4.44889C18.145 3.0428 16.2385 2.25199 14.25 2.25V0.75C16.6362 0.752581 18.9238 1.70162 20.6111 3.38889C22.2984 5.07616 23.2474 7.36384 23.25 9.75Z" fill="currentColor"/>
+<path d="M19.5 9.75H18C17.9988 8.7558 17.6033 7.80267 16.9003 7.09966C16.1973 6.39666 15.2442 6.00119 14.25 6V4.5C15.6418 4.50198 16.976 5.05574 17.9601 6.03988C18.9443 7.02402 19.498 8.35822 19.5 9.75Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>IoT</div></div></a><a href="#" class="nav2_dropdown_list-link hide w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.7992 21.7953C21.6947 21.9002 21.5705 21.9834 21.4338 22.0402C21.297 22.097 21.1504 22.1262 21.0024 22.1262C20.8543 22.1262 20.7077 22.097 20.5709 22.0402C20.4342 21.9834 20.31 21.9002 20.2055 21.7953L15.7533 17.3431C14.0137 18.678 11.8315 19.3013 9.64936 19.0864C7.46719 18.8715 5.44845 17.8347 4.00265 16.1861C2.55686 14.5376 1.79228 12.4008 1.864 10.2092C1.93573 8.01768 2.83839 5.93546 4.38888 4.38497C5.93937 2.83448 8.02159 1.93182 10.2131 1.86009C12.4047 1.78837 14.5415 2.55295 16.19 3.99875C17.8386 5.44454 18.8755 7.46328 19.0903 9.64545C19.3052 11.8276 18.6819 14.0098 17.347 15.7494L21.8039 20.2053C22.014 20.4169 22.1315 20.7032 22.1306 21.0013C22.1297 21.2994 22.0105 21.585 21.7992 21.7953ZM10.5033 16.8744C11.7641 16.8744 12.9967 16.5005 14.0451 15.8C15.0934 15.0995 15.9105 14.1039 16.393 12.939C16.8755 11.7741 17.0018 10.4923 16.7558 9.25568C16.5098 8.01905 15.9027 6.88314 15.0111 5.99158C14.1195 5.10002 12.9836 4.49286 11.747 4.24688C10.5104 4.0009 9.22856 4.12714 8.06368 4.60965C6.8988 5.09216 5.90317 5.90926 5.20267 6.95762C4.50218 8.00599 4.12829 9.23853 4.12829 10.4994C4.13027 12.1895 4.80256 13.8099 5.99768 15.005C7.19279 16.2001 8.81314 16.8724 10.5033 16.8744Z" fill="currentColor"/>
+<path d="M10.4808 6.01858C10.6488 5.98658 10.8168 5.99458 10.9848 6.04258C11.3608 6.13858 11.6168 6.36658 11.7528 6.72658C11.7848 6.84658 11.7768 7.09458 11.7288 7.47058C11.6968 7.67858 11.6048 8.27458 11.4528 9.25858C11.2288 10.7146 11.0888 11.4666 11.0328 11.5146C10.9768 11.5386 10.7848 11.5426 10.4568 11.5266C10.3928 11.5266 10.3568 11.5226 10.3488 11.5146C10.3088 11.4906 10.2728 11.3986 10.2408 11.2386C10.2168 11.0946 10.1128 10.4346 9.92884 9.25858C9.69684 7.73858 9.58884 6.92658 9.60484 6.82258C9.60484 6.80658 9.61284 6.77458 9.62884 6.72658C9.73284 6.39058 9.97684 6.16658 10.3608 6.05458C10.4008 6.03858 10.4408 6.02658 10.4808 6.01858ZM10.4928 12.3066C10.6288 12.2746 10.7848 12.2826 10.9608 12.3306C11.3128 12.4186 11.5568 12.6346 11.6928 12.9786C11.7168 13.0186 11.7328 13.0626 11.7408 13.1106C11.7888 13.2946 11.7888 13.4746 11.7408 13.6506C11.6448 14.0186 11.4208 14.2666 11.0688 14.3946C11.0288 14.4106 10.9928 14.4226 10.9608 14.4306C10.7768 14.4786 10.5968 14.4786 10.4208 14.4306C10.0528 14.3346 9.80484 14.1106 9.67684 13.7586C9.66084 13.7186 9.64884 13.6826 9.64084 13.6506C9.59284 13.4746 9.59284 13.2946 9.64084 13.1106C9.70484 12.8706 9.82484 12.6826 10.0008 12.5466C10.1368 12.4346 10.3008 12.3546 10.4928 12.3066Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Observability</div></div></a><a href="#" class="nav2_dropdown_list-link hide w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 3V7C14 7.26522 14.1054 7.51957 14.2929 7.70711C14.4804 7.89464 14.7348 8 15 8H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9 17V12M12 17V16M15 17V14M17 21H7C6.46957 21 5.96086 20.7893 5.58579 20.4142C5.21071 20.0391 5 19.5304 5 19V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3H14L19 8V19C19 19.5304 18.7893 20.0391 18.4142 20.4142C18.0391 20.7893 17.5304 21 17 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Real-time analytics</div></div></a></div></div><div class="nav2_dropdown_list-column _50pct-tablet border-left"><div class="nav2_dropdown_column"><div class="nav2_dropdown_column-title">Use Cases</div><a href="/use-case/cloud-security" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M14.5 11.8v5.5c0 1.6 1 3.2 2.5 3.8l1.9.8 1.9-.8c1.5-.7 2.4-2.2 2.4-3.8v-5.5h-8.7Zm3.2 7.6c-.9-.4-1.4-1.3-1.4-2.2v-3.5h5.1v3.5c0 .9-.5 1.7-1.5 2.2l-1.1.5-1.1-.5Z"/><path fill="currentColor" d="M16.9 4.1C15.5 2.8 13.8 2 12 2 8.60005 2 5.80005 4.4 5.10005 7.6c-1.2.3-2.2.8-3 1.7-.8.9-1.300001 2.1-1.300001 3.6 0 3 2.500001 5.5 5.500001 5.5H12.3v-1.9H6.30005c-2 0-3.5-1.7-3.5-3.5s1.4-3.5 3.3-3.5h.8v-.8c.3-2.7 2.4-4.7 5.19995-4.7 2.8 0 5.2 2.4 5.2 5.2v.2h1.9001v-.2c0-2-.9001-3.8-2.3001-5.1Z"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Cloud Security</div></div></a><a href="/use-case/artificial-intelligence" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8.25 8.25V15.75H15.75V8.25H8.25ZM14.25 14.25H9.75V9.75H14.25V14.25Z" fill="currentColor"/>
+<path d="M22.5 9.75V8.25H19.5V6C19.5 5.60218 19.342 5.22064 19.0607 4.93934C18.7794 4.65804 18.3978 4.5 18 4.5H15.75V1.5H14.25V4.5H9.75V1.5H8.25V4.5H6C5.60218 4.5 5.22064 4.65804 4.93934 4.93934C4.65804 5.22064 4.5 5.60218 4.5 6V8.25H1.5V9.75H4.5V14.25H1.5V15.75H4.5V18C4.5 18.3978 4.65804 18.7794 4.93934 19.0607C5.22064 19.342 5.60218 19.5 6 19.5H8.25V22.5H9.75V19.5H14.25V22.5H15.75V19.5H18C18.3978 19.5 18.7794 19.342 19.0607 19.0607C19.342 18.7794 19.5 18.3978 19.5 18V15.75H22.5V14.25H19.5V9.75H22.5ZM18 18H6V6H18V18Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Artificial Intelligence / Machine Learning</div></div></a><a href="/use-case/snowflake-connector-for-redpanda-connect" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1144_2047)">
+<path d="M24 3.45902C24 4.10502 23.582 4.63902 22.859 4.63902C22.136 4.63902 21.717 4.10502 21.717 3.45902C21.717 2.81202 22.136 2.27902 22.859 2.27902C23.582 2.27902 24 2.81202 24 3.45902ZM23.772 3.45902C23.772 2.92602 23.392 2.50802 22.859 2.50802C22.326 2.50802 21.946 2.88802 21.946 3.45802C21.946 3.99102 22.326 4.41002 22.859 4.41002C23.429 4.41002 23.772 3.99102 23.772 3.45902ZM22.402 2.92602H22.897C23.163 2.92602 23.353 3.07802 23.353 3.30602C23.353 3.45902 23.277 3.53502 23.163 3.61102L23.353 3.87702V3.91502H23.087L22.897 3.64902H22.668V3.91502H22.402V2.92602ZM22.897 3.15402H22.668V3.42102H22.897C23.011 3.42102 23.049 3.38302 23.049 3.30702C23.087 3.23002 23.011 3.15402 22.897 3.15402ZM7.60199 12.4C7.64487 12.2515 7.67037 12.0984 7.67799 11.944C7.67799 11.83 7.63999 11.716 7.63999 11.602C7.52599 11.259 7.33599 10.955 6.99399 10.764L2.12399 7.98702C1.43899 7.60702 0.563994 7.83502 0.183994 8.52002C-0.197006 9.20502 0.0309938 10.08 0.715994 10.46L3.41699 12.02L0.715994 13.58C0.0309938 13.96 -0.197006 14.836 0.182994 15.52C0.562994 16.205 1.43899 16.434 2.12299 16.053L6.95499 13.276C7.29799 13.009 7.52599 12.743 7.60199 12.4ZM8.93399 15.026C8.66799 14.988 8.36399 15.064 8.09699 15.216L3.26499 17.993C2.57999 18.373 2.35199 19.249 2.73299 19.933C3.11299 20.619 3.98799 20.847 4.67299 20.466L7.37399 18.906V22.026C7.37399 22.826 8.02099 23.434 8.81999 23.434C9.61899 23.434 10.227 22.787 10.227 22.026V16.434C10.227 15.673 9.65699 15.064 8.93399 15.026ZM13.88 8.93802C14.146 8.97602 14.45 8.90002 14.717 8.74802L19.549 5.97102C20.234 5.59102 20.462 4.71502 20.081 4.03102C19.701 3.34502 18.826 3.11702 18.141 3.49802L15.44 5.05802V1.97502C15.44 1.17602 14.793 0.567017 13.994 0.567017C13.195 0.567017 12.548 1.17602 12.548 1.97502V7.53002C12.548 8.29002 13.157 8.90102 13.88 8.93802ZM3.26499 5.97002L8.09699 8.74702C8.36299 8.89902 8.62999 8.93702 8.93399 8.93702C9.65699 8.89902 10.265 8.25302 10.265 7.53002V1.97502C10.265 1.17602 9.61899 0.567017 8.85799 0.567017C8.05899 0.567017 7.41199 1.21402 7.41199 1.97502V5.09502L4.71099 3.53502C4.02599 3.15502 3.15099 3.38302 2.77099 4.06802C2.35199 4.71402 2.58099 5.58902 3.26499 5.97002ZM12.358 11.981C12.3545 11.8812 12.3139 11.7863 12.244 11.715L11.674 11.144C11.6402 11.107 11.5989 11.0777 11.5529 11.058C11.5068 11.0384 11.4571 11.0288 11.407 11.03C11.3072 11.0335 11.2123 11.0741 11.141 11.144L10.57 11.714C10.4999 11.7856 10.4592 11.8809 10.456 11.981C10.456 12.057 10.494 12.171 10.57 12.248L11.14 12.818C11.1738 12.855 11.2151 12.8843 11.2611 12.904C11.3072 12.9237 11.3569 12.9332 11.407 12.932C11.5068 12.9285 11.6017 12.8879 11.673 12.818L12.244 12.248C12.3141 12.1764 12.3548 12.0812 12.358 11.981ZM13.956 12.514L11.94 14.53C11.901 14.568 11.787 14.644 11.711 14.644H11.103C11.0029 14.6408 10.9076 14.6001 10.836 14.53L8.81999 12.514C8.77169 12.4473 8.74515 12.3674 8.74399 12.285V11.677C8.74399 11.601 8.78199 11.487 8.85799 11.41L10.874 9.39402C10.9456 9.32392 11.0409 9.28324 11.141 9.28002H11.749C11.8491 9.28324 11.9444 9.32392 12.016 9.39402L14.032 11.41C14.069 11.4438 14.0983 11.4851 14.118 11.5311C14.1376 11.5772 14.1472 11.6269 14.146 11.677V12.285C14.07 12.362 14.032 12.475 13.956 12.514ZM19.549 17.954L14.717 15.177C14.451 15.025 14.147 14.987 13.88 15.025C13.157 15.063 12.548 15.709 12.548 16.433V21.987C12.548 22.787 13.195 23.395 13.956 23.395C14.755 23.395 15.402 22.748 15.402 21.987V18.867L18.102 20.427C18.788 20.807 19.663 20.579 20.043 19.894C20.462 19.248 20.233 18.373 19.549 17.954ZM22.098 10.421L19.397 11.981L22.097 13.541C22.783 13.921 23.011 14.797 22.63 15.481C22.25 16.166 21.375 16.394 20.69 16.014L15.858 13.236C15.5624 13.0462 15.3356 12.7664 15.211 12.438C15.174 12.285 15.135 12.133 15.135 11.981C15.135 11.867 15.174 11.753 15.174 11.639C15.288 11.296 15.516 10.992 15.82 10.802L20.652 8.02402C21.337 7.64402 22.212 7.87202 22.592 8.55702C23.049 9.16602 22.782 10.041 22.098 10.421Z" fill="currentColor"/>
+</g>
+<defs>
+<clipPath id="clip0_1144_2047">
+<rect width="24" height="24" fill="currentColor"/>
+</clipPath>
+</defs>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Snowflake Connector for Redpanda Connect</div></div></a><a href="/use-case/streaming-iceberg-tables" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path fill="currentColor" stroke="currentColor" stroke-width=".4" d="M22.3984 9.06761h-2.6336l-1.6472-2.9756c-.0512-.0924-.1376-.1612-.2396-.1908l-2.1384-.6148L12.6704.968414c-.0752-.1064-.1836-.1712-.3276-.1684-.1304.0008-.252.0644-.3264.1712L10.2616 3.48921l-2.42079 1.0064c-.0796.0332-.1468.0916-.1908.1656l-2.6112 4.4068h-3.0392c-.2208 0-.4.1788-.4.4 0 .2212.1792.4.4.4h2.9764l2.8648 8.81519c.0432.132.1516.2328.2872.2652.1348.0328.278-.008.376-.1064l1.0352-1.0352 1.88639 5.124c.058.1576.208.2616.3752.2616.168 0 .3176-.1052.3752-.2624l1.806-4.9416.7772.94c.0864.1048.2204.1584.356.142.1352-.0164.2528-.1004.3124-.2232l2.0764-4.2916 1.5396-.876c.1036-.0588.1752-.1608.196-.278l.6236-3.53319h2.5336c.2208 0 .4-.1788.4-.4 0-.2212-.1792-.4-.4-.4l.0016-.0008Zm-10.0508-7.1728 2.8212 3.9688c.0524.074.1284.1276.2156.1528l2.1136.608 1.3524 2.4432h-3.7668l-.8744-2.9732c-.0616-.21-.2804-.332-.4912-.2724l-2.6736.7456.4784-.7668c.0656-.1056.0788-.2352.0356-.3512l-.5876-1.5792 1.3768-1.9756Zm-4.07719 3.2884 2.02239-.8404.4472 1.202-.91879 1.474c-.0872.1404-.0796.3196.0192.4516s.26879.1908.42759.1452l3.2852-.9164.6968 2.3688H5.96881l2.3016-3.8848Zm1.0972 11.66399-.9676.9672-2.5828-7.94679h4.86839L8.97601 12.9112c-.0852.152-.0624.3416.0568.4692l1.32399 1.4144-.98919 2.0524Zm2.43199 4.7836-1.6672-4.5284 1.0636-2.2068c.0716-.1488.0444-.3264-.0684-.4472l-1.31079-1.4008 1.78639-3.17999h3.978l.0368 2.98119-2.538 1.468c-.1512.0876-.2284.2628-.1904.4336l.5408 2.4176-1.6308 4.4628Zm6.686-8.5544-1.484.8448c-.0704.0404-.1268.1004-.162.1736L14.98 17.9372l-.7636-.9232-.4816-2.1524 2.4864-1.4384c.1252-.0724.2016-.2068.2-.3512l-.0396-3.20519h2.6704l-.5668 3.20879.0004.0008Z"/></svg></div><div class="icon-embed-custom w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 181 180" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" aria-hidden="true" role="img"><path fill="#B8E1F3" fill-rule="evenodd" d="M164.5 44h-41v-6c5.107.3345 9.44.0012 13-1-2.427-2.0576-5.093-3.8909-8-5.5-22.333-.6667-44.667-.6667-67 0-3.736 1.4098-7.402 2.9098-11 4.5-3.447 1.5541-5.447 4.2208-6 8h46c-.327 10.1806.006 20.1806 1 30v13h-1c-18.468-7.7349-36.801-15.7349-55-24 12.516-6.0905 25.183-11.9238 38-17.5-9.994-.4998-19.994-.6665-30-.5-8.484-.993-17.151-1.3264-26-1C34.269 17.0202 58.769 3.3535 91 3c32.231.3535 56.731 14.0202 73.5 41Z" clip-rule="evenodd"/><path fill="#F5FAFD" fill-rule="evenodd" d="M136.5 37c-28.838.3313-57.505-.002-86-1 3.598-1.5902 7.264-3.0902 11-4.5 22.333-.6667 44.667-.6667 67 0 2.907 1.6091 5.573 3.4424 8 5.5Z" clip-rule="evenodd"/><path fill="#EAF7FD" fill-rule="evenodd" d="M50.5 36c28.495.998 57.162 1.3313 86 1-3.56 1.0012-7.893 1.3345-13 1v6h-79c.553-3.7792 2.553-6.4459 6-8Z" clip-rule="evenodd"/><path fill="#4B94CB" fill-rule="evenodd" d="M17.5 44c8.849-.3264 17.516.007 26 1 0 .6667-.333 1-1 1-8.333-.6667-16.667-1.3333-25-2Z" clip-rule="evenodd"/><path fill="#277ABE" fill-rule="evenodd" d="M17.4997 44c8.333.6667 16.667 1.3333 25 2-2.487 4.9734-4.987 9.9734-7.5 15 1.926 8.755 5.26 17.0884 10 25 5.7 8.757 11.867 17.091 18.5 25 .069 5.354.402 10.687 1 16-.149 1.052.017 2.052.5 3 8.707 9.204 17.207 18.537 25.5 28 .577 1.273 1.243 1.273 2 0 6.678-11.361 13.3453-22.694 20.0003-34 4.96-3.788 9.793-7.788 14.5-12 .5-8.994.666-17.994.5-27 6.333-7.3333 12.667-14.6667 19-22 .304-.6499.637-1.3165 1-2l-6-15c7.972-.9977 15.972-1.331 24-1 11.793 19.8207 15.293 41.154 10.5 64-8.461 32.462-28.628 53.962-60.5 64.5-42.8973 9.376-76.3973-4.124-100.5003-40.5C2.20566 108.392.538664 83.059 9.99966 57c2.02204-4.7232 4.52204-9.0566 7.50004-13Z" clip-rule="evenodd"/><path fill="#68C1EA" fill-rule="evenodd" d="M123.5 45v28c-9.837 4.8434-19.837 9.51-30 14-.667 0-1 .333-1 1h-1V45h32Z" clip-rule="evenodd"/><path fill="#4E8BC9" fill-rule="evenodd" d="M123.5 44h41c.667 0 1 .3333 1 1-8.028-.331-16.028.0023-24 1l6 15c-.363.6835-.696 1.3501-1 2-7.788 3.0608-15.455 6.3941-23 10V44Z" clip-rule="evenodd"/><path fill="#A2D8F1" fill-rule="evenodd" d="M90.5004 44H123.5v1H91.5004v29c-.994-9.8194-1.327-19.8194-1-30Z" clip-rule="evenodd"/><path fill="#90D4F0" fill-rule="evenodd" d="M43.5 45c10.006-.1665 20.006.0002 30 .5-12.817 5.5762-25.484 11.4095-38 17.5 18.199 8.2651 36.532 16.2651 55 24-.359 1.871-1.359 3.371-3 4.5-8.479 5.985-16.479 12.485-24 19.5-6.633-7.909-12.8-16.243-18.5-25-4.74-7.9116-8.074-16.245-10-25 2.513-5.0266 5.013-10.0266 7.5-15 .667 0 1-.3333 1-1Z" clip-rule="evenodd"/><path fill="#266FA8" fill-rule="evenodd" d="M146.5 63c-6.333 7.3333-12.667 14.6667-19 22-10.688.78-21.355 1.78-32 3-.916-.043-1.583-.376-2-1 10.163-4.49 20.163-9.1566 30-14 7.545-3.6059 15.212-6.9392 23-10Z" clip-rule="evenodd"/><path fill="#4D8AC8" fill-rule="evenodd" d="M127.5 85c.166 9.006 0 18.006-.5 27-4.707 4.212-9.54 8.212-14.5 12-.333-.667-.667-1.333-1-2-6.872-11.081-13.205-22.414-19-34 0-.667.333-1 1-1 .417.624 1.084.957 2 1 10.645-1.22 21.312-2.22 32-3Z" clip-rule="evenodd"/><path fill="#ABDCF1" fill-rule="evenodd" d="M90.5 87h1v25h-1c-8.998-.381-17.998-.714-27-1 7.521-7.015 15.521-13.515 24-19.5 1.641-1.129 2.641-2.629 3-4.5Z" clip-rule="evenodd"/><path fill="#54A5D7" fill-rule="evenodd" d="M91.5 88h1c5.795 11.586 12.128 22.919 19 34-7.044-2.779-13.711-6.112-20-10V88Z" clip-rule="evenodd"/><path fill="#B6E0F2" fill-rule="evenodd" d="M63.5 111c9.002.286 18.002.619 27 1v22c-7.375-.84-14.709-2.007-22-3.5-1.527-1.032-2.86-2.199-4-3.5-.598-5.313-.931-10.646-1-16Z" clip-rule="evenodd"/><path fill="#58AFDE" fill-rule="evenodd" d="M90.5003 112h1c6.289 3.888 12.9557 7.221 19.9997 10 .333.667.667 1.333 1 2-6.766 2.882-13.4327 6.049-19.9997 9.5-.956 3.394-1.289 6.894-1 10.5-.979-3.125-1.313-6.458-1-10v-22Z" clip-rule="evenodd"/><path fill="#266FA8" fill-rule="evenodd" d="M112.5 124c-6.655 11.306-13.322 22.639-20 34-.757 1.273-1.423 1.273-2 0 .986-4.47 1.319-9.137 1-14-.289-3.606.044-7.106 1-10.5 6.567-3.451 13.234-6.618 20-9.5Z" clip-rule="evenodd"/><path fill="#8FD3F0" fill-rule="evenodd" d="M64.5001 127c1.14 1.301 2.473 2.468 4 3.5 7.291 1.493 14.625 2.66 22 3.5-.313 3.542.021 6.875 1 10 .319 4.863-.014 9.53-1 14-8.293-9.463-16.793-18.796-25.5-28-.483-.948-.649-1.948-.5-3Z" clip-rule="evenodd"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Apache Iceberg Topics</div></div></a><a href="#" class="nav2_dropdown_list-link hide w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.0083 11.7716C9.46295 11.6842 8.95001 12.0554 8.8626 12.6007C8.77519 13.1461 9.14641 13.659 9.69173 13.7464L10.0083 11.7716ZM4 12C4 12.5523 4.44772 13 5 13C5.55228 13 6 12.5523 6 12H4ZM1 20C0.447715 20 0 20.4477 0 21C0 21.5523 0.447715 22 1 22V20ZM10 21L9.99985 22H10V21ZM22 11C22 10.4477 21.5523 10 21 10C20.4477 10 20 10.4477 20 11H22ZM1 16C0.447715 16 0 16.4477 0 17C0 17.5523 0.447715 18 1 18V16ZM9.99985 18C10.5521 18.0001 10.9999 17.5524 11 17.0002C11.0001 16.4479 10.5524 16.0001 10.0002 16L9.99985 18ZM20 5C20 5.02557 19.9898 5.16962 19.7079 5.41953C19.4272 5.6684 18.9639 5.9382 18.3056 6.18504C16.9965 6.67595 15.1208 7 13 7V9C15.2972 9 17.4215 8.65255 19.0079 8.05771C19.7973 7.76167 20.5057 7.38504 21.0347 6.91607C21.5625 6.44813 22 5.80293 22 5H20ZM13 7C10.8792 7 9.00352 6.67595 7.69436 6.18504C7.03608 5.9382 6.57283 5.6684 6.29211 5.41953C6.01024 5.16962 6 5.02557 6 5H4C4 5.80293 4.43751 6.44813 4.96533 6.91607C5.4943 7.38504 6.20267 7.76167 6.99214 8.05771C8.57848 8.65255 10.7028 9 13 9V7ZM6 5C6 4.97443 6.01024 4.83038 6.29211 4.58047C6.57283 4.3316 7.03608 4.0618 7.69436 3.81496C9.00352 3.32405 10.8792 3 13 3V1C10.7028 1 8.57848 1.34745 6.99214 1.94229C6.20267 2.23833 5.4943 2.61496 4.96533 3.08393C4.43751 3.55187 4 4.19707 4 5H6ZM13 3C15.1208 3 16.9965 3.32405 18.3056 3.81496C18.9639 4.0618 19.4272 4.3316 19.7079 4.58047C19.9898 4.83038 20 4.97443 20 5H22C22 4.19707 21.5625 3.55187 21.0347 3.08393C20.5057 2.61496 19.7973 2.23833 19.0079 1.94229C17.4215 1.34745 15.2972 1 13 1V3ZM20 5V10H22V5H20ZM20 10C20 10.0256 19.9898 10.1696 19.7079 10.4195C19.4272 10.6684 18.9639 10.9382 18.3056 11.185C16.9965 11.6759 15.1208 12 13 12V14C15.2972 14 17.4215 13.6526 19.0079 13.0577C19.7973 12.7617 20.5057 12.385 21.0347 11.9161C21.5625 11.4481 22 10.8029 22 10H20ZM13 12C11.9322 12 10.9203 11.9178 10.0083 11.7716L9.69173 13.7464C10.7137 13.9102 11.8318 14 13 14V12ZM6 12V5H4V12H6ZM1 22C1.82463 22 2.45272 21.8983 2.95752 21.6901C3.48972 21.4706 3.80288 21.1655 4.02204 20.9276C4.2511 20.6791 4.27426 20.6459 4.3509 20.602C4.39751 20.5753 4.55118 20.5 5 20.5V18.5C4.33102 18.5 3.80079 18.6122 3.35656 18.8667C2.94236 19.1041 2.66775 19.4459 2.55126 19.5724C2.42487 19.7095 2.3447 19.7794 2.19497 19.8412C2.01783 19.9142 1.67537 20 1 20V22ZM5 20.5C5.37775 20.5 5.36458 20.5703 5.2888 20.5084C5.27931 20.5006 5.28608 20.5021 5.35333 20.5885C5.40864 20.6596 5.52062 20.8096 5.66798 20.9569C6.34941 21.6382 7.47205 21.9996 9.99985 22L10.0002 20C7.52795 19.9996 7.15059 19.6111 7.08202 19.5425C7.04188 19.5024 7.01324 19.465 6.93182 19.3603C6.86236 19.271 6.73632 19.1085 6.55495 18.9602C6.13542 18.6171 5.62225 18.5 5 18.5V20.5ZM10 22H12.5V20H10V22ZM12.5 22C14.0347 22 16.2528 21.8738 18.1175 21.4076C19.0434 21.1762 19.9625 20.8419 20.6718 20.3395C21.3989 19.8244 22 19.0551 22 18H20C20 18.1949 19.9136 18.4256 19.5157 18.7074C19.1 19.0019 18.4566 19.2613 17.6325 19.4674C15.9972 19.8762 13.9653 20 12.5 20V22ZM22 18V11H20V18H22ZM1 18C1.82463 18 2.45272 17.8983 2.95752 17.6901C3.48972 17.4706 3.80288 17.1655 4.02204 16.9276C4.2511 16.6791 4.27426 16.6459 4.3509 16.602C4.39751 16.5753 4.55118 16.5 5 16.5V14.5C4.33102 14.5 3.80079 14.6122 3.35656 14.8667C2.94236 15.1041 2.66775 15.4459 2.55126 15.5724C2.42487 15.7095 2.3447 15.7794 2.19497 15.8412C2.01783 15.9142 1.67537 16 1 16V18ZM5 16.5C5.37775 16.5 5.36458 16.5703 5.2888 16.5084C5.27931 16.5006 5.28608 16.5021 5.35333 16.5885C5.40864 16.6596 5.52062 16.8096 5.66798 16.9569C6.34941 17.6382 7.47205 17.9996 9.99985 18L10.0002 16C7.52795 15.9996 7.15059 15.6111 7.08202 15.5425C7.04188 15.5024 7.01324 15.465 6.93182 15.3603C6.86236 15.271 6.73632 15.1085 6.55495 14.9602C6.13542 14.6171 5.62225 14.5 5 14.5V16.5Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Streaming Data Lakehouse</div></div></a><a href="#" class="nav2_dropdown_list-link hide w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.5 14.25H19.5V11.25H18V18H6V6H12.75V4.5H9.75V1.5H8.25V4.5H6C5.60218 4.5 5.22064 4.65804 4.93934 4.93934C4.65804 5.22064 4.5 5.60218 4.5 6V8.25H1.5V9.75H4.5V14.25H1.5V15.75H4.5V18C4.5 18.3978 4.65804 18.7794 4.93934 19.0607C5.22064 19.342 5.60218 19.5 6 19.5H8.25V22.5H9.75V19.5H14.25V22.5H15.75V19.5H18C18.3976 19.4994 18.7788 19.3412 19.06 19.06C19.3412 18.7788 19.4994 18.3976 19.5 18V15.75H22.5V14.25Z" fill="currentColor"/>
+<path d="M15.75 15.75H8.25V8.25H15.75V15.75ZM9.75 14.25H14.25V9.75H9.75V14.25ZM23.25 9.75H21.75C21.748 7.76149 20.9572 5.85498 19.5511 4.44889C18.145 3.0428 16.2385 2.25199 14.25 2.25V0.75C16.6362 0.752581 18.9238 1.70162 20.6111 3.38889C22.2984 5.07616 23.2474 7.36384 23.25 9.75Z" fill="currentColor"/>
+<path d="M19.5 9.75H18C17.9988 8.7558 17.6033 7.80267 16.9003 7.09966C16.1973 6.39666 15.2442 6.00119 14.25 6V4.5C15.6418 4.50198 16.976 5.05574 17.9601 6.03988C18.9443 7.02402 19.498 8.35822 19.5 9.75Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>IoT</div></div></a><a href="#" class="nav2_dropdown_list-link hide w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.7992 21.7953C21.6947 21.9002 21.5705 21.9834 21.4338 22.0402C21.297 22.097 21.1504 22.1262 21.0024 22.1262C20.8543 22.1262 20.7077 22.097 20.5709 22.0402C20.4342 21.9834 20.31 21.9002 20.2055 21.7953L15.7533 17.3431C14.0137 18.678 11.8315 19.3013 9.64936 19.0864C7.46719 18.8715 5.44845 17.8347 4.00265 16.1861C2.55686 14.5376 1.79228 12.4008 1.864 10.2092C1.93573 8.01768 2.83839 5.93546 4.38888 4.38497C5.93937 2.83448 8.02159 1.93182 10.2131 1.86009C12.4047 1.78837 14.5415 2.55295 16.19 3.99875C17.8386 5.44454 18.8755 7.46328 19.0903 9.64545C19.3052 11.8276 18.6819 14.0098 17.347 15.7494L21.8039 20.2053C22.014 20.4169 22.1315 20.7032 22.1306 21.0013C22.1297 21.2994 22.0105 21.585 21.7992 21.7953ZM10.5033 16.8744C11.7641 16.8744 12.9967 16.5005 14.0451 15.8C15.0934 15.0995 15.9105 14.1039 16.393 12.939C16.8755 11.7741 17.0018 10.4923 16.7558 9.25568C16.5098 8.01905 15.9027 6.88314 15.0111 5.99158C14.1195 5.10002 12.9836 4.49286 11.747 4.24688C10.5104 4.0009 9.22856 4.12714 8.06368 4.60965C6.8988 5.09216 5.90317 5.90926 5.20267 6.95762C4.50218 8.00599 4.12829 9.23853 4.12829 10.4994C4.13027 12.1895 4.80256 13.8099 5.99768 15.005C7.19279 16.2001 8.81314 16.8724 10.5033 16.8744Z" fill="currentColor"/>
+<path d="M10.4808 6.01858C10.6488 5.98658 10.8168 5.99458 10.9848 6.04258C11.3608 6.13858 11.6168 6.36658 11.7528 6.72658C11.7848 6.84658 11.7768 7.09458 11.7288 7.47058C11.6968 7.67858 11.6048 8.27458 11.4528 9.25858C11.2288 10.7146 11.0888 11.4666 11.0328 11.5146C10.9768 11.5386 10.7848 11.5426 10.4568 11.5266C10.3928 11.5266 10.3568 11.5226 10.3488 11.5146C10.3088 11.4906 10.2728 11.3986 10.2408 11.2386C10.2168 11.0946 10.1128 10.4346 9.92884 9.25858C9.69684 7.73858 9.58884 6.92658 9.60484 6.82258C9.60484 6.80658 9.61284 6.77458 9.62884 6.72658C9.73284 6.39058 9.97684 6.16658 10.3608 6.05458C10.4008 6.03858 10.4408 6.02658 10.4808 6.01858ZM10.4928 12.3066C10.6288 12.2746 10.7848 12.2826 10.9608 12.3306C11.3128 12.4186 11.5568 12.6346 11.6928 12.9786C11.7168 13.0186 11.7328 13.0626 11.7408 13.1106C11.7888 13.2946 11.7888 13.4746 11.7408 13.6506C11.6448 14.0186 11.4208 14.2666 11.0688 14.3946C11.0288 14.4106 10.9928 14.4226 10.9608 14.4306C10.7768 14.4786 10.5968 14.4786 10.4208 14.4306C10.0528 14.3346 9.80484 14.1106 9.67684 13.7586C9.66084 13.7186 9.64884 13.6826 9.64084 13.6506C9.59284 13.4746 9.59284 13.2946 9.64084 13.1106C9.70484 12.8706 9.82484 12.6826 10.0008 12.5466C10.1368 12.4346 10.3008 12.3546 10.4928 12.3066Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Observability</div></div></a><a href="#" class="nav2_dropdown_list-link hide w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 3V7C14 7.26522 14.1054 7.51957 14.2929 7.70711C14.4804 7.89464 14.7348 8 15 8H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9 17V12M12 17V16M15 17V14M17 21H7C6.46957 21 5.96086 20.7893 5.58579 20.4142C5.21071 20.0391 5 19.5304 5 19V5C5 4.46957 5.21071 3.96086 5.58579 3.58579C5.96086 3.21071 6.46957 3 7 3H14L19 8V19C19 19.5304 18.7893 20.0391 18.4142 20.4142C18.0391 20.7893 17.5304 21 17 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Real-time analytics</div></div></a></div></div><div class="nav2_dropdown_list-column border-left"><div class="nav2_dropdown_column"><div class="w-dyn-list"><div role="list" class="w-dyn-items"><div role="listitem" class="w-dyn-item"><a href="/case-study/teads" class="nav2_dropdown_column-link w-inline-block"><div class="nav2_dropdown_feature-large-wrapper"><img alt="Teads" loading="lazy" src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68b1d7be51fb04d42c71908f_CS%20Teads.png" sizes="100vw" srcset="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68b1d7be51fb04d42c71908f_CS%20Teads-p-500.png 500w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68b1d7be51fb04d42c71908f_CS%20Teads-p-800.png 800w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68b1d7be51fb04d42c71908f_CS%20Teads-p-1080.png 1080w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68b1d7be51fb04d42c71908f_CS%20Teads.png 1170w" class="nav2_dropdown_feature-large-image border-none"/><div><div class="nav2_eyebrow">Adtech &amp; Martech</div><div class="text-style-3lines">How Redpanda on AWS provides stress-free operations while using 87% fewer resources than Kafka.</div></div></div></a></div></div></div><a href="/customers" class="nav2_dropdown_column-link text-weight-medium">View all customer success stories</a></div></div></div></div></nav></div><div data-delay="10" data-hover="true" class="nav2_dropdown w-dropdown"><div nav2-link-primary-dropdown="Learn" class="nav2_link nav2_dropdown_toggle w-dropdown-toggle"><div class="nav2_dropdown_toggle-icon w-icon-dropdown-toggle"></div><div>Learn</div><div class="nav2_dropdown-toggle-arrow-wrapper"><div class="nav2_dropdown-toggle-arrow"></div></div></div><nav class="nav2_dropdown_list _3-right w-dropdown-list"><div class="nav2_dropdown_list-wrapper"><div class="nav2_dropdown_list-column-wrapper"><div class="nav2_dropdown_list-column"><a nav2-link="Learn &gt; Blog" href="/blog" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.85632 3C2.8418 3 2 3.8418 2 4.85632V19.3812C2 20.3958 2.8418 21.2376 3.85632 21.2376H18.3812C19.3958 21.2376 20.2376 20.3958 20.2376 19.3812V14.7974L25.2203 9.82281C25.2932 9.75021 25.351 9.66392 25.3904 9.5689C25.4299 9.47391 25.4502 9.37204 25.4502 9.26917C25.4502 9.1663 25.4299 9.06444 25.3904 8.96944C25.351 8.87442 25.2932 8.78812 25.2203 8.71553L22.8592 6.35441C22.7855 6.28092 22.6978 6.22289 22.6013 6.18374C22.5049 6.1446 22.4015 6.12511 22.2974 6.12644C22.0928 6.12809 21.8969 6.20994 21.7519 6.35441L20.2376 7.86878V4.85632C20.2376 3.8418 19.3958 3 18.3812 3H3.85632ZM3.85632 4.56322H18.3812C18.5587 4.56322 18.6744 4.67884 18.6744 4.85632V9.44014L14.2127 13.91C14.1401 13.9828 14.0827 14.0691 14.0436 14.1641C14.0044 14.2591 13.9844 14.3609 13.9847 14.4636V16.8084C13.9847 17.0157 14.0671 17.2145 14.2136 17.3611C14.3602 17.5077 14.559 17.59 14.7663 17.5901H17.1111C17.2139 17.5903 17.3156 17.5703 17.4106 17.5312C17.5056 17.4921 17.592 17.4346 17.6648 17.3621L18.6744 16.3525V19.3812C18.6744 19.5587 18.5587 19.6744 18.3812 19.6744H3.85632C3.67884 19.6744 3.56322 19.5587 3.56322 19.3812V4.85632C3.56322 4.67884 3.67884 4.56322 3.85632 4.56322ZM5.82663 6.64751C5.72398 6.65284 5.62338 6.67834 5.53058 6.72255C5.43778 6.76676 5.35459 6.82882 5.28578 6.90519C5.21697 6.98155 5.16387 7.07072 5.12953 7.1676C5.09518 7.26448 5.08025 7.36719 5.0856 7.46984C5.09094 7.57249 5.11646 7.67309 5.16069 7.76588C5.20491 7.85867 5.26699 7.94184 5.34336 8.01064C5.41973 8.07944 5.50891 8.13253 5.6058 8.16686C5.70269 8.20119 5.8054 8.2161 5.90805 8.21074H16.3295C16.4331 8.2122 16.5359 8.19306 16.632 8.15444C16.7282 8.11582 16.8156 8.05848 16.8894 7.98576C16.9632 7.91303 17.0217 7.82637 17.0617 7.73082C17.1017 7.63526 17.1223 7.53271 17.1223 7.42912C17.1223 7.32553 17.1017 7.22298 17.0617 7.12743C17.0217 7.03188 16.9632 6.94522 16.8894 6.87249C16.8156 6.79977 16.7282 6.74243 16.632 6.70381C16.5359 6.66518 16.4331 6.64604 16.3295 6.64751H5.90805C5.88093 6.6461 5.85375 6.6461 5.82663 6.64751ZM22.3056 8.01533L23.5594 9.26917L22.7208 10.1078L21.467 8.85394L22.3056 8.01533ZM5.82663 9.77396C5.72398 9.77928 5.62338 9.80478 5.53058 9.84899C5.43779 9.89321 5.35461 9.95526 5.28578 10.0316C5.21699 10.108 5.1639 10.1971 5.12953 10.294C5.09518 10.3909 5.08025 10.4936 5.0856 10.5963C5.09095 10.6989 5.11647 10.7995 5.16069 10.8923C5.20491 10.9851 5.26699 11.0683 5.34336 11.1371C5.41973 11.2059 5.50891 11.259 5.6058 11.2933C5.70269 11.3276 5.8054 11.3425 5.90805 11.3372H15.0268C15.1304 11.3386 15.2332 11.3195 15.3294 11.2809C15.4255 11.2423 15.5129 11.1849 15.5867 11.1122C15.6605 11.0395 15.719 10.9528 15.759 10.8573C15.799 10.7617 15.8196 10.6591 15.8196 10.5556C15.8196 10.452 15.799 10.3494 15.759 10.2539C15.719 10.1583 15.6605 10.0717 15.5867 9.99893C15.5129 9.92621 15.4255 9.86887 15.3294 9.83025C15.2332 9.79163 15.1304 9.77249 15.0268 9.77396H5.90805C5.88093 9.77254 5.85375 9.77254 5.82663 9.77396ZM20.3597 9.96122L21.6135 11.215L16.7855 16.0268H15.5479V14.7893L20.3597 9.96122ZM5.82663 12.9004C5.72398 12.9057 5.62338 12.9312 5.53058 12.9754C5.43778 13.0196 5.3546 13.0817 5.28578 13.1581C5.21697 13.2344 5.16387 13.3236 5.12953 13.4205C5.09518 13.5174 5.08026 13.6201 5.0856 13.7227C5.09094 13.8254 5.11645 13.926 5.16069 14.0188C5.20491 14.1116 5.26699 14.1947 5.34336 14.2635C5.41973 14.3323 5.50891 14.3854 5.6058 14.4197C5.70269 14.4541 5.8054 14.469 5.90805 14.4636H12.1609C12.2645 14.4651 12.3673 14.4459 12.4635 14.4073C12.5596 14.3687 12.647 14.3114 12.7208 14.2386C12.7946 14.1659 12.8531 14.0793 12.8931 13.9837C12.9331 13.8881 12.9537 13.7856 12.9537 13.682C12.9537 13.5784 12.9331 13.4759 12.8931 13.3803C12.8531 13.2848 12.7946 13.1981 12.7208 13.1254C12.647 13.0527 12.5596 12.9953 12.4635 12.9567C12.3673 12.9181 12.2645 12.8989 12.1609 12.9004H5.90805C5.88093 12.899 5.85375 12.899 5.82663 12.9004ZM5.82663 16.0268C5.72398 16.0322 5.62338 16.0577 5.53058 16.1019C5.43778 16.1461 5.3546 16.2081 5.28578 16.2845C5.21697 16.3609 5.16387 16.45 5.12953 16.5469C5.09518 16.6438 5.08025 16.7465 5.0856 16.8492C5.09095 16.9518 5.11647 17.0524 5.16069 17.1452C5.20491 17.238 5.26699 17.3212 5.34336 17.39C5.41973 17.4588 5.50891 17.5118 5.6058 17.5462C5.70269 17.5805 5.8054 17.5954 5.90805 17.5901H12.1609C12.2645 17.5915 12.3673 17.5724 12.4635 17.5338C12.5596 17.4951 12.647 17.4378 12.7208 17.3651C12.7946 17.2924 12.8531 17.2057 12.8931 17.1101C12.9331 17.0146 12.9537 16.912 12.9537 16.8084C12.9537 16.7049 12.9331 16.6023 12.8931 16.5068C12.8531 16.4112 12.7946 16.3245 12.7208 16.2518C12.647 16.1791 12.5596 16.1218 12.4635 16.0831C12.3673 16.0445 12.2645 16.0254 12.1609 16.0268H5.90805C5.88093 16.0254 5.85375 16.0254 5.82663 16.0268Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Blog</div><div class="nav2_dropdown_list-description">In-depth posts on streaming data topics.</div></div></a><a nav2-link="Learn &gt; Upcoming Events" href="/events" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="max-width:100%;max-height:100%" viewBox="0 0 26 26"><path fill="currentColor" d="M18.2778 13.6111H13v5.2778h5.2778v-5.2778ZM17.2222 2v2.11111H8.77778V2H6.66667v2.11111H5.61111c-1.17167 0-2.10055.95-2.10055 2.11111L3.5 21c0 1.1611.93944 2.1111 2.11111 2.1111H20.3889c1.1611 0 2.1111-.95 2.1111-2.1111V6.22222c0-1.16111-.95-2.11111-2.1111-2.11111h-1.0556V2h-2.1111Zm3.1667 19H5.61111V9.38889H20.3889V21Z"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Upcoming Events</div><div class="nav2_dropdown_list-description">Join our live events to learn from experts.</div></div></a><a nav2-link="Learn &gt; On-Demand Resources" href="/resources" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="max-width:100%;max-height:100%" viewBox="0 0 26 26"><path fill="currentColor" d="M20 6v9h-5v5H6V6h14Zm0-2H6c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10l6-6V6c0-1.1-.9-2-2-2Zm-7 11H8v-2h5v2Zm5-4H8V9h10v2Z"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>On-demand Resources</div><div class="nav2_dropdown_list-description">Tech talks, streamcasts, reports, and more.</div></div></a><a nav2-link="Learn &gt; Reports" href="/resources?resource-type=Report" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19.5 14.25V11.625C19.5 10.7299 19.1444 9.87145 18.5115 9.23851C17.8786 8.60558 17.0201 8.25 16.125 8.25H14.625C14.3266 8.25 14.0405 8.13147 13.8295 7.9205C13.6185 7.70952 13.5 7.42337 13.5 7.125V5.625C13.5 4.72989 13.1444 3.87145 12.5115 3.23851C11.8785 2.60558 11.0201 2.25 10.125 2.25H8.25M9 16.5V17.25M12 14.25V17.25M15 12V17.25M10.5 2.25H5.625C5.004 2.25 4.5 2.754 4.5 3.375V20.625C4.5 21.246 5.004 21.75 5.625 21.75H18.375C18.996 21.75 19.5 21.246 19.5 20.625V11.25C19.5 8.86305 18.5518 6.57387 16.864 4.88604C15.1761 3.19821 12.8869 2.25 10.5 2.25Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Reports</div><div class="nav2_dropdown_list-description">Get the latest free Redpanda reports and digital guides.</div></div></a></div><div class="nav2_dropdown_list-column"><a nav2-link="Learn &gt; Documentation" href="https://docs.redpanda.com/home" target="_blank" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M22 5H4C2.9 5 2 5.9 2 7V20C2 21.1 2.9 22 4 22H22C23.1 22 24 21.1 24 20V7C24 5.9 23.1 5 22 5ZM4 20V7H12V20H4ZM22 20H14V7H22V20ZM15 10.5H21V12H15V10.5ZM15 13H21V14.5H15V13ZM15 15.5H21V17H15V15.5Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Documentation</div><div class="nav2_dropdown_list-description">Dive deep into features and APIs.</div></div></a><a nav2-link="Learn &gt; Redpanda University" href="/university" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13 3L1 9.54545L5.36364 11.9236V18.4691L13 22.6364L20.6364 18.4691V11.9236L22.8182 10.7346V18.2727H25V9.54545L13 3ZM20.44 9.54545L13 13.6036L5.56 9.54545L13 5.48727L20.44 9.54545ZM18.4545 17.1709L13 20.1491L7.54545 17.1709V13.1127L13 16.0909L18.4545 13.1127V17.1709Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Redpanda University</div><div class="nav2_dropdown_list-description">Guided courses on building real-time apps.</div></div></a><a nav2-link="Learn &gt; Community Slack" href="https://redpanda.com/slack" target="_blank" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="max-width:100%;max-height:100%" viewBox="0 0 26 26"><path fill="currentColor" fill-rule="evenodd" d="M10.3327 3c-.53041.00012-1.03907.21095-1.41405.58611-.37499.37516-.58559.88391-.58547 1.41434.00012.53044.21095 1.0391.58611 1.41409.37516.37498.88391.58558 1.41431.58546h2V5c-.0004-.53029-.2113-1.03871-.5863-1.41368-.3749-.37497-.8843-.58584-1.4146-.58632Zm0 5.33364H5c-.53043 0-1.03914.21071-1.41421.58578C3.21071 9.2945 3 9.8032 3 10.3336c0 .5305.21071 1.0392.58579 1.4143.37507.375.88378.5857 1.41421.5857h5.3327c.5305 0 1.0392-.2107 1.4142-.5857.3751-.3751.5858-.8838.5858-1.4143 0-.5304-.2107-1.0391-.5858-1.41418-.375-.37507-.8837-.58578-1.4142-.58578ZM23 10.3327c0-.53041-.2107-1.03911-.5858-1.41419-.3751-.37507-.8838-.58578-1.4142-.58578-.5304 0-1.0391.21071-1.4142.58578-.3751.37508-.5858.88378-.5858 1.41419v2h2c.5304 0 1.0391-.2107 1.4142-.5858.3751-.375.5858-.8837.5858-1.4142Zm-5.3336 0V5c0-.53043-.2108-1.03914-.5858-1.41421C16.7055 3.21071 16.1968 3 15.6664 3c-.5305 0-1.0392.21071-1.4142.58579-.3751.37507-.5858.88378-.5858 1.41421v5.3327c0 .5305.2107 1.0392.5858 1.4142.375.3751.8837.5858 1.4142.5858.5304 0 1.0391-.2107 1.4142-.5858.375-.375.5858-.8837.5858-1.4142Zm-2 12.6673c.5304 0 1.0391-.2107 1.4142-.5858.375-.3751.5858-.8838.5858-1.4142 0-.5304-.2108-1.0391-.5858-1.4142-.3751-.3751-.8838-.5858-1.4142-.5858h-2v2c.0002.5304.211 1.0389.586 1.4139.375.3751.8836.5859 1.414.5861Zm0-5.3345H21c.5304 0 1.0391-.2108 1.4142-.5858.3751-.3751.5858-.8838.5858-1.4142 0-.5305-.2107-1.0392-.5858-1.4143-.3751-.375-.8838-.5857-1.4142-.5857h-5.3327c-.5305-.0002-1.0392.2104-1.4144.5854-.3751.375-.586.8837-.5861 1.4141-.0001.5304.2105 1.0392.5855 1.4143.375.3752.8836.586 1.4141.5862ZM3 15.6664c0 .5304.21071 1.0391.58579 1.4142.37507.375.88378.5858 1.41421.5858s1.03914-.2108 1.41421-.5858C6.78929 16.7055 7 16.1968 7 15.6664v-2H5c-.53043 0-1.03914.2107-1.41421.5858C3.21071 14.6272 3 15.1359 3 15.6664Zm5.33364 0v5.3327c-.00012.5304.21047 1.0392.58546 1.4143.37499.3752.88365.586 1.4141.5861.5304.0002 1.0392-.2104 1.4143-.5854.3752-.375.586-.8837.5861-1.4141v-5.3327c.0002-.5305-.2104-1.0392-.5854-1.4144-.375-.3751-.8837-.586-1.4141-.5861-.53044-.0001-1.0392.2105-1.41436.5855-.37515.375-.58598.8836-.5861 1.4141Z" clip-rule="evenodd"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Community Slack</div><div class="nav2_dropdown_list-description">Ask our dev community your burning questions.</div></div></a><a nav2-link="Learn &gt; Redpana Labs" href="https://docs.redpanda.com/redpanda-labs" target="_blank" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="max-width:100%;max-height:100%" viewBox="0 0 26 26"><path fill="currentColor" fill-rule="evenodd" d="M8.2002 1v2.13333h1.0664v5.18994C6.72914 9.66461 5 12.3306 5 15.4005c0 4.4183 3.58172 8 8 8 4.4183 0 8-3.5817 8-8 0-3.0699-1.7292-5.73598-4.2667-7.0773V3.13333h1.0669V1h-9.6Zm6.3997 2.13333h-3.2L11.4 9.75469c-2.4624.69641-4.26667 2.96041-4.26667 5.64581 0 3.2401 2.6266 5.8667 5.86667 5.8667 3.2401 0 5.8667-2.6266 5.8667-5.8667 0-2.6854-1.8043-4.9494-4.2667-5.64581l-.0001-6.62136Z" clip-rule="evenodd"/><path fill="currentColor" fill-rule="evenodd" d="M13.0002 20.1998c2.651 0 4.8-2.1491 4.8-4.8001 0-1.8405-1.0358-1.6396-2.5563-1.3447-.6696.1298-1.4332.2779-2.2437.2779s-1.5741-.1481-2.2437-.2779c-1.52049-.2949-2.5563-.4958-2.5563 1.3447 0 2.651 2.149 4.8001 4.8 4.8001Zm-1.067-3.7327c.2946 0 .5334-.2388.5334-.5334 0-.2945-.2388-.5333-.5334-.5333-.2945 0-.5333.2388-.5333.5333 0 .2946.2388.5334.5333.5334Zm2.4 1.5997c.4418 0 .8-.3582.8-.8s-.3582-.8-.8-.8-.8.3582-.8.8.3582.8.8.8Z" clip-rule="evenodd"/><path fill="currentColor" d="M13.8 13.267c.4418 0 .8-.3582.8-.8s-.3582-.8-.8-.8-.8.3582-.8.8.3582.8.8.8Z"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Redpanda Labs</div><div class="nav2_dropdown_list-description">Examples, experiments, and inspiration.</div></div></a></div><div class="nav2_dropdown_list-column border-left"><div class="nav2_dropdown_column"><div class="nav2_dropdown_column-title">Register for Streamfest</div><a href="/streamfest" class="nav2_dropdown_column-link w-inline-block"><div class="nav2_dropdown_feature-large-wrapper"><img sizes="100vw" srcset="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68bb1e3b1e52e96dfa3f90f9_cover_streamfest-2025-p-500.png 500w, https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68bb1e3b1e52e96dfa3f90f9_cover_streamfest-2025-p-800.png 800w, https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68bb1e3b1e52e96dfa3f90f9_cover_streamfest-2025-p-1080.png 1080w, https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68bb1e3b1e52e96dfa3f90f9_cover_streamfest-2025.png 1200w" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68bb1e3b1e52e96dfa3f90f9_cover_streamfest-2025.png" loading="lazy" alt="" class="nav2_dropdown_feature-large-image border-none"/><div><div class="nav2_eyebrow">Streamfest 2025</div><div class="text-style-3lines">Join leading experts in data streaming and AI to explore innovations in agentic and data-intensive apps.</div></div></div></a><div class="hide w-dyn-list"><div role="list" class="w-dyn-items"><div role="listitem" class="w-dyn-item"><a nav2-link="Learn &gt; Latest Resources &gt; Blog" href="/resources/redpanda-vs-confluent-performance-tco-benchmark-report" class="nav2_dropdown_column-link w-inline-block"><div class="nav2_dropdown_feature-list-wrapper"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/679285d360f88d9be3a3d419_Book-Report-Magazine-Mockup_McKnight_Jan25_stacked.webp" loading="lazy" alt="" sizes="100vw" srcset="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/679285d360f88d9be3a3d419_Book-Report-Magazine-Mockup_McKnight_Jan25_stacked-p-500.webp 500w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/679285d360f88d9be3a3d419_Book-Report-Magazine-Mockup_McKnight_Jan25_stacked-p-800.webp 800w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/679285d360f88d9be3a3d419_Book-Report-Magazine-Mockup_McKnight_Jan25_stacked.webp 980w" class="nav2_dropdown_feature-image"/><div><div class="nav2_eyebrow">Report:</div><div>Redpanda vs. Confluent: A Performance and TCO Benchmark Report (January, 2025)</div></div></div></a></div></div></div><div class="hide w-dyn-list"><div role="list" class="w-dyn-items"><div role="listitem" class="w-dyn-item"><a nav2-link="Learn &gt; Latest Resources &gt; Blog" href="/blog/redpanda-one-multi-modal-streaming-data-engine" class="nav2_dropdown_column-link w-inline-block"><div class="nav2_dropdown_feature-list-wrapper"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66e2cd5adf32ec610d67b0b4_B227%20Redpanda%20one%208.png" loading="lazy" alt="" class="nav2_dropdown_feature-image"/><div><div class="nav2_eyebrow">Blog:</div><div>Redpanda One: a beginning</div></div></div></a></div></div></div><div class="w-dyn-list"><div role="list" class="w-dyn-items"><div role="listitem" class="w-dyn-item"><div class="nav2_dropdown_column-link w-condition-invisible"><div class="nav2_dropdown_feature-list-wrapper"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66fef34b4b890ca46e3c8103_streamfest_cover.webp" loading="lazy" alt="" sizes="100vw" srcset="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66fef34b4b890ca46e3c8103_streamfest_cover-p-500.webp 500w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66fef34b4b890ca46e3c8103_streamfest_cover-p-800.webp 800w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66fef34b4b890ca46e3c8103_streamfest_cover.webp 1200w" class="nav2_dropdown_feature-image"/><div><div class="nav2_eyebrow w-condition-invisible">Upcoming Event:</div><div>Streamfest</div></div></div><a href="/events/streamfest-2024" class="position-absolute-fill w-inline-block w-condition-invisible"></a><a nav2-link="Learn &gt; Latest Resources &gt; Event" href="https://www.redpanda.com/streamfest" target="_blank" class="position-absolute-fill w-inline-block"></a></div></div></div></div><div class="w-dyn-list"><div class="hide w-dyn-empty"><div>No items found.</div></div></div></div></div></div></div></nav></div><div data-delay="10" data-hover="true" class="nav2_dropdown w-dropdown"><div nav2-link-primary-dropdown="Company" class="nav2_link nav2_dropdown_toggle w-dropdown-toggle"><div class="nav2_dropdown_toggle-icon w-icon-dropdown-toggle"></div><div>Company</div><div class="nav2_dropdown-toggle-arrow-wrapper"><div class="nav2_dropdown-toggle-arrow"></div></div></div><nav class="nav2_dropdown_list _2-right w-dropdown-list"><div class="nav2_dropdown_list-wrapper"><div class="nav2_dropdown_list-column-wrapper"><div class="nav2_dropdown_list-column"><a nav2-link="Company &gt; About Redpanda" href="/about-us" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="max-width:100%;max-height:100%" viewBox="0 0 26 26"><path fill="currentColor" d="M13 5.5c1.375 0 2.5 1.125 2.5 2.5s-1.125 2.5-2.5 2.5-2.5-1.125-2.5-2.5 1.125-2.5 2.5-2.5ZM13 18c3.375 0 7.25 1.6125 7.5 2.5h-15c.2875-.9 4.1375-2.5 7.5-2.5Zm0-15c-2.7625 0-5 2.2375-5 5s2.2375 5 5 5 5-2.2375 5-5-2.2375-5-5-5Zm0 12.5c-3.3375 0-10 1.675-10 5V23h20v-2.5c0-3.325-6.6625-5-10-5Z"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>About Redpanda</div><div class="nav2_dropdown_list-description">Meet our team and investors.</div></div></a><a nav2-link="Company &gt; Customer Success Stories" href="/customers" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 6V7.5H19.9395L13.5 13.9395L10.2802 10.7198C10.1396 10.5791 9.94887 10.5002 9.75 10.5002C9.55113 10.5002 9.3604 10.5791 9.21975 10.7198L1.5 18.4395L2.5605 19.5L9.75 12.3105L12.9697 15.5303C13.1104 15.6709 13.3011 15.7498 13.5 15.7498C13.6989 15.7498 13.8896 15.6709 14.0303 15.5303L21 8.5605V13.5H22.5V6H15Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Customer Success Stories</div><div class="nav2_dropdown_list-description">Learn how customers are building better and easier with Redpanda</div></div></a><a nav2-link="Company &gt; Press" href="/press" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 2.95918V23.0408H6V2.95918H20ZM20 1H6C4.9 1 4 1.88163 4 2.95918V23.0408C4 24.1184 4.9 25 6 25H20C21.1 25 22 24.1184 22 23.0408V2.95918C22 1.88163 21.1 1 20 1Z" fill="currentColor"/>
+<path d="M8 4.91837H11.5V11.2857H8V4.91837ZM12.5 4.91837H18V6.38776H12.5V4.91837ZM12.5 7.36735H18V8.83673H12.5V7.36735ZM12.5 9.81633H18V11.2857H12.5V9.81633ZM8 14.7143H18V16.1837H8V14.7143ZM14.5 17.1633H18V21.0816H14.5V17.1633ZM8 12.2653H18V13.7347H8V12.2653ZM8 17.1633H13.5V18.6327H8V17.1633ZM8 19.6122H13.5V21.0816H8V19.6122Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Press</div><div class="nav2_dropdown_list-description">Check out the media buzz.</div></div></a><a nav2-link="Company &gt; Partners" href="/partners" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg xmlns="http://www.w3.org/2000/svg" fill="none" style="max-width:100%;max-height:100%" viewBox="0 0 26 26"><path fill="currentColor" d="M6.5 7.3125c-.64279 0-1.27114-.19061-1.8056-.54772a3.250083 3.250083 0 0 1-1.19701-1.45856c-.24598-.59386-.31034-1.24733-.18494-1.87776.1254-.63044.43493-1.20954.88945-1.66406.45452-.45452 1.03362-.76405 1.66406-.889451.63043-.125402 1.2839-.061041 1.87776.184941A3.250083 3.250083 0 0 1 9.20228 2.2569c.35711.53446.54772 1.16281.54772 1.8056 0 .86195-.34241 1.6886-.9519 2.2981-.6095.60949-1.43615.9519-2.2981.9519Zm0-4.875c-.32139 0-.63557.09531-.9028.27386a1.624998 1.624998 0 0 0-.5985.72928 1.62494 1.62494 0 0 0-.09248.93888c.0627.31522.21747.60477.44473.83203.22726.22726.51681.38203.83203.44473a1.62494 1.62494 0 0 0 .93888-.09248 1.624998 1.624998 0 0 0 .72928-.5985 1.624959 1.624959 0 0 0 .27386-.9028c0-.43098-.17121-.8443-.47595-1.14905C7.3443 2.6087 6.93098 2.4375 6.5 2.4375Zm13 4.875c-.6428 0-1.2711-.19061-1.8056-.54772-.5345-.35712-.951-.8647-1.197-1.45856-.246-.59386-.3104-1.24733-.185-1.87776.1254-.63044.435-1.20954.8895-1.66406.4545-.45452 1.0336-.76405 1.6641-.889451.6304-.125402 1.2839-.061041 1.8777.184941.5939.24599 1.1015.66255 1.4586 1.19701.3571.53446.5477 1.16281.5477 1.8056 0 .86195-.3424 1.6886-.9519 2.2981-.6095.60949-1.4361.9519-2.2981.9519Zm0-4.875c-.3214 0-.6356.0953-.9028.27386s-.4755.43235-.5985.72928c-.123.29693-.1552.62366-.0925.93888.0627.31522.2175.60477.4448.83203.2272.22726.5168.38202.832.44473.3152.0627.6419.03052.9389-.09248.2969-.12299.5507-.33127.7292-.5985.1786-.26723.2739-.58141.2739-.9028 0-.43098-.1712-.8443-.476-1.14905-.3047-.30475-.718-.47595-1.149-.47595Zm1.625 21.9375h-3.25c-.431 0-.8443-.1712-1.149-.476-.3048-.3047-.476-.718-.476-1.149v-5.6875h1.625V22.75h3.25v-7.3125h1.625v-4.875c0-.2155-.0856-.4222-.238-.57452-.1523-.15238-.359-.23798-.5745-.23798h-5.2163L13 16.25l-3.72125-6.5H4.0625c-.21549 0-.42215.0856-.57452.23798-.15238.15232-.23798.35902-.23798.57452v4.875h1.625V22.75h3.25v-5.6875H9.75V22.75c0 .431-.17121.8443-.47595 1.149-.30475.3048-.71807.476-1.14905.476h-3.25c-.43098 0-.8443-.1712-1.14905-.476-.30475-.3047-.47595-.718-.47595-1.149v-5.6875c-.43098 0-.8443-.1712-1.14905-.476-.30475-.3047-.47595-.718-.47595-1.149v-4.875c0-.64647.25681-1.26645.71393-1.72357.45712-.45712 1.0771-.71393 1.72357-.71393h6.1587L13 13l2.7788-4.875h6.1587c.6465 0 1.2665.25681 1.7236.71393.4571.45712.7139 1.0771.7139 1.72357v4.875c0 .431-.1712.8443-.476 1.149-.3047.3048-.718.476-1.149.476V22.75c0 .431-.1712.8443-.476 1.149-.3047.3048-.718.476-1.149.476Z"/></svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Partners</div><div class="nav2_dropdown_list-description">Partner list for achieving customer success together.</div></div></a><a nav2-link="Company &gt; Careers" href="/careers" class="nav2_dropdown_list-link w-inline-block"><div class="nav2_dropdown_list-icon"><div class="icon-1x1-small w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 26 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M15 7V5H11V7H15ZM5 9V20H21V9H5ZM21 7C22.11 7 23 7.89 23 9V20C23 21.11 22.11 22 21 22H5C3.89 22 3 21.11 3 20L3.01 9C3.01 7.89 3.89 7 5 7H9V5C9 3.89 9.89 3 11 3H15C16.11 3 17 3.89 17 5V7H21Z" fill="currentColor"/>
+</svg></div></div><div class="nav2_dropdown_list-copy-wrap"><div>Careers</div><div class="nav2_dropdown_list-description">Explore Redpanda opportunities and culture.</div></div></a></div><div class="nav2_dropdown_list-column border-left"><div class="nav2_dropdown_column"><div class="nav2_dropdown_column-title">Customer Success Story</div><div class="w-dyn-list"><div role="list" class="w-dyn-items"><div role="listitem" class="w-dyn-item"><a href="/case-study/new-york-stock-exchange" class="nav2_dropdown_column-link w-inline-block"><div class="nav2_dropdown_feature-large-wrapper"><img loading="lazy" src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68896a4d2167a089636d2bfb_og_case-study-nyse.png" alt="" sizes="100vw" srcset="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68896a4d2167a089636d2bfb_og_case-study-nyse-p-500.png 500w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68896a4d2167a089636d2bfb_og_case-study-nyse-p-800.png 800w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68896a4d2167a089636d2bfb_og_case-study-nyse-p-1080.png 1080w, https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68896a4d2167a089636d2bfb_og_case-study-nyse.png 1170w" class="nav2_dropdown_feature-large-image border-none"/><div><div class="nav2_eyebrow">Finance</div><div class="text-style-3lines">New York Stock Exchange powers smarter trading decisions with real-time market data</div></div></div></a></div></div></div><a nav2-link="Company &gt; View all success stories" href="/customers" class="nav2_dropdown_column-link text-weight-medium">View all success stories</a></div></div></div></div></nav></div><a nav2-link-primary="Developers" href="/developers" class="nav2_link">Developers</a><div class="nav2_secondary mobile"><a nav2-link-secondary="Cloud Login" aria-label="Cloud Login" href="https://cloud.redpanda.com/" class="nav2_secondary-link">CLOUD LOGIN</a><a nav2-link-secondary="Support" href="https://support.redpanda.com/hc/en-us" class="nav2_secondary-link">Support</a><a nav2-link-secondary="Slack" aria-label="link to slack" title="Link to Redpanda Slack" href="https://redpanda.com/slack" class="nav__slack w-inline-block"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/66956b3a393ea8488bd4aa39_slack__1_.svg" loading="lazy" aria-label="slack logo" alt="Slack Logo" class="nav__social-icon"/></a><a nav2-link-secondary="Github" aria-label="link to github" title="Link to Redpanda Github" href="https://github.com/redpanda-data/redpanda/" class="nav2_secondary-link w-inline-block"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/66956b781dfd6482f3d7553c_github__1_.svg" loading="lazy" aria-label="Github logo" alt="Github logo" class="nav__social-icon"/><div github-repo="stargazers-count" class="text__header">9.3K</div></a></div><div class="nav2_right mobile"><a aria-label="Download Report" href="/price-estimator" class="button is-secondary w-button">Pricing</a><a aria-label="Download Report" href="/try-redpanda" class="button w-button">Start Free</a></div></nav><div class="nav2_right"><a nav2-link-primary-cta="Pricing" aria-label="Pricing" href="/price-estimator" class="button is-secondary is-nav2-secondary w-button">Pricing</a><a nav2-link-primary-cta="Start Free" aria-label="Start Free" href="/try-redpanda" class="button is-nav-primary w-button">Start Free</a></div></div><div class="nav2_menu-button w-nav-button"><div data-is-ix2-target="1" class="nav2_menu-lottie" data-w-id="608b277d-abad-2aa8-1ba1-7c5d956dfc5a" data-animation-type="lottie" data-src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/669655e6b9b781433fd7e11f_nav-panda.json" data-loop="0" data-direction="1" data-autoplay="0" data-renderer="svg" data-default-duration="4.28" data-duration="0" data-ix2-initial-state="1"></div></div></div></div></header><div class="hide w-embed w-script"><style>
+.nav2,
+.nav2_bar-wrapper {
+  background-color: transparent;
+  border-bottom: 0;
+}
+
+.main {
+  margin-top: -7.5rem;
+}
+.ap-tab2-slider_slide {
+  background-color: #faf8f5;
+}
+</style>
+
+<script>
+function adjustMainMargin() {
+  const header = document.querySelector('.nav2');
+  const main = document.querySelector('.main');
+  const heroCopy = document.querySelector('[homepage="hero-copy"]');
+  const sectionHero = document.querySelector('.section-hero');
+  
+  if (header && main) {
+    const headerHeight = header.offsetHeight;
+    
+    // Set the negative margin on main
+    main.style.marginTop = `-${headerHeight}px`;
+    
+    // Handle hero-copy top padding
+    if (heroCopy) {
+      // Store original padding on first run
+      if (!heroCopy.dataset.originalPaddingTop) {
+        const computedStyle = window.getComputedStyle(heroCopy);
+        heroCopy.dataset.originalPaddingTop = computedStyle.paddingTop;
+      }
+      
+      const originalPaddingTop = heroCopy.dataset.originalPaddingTop;
+      
+      if (originalPaddingTop && originalPaddingTop !== '0px') {
+        heroCopy.style.paddingTop = `calc(${originalPaddingTop} + ${headerHeight}px)`;
+      } else {
+        heroCopy.style.paddingTop = `${headerHeight}px`;
+      }
+    }
+    
+    // Handle section-hero styles
+    if (sectionHero) {
+      const computedStyle = window.getComputedStyle(sectionHero);
+      
+      // Store original bottom padding on first run
+      if (!sectionHero.dataset.originalPaddingBottom) {
+        sectionHero.dataset.originalPaddingBottom = computedStyle.paddingBottom;
+      }
+      
+      // Store original max-height on first run
+      if (!sectionHero.dataset.originalMaxHeight) {
+        sectionHero.dataset.originalMaxHeight = computedStyle.maxHeight;
+      }
+      
+      // Store original height on first run
+      if (!sectionHero.dataset.originalHeight) {
+        sectionHero.dataset.originalHeight = computedStyle.height;
+      }
+      
+      // Apply bottom padding
+      const originalPaddingBottom = sectionHero.dataset.originalPaddingBottom;
+      if (originalPaddingBottom && originalPaddingBottom !== '0px') {
+        sectionHero.style.paddingBottom = `calc(${originalPaddingBottom} + ${headerHeight}px)`;
+      } else {
+        sectionHero.style.paddingBottom = `${headerHeight}px`;
+      }
+      
+      // Apply max-height
+      const originalMaxHeight = sectionHero.dataset.originalMaxHeight;
+      if (originalMaxHeight && originalMaxHeight !== 'none' && originalMaxHeight !== '0px') {
+        sectionHero.style.maxHeight = `calc(${originalMaxHeight} + ${headerHeight}px)`;
+      } else if (originalMaxHeight === '0px') {
+        sectionHero.style.maxHeight = `${headerHeight}px`;
+      }
+      
+      // Apply height
+      const originalHeight = sectionHero.dataset.originalHeight;
+      if (originalHeight && originalHeight !== 'auto' && originalHeight !== '0px') {
+        sectionHero.style.height = `calc(${originalHeight} + ${headerHeight}px)`;
+      } else if (originalHeight === '0px') {
+        sectionHero.style.height = `${headerHeight}px`;
+      }
+    }
+    
+    console.log(`Header height: ${headerHeight}px applied to all elements`);
+  }
+}
+
+// Function to handle header background on scroll
+function handleHeaderBackground() {
+  const header = document.querySelector('.nav2');
+  
+  if (header) {
+    // Add transition style if not already added
+    if (!header.dataset.transitionAdded) {
+      header.style.transition = 'background-color 0.25s ease-in-out';
+      header.dataset.transitionAdded = 'true';
+    }
+    
+    // Check scroll position
+    const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+    
+    if (scrollPosition >= 70) {
+      header.style.backgroundColor = 'white';
+    } else {
+      header.style.backgroundColor = 'transparent';
+    }
+  }
+}
+
+// Run on initial load
+document.addEventListener('DOMContentLoaded', () => {
+  adjustMainMargin();
+  handleHeaderBackground(); // Check initial scroll position
+});
+
+// Run on window resize
+window.addEventListener('resize', adjustMainMargin);
+
+// Run on scroll
+window.addEventListener('scroll', handleHeaderBackground);
+
+// Optional: ResizeObserver for detecting header size changes
+const header = document.querySelector('.nav2');
+if (header && window.ResizeObserver) {
+  const resizeObserver = new ResizeObserver(entries => {
+    adjustMainMargin();
+  });
+  
+  resizeObserver.observe(header);
+}
+</script></div><main class="main"><header class="section-hero homepage-v3"><div homepage="hero-copy" class="padding-global z-index-20"><div class="container-large"><div class="padding-section-large"><div class="header-frame"><div class="heading-center max-width-large"><div class="spacer__56 show__mobile-only"></div><h1 data-w-id="c35c19a0-9ecd-963d-146a-f2481f8ec6c8" style="-webkit-transform:translate3d(null, 40px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(null, 40px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(null, 40px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(null, 40px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);opacity:0" class="text-align-center display-style-large">Radically efficient data streaming ready for the agentic era</h1><div data-w-id="c35c19a0-9ecd-963d-146a-f2481f8ec6ca" style="opacity:0;-webkit-transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)" class="text-size-xlarge text-align-center max-width-medium">Build, operate, and govern streaming and AI applications without the complexity of Kafka.</div></div><div data-w-id="c35c19a0-9ecd-963d-146a-f2481f8ec6cc" style="opacity:0;-webkit-transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)" class="button-group_stacked text-align-center"><div class="button-group is-center"><a click-event="header_PrimaryCTA" href="https://cloud.redpanda.com/sign-up/" target="_blank" class="button w-inline-block"><div>Try Redpanda for Free</div><div class="icon-embed-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a><a click-event="header_SecondaryCTA" aria-label="Learn more about choosing Redpanda" href="/why-redpanda" class="button__solid-orange is-secondary w-button">Learn more</a></div><div>Spin up within seconds | No credit card required</div></div></div></div></div></div><img style="-webkit-transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(1deg) skew(0, 0);-moz-transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(1deg) skew(0, 0);-ms-transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(1deg) skew(0, 0);transform:translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(1deg) skew(0, 0);opacity:0.75;filter:blur(0px)" data-w-id="c35c19a0-9ecd-963d-146a-f2481f8ec6d6" alt="" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/6807a6141c9ca3de1cad5c7d_spiral-background.svg" loading="lazy" class="background-absolute"/><div class="logo-slider_containter max-width-large"><div class="text__eyebrow fade-small text-align-center padding-xsmall padding-horizontal">Trusted by category leaders with mission-critical data</div><div class="spacer__12"></div><div class="logo-slider_cms-wrapper"><div class="logo-animate w-dyn-list"><div role="list" class="logo-slider_collection-list w-dyn-items"><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf265101ddb85d0e42bb19_logo_%20activision.svg" loading="lazy" alt="Activision" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf412dceff79280bc27743_logo_fortis.svg" loading="lazy" alt="Fortis Games" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf28209f8c9a2637dd4d33_logo_lacework.svg" loading="lazy" alt="Lacework" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/6722f1445fc516fb0386f473_logo_liveramp.svg" loading="lazy" alt="LiveRamp" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf251821e05fc98fbe9915_logo_midjourney.svg" loading="lazy" alt="MidJourney" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf3538d2c92514419e7b19_logo_moodys.svg" loading="lazy" alt="Moody&#x27;s" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf32d7448aaf088d40f4e0_logo_nanit.svg" loading="lazy" alt="Nanit" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf27060fa3249266f1ba2b_logo_optimizely.svg" loading="lazy" alt="Optimizely" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66c896685e103b3a5e4d144d_logo-sharechat.svg" loading="lazy" alt="ShareChat" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/6728ea120efa15a119c2fd1b_logo-stonex.svg" loading="lazy" alt="StoneX" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf34a54a343de2d1c213ce_logo_texas-instruments.svg" loading="lazy" alt="Texas Instruments" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf2f67a554931e928666ce_logo_the-hotels-network.svg" loading="lazy" alt="The Hotels Network" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf3058667c8ec135667b52_logo_wunderkind.svg" loading="lazy" alt="Wunderkind" class="logo-slider_logo-image"/></div><div role="listitem" class="logo-slider_collection-item w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/6728f142367d60a2f3cdfa1b_logo_zafin.svg" loading="lazy" alt="Zafin" class="logo-slider_logo-image"/></div></div></div></div><div class="hide w-embed"><style>
+.logo-slider_containter {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  /* Ensure the mask works across different browsers */
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+}
+
+/* Animation for the first right to left marquee */
+@keyframes slide {
+  0% {
+    transform: translateX( calc(0% + 50px));
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.logo-animate {
+  animation: slide 45s infinite linear;
+}
+
+/* Animation for the second left to right marquee */
+@keyframes slidealt {
+  0% {
+    transform: translateX( calc(0% + 50px));
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.logo-animate-alt {
+  animation: slidealt 45s infinite linear;
+  animation-direction: reverse;
+}
+</style></div></div><div class="fade-in"><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/6807a5c52222ea0deb6a025b_panda-shield.svg" alt="" class="hero-banner-panda _02b"/><img data-w-id="c35c19a0-9ecd-963d-146a-f2481f8ec6e6" loading="lazy" alt="" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/6807a5b0267543bb17222824_mascot_flying-panda.svg" class="hero-banner-panda _03"/></div></header><section class="section_new background-color-sepia25"><div class="padding-global"><div class="container-large"><div class="padding-section-large"><div class="redpanda-ai_features-list-2_component"><div class="margin-bottom margin-xsmall"><div class="eyebrow-light text-align-left">The AI Dilemma for Enterprise</div></div><div class="margin-bottom margin-large"><div class="feature"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec6f1-1a5f4457" class="feature-left full-width"><div class="max-width-medium"><div class="margin-bottom margin-small"><h2 class="max-width-medium heading-style-h2">AI agents need context.</h2></div></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec6f6-1a5f4457" class="feature-column"><p class="text-size-medium">Agentic applications require context through continuous access to your data without compromising performance or compliance. Redpanda was born ready for real-time delivery, limitless scale, and policy-driven governance.</p><a href="https://ai.redpanda.com/" class="icon-link-block text-size-medium w-inline-block"><div>Learn more about Redpanda AI</div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a></div></div></div><div class="card_12-8column-responsive-grid"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec6fe-1a5f4457" class="card_flip-wrapper"><div class="card flip-card-front"><div class="card_copy-container vertical"><div class="card_content-head"><div class="card_list-container"><h3 class="max-width-medium heading-style-h5">Single binary C<span class="kerning-reduce-medium">++</span> engine</h3><p class="text-size-medium">Best-in-class performance that&#x27;s easily tunable</p></div></div></div><div class="card_image-continer vertical"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7b1dcc78a2230a86c46d_one-engine.png" loading="lazy" width="50" height="60" alt="" class="card_image-cover vertical"/></div><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ba2da8c3a32b5cca5096a3_icon_card-plus.svg" loading="lazy" alt="" class="card_flip-plus-icon more"/></div><div class="card flip-card-back"><div class="card_copy-container full"><div class="card_content-head full"><div class="card_list-container center-center"><div class="max-width-medium heading-style-h5">Single binary C<span class="kerning-reduce-medium">++</span> engine</div><p>Redpanda’s engine is written in modern C++ for raw speed and efficiency. With a single self-contained binary, there are no external dependencies or JVM overhead. It automatically tunes itself and builds on the Seastar framework to squeeze out maximum performance from modern hardware.</p></div></div></div><div class="card_image-continer vertical"></div><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ba2da8c3a32b5cca5096a3_icon_card-plus.svg" loading="lazy" alt="" class="card_flip-plus-icon less"/></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec71a-1a5f4457" class="card_flip-wrapper"><div class="card flip-card-front"><div class="card_copy-container vertical"><div class="card_content-head"><div class="card_list-container"><h3 class="max-width-medium heading-style-h5">Kafka-API compatible</h3><p class="text-size-medium">All the ecosystem benefits without the headaches</p></div></div></div><div class="card_image-continer vertical"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7b1dc57f6c68ff9ca469_kafka-api-compatible.png" loading="lazy" width="50" height="60" alt="" class="card_image-cover vertical"/></div><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ba2da8c3a32b5cca5096a3_icon_card-plus.svg" loading="lazy" alt="" class="card_flip-plus-icon more"/></div><div class="card flip-card-back"><div class="card_copy-container full"><div class="card_content-head full"><div class="card_list-container center-center"><div class="max-width-medium heading-style-h5">Kafka-API compatible</div><p>Redpanda speaks the Kafka API natively. That means your existing Kafka clients, tools, and connectors just work — no code changes required. You keep the ecosystem you know, with faster performance and simpler operations.</p></div></div></div><div class="card_image-continer vertical"></div><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ba2da8c3a32b5cca5096a3_icon_card-plus.svg" loading="lazy" alt="" class="card_flip-plus-icon less"/></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec730-1a5f4457" class="card_flip-wrapper"><div class="card flip-card-front"><div class="card_copy-container vertical"><div class="card_content-head"><div class="card_list-container"><h3 class="max-width-medium heading-style-h5">Tiered storage</h3><p class="text-size-medium">Built-in optimization that balances speed and cost</p></div></div></div><div class="card_image-continer vertical"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7b1dcbe29517083b24de_vector-storage.png" loading="lazy" width="50" height="60" alt="" class="card_image-cover vertical"/></div><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ba2da8c3a32b5cca5096a3_icon_card-plus.svg" loading="lazy" alt="" class="card_flip-plus-icon more"/></div><div class="card flip-card-back"><div class="card_copy-container full"><div class="card_content-head full"><div class="card_list-container center-center"><div class="max-width-medium heading-style-h5">Tiered storage</div><p>Hot data stays on local SSDs for lightning-fast access, while older segments are automatically offloaded to object storage like S3, GCS, or Azure Blob. This gives you virtually unlimited retention, reduces storage costs, and provides the flexibility to hibernate topics or even recover entire clusters.</p></div></div></div><div class="card_image-continer vertical"></div><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ba2da8c3a32b5cca5096a3_icon_card-plus.svg" loading="lazy" alt="" class="card_flip-plus-icon less"/></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec746-1a5f4457" class="card_flip-wrapper"><div class="card flip-card-front"><div class="card_copy-container vertical"><div class="card_content-head"><div class="card_list-container"><h3 class="max-width-medium heading-style-h5">Deploy anywhere</h3><p class="text-size-medium">On-prem, serverless or Bring Your Own Cloud (BYOC)</p></div></div></div><div class="card_image-continer vertical"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7b1dc94825c2e0608cf4_deploy-anywhere.png" loading="lazy" width="50" height="60" alt="" class="card_image-cover vertical"/></div><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ba2da8c3a32b5cca5096a3_icon_card-plus.svg" loading="lazy" alt="" class="card_flip-plus-icon more"/></div><div class="card flip-card-back"><div class="card_copy-container full"><div class="card_content-head full"><div class="card_list-container center-center"><div class="max-width-medium heading-style-h5">Deploy anywhere</div><p>Run Redpanda however you need: Self-managed on your own infrastructure, serverless in the cloud, or in a BYOC model where Redpanda experts manage clusters inside your VPC — fully self-contained and with zero dependencies on external services.</p></div></div></div><div class="card_image-continer vertical"></div><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ba2da8c3a32b5cca5096a3_icon_card-plus.svg" loading="lazy" alt="" class="card_flip-plus-icon less"/></div></div></div></div></div></div></div></section><section class="section_new"><div class="padding-global"><div class="container-large"><div class="padding-section-large"><div class="redpanda-ai_features-list-2_component"><div data-w-id="c35c19a0-9ecd-963d-146a-f2481f8ec761" style="opacity:0;-webkit-transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 0, 0) scale3d(0.9, 0.9, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0)" class="max-width-medium-large align-center text-align-center"><div class="eyebrow-light">Fast. Simple. Scalable.</div><div class="spacer__12"></div><h2 class="heading-style-h2">Real-time data infrastructure built for the future</h2><div class="spacer__16"></div><div class="margin-bottom margin-large"><div class="text-size-large"><p>No bolt-ons. No workarounds. 100% Kafka‑compatible, with no compromises.</p><div class="spacer__12"></div></div></div></div><div class="card_12-8column-responsive-grid"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec76e-1a5f4457" class="card"><div class="card_copy-container"><div class="card_content-head"><div class="redpanda-ai_features-list-2_item-icon-wrapper"><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/686c0f7891168b864290ac99_icon-finger-snap-easy.svg" alt="" class="icon-1x1-medium"/></div><div class="card_list-container"><div class="eyebrow-light text-align-left">Simple</div><h3 class="max-width-medium heading-style-h4">Streaming that just works</h3></div></div></div><div class="card_copy-container"><div class="card_list-container gap-1rem"><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7ec6f816b6e9535cc9c7_icon_single-binary.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>Single binary deployment</strong></p><div class="spacer__4"></div><div>No external dependencies, no operational complexity.</div></div></div><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7ec6e6e909a9d8e02593_icon_self-healing-clusters.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>Self-healing clusters</strong></p><div class="spacer__4"></div><div>With auto-tuning eliminate the need for specialized Kafka expertise.</div></div></div><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7ec6e6c5cd475de0c7ca_icon_unified-platform.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>Unified platform</strong></p><div class="spacer__4"></div><div>Handles operational, analytical, and lakehouse workloads in one system.</div></div></div></div></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec795-1a5f4457" class="card"><div class="card_copy-container"><div class="card_content-head"><div class="redpanda-ai_features-list-2_item-icon-wrapper"><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7fc0b2f5c636e3e7e678_icon_online-money-transfer.svg" alt="" class="icon-1x1-medium"/></div><div class="card_list-container"><div class="eyebrow-light text-align-left">EFFICIENT</div><h3 class="max-width-medium heading-style-h4">Unbeatable price-performance</h3></div></div></div><div class="card_copy-container"><div class="card_list-container gap-1rem"><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7fc0100f7e69a43e989f_icon_c-plus-plus.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>Native C++ architecture</strong></p><div class="spacer__4"></div><div>Delivers 10x lower tail latencies than open-source Kafka.</div></div></div><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7fc016a2dd4da85bc0a9_icon_thread-per-core.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>Thread-per-core design</strong></p><div class="spacer__4"></div><div>With continuous balancing maximizes hardware efficiency.</div></div></div><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae7fc07e24478830b0b917_icon_cost-optimized.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>Cost-optimized ingress/egress</strong></p><div class="spacer__4"></div><div>With follower fetching reduces data transfer costs by up to 60%.</div></div></div></div></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec7bc-1a5f4457" class="card"><div class="card_copy-container"><div class="card_content-head"><div class="redpanda-ai_features-list-2_item-icon-wrapper"><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae813d8f3fdbbe0adcb724_icon_administrative-tools.svg" alt="" class="icon-1x1-medium"/></div><div class="card_list-container"><div class="eyebrow-light text-align-left">INTEROPERABLE</div><h3 class="max-width-medium heading-style-h4">Integrate seamlessly, build anywhere</h3></div></div></div><div class="card_copy-container"><div class="card_list-container gap-1rem"><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae813dc57f6c68ff9d94be_icon_apache-kafka.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>Drop-in Kafka compatibility</strong></p><div class="spacer__4"></div><div>No app rewrites, no tool changes, no vendor lock-in.</div></div></div><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae813dd352714ce43eb827_icon_connectors.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>300+ connectors</strong></p><div class="spacer__4"></div><div>Plus native Apache Iceberg support for seamless data lakehouse integration.</div></div></div><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae813dac13523fe512ba52_2c71e188202ba3dd0febfa7d86b49f0e_icon_deploy.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>Deploy your way</strong></p><div class="spacer__4"></div><div>BYOC, self-hosted, or serverless to fit any security or compliance requirement.</div></div></div></div></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec7e3-1a5f4457" class="card"><div class="card_copy-container"><div class="card_content-head"><div class="redpanda-ai_features-list-2_item-icon-wrapper"><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae8214015d0c4174b62156_icon_shield.svg" alt="" class="icon-1x1-medium"/></div><div class="card_list-container"><div class="eyebrow-light text-align-left">SAFE</div><h3 class="max-width-medium heading-style-h4">Enterprise-grade governance</h3></div></div></div><div class="card_copy-container"><div class="card_list-container gap-1rem"><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae8214d74bf84e3f6c5c69_icon_vpc-isolated.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>VPC-isolated by default</strong></p><div class="spacer__4"></div><div>Your data never leaves your environment with BYOC.</div></div></div><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae821469c14621a2ba2a92_icon_raft-powered.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>Raft-powered consistency</strong></p><div class="spacer__4"></div><div>Ensures zero data loss with multi-AZ, multi-region self-healing.</div></div></div><div class="bullet-icon-item flex-align-top-left"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/68ae82143b40d8c1e9f08089_icon_one-click-disaster-recovery.svg" loading="lazy" width="24" height="24" alt="" class="icon-1x1-xsmall"/><div><p class="text-size-medium"><strong>One-click disaster recovery</strong></p><div class="spacer__4"></div><div>With automated backups and rapid cluster restore.</div></div></div></div></div></div></div></div></div></div></div></section><section class="section_new background-color-sepia25"><div class="padding-global"><div class="container-large"><div class="padding-section-large"><div class="redpanda-ai_features-list-2_component"><div class="margin-bottom margin-xsmall"><div class="eyebrow-light">Use Cases</div></div><div class="margin-bottom margin-large"><div class="feature"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec814-1a5f4457" class="align-center text-align-center"><div class="margin-bottom margin-small"><h2 class="max-width-medium heading-style-h2">How teams use Redpanda</h2></div></div></div></div><div class="card_6-column-grid"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec819-1a5f4457" class="card no-max-height"><div class="card_copy-container full"><div class="card_content-head"><div class="card_list-container"><h3 class="max-width-medium heading-style-h4">A modern Kafka alternative</h3></div><p class="text-size-medium">Handle any Kafka workload with 10X performance and none of the overhead.</p></div><div class="rte_try-redpanda w-richtext"><ul role="list"><li>Zero-downtime migration from any Kafka cluster</li><li>No ZooKeeper, no JVM tuning, no Kafka specialists required</li><li>10X lower tail latencies with predictable performance</li><li>Monitoring, tools, and apps work unchanged</li></ul></div><div class="button-group is-center"><a href="/try-redpanda" target="_blank" class="button is-secondary w-inline-block"><div>Try Redpanda</div><div class="icon-embed-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a></div><a href="/try-redpanda" class="position-absolute-fill z-index-2 w-inline-block"></a></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec831-1a5f4457" class="card no-max-height"><div class="card_copy-container full"><div class="card_content-head"><div class="card_list-container"><h3 class="max-width-medium heading-style-h4">Agentic AI runtime</h3></div><p class="text-size-medium">Authenticate, observe, and audit every action taken on your data across any environment.</p></div><div class="rte_try-redpanda w-richtext"><ul role="list"><li>Multi-agent applications with traceability, replays, and explainability built-in</li><li>Run secure, performant models locally</li><li>Create agents that control processes, tools, and data systems safely and code-free</li><li>Eliminate data exposure risks with BYOC architecture</li></ul></div><div class="button-group is-center"><a href="https://ai.redpanda.com/" target="_blank" class="button is-secondary w-inline-block"><div>Explore Redpanda AI</div><div class="icon-embed-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a></div></div><a href="https://ai.redpanda.com/" target="_blank" class="position-absolute-fill z-index-2 w-inline-block"></a></div></div></div></div></div></div></section><section class="section_new"><div class="padding-global"><div class="container-large"><div class="padding-section-large"><div class="max-width-large align-center text-align-center"><div class="text__eyebrow"><strong>WHAT OUR CUSTOMERS SAY</strong></div><div class="spacer__12"></div><h2 class="heading-style-h2">Best-in-class experiences from startups to the enterprise</h2><div class="spacer__24"></div></div><div class="button-group flex-center-relative"><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/67223c706e0a80adfd227611_904746d2ff5b024c2f24f34741517f46_EventStreamProcessing_Leader_Leader.svg" alt="G2 Badge: Leader" class="icon-1x1-xlarge fit-contain"/><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/678fc5f43964b233ca4b8fe7_0e05eb14d7bce8a160ebd041f30697c8_EventStreamProcessing_BestSupport_Mid-Market_QualityOfSupport.svg" alt="G2 Badge: Best Support" class="icon-1x1-xlarge fit-contain"/><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/686d710540dada610fe5da5d_EventStreamProcessing_MostImplementable_Total.svg" alt="" class="icon-1x1-xlarge fit-contain hide-tablet"/><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/67223c71b0919e4293c6c43f_users-love-us.svg" alt="" class="icon-1x1-xxlarge fit-contain hide-mobile-portrait"/><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/686d7105065cce5ba63b9d51_EventStreamProcessing_MomentumLeader_Leader.svg" alt="" class="icon-1x1-xlarge fit-contain hide-mobile-portrait"/><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/678fc5f3c7764ec106632417_18e9d92ea6acf8bc0a2d9959cd43d5bc_EventStreamProcessing_BestRelationship_Total.svg" alt="G2 Badge: Best Relationship" class="icon-1x1-xlarge fit-contain hide-tablet"/><img loading="lazy" src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/678fc5f452e12a2d268f24f5_a03dc8ed3eec77fbd8fac796e86d424a_EventStreamProcessing_UsersMostLikelyToRecommend_Nps.svg" alt="G2 Badge: Users Most Likely to Recommend" class="icon-1x1-xlarge fit-contain"/></div><div class="spacer__48"></div><div fs-slider-type="cms" fs-slider-instance="cs-slider" class="cs-slider_instance"><div fs-slider-element="list-wrapper" class="cs-slider_list-wrapper w-dyn-list"><div fs-slider-element="list" role="list" class="cs-slider_list w-dyn-items"><div fs-slider-element="slide" role="listitem" class="cs-slider_slide w-dyn-item"><div class="cs-slider_card"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec863-1a5f4457" class="cs-slider_card_left-panel"><div class="ap-tab2-slider_logo-container"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68518ac8ac8699ae6c6b124d_logo_teads.svg" loading="lazy" alt="" class="ap-tab2-slider_logo"/></div><div><div class="ap-tab2-slider_micro-a">100B</div><div class="ap-tab2-slider_micro-b">events tracked daily</div></div><div><div class="ap-tab2-slider_micro-a">87%</div><div class="ap-tab2-slider_micro-b">reduction in brokers</div></div><div class="cs-slider_card_left-panel-bkg"></div></div><div class="cs-slider_card_bracket"><div class="image-contain w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 9 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 15.0469V13.5938C1.30469 13.5938 2.21484 13.3203 2.73047 12.7734C3.25391 12.2266 3.51562 11.3125 3.51562 10.0313V6.28125C3.51562 5.20313 3.61719 4.26953 3.82031 3.48047C4.03125 2.69141 4.37109 2.03906 4.83984 1.52344C5.30859 1.00781 5.93359 0.625001 6.71484 0.375002C7.49609 0.125001 7.85156 0 9 0V2.29688C8.09375 2.29688 7.98828 2.4375 7.46484 2.71875C6.94922 3 6.58203 3.4375 6.36328 4.03125C6.15234 4.61719 6.04688 5.36719 6.04688 6.28125V10.9688C6.04688 11.5781 5.96484 12.1328 5.80078 12.6328C5.64453 13.1328 5.35156 13.5625 4.92187 13.9219C4.49219 14.2813 3.87891 14.5586 3.08203 14.7539C2.29297 14.9492 1.26562 15.0469 0 15.0469ZM9 30C7.85156 30 7.49609 29.875 6.71484 29.625C5.93359 29.375 5.30859 28.9922 4.83984 28.4766C4.37109 27.9609 4.03125 27.3086 3.82031 26.5195C3.61719 25.7305 3.51562 24.7969 3.51562 23.7188V19.9688C3.51562 18.6875 3.25391 17.7734 2.73047 17.2266C2.21484 16.6797 1.30469 16.4063 0 16.4063V14.9531C1.26562 14.9531 2.29297 15.0508 3.08203 15.2461C3.87891 15.4414 4.49219 15.7188 4.92187 16.0781C5.35156 16.4375 5.64453 16.8672 5.80078 17.3672C5.96484 17.8672 6.04688 18.4219 6.04688 19.0313V23.7188C6.04688 24.6328 6.15234 25.3828 6.36328 25.9688C6.58203 26.5547 6.94922 26.9883 7.46484 27.2695C7.98828 27.5586 8.09375 27.7031 9 27.7031V30ZM0 16.4063V13.5938H2.76562V16.4063H0Z" fill="currentColor"/>
+</svg></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec86f-1a5f4457" class="cs-slider_card_quote"><div class="text__eyebrow">Adtech &amp; Martech</div><div class="spacer__8"></div><div class="text-rich-text-quote-large w-richtext"><p>“I recommend Redpanda to anybody running a <strong>significant event-based workload</strong>. It&#x27;s Kafka-compliant, comes with batteries included, and brings <strong>beautiful operational simplicity</strong>.”</p></div><div class="spacer__16"></div><a href="#" class="icon-link-block text-size-medium w-inline-block w-condition-invisible"><div class="w-dyn-bind-empty"></div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a><a href="/case-study/teads" class="icon-link-block text-size-medium w-inline-block"><div>View success story</div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a></div></div></div><div fs-slider-element="slide" role="listitem" class="cs-slider_slide w-dyn-item"><div class="cs-slider_card"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec863-1a5f4457" class="cs-slider_card_left-panel"><div class="ap-tab2-slider_logo-container"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68b15218a47e4d6470e708ff_logo_nyse.svg" loading="lazy" alt="" class="ap-tab2-slider_logo"/></div><div><div class="ap-tab2-slider_micro-a">1.1 trillion</div><div class="ap-tab2-slider_micro-b">records daily</div></div><div><div class="ap-tab2-slider_micro-a w-dyn-bind-empty"></div><div class="ap-tab2-slider_micro-b w-dyn-bind-empty"></div></div><div class="cs-slider_card_left-panel-bkg"></div></div><div class="cs-slider_card_bracket"><div class="image-contain w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 9 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 15.0469V13.5938C1.30469 13.5938 2.21484 13.3203 2.73047 12.7734C3.25391 12.2266 3.51562 11.3125 3.51562 10.0313V6.28125C3.51562 5.20313 3.61719 4.26953 3.82031 3.48047C4.03125 2.69141 4.37109 2.03906 4.83984 1.52344C5.30859 1.00781 5.93359 0.625001 6.71484 0.375002C7.49609 0.125001 7.85156 0 9 0V2.29688C8.09375 2.29688 7.98828 2.4375 7.46484 2.71875C6.94922 3 6.58203 3.4375 6.36328 4.03125C6.15234 4.61719 6.04688 5.36719 6.04688 6.28125V10.9688C6.04688 11.5781 5.96484 12.1328 5.80078 12.6328C5.64453 13.1328 5.35156 13.5625 4.92187 13.9219C4.49219 14.2813 3.87891 14.5586 3.08203 14.7539C2.29297 14.9492 1.26562 15.0469 0 15.0469ZM9 30C7.85156 30 7.49609 29.875 6.71484 29.625C5.93359 29.375 5.30859 28.9922 4.83984 28.4766C4.37109 27.9609 4.03125 27.3086 3.82031 26.5195C3.61719 25.7305 3.51562 24.7969 3.51562 23.7188V19.9688C3.51562 18.6875 3.25391 17.7734 2.73047 17.2266C2.21484 16.6797 1.30469 16.4063 0 16.4063V14.9531C1.26562 14.9531 2.29297 15.0508 3.08203 15.2461C3.87891 15.4414 4.49219 15.7188 4.92187 16.0781C5.35156 16.4375 5.64453 16.8672 5.80078 17.3672C5.96484 17.8672 6.04688 18.4219 6.04688 19.0313V23.7188C6.04688 24.6328 6.15234 25.3828 6.36328 25.9688C6.58203 26.5547 6.94922 26.9883 7.46484 27.2695C7.98828 27.5586 8.09375 27.7031 9 27.7031V30ZM0 16.4063V13.5938H2.76562V16.4063H0Z" fill="currentColor"/>
+</svg></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec86f-1a5f4457" class="cs-slider_card_quote"><div class="text__eyebrow">Finance</div><div class="spacer__8"></div><div class="text-rich-text-quote-large w-richtext"><p>“Redpanda is the only Kafka-compatible data streaming platform that can <strong>cost-effectively and reliably manage the massive scale of the NYSE</strong>. When milliseconds matter, <strong>Redpanda delivers</strong>.”</p></div><div class="spacer__16"></div><a href="#" class="icon-link-block text-size-medium w-inline-block w-condition-invisible"><div class="w-dyn-bind-empty"></div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a><a href="/case-study/new-york-stock-exchange" class="icon-link-block text-size-medium w-inline-block"><div>View success story</div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a></div></div></div><div fs-slider-element="slide" role="listitem" class="cs-slider_slide w-dyn-item"><div style="background-color:#1270ce" class="cs-slider_card"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec863-1a5f4457" class="cs-slider_card_left-panel"><div class="ap-tab2-slider_logo-container"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/6728f142367d60a2f3cdfa1b_logo_zafin.svg" loading="lazy" alt="" class="ap-tab2-slider_logo"/></div><div><div class="ap-tab2-slider_micro-a">800M</div><div class="ap-tab2-slider_micro-b">events per day</div></div><div><div class="ap-tab2-slider_micro-a w-dyn-bind-empty"></div><div class="ap-tab2-slider_micro-b w-dyn-bind-empty"></div></div><div class="cs-slider_card_left-panel-bkg"></div></div><div class="cs-slider_card_bracket"><div class="image-contain w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 9 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 15.0469V13.5938C1.30469 13.5938 2.21484 13.3203 2.73047 12.7734C3.25391 12.2266 3.51562 11.3125 3.51562 10.0313V6.28125C3.51562 5.20313 3.61719 4.26953 3.82031 3.48047C4.03125 2.69141 4.37109 2.03906 4.83984 1.52344C5.30859 1.00781 5.93359 0.625001 6.71484 0.375002C7.49609 0.125001 7.85156 0 9 0V2.29688C8.09375 2.29688 7.98828 2.4375 7.46484 2.71875C6.94922 3 6.58203 3.4375 6.36328 4.03125C6.15234 4.61719 6.04688 5.36719 6.04688 6.28125V10.9688C6.04688 11.5781 5.96484 12.1328 5.80078 12.6328C5.64453 13.1328 5.35156 13.5625 4.92187 13.9219C4.49219 14.2813 3.87891 14.5586 3.08203 14.7539C2.29297 14.9492 1.26562 15.0469 0 15.0469ZM9 30C7.85156 30 7.49609 29.875 6.71484 29.625C5.93359 29.375 5.30859 28.9922 4.83984 28.4766C4.37109 27.9609 4.03125 27.3086 3.82031 26.5195C3.61719 25.7305 3.51562 24.7969 3.51562 23.7188V19.9688C3.51562 18.6875 3.25391 17.7734 2.73047 17.2266C2.21484 16.6797 1.30469 16.4063 0 16.4063V14.9531C1.26562 14.9531 2.29297 15.0508 3.08203 15.2461C3.87891 15.4414 4.49219 15.7188 4.92187 16.0781C5.35156 16.4375 5.64453 16.8672 5.80078 17.3672C5.96484 17.8672 6.04688 18.4219 6.04688 19.0313V23.7188C6.04688 24.6328 6.15234 25.3828 6.36328 25.9688C6.58203 26.5547 6.94922 26.9883 7.46484 27.2695C7.98828 27.5586 8.09375 27.7031 9 27.7031V30ZM0 16.4063V13.5938H2.76562V16.4063H0Z" fill="currentColor"/>
+</svg></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec86f-1a5f4457" class="cs-slider_card_quote"><div class="text__eyebrow">Finance</div><div class="spacer__8"></div><div class="text-rich-text-quote-large w-richtext"><p>&quot;We had a large Kafka environment (<strong>800M events per day</strong>). I dropped Redpanda in and <strong>changed nothing and that&#x27;s when I was completely sold</strong>.&quot;</p></div><div class="spacer__16"></div><a href="https://www.redpanda.com/blog/zafin-banking-fintech-streaming-data" target="_blank" class="icon-link-block text-size-medium w-inline-block w-condition-invisible"><div>Why Zafin switched from Kafka</div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a><a href="/case-study/zafin" class="icon-link-block text-size-medium w-inline-block"><div>View success story</div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a></div></div></div><div fs-slider-element="slide" role="listitem" class="cs-slider_slide w-dyn-item"><div style="background-color:#153ff3" class="cs-slider_card"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec863-1a5f4457" class="cs-slider_card_left-panel"><div class="ap-tab2-slider_logo-container"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf28209f8c9a2637dd4d33_logo_lacework.svg" loading="lazy" alt="" class="ap-tab2-slider_logo"/></div><div><div class="ap-tab2-slider_micro-a">14.5GB</div><div class="ap-tab2-slider_micro-b">per second</div></div><div><div class="ap-tab2-slider_micro-a w-dyn-bind-empty"></div><div class="ap-tab2-slider_micro-b w-dyn-bind-empty"></div></div><div class="cs-slider_card_left-panel-bkg"></div></div><div class="cs-slider_card_bracket"><div class="image-contain w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 9 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 15.0469V13.5938C1.30469 13.5938 2.21484 13.3203 2.73047 12.7734C3.25391 12.2266 3.51562 11.3125 3.51562 10.0313V6.28125C3.51562 5.20313 3.61719 4.26953 3.82031 3.48047C4.03125 2.69141 4.37109 2.03906 4.83984 1.52344C5.30859 1.00781 5.93359 0.625001 6.71484 0.375002C7.49609 0.125001 7.85156 0 9 0V2.29688C8.09375 2.29688 7.98828 2.4375 7.46484 2.71875C6.94922 3 6.58203 3.4375 6.36328 4.03125C6.15234 4.61719 6.04688 5.36719 6.04688 6.28125V10.9688C6.04688 11.5781 5.96484 12.1328 5.80078 12.6328C5.64453 13.1328 5.35156 13.5625 4.92187 13.9219C4.49219 14.2813 3.87891 14.5586 3.08203 14.7539C2.29297 14.9492 1.26562 15.0469 0 15.0469ZM9 30C7.85156 30 7.49609 29.875 6.71484 29.625C5.93359 29.375 5.30859 28.9922 4.83984 28.4766C4.37109 27.9609 4.03125 27.3086 3.82031 26.5195C3.61719 25.7305 3.51562 24.7969 3.51562 23.7188V19.9688C3.51562 18.6875 3.25391 17.7734 2.73047 17.2266C2.21484 16.6797 1.30469 16.4063 0 16.4063V14.9531C1.26562 14.9531 2.29297 15.0508 3.08203 15.2461C3.87891 15.4414 4.49219 15.7188 4.92187 16.0781C5.35156 16.4375 5.64453 16.8672 5.80078 17.3672C5.96484 17.8672 6.04688 18.4219 6.04688 19.0313V23.7188C6.04688 24.6328 6.15234 25.3828 6.36328 25.9688C6.58203 26.5547 6.94922 26.9883 7.46484 27.2695C7.98828 27.5586 8.09375 27.7031 9 27.7031V30ZM0 16.4063V13.5938H2.76562V16.4063H0Z" fill="currentColor"/>
+</svg></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec86f-1a5f4457" class="cs-slider_card_quote"><div class="text__eyebrow">Cybersecurity</div><div class="spacer__8"></div><div class="text-rich-text-quote-large w-richtext"><p>&quot;We have operational agility with Redpanda, meeting stringent SLOs while keeping developers focused on high-value work. Redpanda&#x27;s tiered storage saves up to 30% on storage costs, easily handling 14.5GB/second.&quot;</p></div><div class="spacer__16"></div><a href="#" class="icon-link-block text-size-medium w-inline-block w-condition-invisible"><div class="w-dyn-bind-empty"></div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a><a href="/case-study/lacework" class="icon-link-block text-size-medium w-inline-block"><div>View success story</div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a></div></div></div><div fs-slider-element="slide" role="listitem" class="cs-slider_slide w-dyn-item"><div style="background-color:hsla(24.67289719626168, 80.77%, 75.51%, 1.00)" class="cs-slider_card"><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec863-1a5f4457" class="cs-slider_card_left-panel"><div class="ap-tab2-slider_logo-container"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf412dceff79280bc27743_logo_fortis.svg" loading="lazy" alt="" class="ap-tab2-slider_logo"/></div><div><div class="ap-tab2-slider_micro-a">100</div><div class="ap-tab2-slider_micro-b">million users</div></div><div><div class="ap-tab2-slider_micro-a">100GB/min</div><div class="ap-tab2-slider_micro-b">throughput</div></div><div class="cs-slider_card_left-panel-bkg"></div></div><div class="cs-slider_card_bracket"><div class="image-contain w-embed"><svg width="100%" height="100%" style="max-width:100%;max-height:100%;" viewBox="0 0 9 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 15.0469V13.5938C1.30469 13.5938 2.21484 13.3203 2.73047 12.7734C3.25391 12.2266 3.51562 11.3125 3.51562 10.0313V6.28125C3.51562 5.20313 3.61719 4.26953 3.82031 3.48047C4.03125 2.69141 4.37109 2.03906 4.83984 1.52344C5.30859 1.00781 5.93359 0.625001 6.71484 0.375002C7.49609 0.125001 7.85156 0 9 0V2.29688C8.09375 2.29688 7.98828 2.4375 7.46484 2.71875C6.94922 3 6.58203 3.4375 6.36328 4.03125C6.15234 4.61719 6.04688 5.36719 6.04688 6.28125V10.9688C6.04688 11.5781 5.96484 12.1328 5.80078 12.6328C5.64453 13.1328 5.35156 13.5625 4.92187 13.9219C4.49219 14.2813 3.87891 14.5586 3.08203 14.7539C2.29297 14.9492 1.26562 15.0469 0 15.0469ZM9 30C7.85156 30 7.49609 29.875 6.71484 29.625C5.93359 29.375 5.30859 28.9922 4.83984 28.4766C4.37109 27.9609 4.03125 27.3086 3.82031 26.5195C3.61719 25.7305 3.51562 24.7969 3.51562 23.7188V19.9688C3.51562 18.6875 3.25391 17.7734 2.73047 17.2266C2.21484 16.6797 1.30469 16.4063 0 16.4063V14.9531C1.26562 14.9531 2.29297 15.0508 3.08203 15.2461C3.87891 15.4414 4.49219 15.7188 4.92187 16.0781C5.35156 16.4375 5.64453 16.8672 5.80078 17.3672C5.96484 17.8672 6.04688 18.4219 6.04688 19.0313V23.7188C6.04688 24.6328 6.15234 25.3828 6.36328 25.9688C6.58203 26.5547 6.94922 26.9883 7.46484 27.2695C7.98828 27.5586 8.09375 27.7031 9 27.7031V30ZM0 16.4063V13.5938H2.76562V16.4063H0Z" fill="currentColor"/>
+</svg></div></div><div id="w-node-c35c19a0-9ecd-963d-146a-f2481f8ec86f-1a5f4457" class="cs-slider_card_quote"><div class="text__eyebrow">Gaming</div><div class="spacer__8"></div><div class="text-rich-text-quote-large w-richtext"><p>&quot;Redpanda rose to the top of our list because we knew its obsessed over performance and reliability at scale. We tested the data platform for up to <strong>100M users</strong> with zero performance blips at <strong>100GB/min throughput</strong> and peaks of <strong>100K transactions/second</strong>.&quot;</p></div><div class="spacer__16"></div><a href="https://thenewstack.io/a-real-time-data-platform-for-player-driven-game-experiences" target="_blank" class="icon-link-block text-size-medium w-inline-block w-condition-invisible"><div>Ensure Flawless Performance for 100M Users</div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a><a href="/case-study/fortis-games" class="icon-link-block text-size-medium w-inline-block"><div>View success story</div><div class="icon-1x1-xxsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a></div></div></div></div></div><div fs-slider-element="navigation" class="cs-slider_navigation"><button fs-slider-element="previous" class="cs-slider_previous"><div class="cs-slider_arrow w-embed"><svg width="100%" height="100%" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M17.0019 3.80378C16.5119 3.31378 15.7219 3.31378 15.2319 3.80378L6.92189 12.1138C6.53189 12.5038 6.53189 13.1338 6.92189 13.5238L15.2319 21.8338C15.7219 22.3238 16.5119 22.3238 17.0019 21.8338C17.4919 21.3438 17.4919 20.5538 17.0019 20.0638L9.76189 12.8138L17.0119 5.56378C17.4919 5.08378 17.4919 4.28378 17.0019 3.80378Z" fill="currentColor"/>
+</svg></div></button><div fs-slider-element="scrollbar" class="cs-slider_scrollbar"><div fs-slider-element="scrollbar-drag" class="cs-slider_scrollbar-drag"></div></div><button fs-slider-element="next" class="cs-slider_next"><div class="cs-slider_arrow w-embed"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.99811 21.0151C7.48811 21.5051 8.27811 21.5051 8.76811 21.0151L17.0781 12.7051C17.4681 12.3151 17.4681 11.6851 17.0781 11.2951L8.7681 2.98507C8.2781 2.49507 7.4881 2.49507 6.9981 2.98507C6.5081 3.47507 6.5081 4.26507 6.9981 4.75507L14.2381 12.0051L6.98811 19.2551C6.50811 19.7351 6.5081 20.5351 6.99811 21.0151Z" fill="currentColor"/>
+</svg></div></button></div></div><div fs-slider-type="cms" fs-slider-instance="cs-thumb-slider" class="cs-thumb-slider_instance"><div fs-slider-element="list-wrapper" class="cs-thumb-slider_list-wrapper w-dyn-list"><div fs-slider-element="list" role="list" class="cs-thumb-slider_list w-dyn-items"><div fs-slider-element="slide" role="listitem" class="cs-thumb-slider_slide is-thumb-active w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68518ac8ac8699ae6c6b124d_logo_teads.svg" loading="lazy" alt="" class="cs-thumb-slider_logo"/></div><div fs-slider-element="slide" role="listitem" class="cs-thumb-slider_slide is-thumb-active w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/68b15218a47e4d6470e708ff_logo_nyse.svg" loading="lazy" alt="" class="cs-thumb-slider_logo"/></div><div fs-slider-element="slide" role="listitem" class="cs-thumb-slider_slide is-thumb-active w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/6728f142367d60a2f3cdfa1b_logo_zafin.svg" loading="lazy" alt="" class="cs-thumb-slider_logo"/></div><div fs-slider-element="slide" role="listitem" class="cs-thumb-slider_slide is-thumb-active w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf28209f8c9a2637dd4d33_logo_lacework.svg" loading="lazy" alt="" class="cs-thumb-slider_logo"/></div><div fs-slider-element="slide" role="listitem" class="cs-thumb-slider_slide is-thumb-active w-dyn-item"><img src="https://cdn.prod.website-files.com/6659da8aecd70e0898c0d7ed/66cf412dceff79280bc27743_logo_fortis.svg" loading="lazy" alt="" class="cs-thumb-slider_logo"/></div></div></div></div></div></div></div></section><section component="dark-background" class="section_new background-color-sepia25 text-color-white"><div><div class="spacer__72"></div><div class="contain"><div class="padding-xlarge position-relative"><div class="flex-cta-section"><div class="width-25pct-responsive"><h2 class="heading-style-h2 text-color-white">Need help deciding?</h2></div><div class="width-sizing-stretch"><p class="text-size-xlarge">Create your Serverless cluster for free and receive $100 in credits for new signups, or ask our friendly team for advice.</p></div><div class="width-25pct-responsive"><div class="flex-vertical-xl-yc height-full gap-1rem"><a href="https://cloud.redpanda.com/sign-up" target="_blank" class="button is-dark wide-left-stretch w-inline-block"><div class="icon-embed-xsmall w-embed"><svg width="100%" height="100%" style="" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 21C23.5 21 23 20.8 22.6 20.4L19.6 17.4C19.2 17 19 16.5 19 16C19 15.5 19.2 15 19.6 14.6L22.6 11.6C23 11.2 23.5 11 24 11C24.5 11 25 11.2 25.4 11.6L28.4 14.6C28.8 15 29 15.5 29 16C29 16.5 28.8 17 28.4 17.4L25.4 20.4C25 20.8 24.5 21 24 21ZM24 13L21 16L24 19L27 16L24 13ZM16 13C15.5 13 15 12.8 14.6 12.4L11.6 9.4C11.2 9 11 8.5 11 8C11 7.5 11.2 7 11.6 6.6L14.6 3.6C15 3.2 15.5 3 16 3C16.5 3 17 3.2 17.4 3.6L20.4 6.6C20.8 7 21 7.5 21 8C21 8.5 20.8 9 20.4 9.4L17.4 12.4C17 12.8 16.5 13 16 13ZM16 5L13 8L16 11L19 8L16 5ZM16 29C15.5 29 15 28.8 14.6 28.4L11.6 25.4C11.2 25 11 24.5 11 24C11 23.5 11.2 23 11.6 22.6L14.6 19.6C15 19.2 15.5 19 16 19C16.5 19 17 19.2 17.4 19.6L20.4 22.6C20.8 23 21 23.5 21 24C21 24.5 20.8 25 20.4 25.4L17.4 28.4C17 28.8 16.5 29 16 29ZM16 21L13 24L16 27L19 24L16 21ZM8 21C7.5 21 7 20.8 6.6 20.4L3.6 17.4C3.2 17 3 16.5 3 16C3 15.5 3.2 15 3.6 14.6L6.6 11.6C7 11.2 7.5 11 8 11C8.5 11 9 11.2 9.4 11.6L12.4 14.6C12.8 15 13 15.5 13 16C13 16.5 12.8 17 12.4 17.4L9.4 20.4C9 20.8 8.5 21 8 21ZM8 13L5 16L8 19L11 16L8 13Z" fill="#E2401B"/>
+</svg></div><div class="width-sizing-stretch">Get started</div><div class="icon-embed-xsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a><a href="/price-estimator" class="button is-dark wide-left-stretch w-inline-block"><div class="icon-embed-xsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"><path fill="#E2401B" d="M6.75 2C5.24011 2 4 3.24011 4 4.75v14.5C4 20.7599 5.24011 22 6.75 22h10.5c1.5099 0 2.75-1.2401 2.75-2.75V4.75C20 3.24011 18.7599 2 17.25 2H6.75Zm0 1.5h10.5c.6991 0 1.25.55089 1.25 1.25v14.5c0 .6991-.5509 1.25-1.25 1.25H6.75c-.69911 0-1.25-.5509-1.25-1.25V4.75c0-.69911.55089-1.25 1.25-1.25Zm1.48047 1.99902C7.56007 5.49902 7 6.06007 7 6.73047v3.03906C7 10.4399 7.56007 11 8.23047 11h7.53903c.6704 0 1.2302-.5599 1.2315-1.22949V6.73047c0-.6704-.5611-1.23145-1.2315-1.23145H8.23047Zm.26953 1.5h7.001V9.5H8.5V6.99902ZM8.25 12.5c-.33152 0-.64946.1317-.88388.3661C7.1317 13.1005 7 13.4185 7 13.75s.1317.6495.36612.8839c.23442.2344.55236.3661.88388.3661.33152 0 .64946-.1317.88388-.3661.23442-.2344.36612-.5524.36612-.8839s-.1317-.6495-.36612-.8839C8.89946 12.6317 8.58152 12.5 8.25 12.5Zm3.75 0c-.3315 0-.6495.1317-.8839.3661-.2344.2344-.3661.5524-.3661.8839s.1317.6495.3661.8839c.2344.2344.5524.3661.8839.3661s.6495-.1317.8839-.3661c.2344-.2344.3661-.5524.3661-.8839s-.1317-.6495-.3661-.8839c-.2344-.2344-.5524-.3661-.8839-.3661Zm3.75 0c-.6905 0-1.25.5595-1.25 1.25v3.5c0 .6905.5595 1.25 1.25 1.25S17 17.9405 17 17.25v-3.5c0-.6905-.5595-1.25-1.25-1.25ZM8.25 16c-.33152 0-.64946.1317-.88388.3661C7.1317 16.6005 7 16.9185 7 17.25s.1317.6495.36612.8839c.23442.2344.55236.3661.88388.3661.33152 0 .64946-.1317.88388-.3661.23442-.2344.36612-.5524.36612-.8839s-.1317-.6495-.36612-.8839C8.89946 16.1317 8.58152 16 8.25 16ZM12 16c-.3315 0-.6495.1317-.8839.3661-.2344.2344-.3661.5524-.3661.8839s.1317.6495.3661.8839c.2344.2344.5524.3661.8839.3661s.6495-.1317.8839-.3661c.2344-.2344.3661-.5524.3661-.8839s-.1317-.6495-.3661-.8839C12.6495 16.1317 12.3315 16 12 16Z"/></svg></div><div class="width-sizing-stretch">Get an estimate</div><div class="icon-embed-xsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a><a href="/contact" class="button is-dark wide-left-stretch w-inline-block"><div class="icon-embed-xsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"><path fill="#E2401B" d="M6.25 3A3.262 3.262 0 0 0 3 6.25v11.5A3.262 3.262 0 0 0 6.25 21h11.5A3.261 3.261 0 0 0 21 17.75V6.25A3.262 3.262 0 0 0 17.75 3H6.25Zm0 1.5h11.5c.975 0 1.75.775 1.75 1.75V7h-15v-.75c0-.975.775-1.75 1.75-1.75Zm-1.75 4h15v9.25a1.74 1.74 0 0 1-1.75 1.75H6.25a1.74 1.74 0 0 1-1.75-1.75V8.5Zm9.25 3.5c-.957 0-1.75.793-1.75 1.75v2c0 .957.793 1.75 1.75 1.75h2c.957 0 1.75-.793 1.75-1.75v-2c0-.957-.793-1.75-1.75-1.75h-2Zm0 1.5h2c.148 0 .25.102.25.25v2c0 .148-.102.25-.25.25h-2a.239.239 0 0 1-.25-.25v-2c0-.148.102-.25.25-.25Z"/></svg></div><div class="width-sizing-stretch">Book a meeting</div><div class="icon-embed-xsmall w-embed"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></svg></div></a></div></div></div><div class="position-absolute-fill background-color-darkish z-index-0"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/677d8388fda28a26cfddf443_poly-slate_top-left.svg" loading="lazy" alt="" class="bg_poly-slate_top-left"/><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/677d838880f552d9dd7af561_poly-slate_bottom-right.svg" loading="lazy" alt="" class="bg_poly-slate_bottom-right"/></div></div></div><div class="spacer__72"></div></div></section></main><footer class="footer"><div class="bg__light-grey"></div><div class="contain"><div class="footer__wrap"><div class="footer__top"><div id="w-node-_490baa79-96c2-bb01-6558-2bce1e804c5a-7a8daed0" class="footer__column first"><img src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/6647694a827e35299ffead7f_redpanda-logo-red.svg" loading="lazy" alt="Redpanda logo" height="40" class="footer__logo"/><div class="text-block">The streaming data platform for developers.</div><div class="footer__address"><div>5758 Geary Blvd. #153</div><div>San Francisco, CA 94121</div></div></div><div id="w-node-c75ba9f2-5ede-ec9a-3f14-574513e52ebb-7a8daed0" class="footer__column"><div class="footer__header">WHAT IS REDPANDA?<br/></div><a href="/platform-capabilities" class="footer__link">Capabilities</a><a href="/try-redpanda" class="footer__link">Try Redpanda</a><a href="/product/serverless" class="footer__link">Redpanda Serverless</a><a href="/product/bring-your-own-cloud-byoc" class="footer__link">Redpanda BYOC</a><a href="https://ai.redpanda.com/" target="_blank" class="footer__link">Redpanda Agentic AI</a><a href="/connect" class="footer__link">Redpanda Connect</a><a href="/redpanda-console-kafka-ui" class="footer__link">Redpanda Console</a><a href="/compare/redpanda-vs-kafka" class="footer__link">Kafka vs. Redpanda</a><a href="/compare/redpanda-vs-amazon-msk" class="footer__link">MSK vs. Redpanda Cloud</a><a href="/blog/redpanda-official-jepsen-report-and-analysis" class="footer__link">Jepsen report</a><a href="https://docs.redpanda.com/redpanda-cloud/get-started/cluster-types/serverless/" target="_blank" class="footer__link">Quick start guide</a><a href="https://www.redpanda.com/university" target="_blank" class="footer__link">Redpanda University</a></div><div id="w-node-_21e868bf-7dc6-5d5f-755d-3675b4afff85-7a8daed0" class="footer__column"><div class="footer__header">Company<br/></div><a href="/contact" class="footer__link">Contact us</a><a href="/about-us" class="footer__link">About us</a><a href="/careers" class="footer__link">Careers</a><a href="/press" class="footer__link">Press</a><a href="/legal/scholarship" class="footer__link">Scholarship</a><a href="/partners" class="footer__link">Partners</a><a href="/blog" class="footer__link">Blog</a></div><div id="w-node-_3e8b1cc8-d6dc-3a71-eb7b-00361a032c84-7a8daed0" class="footer__column last"><div class="footer__header">Quick links<br/></div><a href="/price-estimator" class="footer__link">Pricing</a><a href="/developers" class="footer__link">Developers</a><a href="https://docs.redpanda.com/home/" target="_blank" class="footer__link">Docs</a><a href="https://support.redpanda.com/" target="_blank" class="footer__link">Support</a><a href="/legal/privacy-policy" class="footer__link">Privacy policy</a><a href="/legal/terms-of-use" class="footer__link">Terms of use</a><a href="/legal/security" class="footer__link">Security</a><a href="https://trust.redpanda.com/" target="_blank" class="footer__link">Trust Center</a><a href="/legal/redpanda-cloud-service-level-agreement" class="footer__link">Cloud SLA</a><a href="/legal/redpanda-subscription-terms-and-conditions" class="footer__link">Subscription terms</a><a href="/legal/byoc-service-terms" class="footer__link">BYOC service terms</a><a href="/legal/accessibility" class="footer__link">Accessibility statement</a></div></div><div class="line__grey"></div><div class="footer__bottom"><div>© <span data-year="current" class="footer_copyright">2024</span> Redpanda Data Inc.</div><a data-onetrust="true" href="#" class="footer__link">Cookie preferences</a><div class="footer__socials"><a aria-label="Redpanda on X" title="Redpanda on X" href="https://twitter.com/redpandadata" target="_blank" class="footer__social-link w-inline-block"><div class="footer__social-icon w-embed"><svg width="25" height="25" style="" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_1941_163)">
+<path d="M15.2048 10.6575L23.9422 0.5H21.8708L14.2835 9.31956L8.22386 0.5H1.23511L10.3989 13.8359L1.23511 24.4883H3.3065L11.3182 15.1738L17.7182 24.4883H24.707L15.2028 10.6575H15.2048ZM12.3686 13.9533L11.4395 12.6252L4.05173 2.05892H7.23217L13.194 10.587L14.1231 11.9152L21.8728 22.9998H18.6923L12.3686 13.9553V13.9533Z" fill="currentColor"/>
+</g>
+<defs>
+<clipPath id="clip0_1941_163">
+<rect width="24" height="24" fill="currentColor" transform="translate(0.275146 0.5)"/>
+</clipPath>
+</defs>
+</svg></div></a><a aria-label="Redpanda on BlueSky" title="Redpanda on BlueSky" href="https://bsky.app/profile/redpanda.com" target="_blank" class="footer__social-link w-inline-block"><div class="footer__social-icon w-embed"><svg width="24" height="25" style="" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5.42878 3.16126C8.08862 5.1581 10.9496 9.20686 12 11.3797C13.0505 9.20702 15.9113 5.15806 18.5712 3.16126C20.4904 1.72042 23.6 0.605578 23.6 4.15306C23.6 4.86154 23.1938 10.1047 22.9555 10.9559C22.1274 13.9152 19.1098 14.67 16.4255 14.2132C21.1175 15.0117 22.3111 17.6569 19.7334 20.302C14.8378 25.3256 12.697 19.0415 12.1482 17.4313C12.0477 17.1362 12.0006 16.9981 11.9999 17.1155C11.9992 16.9981 11.9522 17.1362 11.8516 17.4313C11.303 19.0415 9.16228 25.3257 4.2664 20.302C1.68864 17.6569 2.8822 15.0116 7.57428 14.2132C4.88996 14.67 1.87228 13.9152 1.04428 10.9559C0.806033 10.1046 0.399841 4.86146 0.399841 4.15306C0.399841 0.605578 3.50952 1.72042 5.42864 3.16126H5.42878Z" fill="currentColor"/>
+</svg></div></a><a aria-label="Redpanda Linkedin" title="Redpanda Linkedin" href="https://www.linkedin.com/company/redpanda-data" target="_blank" class="footer__social-link w-inline-block"><div class="w-embed"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.2234 0H1.77187C0.792187 0 0 0.773438 0 1.72969V22.2656C0 23.2219 0.792187 24 1.77187 24H22.2234C23.2031 24 24 23.2219 24 22.2703V1.72969C24 0.773438 23.2031 0 22.2234 0ZM7.12031 20.4516H3.55781V8.99531H7.12031V20.4516ZM5.33906 7.43438C4.19531 7.43438 3.27188 6.51094 3.27188 5.37187C3.27188 4.23281 4.19531 3.30937 5.33906 3.30937C6.47813 3.30937 7.40156 4.23281 7.40156 5.37187C7.40156 6.50625 6.47813 7.43438 5.33906 7.43438ZM20.4516 20.4516H16.8937V14.8828C16.8937 13.5562 16.8703 11.8453 15.0422 11.8453C13.1906 11.8453 12.9094 13.2937 12.9094 14.7891V20.4516H9.35625V8.99531H12.7687V10.5609H12.8156C13.2891 9.66094 14.4516 8.70938 16.1813 8.70938C19.7859 8.70938 20.4516 11.0813 20.4516 14.1656V20.4516Z" fill="currentColor"/>
+</svg></div></a><a aria-label="Redpanda Slack" title="Redpanda Slack" href="/slack" target="_blank" class="footer__social-link w-inline-block"><div class="w-embed"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19.8752 11.2499C20.9106 11.2499 21.75 10.4105 21.75 9.37508C21.75 8.33964 20.9105 7.50025 19.8751 7.50025C18.8395 7.50025 18 8.33971 18 9.37525V11.2499H19.8752ZM14.625 11.2499C15.6605 11.2499 16.5 10.4105 16.5 9.37492V4.12525C16.5 3.08971 15.6605 2.25024 14.625 2.25024C13.5895 2.25024 12.75 3.08971 12.75 4.12524V9.37492C12.75 10.4105 13.5895 11.2499 14.625 11.2499Z" fill="currentColor"/>
+<path d="M4.12484 12.7501C3.08939 12.7501 2.25 13.5895 2.25 14.6249C2.25 15.6604 3.08947 16.4998 4.12492 16.4998C5.16045 16.4998 6 15.6603 6 14.6248V12.7501H4.12484ZM9.375 12.7501C8.33947 12.7501 7.5 13.5895 7.5 14.6251V19.8748C7.5 20.9103 8.33947 21.7498 9.375 21.7498C10.4105 21.7498 11.25 20.9103 11.25 19.8748V14.6251C11.25 13.5895 10.4105 12.7501 9.375 12.7501Z" fill="currentColor"/>
+<path d="M12.7501 19.8752C12.7501 20.9106 13.5895 21.75 14.6249 21.75C15.6604 21.75 16.4998 20.9105 16.4998 19.8751C16.4998 18.8395 15.6603 18 14.6248 18L12.7501 18L12.7501 19.8752ZM12.7501 14.625C12.7501 15.6605 13.5895 16.5 14.6251 16.5L19.8748 16.5C20.9103 16.5 21.7498 15.6605 21.7498 14.625C21.7498 13.5895 20.9103 12.75 19.8748 12.75L14.6251 12.75C13.5895 12.75 12.7501 13.5895 12.7501 14.625Z" fill="currentColor"/>
+<path d="M11.2498 4.12484C11.2498 3.08939 10.4104 2.25 9.37496 2.25C8.33952 2.25 7.50012 3.08947 7.50012 4.12492C7.50012 5.16045 8.33959 6 9.37512 6L11.2498 6L11.2498 4.12484ZM11.2498 9.375C11.2498 8.33947 10.4103 7.5 9.3748 7.5L4.12512 7.5C3.08959 7.5 2.25012 8.33947 2.25012 9.375C2.25012 10.4105 3.08959 11.25 4.12512 11.25L9.3748 11.25C10.4103 11.25 11.2498 10.4105 11.2498 9.375Z" fill="currentColor"/>
+</svg></div></a><a aria-label="Redpanda Github" title="Redpanda Github" href="https://github.com/redpanda-data/redpanda" target="_blank" class="footer__social-link w-inline-block"><div class="w-embed"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C5.3724 0 0 5.3808 0 12.0204C0 17.3304 3.438 21.8364 8.2068 23.4252C8.8068 23.5356 9.0252 23.1648 9.0252 22.8456C9.0252 22.5612 9.0156 21.804 9.0096 20.802C5.6712 21.528 4.9668 19.1904 4.9668 19.1904C4.422 17.8008 3.6348 17.4312 3.6348 17.4312C2.5452 16.6872 3.7176 16.7016 3.7176 16.7016C4.9212 16.7856 5.5548 17.94 5.5548 17.94C6.6252 19.776 8.364 19.2456 9.0468 18.9384C9.1572 18.162 9.4668 17.6328 9.81 17.3328C7.146 17.0292 4.344 15.9972 4.344 11.3916C4.344 10.08 4.812 9.006 5.5788 8.166C5.4552 7.8624 5.0436 6.6396 5.6964 4.986C5.6964 4.986 6.7044 4.662 8.9964 6.2172C9.97532 5.95022 10.9853 5.81423 12 5.8128C13.02 5.8176 14.046 5.9508 15.0048 6.2172C17.2956 4.662 18.3012 4.9848 18.3012 4.9848C18.9564 6.6396 18.5436 7.8624 18.4212 8.166C19.1892 9.006 19.6548 10.08 19.6548 11.3916C19.6548 16.0092 16.848 17.0256 14.1756 17.3232C14.6064 17.694 14.9892 18.4272 14.9892 19.5492C14.9892 21.1548 14.9748 22.452 14.9748 22.8456C14.9748 23.1672 15.1908 23.5416 15.8004 23.424C18.19 22.6225 20.2672 21.0904 21.7386 19.0441C23.2099 16.9977 24.001 14.5408 24 12.0204C24 5.3808 18.6264 0 12 0Z" fill="currentColor"/>
+</svg></div></a><a aria-label="Redpanda youtube" title="Redpanda youtube" href="https://www.youtube.com/@RedpandaData" target="_blank" class="footer__social-link w-inline-block"><div class="w-embed"><svg width="33" height="24" viewBox="0 0 33 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M32.3038 3.74694C32.116 3.02209 31.7483 2.3612 31.2374 1.83041C30.7266 1.29962 30.0905 0.917555 29.3929 0.722449C26.8237 2.18956e-07 16.5 0 16.5 0C16.5 0 6.17627 2.18956e-07 3.60712 0.722449C2.90949 0.917555 2.27342 1.29962 1.76256 1.83041C1.25171 2.3612 0.883986 3.02209 0.696206 3.74694C0.21649 6.46931 -0.0163041 9.23244 0.000886751 12C-0.0163041 14.7676 0.21649 17.5307 0.696206 20.2531C0.883986 20.9779 1.25171 21.6388 1.76256 22.1696C2.27342 22.7004 2.90949 23.0824 3.60712 23.2776C6.17627 24 16.5 24 16.5 24C16.5 24 26.8237 24 29.3929 23.2776C30.0905 23.0824 30.7266 22.7004 31.2374 22.1696C31.7483 21.6388 32.116 20.9779 32.3038 20.2531C32.7835 17.5307 33.0163 14.7676 32.9991 12C33.0163 9.23244 32.7835 6.46931 32.3038 3.74694V3.74694ZM13.2002 17.1429V6.85714L21.7679 12L13.2002 17.1429Z" fill="currentColor"/>
+</svg></div></a></div></div></div></div></footer></div><script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=6632a83042773c5a1a5f4443" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script><script src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/js/redpanda-data.schunk.57d5559d2f0cd9f8.js" type="text/javascript"></script><script src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/js/redpanda-data.schunk.c2fc14e02ac50949.js" type="text/javascript"></script><script src="https://cdn.prod.website-files.com/6632a83042773c5a1a5f4443/js/redpanda-data.b143bab4.3d5c12040db3789b.js" type="text/javascript"></script><!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WB2CSV5" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!--🤙 https://slater.app/10151.js-->
+<script>document.addEventListener("DOMContentLoaded", function() {function loadwwwredpandacom(e){let t=document.createElement("script");t.setAttribute("src",e),t.setAttribute("type","module"),document.body.appendChild(t),t.addEventListener("load",()=>{console.log("Slater loaded www.redpanda.com.js: https://slater.app/10151.js 🤙")}),t.addEventListener("error",e=>{console.log("Error loading file",e)})}let src=window.location.host.includes("webflow.io")?"https://slater.app/10151.js":"https://assets.slater.app/slater/10151.js?v=1.0";loadwwwredpandacom(src);})</script>
+
+<!-- constructConversionEventId -->
+<script src="https://assets.slater.app/slater/10151/22826.js"></script>
+
+<!-- old slater needs converted -->
+<!-- vwo-general-events -->
+<script src="https://assets.slater.app/slater/9244/21522.js"></script></body></html>
