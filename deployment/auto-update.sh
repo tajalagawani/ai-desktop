@@ -55,7 +55,18 @@ update_app() {
 
   # Save new commit SHA
   LATEST=$(get_latest_commit)
+  LATEST_SHORT="${LATEST:0:7}"
   echo "$LATEST" > "$STATE_FILE"
+
+  # Update version.json with current SHA and timestamp
+  log "📝 Updating version.json..."
+  TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+  if [ -f "$APP_DIR/version.json" ]; then
+    # Update the JSON file with current SHA and last updated time
+    cat "$APP_DIR/version.json" | jq --arg sha "$LATEST_SHORT" --arg time "$TIMESTAMP" \
+      '.currentSHA = $sha | .lastUpdated = $time' > "$APP_DIR/version.json.tmp" && \
+      mv "$APP_DIR/version.json.tmp" "$APP_DIR/version.json"
+  fi
 
   log "✅ Update completed successfully! Latest commit: $LATEST"
 

@@ -22,6 +22,7 @@ export function Changelog() {
   const [updateAvailable, setUpdateAvailable] = useState(false)
   const [latestSHA, setLatestSHA] = useState<string>("")
   const [currentSHA, setCurrentSHA] = useState<string>("")
+  const [lastUpdated, setLastUpdated] = useState<string>("")
   const [updating, setUpdating] = useState(false)
   const [updateMessage, setUpdateMessage] = useState<string | null>(null)
 
@@ -43,6 +44,7 @@ export function Changelog() {
         setUpdateAvailable(data.updateAvailable)
         setLatestSHA(data.latestSHA)
         setCurrentSHA(data.currentSHA)
+        setLastUpdated(data.lastUpdated)
       } else {
         setError('Failed to load changelog')
       }
@@ -115,7 +117,7 @@ export function Changelog() {
                 )}
               </div>
               <p className="text-sm text-muted-foreground">
-                Build: {buildDate} • Commit: {currentSHA || 'Unknown'}
+                Build: {buildDate} • Deployed: {currentSHA || 'Not deployed yet'} {lastUpdated && `• Updated: ${lastUpdated}`}
               </p>
             </div>
           </div>

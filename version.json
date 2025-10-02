@@ -1,6 +1,8 @@
 {
   "version": "1.0.0",
   "buildDate": "2025-10-02",
+  "currentSHA": null,
+  "lastUpdated": null,
   "changelog": {
     "1.0.0": {
       "date": "2025-10-02",
@@ -13,7 +15,9 @@
           "System monitor and terminal",
           "File manager with mock data",
           "Auto-update system with GitHub integration",
-          "In-app changelog viewer"
+          "In-app changelog viewer with version tracking",
+          "One-click update system",
+          "Semantic versioning support"
         ],
         "fixed": [],
         "changed": [],

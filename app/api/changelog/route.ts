@@ -45,6 +45,7 @@ export async function GET() {
       buildDate: versionData.buildDate,
       currentSHA: currentVersionSHA,
       latestSHA,
+      lastUpdated: versionData.lastUpdated || null,
       updateAvailable,
       changelog,
       versionChangelog: versionData.changelog,
