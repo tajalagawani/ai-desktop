@@ -43,7 +43,8 @@ update_app() {
 
   # Install dependencies
   log "📦 Installing dependencies..."
-  npm ci
+  rm -rf node_modules package-lock.json
+  npm install
 
   # Build application
   log "🔨 Building application..."
