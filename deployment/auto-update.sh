@@ -41,11 +41,6 @@ update_app() {
   git fetch origin main
   git reset --hard origin/main
 
-  # Install dependencies
-  log "📦 Installing dependencies..."
-  rm -rf node_modules package-lock.json
-  npm install
-
   # Build application
   log "🔨 Building application..."
   npm run build
