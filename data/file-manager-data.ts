@@ -38,27 +38,28 @@ export interface ProjectItem {
 // Quick Access Items
 export const QUICK_ACCESS_ITEMS: QuickAccessItem[] = [
   {
-    id: "recent",
-    name: "Recent",
-    icon: "Clock",
-    badge: 5,
+    id: "home",
+    name: "Home",
+    icon: "Home",
+    path: "/",
   },
   {
-    id: "starred",
-    name: "Starred",
-    icon: "Star",
-    badge: 3,
+    id: "tmp",
+    name: "Temp",
+    icon: "FolderOpen",
+    path: "/tmp",
   },
   {
-    id: "shared",
-    name: "Shared",
-    icon: "Share2",
-    badge: 2,
+    id: "var",
+    name: "System (/var)",
+    icon: "Server",
+    path: "/var",
   },
   {
-    id: "trash",
-    name: "Trash",
-    icon: "Trash2",
+    id: "etc",
+    name: "Config (/etc)",
+    icon: "Settings",
+    path: "/etc",
   },
 ]
 

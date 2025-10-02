@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronRight, ChevronsUpDown, Menu } from "lucide-react"
+import { ChevronRight, ChevronsUpDown, Menu, RefreshCw, Plus, Trash2, FolderPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -26,58 +26,148 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
 
-// Import data and utilities
+// Import server actions and utilities
+import { listFiles, createFolder, deleteItem, renameItem, FileItem } from "@/lib/file-actions"
 import {
   QUICK_ACCESS_ITEMS,
-  FOLDER_STRUCTURE,
   PROJECT_ITEMS,
   SECONDARY_NAV_ITEMS,
   FILE_TYPE_ICONS,
-  FILE_GRID_ITEMS,
   USER_PROFILE,
-  BREADCRUMB_ITEMS,
 } from "@/data/file-manager-data"
-import { useFileManager, useFileOperations } from "@/hooks/use-file-manager"
 import { getIcon, getIconProps } from "@/utils/icon-mapper"
 
 export function FileManager() {
-  const {
-    sidebarOpen,
-    selectedFile,
-    folderStates,
-    toggleSidebar,
-    selectFile,
-    toggleFolder,
-  } = useFileManager()
-  
-  const { openFile } = useFileOperations()
+  const [sidebarOpen, setSidebarOpen] = React.useState(true)
+  const [currentPath, setCurrentPath] = React.useState('/')
+  const [files, setFiles] = React.useState<FileItem[]>([])
+  const [selectedFile, setSelectedFile] = React.useState<FileItem | null>(null)
+  const [loading, setLoading] = React.useState(true)
+  const [newFolderMode, setNewFolderMode] = React.useState(false)
+  const [newFolderName, setNewFolderName] = React.useState('')
+
+  const loadFiles = React.useCallback(async (path: string) => {
+    setLoading(true)
+    try {
+      const items = await listFiles(path)
+      setFiles(items)
+    } catch (error) {
+      console.error('Failed to load files:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    loadFiles(currentPath)
+  }, [currentPath, loadFiles])
+
+  const handleOpenFolder = (folder: FileItem) => {
+    if (folder.type === 'folder') {
+      setCurrentPath(folder.path)
+      setSelectedFile(null)
+    }
+  }
+
+  const handleBreadcrumbClick = (path: string) => {
+    setCurrentPath(path)
+    setSelectedFile(null)
+  }
+
+  const handleCreateFolder = async () => {
+    if (!newFolderName.trim()) return
+
+    try {
+      await createFolder(currentPath, newFolderName)
+      setNewFolderName('')
+      setNewFolderMode(false)
+      await loadFiles(currentPath)
+    } catch (error) {
+      console.error('Failed to create folder:', error)
+    }
+  }
+
+  const handleDelete = async (item: FileItem) => {
+    if (confirm(`Are you sure you want to delete ${item.name}?`)) {
+      try {
+        await deleteItem(item.path)
+        await loadFiles(currentPath)
+        if (selectedFile?.id === item.id) {
+          setSelectedFile(null)
+        }
+      } catch (error) {
+        console.error('Failed to delete item:', error)
+      }
+    }
+  }
+
+  const breadcrumbs = React.useMemo(() => {
+    const parts = currentPath.split('/').filter(Boolean)
+    const crumbs = [{ path: '/', label: 'Home' }]
+
+    let buildPath = ''
+    for (const part of parts) {
+      buildPath += `/${part}`
+      crumbs.push({ path: buildPath, label: part })
+    }
+
+    return crumbs
+  }, [currentPath])
 
   return (
     <div className="flex h-full w-full">
       {/* Sidebar */}
-      <Sidebar 
+      <Sidebar
         isOpen={sidebarOpen}
-        folderStates={folderStates}
-        onToggleFolder={toggleFolder}
-        onSelectFile={selectFile}
+        onNavigate={handleBreadcrumbClick}
       />
 
       {/* Main Content */}
       <div className="flex-1 flex bg-background overflow-hidden">
         <div className="flex-1 flex flex-col">
           {/* Header */}
-          <Header 
-            onToggleSidebar={toggleSidebar}
-            breadcrumbs={BREADCRUMB_ITEMS}
+          <Header
+            onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+            breadcrumbs={breadcrumbs}
+            onRefresh={() => loadFiles(currentPath)}
+            onNewFolder={() => setNewFolderMode(true)}
           />
 
+          {/* New Folder Input */}
+          {newFolderMode && (
+            <div className="px-4 py-2 border-b flex items-center gap-2">
+              <Input
+                placeholder="New folder name"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleCreateFolder()
+                  if (e.key === 'Escape') {
+                    setNewFolderMode(false)
+                    setNewFolderName('')
+                  }
+                }}
+                autoFocus
+                className="max-w-xs"
+              />
+              <Button size="sm" onClick={handleCreateFolder}>Create</Button>
+              <Button size="sm" variant="ghost" onClick={() => {
+                setNewFolderMode(false)
+                setNewFolderName('')
+              }}>Cancel</Button>
+            </div>
+          )}
+
           {/* File Grid */}
-          <FileGrid 
-            files={FILE_GRID_ITEMS}
+          <FileGrid
+            files={files}
             selectedFile={selectedFile}
-            onSelectFile={selectFile}
-            onOpenFile={openFile}
+            onSelectFile={setSelectedFile}
+            onOpenFile={handleOpenFolder}
+            onDelete={handleDelete}
+            loading={loading}
           />
         </div>
       </div>
@@ -86,7 +176,7 @@ export function FileManager() {
 }
 
 // Sidebar Component
-function Sidebar({ isOpen, folderStates, onToggleFolder, onSelectFile }: any) {
+function Sidebar({ isOpen, onNavigate }: any) {
   const CommandIcon = getIcon("Command")
   
   return (
@@ -108,23 +198,13 @@ function Sidebar({ isOpen, folderStates, onToggleFolder, onSelectFile }: any) {
         {/* Sidebar Content */}
         <div className="flex-1 overflow-auto py-2">
           {/* Quick Access */}
-          <QuickAccessSection items={QUICK_ACCESS_ITEMS} />
-          
+          <QuickAccessSection items={QUICK_ACCESS_ITEMS} onNavigate={onNavigate} />
+
           <Separator className="my-4" />
-          
-          {/* Folders */}
-          <FoldersSection 
-            folders={FOLDER_STRUCTURE}
-            folderStates={folderStates}
-            onToggleFolder={onToggleFolder}
-            onSelectFile={onSelectFile}
-          />
-          
-          <Separator className="my-4" />
-          
+
           {/* Projects */}
           <ProjectsSection projects={PROJECT_ITEMS} />
-          
+
           {/* Secondary Navigation */}
           <SecondaryNav items={SECONDARY_NAV_ITEMS} />
         </div>
@@ -137,7 +217,7 @@ function Sidebar({ isOpen, folderStates, onToggleFolder, onSelectFile }: any) {
 }
 
 // Header Component
-function Header({ onToggleSidebar, breadcrumbs }: any) {
+function Header({ onToggleSidebar, breadcrumbs, onRefresh, onNewFolder }: any) {
   return (
     <header className="flex h-14 items-center gap-4 border-b px-4">
       <Button
@@ -152,25 +232,43 @@ function Header({ onToggleSidebar, breadcrumbs }: any) {
       <Breadcrumb>
         <BreadcrumbList>
           {breadcrumbs.map((item: any, index: number) => (
-            <React.Fragment key={item.id}>
+            <React.Fragment key={item.path}>
               {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
               <BreadcrumbItem className={index === 0 ? "hidden md:block" : ""}>
-                {item.href ? (
-                  <BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
-                ) : (
+                {index === breadcrumbs.length - 1 ? (
                   <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink href="#" onClick={() => onRefresh()}>{item.label}</BreadcrumbLink>
                 )}
               </BreadcrumbItem>
             </React.Fragment>
           ))}
         </BreadcrumbList>
       </Breadcrumb>
+      <div className="ml-auto flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onRefresh}
+          className="h-8 w-8 p-0"
+        >
+          <RefreshCw className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onNewFolder}
+          className="h-8 w-8 p-0"
+        >
+          <FolderPlus className="h-4 w-4" />
+        </Button>
+      </div>
     </header>
   )
 }
 
 // Quick Access Section
-function QuickAccessSection({ items }: any) {
+function QuickAccessSection({ items, onNavigate }: any) {
   return (
     <div className="px-3 py-2">
       <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight">Quick Access</h2>
@@ -178,9 +276,10 @@ function QuickAccessSection({ items }: any) {
         {items.map((item: any) => {
           const Icon = getIcon(item.icon)
           return (
-            <button 
+            <button
               key={item.id}
               className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-muted-foreground hover:text-primary hover:bg-accent"
+              onClick={() => item.path && onNavigate(item.path)}
             >
               <Icon {...getIconProps("sm")} />
               <span className="flex-1 text-left">{item.name}</span>
@@ -197,67 +296,6 @@ function QuickAccessSection({ items }: any) {
   )
 }
 
-// Folders Section
-function FoldersSection({ folders, folderStates, onToggleFolder, onSelectFile }: any) {
-  return (
-    <div className="px-3 py-2">
-      <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight">Folders</h2>
-      <div className="space-y-1">
-        {folders.map((folder: any) => {
-          const FolderIcon = getIcon(folder.icon)
-          const isOpen = folderStates[folder.id]
-          
-          return (
-            <Collapsible 
-              key={folder.id} 
-              open={isOpen} 
-              onOpenChange={() => onToggleFolder(folder.id)}
-            >
-              <CollapsibleTrigger className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-muted-foreground transition-all hover:text-primary hover:bg-accent">
-                <FolderIcon {...getIconProps("sm", "primary")} />
-                <span className="flex-1 text-left">{folder.name}</span>
-                <ChevronRight className={`size-4 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
-              </CollapsibleTrigger>
-              {folder.children && (
-                <CollapsibleContent className="mt-1 space-y-1 pl-6">
-                  {folder.children.map((file: any) => {
-                    const fileIcon = FILE_TYPE_ICONS[file.extension || 'default']
-                    const FileIcon = getIcon(fileIcon.icon)
-                    
-                    return (
-                      <button 
-                        key={file.id}
-                        className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-sm text-muted-foreground hover:text-primary hover:bg-accent"
-                        onClick={() => onSelectFile(file)}
-                      >
-                        <FileIcon className={`w-4 h-4 ${fileIcon.color}`} />
-                        {file.name}
-                      </button>
-                    )
-                  })}
-                </CollapsibleContent>
-              )}
-            </Collapsible>
-          )
-        })}
-        
-        {/* Static folders without children */}
-        {["Videos", "Music"].map((name) => {
-          const FolderIcon = getIcon("Folder")
-          return (
-            <button 
-              key={name.toLowerCase()}
-              className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-muted-foreground hover:text-primary hover:bg-accent"
-            >
-              <FolderIcon {...getIconProps("sm", "primary")} />
-              <span className="flex-1 text-left">{name}</span>
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
 
 // Projects Section
 function ProjectsSection({ projects }: any) {
@@ -338,30 +376,62 @@ function UserSection({ profile }: any) {
 }
 
 // File Grid Component
-function FileGrid({ files, selectedFile, onSelectFile, onOpenFile }: any) {
+function FileGrid({ files, selectedFile, onSelectFile, onOpenFile, onDelete, loading }: any) {
+  if (loading) {
+    return (
+      <div className="flex-1 overflow-auto p-4 lg:p-6 flex items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    )
+  }
+
+  if (files.length === 0) {
+    return (
+      <div className="flex-1 overflow-auto p-4 lg:p-6 flex items-center justify-center">
+        <div className="text-muted-foreground">This folder is empty</div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex-1 overflow-auto p-4 lg:p-6">
       <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
-        {files.map((item: any) => {
+        {files.map((item: FileItem) => {
           const isFolder = item.type === "folder"
-          const Icon = isFolder 
+          const extension = item.name.split('.').pop()?.toLowerCase() || 'default'
+          const Icon = isFolder
             ? getIcon("Folder")
-            : getIcon(FILE_TYPE_ICONS[item.extension || 'default'].icon)
-          const iconColor = isFolder 
+            : getIcon(FILE_TYPE_ICONS[extension]?.icon || FILE_TYPE_ICONS.default.icon)
+          const iconColor = isFolder
             ? "text-blue-500"
-            : FILE_TYPE_ICONS[item.extension || 'default'].color
-          
+            : FILE_TYPE_ICONS[extension]?.color || FILE_TYPE_ICONS.default.color
+
           return (
-            <div 
+            <div
               key={item.id}
-              className={`flex flex-col items-center p-3 rounded-lg hover:bg-accent cursor-pointer ${
+              className={`flex flex-col items-center p-3 rounded-lg hover:bg-accent cursor-pointer group relative ${
                 selectedFile?.id === item.id ? 'bg-accent' : ''
               }`}
               onClick={() => onSelectFile(item)}
               onDoubleClick={() => onOpenFile(item)}
+              onContextMenu={(e) => {
+                e.preventDefault()
+                onSelectFile(item)
+              }}
             >
               <Icon className={`w-12 h-12 mb-2 ${iconColor}`} />
               <span className="text-xs text-center truncate w-full">{item.name}</span>
+
+              {/* Delete button on hover */}
+              <button
+                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-destructive text-destructive-foreground rounded p-1 hover:bg-destructive/90"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDelete(item)
+                }}
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
             </div>
           )
         })}
