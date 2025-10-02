@@ -8,6 +8,7 @@ module.exports = {
       script: 'npm',
       args: 'start',
       cwd: '/var/www/ai-desktop', // Update this to your actual path on VPS
+      version: '1.0.0', // Application version
       instances: '1', // Use '1' for single instance, or 'max' for cluster mode
       exec_mode: 'fork', // Use 'cluster' for load balancing with multiple instances
       watch: false, // Don't watch files in production
