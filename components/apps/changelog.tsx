@@ -126,25 +126,64 @@ export function Changelog() {
             </Button>
           </div>
 
-          {/* Update Available Banner */}
-          {updateAvailable && !updating && (
-            <div className="p-4 bg-muted/50 border border-border rounded-lg">
+          {/* Version Status Banner */}
+          {!updating && currentSHA && (
+            <div className={`p-4 border rounded-lg ${
+              updateAvailable
+                ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900'
+                : 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900'
+            }`}>
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="font-medium text-foreground mb-1">Update Available</p>
-                  <p className="text-sm text-muted-foreground">
-                    New version {latestSHA} is available
+                  <div className="flex items-center gap-2 mb-1">
+                    {updateAvailable ? (
+                      <Download className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    ) : (
+                      <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    )}
+                    <p className={`font-medium ${
+                      updateAvailable
+                        ? 'text-blue-900 dark:text-blue-100'
+                        : 'text-green-900 dark:text-green-100'
+                    }`}>
+                      {updateAvailable ? 'Update Available' : 'Up to Date'}
+                    </p>
+                  </div>
+                  <p className={`text-sm ${
+                    updateAvailable
+                      ? 'text-blue-700 dark:text-blue-300'
+                      : 'text-green-700 dark:text-green-300'
+                  }`}>
+                    {updateAvailable ? (
+                      <>New version {latestSHA} is available</>
+                    ) : (
+                      <>You're running the latest version {currentSHA}</>
+                    )}
                     {lastUpdated && ` • Last updated ${lastUpdated}`}
                   </p>
                 </div>
-                <Button
-                  onClick={handleUpdate}
-                  size="sm"
-                  className="gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  Update Now
-                </Button>
+                {updateAvailable && (
+                  <Button
+                    onClick={handleUpdate}
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Update Now
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Not Deployed Banner */}
+          {!updating && !currentSHA && (
+            <div className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900 rounded-lg">
+              <div className="flex items-center gap-2">
+                <ExternalLink className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
+                  Not deployed yet • Latest version {latestSHA} is available
+                </p>
               </div>
             </div>
           )}
