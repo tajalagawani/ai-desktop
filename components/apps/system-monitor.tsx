@@ -29,35 +29,61 @@ interface SystemStats {
   hostname: string
 }
 
+interface PM2Process {
+  id: string
+  name: string
+  status: 'running' | 'stopped' | 'error' | 'idle'
+  uptime: string
+  cpu: string
+  memory: string
+  restarts: number
+}
+
+interface LogEntry {
+  time: string
+  level: 'info' | 'warn' | 'error'
+  message: string
+}
+
 export function SystemMonitor() {
   const [stats, setStats] = useState<SystemStats | null>(null)
+  const [processes, setProcesses] = useState<PM2Process[]>([])
+  const [logs, setLogs] = useState<LogEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  const workflows = [
-    { id: "1", name: "PR → Slack Notification", status: "running", lastRun: "2 min ago" },
-    { id: "2", name: "Daily Report Generator", status: "success", lastRun: "1 hour ago" },
-    { id: "3", name: "Error Alert System", status: "idle", lastRun: "3 hours ago" },
-  ]
-
-  const logs = [
-    { time: "14:32:15", level: "info", message: "Slack node executed successfully" },
-    { time: "14:31:45", level: "info", message: "GitHub webhook received" },
-    { time: "14:30:22", level: "warn", message: "OpenAI rate limit approaching" },
-    { time: "14:28:10", level: "error", message: "Database connection timeout" },
-    { time: "14:25:33", level: "info", message: 'Workflow "PR → Slack" started' },
-  ]
 
   const fetchStats = async () => {
     try {
       setLoading(true)
       setError(null)
-      const response = await fetch('/api/system-stats')
-      if (!response.ok) {
-        throw new Error('Failed to fetch system stats')
+
+      // Fetch all data in parallel
+      const [statsRes, processesRes, logsRes] = await Promise.all([
+        fetch('/api/system-stats'),
+        fetch('/api/pm2-processes'),
+        fetch('/api/system-logs')
+      ])
+
+      if (!statsRes.ok) throw new Error('Failed to fetch system stats')
+
+      const statsData = await statsRes.json()
+      setStats(statsData)
+
+      // Process PM2 data (don't throw error if it fails)
+      if (processesRes.ok) {
+        const processesData = await processesRes.json()
+        if (processesData.success) {
+          setProcesses(processesData.processes)
+        }
       }
-      const data = await response.json()
-      setStats(data)
+
+      // Process logs data (don't throw error if it fails)
+      if (logsRes.ok) {
+        const logsData = await logsRes.json()
+        if (logsData.success) {
+          setLogs(logsData.logs)
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
       console.error('Error fetching system stats:', err)
@@ -228,22 +254,30 @@ export function SystemMonitor() {
         </div>
       )}
 
-      {/* Active Workflows */}
+      {/* PM2 Processes */}
       <Card className="p-4">
-        <h3 className="font-semibold mb-4">Active Workflows</h3>
+        <h3 className="font-semibold mb-4">PM2 Processes</h3>
         <div className="space-y-3">
-          {workflows.map((workflow) => (
-            <div key={workflow.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-              <div className="flex items-center gap-3">
-                {getStatusIcon(workflow.status)}
-                <div>
-                  <div className="font-medium text-sm">{workflow.name}</div>
-                  <div className="text-xs text-muted-foreground">Last run: {workflow.lastRun}</div>
+          {processes.length > 0 ? (
+            processes.map((process) => (
+              <div key={process.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(process.status)}
+                  <div>
+                    <div className="font-medium text-sm">{process.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      Uptime: {process.uptime} • CPU: {process.cpu} • RAM: {process.memory} • Restarts: {process.restarts}
+                    </div>
+                  </div>
                 </div>
+                <Badge variant={process.status === "running" ? "default" : "secondary"}>{process.status}</Badge>
               </div>
-              <Badge variant={workflow.status === "running" ? "default" : "secondary"}>{workflow.status}</Badge>
+            ))
+          ) : (
+            <div className="text-sm text-muted-foreground text-center py-4">
+              No PM2 processes running
             </div>
-          ))}
+          )}
         </div>
       </Card>
 
@@ -251,13 +285,19 @@ export function SystemMonitor() {
       <Card className="p-4">
         <h3 className="font-semibold mb-4">System Logs</h3>
         <div className="space-y-2 max-h-64 overflow-auto">
-          {logs.map((log, index) => (
-            <div key={index} className="flex items-start gap-3 p-2 rounded text-sm font-mono">
-              {getLogIcon(log.level)}
-              <span className="text-muted-foreground min-w-[60px]">{log.time}</span>
-              <span className="flex-1">{log.message}</span>
+          {logs.length > 0 ? (
+            logs.map((log, index) => (
+              <div key={index} className="flex items-start gap-3 p-2 rounded text-sm font-mono">
+                {getLogIcon(log.level)}
+                <span className="text-muted-foreground min-w-[60px]">{log.time}</span>
+                <span className="flex-1">{log.message}</span>
+              </div>
+            ))
+          ) : (
+            <div className="text-sm text-muted-foreground text-center py-4">
+              No logs available
             </div>
-          ))}
+          )}
         </div>
       </Card>
     </div>
