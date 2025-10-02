@@ -26,6 +26,7 @@ import { WorkflowCanvas } from "@/components/apps/workflow-canvas"
 import { SystemMonitor } from "@/components/apps/system-monitor"
 import { ChatInterface } from "@/components/apps/chat-interface"
 import { Terminal } from "@/components/apps/terminal"
+import { ClaudeCLI } from "@/components/apps/claude-cli"
 import { Changelog } from "@/components/apps/changelog"
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
@@ -56,6 +57,7 @@ const getAppComponent = (id: string): React.ReactNode => {
     "installed": <InstalledApps />,
     "workflows": <WorkflowCanvas />,
     "terminal": <Terminal />,
+    "claude-cli": <ClaudeCLI />,
     "changelog": <Changelog />,
     "monitor": <SystemMonitor />,
     "file-manager": <FileManager />,

@@ -308,3 +308,26 @@ All you need to do is **follow DEPLOYMENT.md** and you'll have a live, deployed 
 - ~20 files reorganized
 - All imports fixed
 - Build tested and working
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+cd /var/www/ai-desktop && git pull origin main && rm -rf node_modules package-lock.json .next && npm install && npm run build && pm2 restart ai-desktop
+
+ cd /var/www/ai-desktop && \
+  git pull origin main && \
+  npm run build && \
+  pm2 restart ai-desktop

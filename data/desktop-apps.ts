@@ -63,6 +63,13 @@ export const DOCK_APPS: AppConfig[] = [
     description: "Command line interface"
   },
   {
+    id: "claude-cli",
+    name: "Claude Code",
+    icon: "Zap",
+    category: "development",
+    description: "AI-powered coding assistant"
+  },
+  {
     id: "monitor",
     name: "System Monitor",
     icon: "Activity",
@@ -143,6 +150,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     defaultHeight: 500,
     minWidth: 400,
     minHeight: 300,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "claude-cli": {
+    defaultWidth: 900,
+    defaultHeight: 600,
+    minWidth: 500,
+    minHeight: 400,
     resizable: true,
     maximizable: true,
     minimizable: true,
