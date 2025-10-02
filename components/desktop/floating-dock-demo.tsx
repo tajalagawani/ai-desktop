@@ -14,6 +14,7 @@ import {
   PaperclipIcon,
   ArrowUpIcon,
   X,
+  Zap,
 } from "lucide-react";
 import { Github, Brain, Slack } from "lucide-react";
 
@@ -87,11 +88,19 @@ export function FloatingDockDemo({ openWindow, openWindows, dockApps, onDrop, on
   };
 
   const links = (dockApps || []).map((app) => {
-    const IconComponent = getIconComponent(app.icon);
+    const isImageIcon = app.iconType === "image";
+    const IconComponent = !isImageIcon ? getIconComponent(app.icon) : null;
+
     return {
       title: app.name,
-      icon: (
-        <IconComponent className={`h-full w-full ${openWindows.includes(app.id) ? "text-white" : "text-neutral-500 dark:text-neutral-300"}`} />
+      icon: isImageIcon ? (
+        <img
+          src={app.icon}
+          alt={app.name}
+          className="h-full w-full object-contain p-1"
+        />
+      ) : (
+        IconComponent && <IconComponent className={`h-full w-full ${openWindows.includes(app.id) ? "text-white" : "text-neutral-500 dark:text-neutral-300"}`} />
       ),
       href: "#",
       onClick: () => {

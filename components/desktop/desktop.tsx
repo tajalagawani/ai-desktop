@@ -283,14 +283,20 @@ function DesktopIcons({
       {/* System Icons */}
       <div className="absolute top-4 left-4 md:top-8 md:left-8 grid grid-cols-1 gap-3 md:gap-4 z-20">
         {DOCK_APPS.filter(app => app.isSystem).map(app => {
-          const IconComponent = getIcon(app.icon)
+          const isImageIcon = app.iconType === "image"
+          const IconComponent = !isImageIcon ? getIcon(app.icon) : null
+
           return (
             <div key={app.id} className="flex flex-col items-center gap-2">
               <button
-                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center hover:scale-[1.2] transition-transform duration-200"
+                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center hover:scale-[1.2] transition-transform duration-200 overflow-hidden"
                 onClick={() => onOpenWindow(app.id, app.name)}
               >
-                <IconComponent className="h-6 w-6 text-neutral-600 dark:text-neutral-300" />
+                {isImageIcon ? (
+                  <img src={app.icon} alt={app.name} className="h-8 w-8 object-contain" />
+                ) : (
+                  IconComponent && <IconComponent className="h-6 w-6 text-neutral-600 dark:text-neutral-300" />
+                )}
               </button>
               <span className="text-xs text-foreground font-medium">{app.name}</span>
             </div>
@@ -301,9 +307,10 @@ function DesktopIcons({
       {/* Installed Apps */}
       <div className="absolute top-4 right-4 md:top-8 md:right-80 grid grid-cols-1 gap-3 md:gap-4 z-20">
         {installedApps.map((app: any) => {
-          const IconComponent = getIcon(app.icon)
+          const isImageIcon = app.iconType === "image"
+          const IconComponent = !isImageIcon ? getIcon(app.icon) : null
           const isRunning = windows.some((w: any) => w.id === app.id)
-          
+
           return (
             <DesktopIconContextMenu
               key={app.id}
@@ -313,7 +320,7 @@ function DesktopIcons({
               isPinned={true}
               onAction={onIconContextMenuAction}
             >
-              <div 
+              <div
                 className="flex flex-col items-center gap-2"
                 draggable
                 onDragStart={(e) => {
@@ -324,10 +331,14 @@ function DesktopIcons({
                 onDragEnd={() => setDraggedApp(null)}
               >
                 <button
-                  className="w-10 h-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center hover:scale-110 transition-transform duration-200 cursor-move"
+                  className="w-10 h-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center hover:scale-110 transition-transform duration-200 cursor-move overflow-hidden"
                   onClick={() => onOpenWindow(app.id, app.name)}
                 >
-                  <IconComponent className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
+                  {isImageIcon ? (
+                    <img src={app.icon} alt={app.name} className="h-8 w-8 object-contain" />
+                  ) : (
+                    IconComponent && <IconComponent className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
+                  )}
                 </button>
                 <span className="text-xs text-foreground font-medium">{app.name}</span>
               </div>

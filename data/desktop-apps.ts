@@ -4,7 +4,8 @@
 export interface AppConfig {
   id: string
   name: string
-  icon: string // Lucide icon name
+  icon: string // Lucide icon name or image path
+  iconType?: "lucide" | "image" // Type of icon (default: lucide)
   category: "system" | "productivity" | "development" | "communication" | "media" | "utilities"
   description?: string
   version?: string
@@ -65,7 +66,8 @@ export const DOCK_APPS: AppConfig[] = [
   {
     id: "claude-cli",
     name: "Claude Code",
-    icon: "Zap",
+    icon: "/icons/claude.png",
+    iconType: "image",
     category: "development",
     description: "AI-powered coding assistant"
   },
