@@ -302,7 +302,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
               </Button>
 
               <div className="mb-4 flex items-start gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm flex-shrink-0">
                   {selectedService.iconType === 'image' ? (
                     <img src={selectedService.icon} alt={selectedService.name} className="h-10 w-10 object-contain" />
                   ) : (
@@ -312,6 +312,52 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     })()
                   )}
                 </div>
+
+                {/* Action Buttons - Right after icon */}
+                {selectedService.installed && (
+                  <div className="flex gap-2 items-center flex-shrink-0">
+                    {selectedService.status === 'running' ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleServiceAction(selectedService.id, 'stop')}
+                        disabled={actionLoading === selectedService.id}
+                        title="Stop service"
+                      >
+                        <Square className="h-3.5 w-3.5" />
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleServiceAction(selectedService.id, 'start')}
+                        disabled={actionLoading === selectedService.id}
+                        title="Start service"
+                      >
+                        <Play className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleServiceAction(selectedService.id, 'restart')}
+                      disabled={actionLoading === selectedService.id}
+                      title="Restart service"
+                    >
+                      <RotateCw className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleServiceAction(selectedService.id, 'remove')}
+                      disabled={actionLoading === selectedService.id}
+                      title="Delete service"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                )}
+
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <h2 className="text-2xl font-semibold">{selectedService.name}</h2>
@@ -473,59 +519,6 @@ export function ServiceManager(_props: ServiceManagerProps) {
                           </div>
                         ))}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Action Buttons */}
-                  {!selectedService.installed ? (
-                    <Button
-                      size="sm"
-                      className="bg-primary text-primary-foreground hover:bg-primary/90"
-                      onClick={() => handleServiceAction(selectedService.id, 'install')}
-                      disabled={actionLoading === selectedService.id}
-                    >
-                      <Download className="mr-2 h-3 w-3" />
-                      {actionLoading === selectedService.id ? 'Installing...' : 'Install'}
-                    </Button>
-                  ) : (
-                    <div className="flex gap-2 flex-wrap">
-                      {selectedService.status === 'running' ? (
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleServiceAction(selectedService.id, 'stop')}
-                          disabled={actionLoading === selectedService.id}
-                        >
-                          <Square className="mr-2 h-3 w-3" />
-                          Stop
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          className="bg-primary text-primary-foreground hover:bg-primary/90"
-                          onClick={() => handleServiceAction(selectedService.id, 'start')}
-                          disabled={actionLoading === selectedService.id}
-                        >
-                          <Play className="mr-2 h-3 w-3" />
-                          Start
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleServiceAction(selectedService.id, 'restart')}
-                        disabled={actionLoading === selectedService.id}
-                      >
-                        <RotateCw className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleServiceAction(selectedService.id, 'remove')}
-                        disabled={actionLoading === selectedService.id}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
                     </div>
                   )}
                 </div>
