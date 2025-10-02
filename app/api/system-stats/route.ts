@@ -59,7 +59,8 @@ async function getCPUUsage(): Promise<number> {
     totalUsage += usage
   }
 
-  return Math.round(totalUsage / startMeasure.length)
+  const avgUsage = totalUsage / startMeasure.length
+  return Math.min(Math.round(avgUsage), 100)
 }
 
 // Get disk usage (works on Linux/Unix)
