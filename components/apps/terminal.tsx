@@ -8,13 +8,14 @@ export function Terminal() {
   const wsRef = useRef<WebSocket | null>(null)
   const fitAddonRef = useRef<any>(null)
   const [isConnected, setIsConnected] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (!terminalRef.current) return
 
     let cleanup: (() => void) | null = null
+    let term: any = null
+    let fitAddon: any = null
 
     // Dynamically import xterm to avoid SSR issues
     const loadTerminal = async () => {
@@ -29,45 +30,61 @@ export function Terminal() {
 
         if (!terminalRef.current) return
 
-        // Create terminal instance
-        const term = new XTerm({
+        // Create terminal instance with optimal settings
+        term = new XTerm({
           cursorBlink: true,
+          cursorStyle: 'block',
           fontSize: 14,
-          fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+          fontFamily: '"Cascadia Code", Menlo, Monaco, "Courier New", monospace',
+          fontWeight: 'normal',
+          fontWeightBold: 'bold',
+          letterSpacing: 0,
+          lineHeight: 1.0,
+          allowProposedApi: true,
+          allowTransparency: false,
+          convertEol: false,
+          disableStdin: false,
+          scrollback: 1000,
+          tabStopWidth: 8,
           theme: {
-            background: '#1a1a1a',
-            foreground: '#ffffff',
+            background: '#1e1e1e',
+            foreground: '#d4d4d4',
             cursor: '#ffffff',
+            cursorAccent: '#000000',
+            selectionBackground: '#264f78',
             black: '#000000',
-            red: '#ff5555',
-            green: '#50fa7b',
-            yellow: '#f1fa8c',
-            blue: '#bd93f9',
-            magenta: '#ff79c6',
-            cyan: '#8be9fd',
-            white: '#bfbfbf',
-            brightBlack: '#4d4d4d',
-            brightRed: '#ff6e67',
-            brightGreen: '#5af78e',
-            brightYellow: '#f4f99d',
-            brightBlue: '#caa9fa',
-            brightMagenta: '#ff92d0',
-            brightCyan: '#9aedfe',
-            brightWhite: '#e6e6e6',
+            red: '#cd3131',
+            green: '#0dbc79',
+            yellow: '#e5e510',
+            blue: '#2472c8',
+            magenta: '#bc3fbc',
+            cyan: '#11a8cd',
+            white: '#e5e5e5',
+            brightBlack: '#666666',
+            brightRed: '#f14c4c',
+            brightGreen: '#23d18b',
+            brightYellow: '#f5f543',
+            brightBlue: '#3b8eea',
+            brightMagenta: '#d670d6',
+            brightCyan: '#29b8db',
+            brightWhite: '#ffffff',
           },
-          rows: 24,
-          cols: 80,
         })
 
-        // Add addons
-        const fitAddon = new FitAddon()
+        // Create and load addons
+        fitAddon = new FitAddon()
         const webLinksAddon = new WebLinksAddon()
 
         term.loadAddon(fitAddon)
         term.loadAddon(webLinksAddon)
 
-        // Open terminal
+        // Open terminal in the container
         term.open(terminalRef.current)
+
+        // Wait for terminal to be fully mounted
+        await new Promise(resolve => setTimeout(resolve, 10))
+
+        // Fit terminal to container
         fitAddon.fit()
 
         xtermRef.current = term
@@ -78,10 +95,34 @@ export function Terminal() {
         // Connect to WebSocket
         connectWebSocket(term)
 
-        // Handle resize
+        // Handle window resize with debouncing
+        let resizeTimeout: NodeJS.Timeout
         const handleResize = () => {
+          clearTimeout(resizeTimeout)
+          resizeTimeout = setTimeout(() => {
+            try {
+              fitAddon.fit()
+              if (wsRef.current?.readyState === WebSocket.OPEN && term) {
+                wsRef.current.send(
+                  JSON.stringify({
+                    type: 'resize',
+                    cols: term.cols,
+                    rows: term.rows,
+                  })
+                )
+              }
+            } catch (error) {
+              console.error('[Terminal] Resize error:', error)
+            }
+          }, 100)
+        }
+
+        window.addEventListener('resize', handleResize)
+
+        // Initial resize after a short delay
+        setTimeout(() => {
           fitAddon.fit()
-          if (wsRef.current?.readyState === WebSocket.OPEN) {
+          if (wsRef.current?.readyState === WebSocket.OPEN && term) {
             wsRef.current.send(
               JSON.stringify({
                 type: 'resize',
@@ -90,21 +131,21 @@ export function Terminal() {
               })
             )
           }
-        }
-
-        window.addEventListener('resize', handleResize)
+        }, 200)
 
         // Set cleanup function
         cleanup = () => {
+          clearTimeout(resizeTimeout)
           window.removeEventListener('resize', handleResize)
           if (wsRef.current) {
             wsRef.current.close()
           }
-          term.dispose()
+          if (term) {
+            term.dispose()
+          }
         }
       } catch (error) {
         console.error('[Terminal] Error loading terminal:', error)
-        setError('Failed to load terminal')
         setIsLoading(false)
       }
     }
@@ -123,19 +164,25 @@ export function Terminal() {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const wsUrl = `${protocol}//${window.location.host}/api/terminal/ws`
 
-      term.writeln('\x1b[1;32mConnecting to terminal...\x1b[0m')
-
       const ws = new WebSocket(wsUrl)
       wsRef.current = ws
 
       ws.onopen = () => {
         console.log('[Terminal] WebSocket connected')
         setIsConnected(true)
-        setError(null)
-        term.writeln('\x1b[1;32mConnected!\x1b[0m')
-        term.writeln('')
 
-        // Send input to WebSocket
+        // Send initial terminal size
+        if (term) {
+          ws.send(
+            JSON.stringify({
+              type: 'resize',
+              cols: term.cols,
+              rows: term.rows,
+            })
+          )
+        }
+
+        // Handle data from terminal (user input)
         term.onData((data: string) => {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: 'input', data }))
@@ -152,7 +199,7 @@ export function Terminal() {
           } else if (message.type === 'connected') {
             console.log('[Terminal] Session established:', message.sessionId)
           } else if (message.type === 'exit') {
-            term.writeln(`\n\n\x1b[1;31mTerminal session ended (exit code: ${message.exitCode})\x1b[0m`)
+            term.write(`\r\n\x1b[1;31mTerminal session ended (exit code: ${message.exitCode})\x1b[0m\r\n`)
             setIsConnected(false)
           }
         } catch (error) {
@@ -162,40 +209,42 @@ export function Terminal() {
 
       ws.onerror = (error) => {
         console.error('[Terminal] WebSocket error:', error)
-        setError('Connection error')
-        term.writeln('\n\x1b[1;31mConnection error!\x1b[0m')
+        term.write('\r\n\x1b[1;31mConnection error!\x1b[0m\r\n')
+        setIsConnected(false)
       }
 
       ws.onclose = () => {
         console.log('[Terminal] WebSocket closed')
         setIsConnected(false)
-        term.writeln('\n\x1b[1;33mConnection closed. Refresh to reconnect.\x1b[0m')
+        term.write('\r\n\x1b[1;33mConnection closed. Refresh to reconnect.\x1b[0m\r\n')
       }
     } catch (error) {
       console.error('[Terminal] Error connecting:', error)
-      setError('Failed to connect')
-      term.writeln('\n\x1b[1;31mFailed to connect to terminal!\x1b[0m')
+      term.write('\r\n\x1b[1;31mFailed to connect to terminal!\x1b[0m\r\n')
     }
   }
 
   return (
-    <div className="h-full w-full bg-[#1a1a1a] p-4">
+    <div className="h-full w-full bg-[#1e1e1e] flex flex-col">
       {isLoading && (
         <div className="flex items-center justify-center h-full text-white">
-          <div className="text-sm">Loading terminal...</div>
+          <div className="text-sm">Initializing terminal...</div>
         </div>
       )}
-      {error && (
-        <div className="mb-2 text-sm text-red-500">
-          {error}
-        </div>
-      )}
-      {!isConnected && !isLoading && (
-        <div className="mb-2 text-sm text-yellow-500">
+      {!isLoading && !isConnected && (
+        <div className="px-4 py-2 text-sm text-yellow-400 bg-yellow-900/20 border-b border-yellow-900/30">
           Connecting to terminal...
         </div>
       )}
-      <div ref={terminalRef} className="h-full w-full" style={{ display: isLoading ? 'none' : 'block' }} />
+      <div
+        ref={terminalRef}
+        className="flex-1 w-full p-2"
+        style={{
+          display: isLoading ? 'none' : 'block',
+          height: '100%',
+          overflow: 'hidden'
+        }}
+      />
     </div>
   )
 }
