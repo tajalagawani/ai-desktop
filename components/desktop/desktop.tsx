@@ -52,7 +52,12 @@ import { useDesktop, useMouseActivity, useTheme, useDockApps } from "@/hooks/use
 import { getIcon, getIconProps } from "@/utils/icon-mapper"
 
 // Component map for dynamic loading
-const getAppComponent = (id: string, openWindowFn?: (id: string, title: string, component: React.ReactNode) => void): React.ReactNode => {
+const getAppComponent = (
+  id: string,
+  openWindowFn?: (id: string, title: string, component: React.ReactNode) => void,
+  toggleMaximizeFn?: (id: string) => void,
+  bringToFrontFn?: (id: string) => void
+): React.ReactNode => {
   const componentMap: Record<string, React.ReactNode> = {
     "app-store": <MacAppStore />,
     "installed": <InstalledApps />,
@@ -62,7 +67,7 @@ const getAppComponent = (id: string, openWindowFn?: (id: string, title: string, 
     "changelog": <Changelog />,
     "monitor": <SystemMonitor />,
     "file-manager": <FileManager />,
-    "service-manager": <ServiceManager openWindow={openWindowFn} />,
+    "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
     "github": <div>GitHub Desktop</div>,
     "chatgpt": <div>ChatGPT</div>,
     "slack": <div>Slack</div>,
@@ -122,7 +127,7 @@ export function Desktop() {
 
   // Handle window operations
   const handleOpenWindow = (id: string, title: string) => {
-    const component = getAppComponent(id, openWindow)
+    const component = getAppComponent(id, openWindow, toggleMaximizeWindow, setActiveWindow)
     openWindow(id, title, component)
 
     // Auto-maximize changelog window

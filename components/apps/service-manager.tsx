@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Widget } from "@/components/desktop/widget"
 import { INSTALLABLE_SERVICES, SERVICE_CATEGORIES, ServiceConfig } from "@/data/installable-services"
 import { getIcon } from "@/utils/icon-mapper"
 import { Play, Square, RotateCw, Trash2, Download, ExternalLink, Terminal, Eye } from "lucide-react"
@@ -19,9 +19,11 @@ interface ServiceWithStatus extends ServiceConfig {
 
 interface ServiceManagerProps {
   openWindow?: (id: string, title: string, component: React.ReactNode) => void
+  toggleMaximizeWindow?: (id: string) => void
+  bringToFront?: (id: string) => void
 }
 
-export function ServiceManager({ openWindow }: ServiceManagerProps) {
+export function ServiceManager({ openWindow, toggleMaximizeWindow, bringToFront }: ServiceManagerProps) {
   const [services, setServices] = useState<ServiceWithStatus[]>([])
   const [loading, setLoading] = useState(true)
   const [dockerInstalled, setDockerInstalled] = useState(false)
@@ -147,84 +149,104 @@ export function ServiceManager({ openWindow }: ServiceManagerProps) {
         </div>
 
         <TabsContent value={selectedCategory} className="flex-1 overflow-auto p-6 mt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredServices.map(service => {
               const Icon = getIcon(service.icon)
               const isLoading = actionLoading === service.id
 
               return (
-                <Card key={service.id} className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <Icon className="h-6 w-6 text-primary" />
+                <Widget key={service.id} icon={Icon} title={service.name}>
+                  <div className="space-y-3">
+                    {/* Status Badge */}
+                    <div className="flex items-center justify-between">
+                      {getStatusBadge(service.status)}
+                      <span className="text-xs text-muted-foreground">
+                        {service.category}
+                      </span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold">{service.name}</h3>
-                        {getStatusBadge(service.status)}
+
+                    {/* Description */}
+                    <p className="text-xs text-muted-foreground line-clamp-2">
+                      {service.description}
+                    </p>
+
+                    {/* Credentials (if installed) */}
+                    {service.installed && service.defaultCredentials && (
+                      <div className="text-xs space-y-1 p-2 bg-muted/50 rounded">
+                        {service.defaultCredentials.port && (
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Port:</span>
+                            <span className="font-mono">{service.defaultCredentials.port}</span>
+                          </div>
+                        )}
+                        {service.defaultCredentials.username && (
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">User:</span>
+                            <span className="font-mono">{service.defaultCredentials.username}</span>
+                          </div>
+                        )}
                       </div>
-                      <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
+                    )}
 
-                      {service.installed && service.defaultCredentials && (
-                        <div className="mt-2 text-xs text-muted-foreground">
-                          {service.defaultCredentials.port && (
-                            <div>Port: {service.defaultCredentials.port}</div>
-                          )}
-                          {service.defaultCredentials.username && (
-                            <div>User: {service.defaultCredentials.username}</div>
-                          )}
-                        </div>
-                      )}
-
-                      <Separator className="my-3" />
-
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {!service.installed ? (
+                    {/* Action Buttons */}
+                    <div className="flex flex-col gap-2 pt-2">
+                      {!service.installed ? (
+                        <Button
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleServiceAction(service.id, 'install')}
+                          disabled={isLoading}
+                        >
+                          <Download className="h-3 w-3 mr-2" />
+                          {isLoading ? 'Installing...' : 'Install'}
+                        </Button>
+                      ) : (
+                        <>
                           <Button
                             size="sm"
-                            onClick={() => handleServiceAction(service.id, 'install')}
-                            disabled={isLoading}
+                            variant="secondary"
+                            className="w-full"
+                            onClick={() => {
+                              if (openWindow && toggleMaximizeWindow && bringToFront) {
+                                const windowId = `service-${service.id}`
+                                openWindow(
+                                  windowId,
+                                  service.name,
+                                  <ServiceViewer service={service} />
+                                )
+                                // Maximize and bring to front after a short delay
+                                setTimeout(() => {
+                                  toggleMaximizeWindow(windowId)
+                                  bringToFront(windowId)
+                                }, 100)
+                              }
+                            }}
                           >
-                            <Download className="h-3 w-3 mr-2" />
-                            Install
+                            <Eye className="h-3 w-3 mr-2" />
+                            Open Dashboard
                           </Button>
-                        ) : (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => {
-                                if (openWindow) {
-                                  openWindow(
-                                    `service-${service.id}`,
-                                    service.name,
-                                    <ServiceViewer service={service} />
-                                  )
-                                }
-                              }}
-                            >
-                              <Eye className="h-3 w-3 mr-2" />
-                              Open
-                            </Button>
 
+                          <div className="flex gap-2">
                             {service.status === 'running' ? (
                               <Button
                                 size="sm"
                                 variant="destructive"
+                                className="flex-1"
                                 onClick={() => handleServiceAction(service.id, 'stop')}
                                 disabled={isLoading}
                               >
-                                <Square className="h-3 w-3 mr-2" />
+                                <Square className="h-3 w-3 mr-1" />
                                 Stop
                               </Button>
                             ) : (
                               <Button
                                 size="sm"
                                 variant="default"
+                                className="flex-1"
                                 onClick={() => handleServiceAction(service.id, 'start')}
                                 disabled={isLoading}
                               >
-                                <Play className="h-3 w-3 mr-2" />
+                                <Play className="h-3 w-3 mr-1" />
                                 Start
                               </Button>
                             )}
@@ -234,6 +256,7 @@ export function ServiceManager({ openWindow }: ServiceManagerProps) {
                               variant="outline"
                               onClick={() => handleServiceAction(service.id, 'restart')}
                               disabled={isLoading}
+                              title="Restart"
                             >
                               <RotateCw className="h-3 w-3" />
                             </Button>
@@ -243,15 +266,16 @@ export function ServiceManager({ openWindow }: ServiceManagerProps) {
                               variant="outline"
                               onClick={() => handleServiceAction(service.id, 'remove')}
                               disabled={isLoading}
+                              title="Remove"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
-                          </>
-                        )}
-                      </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
-                </Card>
+                </Widget>
               )
             })}
           </div>
