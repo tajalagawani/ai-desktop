@@ -56,34 +56,12 @@ export function SystemMonitor() {
     try {
       setLoading(true)
       setError(null)
-
-      // Fetch all data in parallel
-      const [statsRes, processesRes, logsRes] = await Promise.all([
-        fetch('/api/system-stats'),
-        fetch('/api/pm2-processes'),
-        fetch('/api/system-logs')
-      ])
-
-      if (!statsRes.ok) throw new Error('Failed to fetch system stats')
-
-      const statsData = await statsRes.json()
-      setStats(statsData)
-
-      // Process PM2 data (don't throw error if it fails)
-      if (processesRes.ok) {
-        const processesData = await processesRes.json()
-        if (processesData.success) {
-          setProcesses(processesData.processes)
-        }
+      const response = await fetch('/api/system-stats')
+      if (!response.ok) {
+        throw new Error('Failed to fetch system stats')
       }
-
-      // Process logs data (don't throw error if it fails)
-      if (logsRes.ok) {
-        const logsData = await logsRes.json()
-        if (logsData.success) {
-          setLogs(logsData.logs)
-        }
-      }
+      const data = await response.json()
+      setStats(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
       console.error('Error fetching system stats:', err)
@@ -254,30 +232,22 @@ export function SystemMonitor() {
         </div>
       )}
 
-      {/* PM2 Processes */}
+      {/* Active Workflows */}
       <Card className="p-4">
-        <h3 className="font-semibold mb-4">PM2 Processes</h3>
+        <h3 className="font-semibold mb-4">Active Workflows</h3>
         <div className="space-y-3">
-          {processes.length > 0 ? (
-            processes.map((process) => (
-              <div key={process.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                <div className="flex items-center gap-3">
-                  {getStatusIcon(process.status)}
-                  <div>
-                    <div className="font-medium text-sm">{process.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      Uptime: {process.uptime} • CPU: {process.cpu} • RAM: {process.memory} • Restarts: {process.restarts}
-                    </div>
-                  </div>
+          {workflows.map((workflow) => (
+            <div key={workflow.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+              <div className="flex items-center gap-3">
+                {getStatusIcon(workflow.status)}
+                <div>
+                  <div className="font-medium text-sm">{workflow.name}</div>
+                  <div className="text-xs text-muted-foreground">Last run: {workflow.lastRun}</div>
                 </div>
-                <Badge variant={process.status === "running" ? "default" : "secondary"}>{process.status}</Badge>
               </div>
-            ))
-          ) : (
-            <div className="text-sm text-muted-foreground text-center py-4">
-              No PM2 processes running
+              <Badge variant={workflow.status === "running" ? "default" : "secondary"}>{workflow.status}</Badge>
             </div>
-          )}
+          ))}
         </div>
       </Card>
 
