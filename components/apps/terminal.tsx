@@ -30,12 +30,12 @@ export function Terminal() {
 
         if (!terminalRef.current) return
 
-        // Create terminal instance with optimal settings
+        // Create terminal instance with optimal settings (macOS Terminal colors)
         term = new XTerm({
           cursorBlink: true,
           cursorStyle: 'block',
-          fontSize: 14,
-          fontFamily: '"Cascadia Code", Menlo, Monaco, "Courier New", monospace',
+          fontSize: 13,
+          fontFamily: 'Menlo, Monaco, "Courier New", monospace',
           fontWeight: 'normal',
           fontWeightBold: 'bold',
           letterSpacing: 0,
@@ -47,27 +47,30 @@ export function Terminal() {
           scrollback: 1000,
           tabStopWidth: 8,
           theme: {
-            background: '#1e1e1e',
-            foreground: '#d4d4d4',
+            // macOS Terminal (Basic profile) exact colors
+            background: '#000000',
+            foreground: '#ffffff',
             cursor: '#ffffff',
             cursorAccent: '#000000',
-            selectionBackground: '#264f78',
+            selectionBackground: 'rgba(255, 255, 255, 0.3)',
+            // ANSI Colors - macOS Terminal Basic
             black: '#000000',
-            red: '#cd3131',
-            green: '#0dbc79',
-            yellow: '#e5e510',
-            blue: '#2472c8',
-            magenta: '#bc3fbc',
-            cyan: '#11a8cd',
-            white: '#e5e5e5',
-            brightBlack: '#666666',
-            brightRed: '#f14c4c',
-            brightGreen: '#23d18b',
-            brightYellow: '#f5f543',
-            brightBlue: '#3b8eea',
-            brightMagenta: '#d670d6',
-            brightCyan: '#29b8db',
-            brightWhite: '#ffffff',
+            red: '#c23621',
+            green: '#25bc24',
+            yellow: '#adad27',
+            blue: '#492ee1',
+            magenta: '#d338d3',
+            cyan: '#33bbc8',
+            white: '#cbcccd',
+            // Bright ANSI Colors - macOS Terminal Basic
+            brightBlack: '#818383',
+            brightRed: '#fc391f',
+            brightGreen: '#31e722',
+            brightYellow: '#eaec23',
+            brightBlue: '#5833ff',
+            brightMagenta: '#f935f8',
+            brightCyan: '#14f0f0',
+            brightWhite: '#e9ebeb',
           },
         })
 
@@ -225,7 +228,7 @@ export function Terminal() {
   }
 
   return (
-    <div className="h-full w-full bg-[#1e1e1e] flex flex-col">
+    <div className="h-full w-full bg-black flex flex-col">
       {isLoading && (
         <div className="flex items-center justify-center h-full text-white">
           <div className="text-sm">Initializing terminal...</div>
