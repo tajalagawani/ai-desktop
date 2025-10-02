@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { GitCommit, Clock, User, ExternalLink, RefreshCw, Download, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
+import { Clock, User, ExternalLink, RefreshCw, Download, CheckCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
@@ -18,7 +18,6 @@ export function Changelog() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentVersion, setCurrentVersion] = useState<string>("")
-  const [buildDate, setBuildDate] = useState<string>("")
   const [updateAvailable, setUpdateAvailable] = useState(false)
   const [latestSHA, setLatestSHA] = useState<string>("")
   const [currentSHA, setCurrentSHA] = useState<string>("")
@@ -40,7 +39,6 @@ export function Changelog() {
       if (data.success) {
         setChangelog(data.changelog)
         setCurrentVersion(data.currentVersion)
-        setBuildDate(data.buildDate)
         setUpdateAvailable(data.updateAvailable)
         setLatestSHA(data.latestSHA)
         setCurrentSHA(data.currentSHA)
@@ -63,15 +61,15 @@ export function Changelog() {
       const data = await response.json()
 
       if (data.success) {
-        setUpdateMessage('✅ Update completed successfully! The app will reload in 3 seconds...')
+        setUpdateMessage('Update completed successfully! Reloading in 3 seconds...')
         setTimeout(() => {
           window.location.reload()
         }, 3000)
       } else {
-        setUpdateMessage(`❌ Update failed: ${data.error}`)
+        setUpdateMessage(`Update failed: ${data.error}`)
       }
     } catch (err) {
-      setUpdateMessage('❌ Failed to trigger update')
+      setUpdateMessage('Failed to trigger update')
     } finally {
       setUpdating(false)
     }
@@ -79,13 +77,22 @@ export function Changelog() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
+
+  const formatRelativeTime = (dateString: string) => {
+    const date = new Date(dateString)
     const now = new Date()
     const diff = now.getTime() - date.getTime()
     const hours = Math.floor(diff / (1000 * 60 * 60))
     const days = Math.floor(hours / 24)
 
     if (days > 7) {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      return formatDate(dateString)
     } else if (days > 0) {
       return `${days} day${days > 1 ? 's' : ''} ago`
     } else if (hours > 0) {
@@ -97,42 +104,16 @@ export function Changelog() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header with Version Info */}
-      <div className="border-b border-border bg-card/50">
-        <div className="flex items-center justify-between p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-muted">
-              <GitCommit className="w-5 h-5 text-foreground" />
-            </div>
+      {/* Simple Header */}
+      <div className="border-b border-border">
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold text-foreground">Recent Updates</h2>
-                <Badge variant="secondary" className="font-mono text-xs">
-                  v{currentVersion}
-                </Badge>
-                {updateAvailable && (
-                  <Badge className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20">
-                    Update Available
-                  </Badge>
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Build: {buildDate} • Deployed: {currentSHA || 'Not deployed yet'} {lastUpdated && `• Updated: ${lastUpdated}`}
+              <h1 className="text-3xl font-bold text-foreground mb-2">Changelog</h1>
+              <p className="text-muted-foreground">
+                {currentSHA ? `Currently on ${currentSHA}` : 'Not deployed'} • v{currentVersion}
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {updateAvailable && !updating && (
-              <Button
-                onClick={handleUpdate}
-                variant="default"
-                size="sm"
-                className="gap-2 bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Download className="w-4 h-4" />
-                Update Now
-              </Button>
-            )}
             <Button
               onClick={fetchChangelog}
               variant="outline"
@@ -144,143 +125,158 @@ export function Changelog() {
               Refresh
             </Button>
           </div>
-        </div>
 
-        {/* Update Status Banner */}
-        {updateMessage && (
-          <div className={`px-6 py-3 border-t border-border ${
-            updateMessage.startsWith('✅') ? 'bg-green-500/10' : 'bg-red-500/10'
-          }`}>
-            <p className={`text-sm ${
-              updateMessage.startsWith('✅') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-            }`}>
-              {updateMessage}
-            </p>
-          </div>
-        )}
-
-        {/* Updating Progress */}
-        {updating && (
-          <div className="px-6 py-4 bg-muted/50 border-t border-border">
-            <div className="flex items-center gap-3">
-              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-              <div>
-                <p className="text-sm font-medium text-foreground">Updating application...</p>
-                <p className="text-xs text-muted-foreground">Please wait while we update to the latest version</p>
+          {/* Update Available Banner */}
+          {updateAvailable && !updating && (
+            <div className="p-4 bg-muted/50 border border-border rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="font-medium text-foreground mb-1">Update Available</p>
+                  <p className="text-sm text-muted-foreground">
+                    New version {latestSHA} is available
+                    {lastUpdated && ` • Last updated ${lastUpdated}`}
+                  </p>
+                </div>
+                <Button
+                  onClick={handleUpdate}
+                  size="sm"
+                  className="gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Update Now
+                </Button>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Version Comparison */}
-        {updateAvailable && !updating && (
-          <div className="px-6 py-4 bg-muted/30 border-t border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-foreground mb-1">New Version Available!</p>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    Current: <code className="font-mono bg-muted px-1 rounded">{currentSHA}</code>
-                  </span>
-                  <span>→</span>
-                  <span className="flex items-center gap-1">
-                    Latest: <code className="font-mono bg-muted px-1 rounded text-green-600">{latestSHA}</code>
-                  </span>
+          {/* Updating State */}
+          {updating && (
+            <div className="p-4 bg-muted/50 border border-border rounded-lg">
+              <div className="flex items-center gap-3">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium text-foreground">Updating application...</p>
+                  <p className="text-xs text-muted-foreground">This may take a few moments</p>
                 </div>
               </div>
-              <AlertCircle className="w-5 h-5 text-green-600" />
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Update Message */}
+          {updateMessage && (
+            <div className={`p-4 border rounded-lg ${
+              updateMessage.includes('success')
+                ? 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900'
+                : 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900'
+            }`}>
+              <p className={`text-sm ${
+                updateMessage.includes('success')
+                  ? 'text-green-900 dark:text-green-100'
+                  : 'text-red-900 dark:text-red-100'
+              }`}>
+                {updateMessage}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-6">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-8 h-8 border-2 border-border border-t-foreground rounded-full animate-spin" />
-              <p className="text-sm text-muted-foreground">Loading changelog...</p>
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Loading changelog...</p>
+              </div>
             </div>
-          </div>
-        ) : error ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <p className="text-destructive mb-2">{error}</p>
-              <Button onClick={fetchChangelog} variant="outline" size="sm">
-                Retry
-              </Button>
+          ) : error ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <p className="text-destructive mb-4">{error}</p>
+                <Button onClick={fetchChangelog} variant="outline" size="sm">
+                  Try Again
+                </Button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-4 max-w-4xl mx-auto">
-            {changelog.map((entry, index) => (
-              <div
-                key={entry.sha}
-                className="group relative p-6 rounded-lg bg-card border border-border hover:border-foreground/20 hover:bg-card/80 transition-all duration-200"
-              >
-                {/* Commit Info */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="mt-1 p-2 rounded-md bg-muted">
-                        <GitCommit className="w-4 h-4 text-muted-foreground" />
+          ) : (
+            <div className="space-y-12">
+              {changelog.map((entry, index) => (
+                <article key={entry.sha} className="relative">
+                  {/* Timeline connector */}
+                  {index !== changelog.length - 1 && (
+                    <div className="absolute left-[7px] top-10 bottom-0 w-[2px] bg-border" />
+                  )}
+
+                  <div className="relative flex gap-6">
+                    {/* Timeline dot */}
+                    <div className="relative flex-shrink-0">
+                      <div className="w-4 h-4 rounded-full border-2 border-border bg-background mt-2" />
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0 pb-2">
+                      {/* Date */}
+                      <time className="text-sm text-muted-foreground mb-2 block">
+                        {formatDate(entry.date)}
+                      </time>
+
+                      {/* Title/Message */}
+                      <h2 className="text-2xl font-bold text-foreground mb-3 leading-snug">
+                        {entry.message}
+                      </h2>
+
+                      {/* Meta Info */}
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                        <span className="flex items-center gap-1.5">
+                          <User className="w-3.5 h-3.5" />
+                          {entry.author}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5" />
+                          {formatRelativeTime(entry.date)}
+                        </span>
+                        <Badge variant="outline" className="font-mono text-xs">
+                          {entry.sha}
+                        </Badge>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-foreground font-medium mb-2 leading-relaxed">
-                          {entry.message}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1.5">
-                            <User className="w-3.5 h-3.5" />
-                            <span className="font-medium">{entry.author}</span>
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <Clock className="w-3.5 h-3.5" />
-                            {formatDate(entry.date)}
-                          </span>
-                          <span className="font-mono text-xs bg-muted px-2.5 py-1 rounded-md border border-border">
-                            {entry.sha}
-                          </span>
-                        </div>
-                      </div>
+
+                      {/* GitHub Link */}
+                      <a
+                        href={entry.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        View on GitHub
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
                     </div>
                   </div>
-                  <a
-                    href={entry.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-muted rounded-lg"
-                    title="View on GitHub"
-                  >
-                    <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border bg-card/50">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Showing last {changelog.length} commits</span>
-          <span className="flex items-center gap-2">
-            {!updateAvailable ? (
-              <>
-                <CheckCircle className="w-3 h-3 text-green-600" />
-                <span>You're up to date</span>
-              </>
-            ) : (
-              <>
-                <AlertCircle className="w-3 h-3 text-yellow-600" />
-                <span>{changelog.length} new updates available</span>
-              </>
-            )}
-          </span>
+      {!loading && !error && (
+        <div className="border-t border-border">
+          <div className="max-w-4xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Showing {changelog.length} recent updates</span>
+              {!updateAvailable && currentSHA && (
+                <span className="flex items-center gap-2">
+                  <CheckCircle className="w-3 h-3 text-green-600" />
+                  You're up to date
+                </span>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

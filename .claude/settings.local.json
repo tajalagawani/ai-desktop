@@ -8,7 +8,9 @@
       "Bash(npm run build:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "WebFetch(domain:logspot.vercel.app)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []

@@ -1,13 +1,20 @@
-# Auto-Update Setup Guide
+# Update System Guide
 
-This guide shows you how to set up automatic updates for your AI Desktop deployment on VPS.
+This guide shows you how to use the update system for your AI Desktop deployment on VPS.
 
 ## How It Works
 
-1. **GitHub API Polling**: The script checks GitHub every 5 minutes for new commits
-2. **Auto Deploy**: When a new commit is detected, it automatically pulls, builds, and restarts
-3. **In-App Changelog**: Users can view recent updates from the system menu
-4. **No SSH Keys Required**: Works with public repositories without storing sensitive credentials
+1. **User-Triggered Updates**: Updates are triggered manually by clicking "Update Now" button in the app
+2. **Version Detection**: App compares deployed commit SHA with latest GitHub commit
+3. **One-Click Deploy**: Button triggers script to pull, build, and restart automatically
+4. **In-App Changelog**: View recent updates and version info from Power menu → Recent Updates
+5. **No SSH Keys Required**: Works with public repositories without storing sensitive credentials
+
+## Version Display
+
+- **Primary Version**: Commit SHA (e.g., `abc1234`) - shown prominently as main version
+- **Semantic Version**: v1.0.0 - shown as secondary badge
+- **Last Updated**: Timestamp of last deployment
 
 ## Setup Instructions
 
@@ -18,13 +25,13 @@ ssh root@your-vps-ip
 cd /var/www/ai-desktop
 ```
 
-### Step 2: Make Auto-Update Script Executable
+### Step 2: Make Update Script Executable
 
 ```bash
 chmod +x deployment/auto-update.sh
 ```
 
-### Step 3: Test the Script
+### Step 3: Test the Script (Optional)
 
 ```bash
 # Run manually to test
@@ -37,17 +44,16 @@ You should see output like:
 [2025-10-02 12:00:01] ✅ Already up to date: abc1234
 ```
 
-### Step 4: Setup Cron Job (Auto-Check Every 5 Minutes)
+### Step 4: Using In-App Updates
 
-```bash
-# Open crontab editor
-crontab -e
-```
+**No cron setup needed!** Updates are triggered from the app:
 
-Add this line at the end:
-```bash
-*/5 * * * * /var/www/ai-desktop/deployment/auto-update.sh >> /var/www/ai-desktop/logs/auto-update.log 2>&1
-```
+1. Open the app in your browser
+2. Click **Power button** (top-right) → **"Recent Updates"**
+3. View current version (commit SHA) and available updates
+4. If update available, click **"Update Now"** button
+5. App automatically pulls latest code, builds, and restarts
+6. Page reloads with new version after 3 seconds
 
 Save and exit (Ctrl+X, then Y, then Enter in nano).
 
@@ -76,13 +82,14 @@ Users can view recent updates from within the application:
 
 1. Click the **Power** button in the top-right taskbar
 2. Select **"Recent Updates"** from the menu
-3. See the latest 10 commits with:
-   - Commit message
-   - Author
-   - Time
+3. See the latest 10 commits in a clean timeline layout with:
+   - Commit date
+   - Commit message (large, bold title)
+   - Author and relative time
+   - Commit SHA badge
    - Direct link to GitHub
 
-The changelog auto-refreshes every 60 seconds.
+The changelog features a minimalist design inspired by modern changelog templates, with a vertical timeline layout for easy scanning.
 
 ## Update Behavior
 
