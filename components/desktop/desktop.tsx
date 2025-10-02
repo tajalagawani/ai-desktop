@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -14,6 +14,8 @@ import {
   Folder,
   AlertCircle,
   Bell,
+  MemoryStick as Memory,
+  HardDrive,
 } from "lucide-react"
 import { MacAppStore } from "@/components/apps/mac-app-store"
 import { InstalledApps } from "@/components/apps/installed-apps"
@@ -31,13 +33,14 @@ import { DesktopIconContextMenu } from "@/components/desktop/desktop-icon-contex
 import { Taskbar } from "@/components/desktop/taskbar"
 import { FileManager } from "@/components/apps/file-manager"
 import { Window } from "@/components/desktop/window"
+import { Widget } from "@/components/desktop/widget"
 
 // Import data and utilities
-import { 
-  DOCK_APPS, 
-  INSTALLED_APPS, 
-  SYSTEM_STATUS, 
-  RECENT_ACTIVITY 
+import {
+  DOCK_APPS,
+  INSTALLED_APPS,
+  SYSTEM_STATUS,
+  RECENT_ACTIVITY
 } from "@/data/desktop-apps"
 import { useDesktop, useMouseActivity, useTheme, useDockApps } from "@/hooks/use-desktop"
 import { getIcon, getIconProps } from "@/utils/icon-mapper"
@@ -60,11 +63,35 @@ const getAppComponent = (id: string): React.ReactNode => {
 }
 
 
+interface SystemStats {
+  cpu: {
+    usage: number
+    cores: number
+    model: string
+  }
+  memory: {
+    total: number
+    used: number
+    free: number
+    usagePercent: number
+  }
+  disk: {
+    total: number
+    used: number
+    free: number
+    usagePercent: number
+  }
+  uptime: number
+  platform: string
+  hostname: string
+}
+
 export function Desktop() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [draggedApp, setDraggedApp] = useState<any>(null)
-  
+  const [systemStats, setSystemStats] = useState<SystemStats | null>(null)
+
   // Custom hooks for clean state management
   const {
     windows,
@@ -82,10 +109,32 @@ export function Desktop() {
     deleteFolder,
     renameFolder,
   } = useDesktop()
-  
+
   const isMouseActive = useMouseActivity(3000)
   const { isDarkMode, toggleTheme } = useTheme()
   const { dockApps, addToDock, removeFromDock } = useDockApps(DOCK_APPS)
+
+  // Fetch system stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/system-stats')
+        if (response.ok) {
+          const data = await response.json()
+          setSystemStats(data)
+        }
+      } catch (error) {
+        console.error('Error fetching system stats:', error)
+      }
+    }
+
+    if (isAuthenticated) {
+      fetchStats()
+      // Update every 3 seconds
+      const interval = setInterval(fetchStats, 3000)
+      return () => clearInterval(interval)
+    }
+  }, [isAuthenticated])
 
   // Handle window operations
   const handleOpenWindow = (id: string, title: string) => {
@@ -166,9 +215,10 @@ export function Desktop() {
         />
 
         {/* System Widgets */}
-        <SystemWidgets 
+        <SystemWidgets
           systemStatus={SYSTEM_STATUS}
           recentActivity={RECENT_ACTIVITY}
+          systemStats={systemStats}
         />
 
         {/* Windows */}
@@ -307,39 +357,102 @@ function DesktopIcons({
   )
 }
 
-function SystemWidgets({ systemStatus, recentActivity }: any) {
+function SystemWidgets({ systemStatus, recentActivity, systemStats }: any) {
+  const formatBytes = (bytes: number): string => {
+    if (bytes === 0) return '0 B'
+    const k = 1024
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`
+  }
+
   return (
     <div className="hidden lg:block absolute top-8 right-8 space-y-4 z-20">
-      {/* System Status Widget */}
-      <Card className="bg-gray-50 dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 p-4 w-64 rounded-2xl">
-        <div className="flex items-center gap-2 mb-2">
-          <Cpu className="h-4 w-4 text-neutral-500 dark:text-neutral-300" />
-          <span className="text-sm font-medium text-neutral-700 dark:text-white">System Status</span>
-        </div>
+      {/* CPU Widget */}
+      <Widget icon={Cpu} title="CPU">
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-neutral-500 dark:text-neutral-400">CPU Usage</span>
-            <span className="text-neutral-700 dark:text-white">{systemStatus.cpu.usage}%</span>
+            <span className="text-neutral-500 dark:text-neutral-400">Usage</span>
+            <span className="text-neutral-700 dark:text-white font-mono">
+              {systemStats?.cpu.usage ?? systemStatus.cpu.usage}%
+            </span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-neutral-500 dark:text-neutral-400">Active Workflows</span>
-            <Badge variant="secondary" className="text-xs bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-white">
-              {systemStatus.workflows.active}
-            </Badge>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-neutral-500 dark:text-neutral-400">Apps Installed</span>
-            <span className="text-neutral-700 dark:text-white">{systemStatus.apps.installed}</span>
-          </div>
+          {systemStats && (
+            <>
+              <div className="flex justify-between">
+                <span className="text-neutral-500 dark:text-neutral-400">Cores</span>
+                <span className="text-neutral-700 dark:text-white">{systemStats.cpu.cores}</span>
+              </div>
+              <div className="text-xs text-neutral-500 dark:text-neutral-400 truncate" title={systemStats.cpu.model}>
+                {systemStats.cpu.model}
+              </div>
+            </>
+          )}
         </div>
-      </Card>
+      </Widget>
+
+      {/* Memory Widget */}
+      <Widget icon={Memory} title="Memory">
+        <div className="space-y-2 text-sm">
+          {systemStats ? (
+            <>
+              <div className="flex justify-between">
+                <span className="text-neutral-500 dark:text-neutral-400">Usage</span>
+                <span className="text-neutral-700 dark:text-white font-mono">
+                  {systemStats.memory.usagePercent}%
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-neutral-500 dark:text-neutral-400">Used</span>
+                <span className="text-neutral-700 dark:text-white font-mono">
+                  {formatBytes(systemStats.memory.used)}
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-neutral-500 dark:text-neutral-400">Total</span>
+                <span className="text-neutral-700 dark:text-white font-mono">
+                  {formatBytes(systemStats.memory.total)}
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className="text-xs text-neutral-500 dark:text-neutral-400">Loading...</div>
+          )}
+        </div>
+      </Widget>
+
+      {/* Storage Widget */}
+      <Widget icon={HardDrive} title="Storage">
+        <div className="space-y-2 text-sm">
+          {systemStats && systemStats.disk.total > 0 ? (
+            <>
+              <div className="flex justify-between">
+                <span className="text-neutral-500 dark:text-neutral-400">Usage</span>
+                <span className="text-neutral-700 dark:text-white font-mono">
+                  {systemStats.disk.usagePercent}%
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-neutral-500 dark:text-neutral-400">Used</span>
+                <span className="text-neutral-700 dark:text-white font-mono">
+                  {formatBytes(systemStats.disk.used)}
+                </span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-neutral-500 dark:text-neutral-400">Total</span>
+                <span className="text-neutral-700 dark:text-white font-mono">
+                  {formatBytes(systemStats.disk.total)}
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className="text-xs text-neutral-500 dark:text-neutral-400">Loading...</div>
+          )}
+        </div>
+      </Widget>
 
       {/* Recent Activity Widget */}
-      <Card className="bg-gray-50 dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 p-4 w-64 rounded-2xl">
-        <div className="flex items-center gap-2 mb-2">
-          <Clock className="h-4 w-4 text-neutral-500 dark:text-neutral-300" />
-          <span className="text-sm font-medium text-neutral-700 dark:text-white">Recent Activity</span>
-        </div>
+      <Widget icon={Clock} title="Recent Activity">
         <div className="space-y-2 text-xs">
           {recentActivity.slice(0, 3).map((activity: any) => (
             <div key={activity.id} className="text-neutral-500 dark:text-neutral-400">
@@ -347,14 +460,10 @@ function SystemWidgets({ systemStatus, recentActivity }: any) {
             </div>
           ))}
         </div>
-      </Card>
+      </Widget>
 
       {/* AI Assistant Widget */}
-      <Card className="bg-gray-50 dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 p-4 w-64 rounded-2xl">
-        <div className="flex items-center gap-2 mb-2">
-          <MessageSquare className="h-4 w-4 text-neutral-500 dark:text-neutral-300" />
-          <span className="text-sm font-medium text-neutral-700 dark:text-white">AI Assistant</span>
-        </div>
+      <Widget icon={MessageSquare} title="AI Assistant">
         <div className="text-xs text-neutral-500 dark:text-neutral-400 mb-2">
           Ready to assist with workflow automation
         </div>
@@ -366,7 +475,7 @@ function SystemWidgets({ systemStatus, recentActivity }: any) {
         >
           Chat with AI
         </Button>
-      </Card>
+      </Widget>
     </div>
   )
 }
