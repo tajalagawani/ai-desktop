@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { BackgroundBeams } from "@/components/ui/background-beams"
-import { LayoutTextFlip } from "@/components/ui/layout-text-flip"
 import { TextHoverEffect } from "@/components/ui/text-hover-effect"
 import { motion } from "framer-motion"
-import { Shield, Smartphone } from "lucide-react"
+import { User } from "lucide-react"
 
 interface TwoFactorAuthProps {
   onAuthenticated: () => void
@@ -58,8 +56,10 @@ export function TwoFactorAuth({ onAuthenticated }: TwoFactorAuthProps) {
   }
 
   return (
-    <div className="h-screen w-full bg-background relative flex flex-col items-center justify-center antialiased overflow-hidden">
-      <BackgroundBeams paused={!showLogin} />
+    <div className="h-screen w-full relative flex flex-col items-center justify-center antialiased overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      {/* Subtle background effect */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800/20 via-transparent to-transparent" />
+      <BackgroundBeams paused={!showLogin} className="opacity-30" />
 
       {!showLogin ? (
         // Show ORCHA text hover effect first
@@ -73,78 +73,112 @@ export function TwoFactorAuth({ onAuthenticated }: TwoFactorAuthProps) {
           <TextHoverEffect text="ORCHA" />
         </motion.div>
       ) : (
-        <>
-          {/* Show login form after transition */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative z-10 flex flex-col items-center"
+        >
+          {/* User Avatar */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-md mx-auto p-4 relative z-10"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+            className="mb-8"
           >
-            <Card className="bg-card/80 backdrop-blur-sm border-border p-8">
-              <div className="text-center mb-6">
-                <div className="flex justify-center mb-4">
-                  <div className="p-3 rounded-full bg-teal-500/10 border border-teal-500/20">
-                    <Shield className="h-8 w-8 text-teal-500" />
-                  </div>
-                </div>
-                <h1 className="text-2xl font-bold text-foreground mb-2">Two-Factor Authentication</h1>
-                <p className="text-muted-foreground text-sm">
-                  Enter the 6-digit code from your authenticator app to access AI Desktop
-                </p>
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 border-4 border-slate-600/50 shadow-2xl flex items-center justify-center">
+                <User className="w-16 h-16 text-slate-300" strokeWidth={1.5} />
               </div>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-1">
-                  <label htmlFor="auth-code" className="text-sm font-medium text-foreground block mb-3">
-                    Authentication Code
-                  </label>
-                  <div className="relative">
-                    <Input
-                      id="auth-code"
-                      type="text"
-                      value={code}
-                      onChange={handleCodeChange}
-                      placeholder="000000"
-                      className="text-center text-2xl font-mono tracking-widest"
-                      maxLength={6}
-                      autoComplete="one-time-code"
-                    />
-                    <Smartphone className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  </div>
-                  {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
-                </div>
-
-                <Button type="submit" className="w-full" disabled={code.length !== 6 || isLoading}>
-                  {isLoading ? "Verifying..." : "Verify & Continue"}
-                </Button>
-              </form>
-
-              <div className="mt-6 text-center">
-                <p className="text-xs text-muted-foreground">
-                  Don't have access to your authenticator app?{" "}
-                  <button className="text-teal-500 hover:underline">Use backup codes</button>
-                </p>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Flipped text in bottom left corner */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="absolute bottom-6 -left-8 z-10"
-          >
-            <div className="scale-75">
-              <LayoutTextFlip
-                text="Securing access to "
-                words={["AI Desktop", "Your Workspace", "The Future", "Innovation"]}
-              />
+              {/* Subtle glow effect */}
+              <div className="absolute inset-0 rounded-full bg-slate-500/10 blur-2xl" />
             </div>
           </motion.div>
-        </>
+
+          {/* User Name */}
+          <motion.h1
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+            className="text-3xl font-light text-white mb-2 tracking-wide"
+          >
+            ORCHA Desktop
+          </motion.h1>
+
+          {/* Authentication Form */}
+          <motion.form
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+            className="w-80 mt-6"
+          >
+            <div className="space-y-4">
+              {/* Input Field */}
+              <div className="relative">
+                <Input
+                  id="auth-code"
+                  type="text"
+                  value={code}
+                  onChange={handleCodeChange}
+                  placeholder="Enter authentication code"
+                  className="w-full h-12 px-4 bg-white/10 backdrop-blur-md border-white/20 hover:border-white/30 focus:border-white/50 text-white placeholder:text-slate-400 text-center text-lg tracking-widest font-mono rounded-lg transition-all duration-200 shadow-lg"
+                  maxLength={6}
+                  autoComplete="one-time-code"
+                  autoFocus
+                />
+              </div>
+
+              {/* Error Message */}
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm text-red-400 text-center"
+                >
+                  {error}
+                </motion.p>
+              )}
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                disabled={code.length !== 6 || isLoading}
+                className="w-full h-12 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white font-medium rounded-lg transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Verifying...
+                  </span>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </div>
+          </motion.form>
+
+          {/* Helper Text */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.3 }}
+            className="mt-6 text-sm text-slate-400 text-center"
+          >
+            Enter your 6-digit authentication code
+          </motion.p>
+        </motion.div>
       )}
+
+      {/* Bottom Info - OS Style */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xs text-slate-500 text-center"
+      >
+        ORCHA Desktop • Secure Authentication
+      </motion.div>
     </div>
   )
 }
