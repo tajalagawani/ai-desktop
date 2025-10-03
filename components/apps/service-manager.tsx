@@ -22,7 +22,8 @@ import {
   Terminal as TerminalIcon,
   Key,
   Globe,
-  Copy
+  Copy,
+  Search
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -48,6 +49,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
   const [logs, setLogs] = useState<string>("")
   const [logsLoading, setLogsLoading] = useState(false)
   const [logsWs, setLogsWs] = useState<WebSocket | null>(null)
+  const [searchQuery, setSearchQuery] = useState<string>("")
 
   const loadServices = useCallback(async () => {
     setLoading(true)
@@ -223,10 +225,22 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
   // Filtered services
   const filteredServices = useMemo(() => {
-    return selectedCategory === 'all'
+    let filtered = selectedCategory === 'all'
       ? services
       : services.filter(s => s.category === selectedCategory)
-  }, [services, selectedCategory])
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(s =>
+        s.name.toLowerCase().includes(query) ||
+        s.description.toLowerCase().includes(query) ||
+        s.id.toLowerCase().includes(query)
+      )
+    }
+
+    return filtered
+  }, [services, selectedCategory, searchQuery])
 
   // Statistics
   const stats = useMemo(() => {
@@ -652,11 +666,23 @@ export function ServiceManager(_props: ServiceManagerProps) {
           ) : (
             // Services List View
             <div>
-              <div className="mb-6">
-                <h2 className="mb-2 text-lg font-semibold">Available Services</h2>
-                <p className="text-sm text-muted-foreground">
-                  Choose from a variety of services to install on your VPS.
-                </p>
+              <div className="mb-6 flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h2 className="mb-2 text-lg font-semibold">Available Services</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Choose from a variety of services to install on your VPS.
+                  </p>
+                </div>
+                <div className="relative w-80">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search services..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full h-9 pl-9 pr-3 rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  />
+                </div>
               </div>
 
               {/* Category Tabs */}
