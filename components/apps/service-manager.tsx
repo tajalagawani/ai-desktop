@@ -360,10 +360,10 @@ export function ServiceManager(_props: ServiceManagerProps) {
         </div>
 
         {/* Right Panel - Dynamic Content */}
-        <div className="bg-background p-8 h-full overflow-y-auto">
+        <div className="bg-background p-8 h-full overflow-hidden flex flex-col">
           {selectedService ? (
             // Service Detail View with Tabs
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col flex-1 min-h-0">
               <Button
                 variant="ghost"
                 size="sm"
@@ -450,7 +450,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
               </div>
 
               {/* Overview Content - Always Visible */}
-              <div className="space-y-3">
+              <div className="space-y-3 flex-shrink-0">
                   {/* Unified Connection Info Card */}
                   {selectedService.installed && (
                     <div className="p-3 bg-muted/50 rounded-lg space-y-2.5">
@@ -598,8 +598,8 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
                 {/* Tabs for Config, Logs, Web UI */}
                 {selectedService.installed && (
-                  <Tabs defaultValue="logs" className="flex-1 flex flex-col mt-2">
-                    <TabsList className="mb-2 justify-start w-auto">
+                  <Tabs defaultValue="logs" className="flex-1 flex flex-col mt-2 min-h-0">
+                    <TabsList className="mb-2 justify-start w-auto flex-shrink-0">
                       {selectedService.status === 'running' && (
                         <TabsTrigger value="logs">
                           Logs
@@ -612,7 +612,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     </TabsList>
 
                     {/* Configuration Tab */}
-                    <TabsContent value="config" className="flex-1 overflow-auto mt-0">
+                    <TabsContent value="config" className="flex-1 overflow-auto mt-0 min-h-0">
                       <Card className="p-3">
                         <h3 className="font-normal mb-2 text-sm">Docker Configuration</h3>
                         <div className="space-y-1.5 text-sm">
@@ -637,16 +637,16 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     </TabsContent>
 
                     {/* Logs Tab */}
-                    <TabsContent value="logs" className="flex-1 flex flex-col mt-0">
-                      <Card className="p-3 flex-1 flex flex-col">
-                        <div className="flex items-center justify-between mb-2">
+                    <TabsContent value="logs" className="flex-1 flex flex-col mt-0 min-h-0">
+                      <Card className="p-3 flex-1 flex flex-col min-h-0">
+                        <div className="flex items-center justify-between mb-2 flex-shrink-0">
                           <h3 className="font-normal text-sm">Container Logs (Live Stream)</h3>
                           <Button size="sm" onClick={() => connectLogsWebSocket(selectedService.containerName)} disabled={logsLoading}>
                             <RotateCw className={cn("h-3 w-3 mr-1.5", logsLoading && "animate-spin")} />
                             Reconnect
                           </Button>
                         </div>
-                        <pre className="flex-1 p-3 bg-black text-green-400 rounded font-mono text-xs overflow-auto whitespace-pre-wrap">
+                        <pre className="flex-1 min-h-0 p-3 bg-black text-green-400 rounded font-mono text-xs overflow-auto whitespace-pre-wrap">
                           {logs || 'Connecting to log stream...'}
                         </pre>
                       </Card>
