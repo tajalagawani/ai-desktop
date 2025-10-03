@@ -47,6 +47,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [logs, setLogs] = useState<string>("")
   const [logsLoading, setLogsLoading] = useState(false)
+  const [logsWs, setLogsWs] = useState<WebSocket | null>(null)
 
   const loadServices = useCallback(async () => {
     setLoading(true)
@@ -104,33 +105,82 @@ export function ServiceManager(_props: ServiceManagerProps) {
   }
 
 
-  const loadLogs = useCallback(async (serviceId: string) => {
+  const connectLogsWebSocket = useCallback((containerName: string) => {
+    // Close existing connection
+    if (logsWs) {
+      logsWs.close()
+    }
+
     setLogsLoading(true)
+    setLogs('')
+
     try {
-      const response = await fetch('/api/services', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'logs', serviceId })
-      })
-      const data = await response.json()
-      if (data.success) {
-        setLogs(data.logs)
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const wsUrl = `${protocol}//${window.location.host}/api/services/logs/ws?container=${containerName}`
+
+      console.log('[Logs] Connecting to:', wsUrl)
+
+      const ws = new WebSocket(wsUrl)
+      setLogsWs(ws)
+
+      ws.onopen = () => {
+        console.log('[Logs] WebSocket connected')
+        setLogsLoading(false)
+      }
+
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data)
+
+          if (message.type === 'log') {
+            setLogs(prev => prev + message.data)
+          } else if (message.type === 'error') {
+            console.error('[Logs] Error:', message.message)
+            setLogs(prev => prev + `\n[ERROR] ${message.message}\n`)
+          } else if (message.type === 'connected') {
+            console.log('[Logs] Connected:', message.message)
+          }
+        } catch (error) {
+          console.error('[Logs] Error parsing message:', error)
+        }
+      }
+
+      ws.onerror = (error) => {
+        console.error('[Logs] WebSocket error:', error)
+        setLogsLoading(false)
+      }
+
+      ws.onclose = () => {
+        console.log('[Logs] WebSocket closed')
+        setLogsLoading(false)
       }
     } catch (error) {
-      console.error('Failed to load logs:', error)
-    } finally {
+      console.error('[Logs] Failed to connect:', error)
       setLogsLoading(false)
     }
-  }, [])
+  }, [logsWs])
 
-  // Auto-load logs when a running service is selected
+  // Auto-connect logs WebSocket when a running service is selected
   useEffect(() => {
     if (selectedService && selectedService.installed && selectedService.status === 'running') {
-      loadLogs(selectedService.id)
+      connectLogsWebSocket(selectedService.containerName)
     } else {
+      // Close WebSocket if service is not running
+      if (logsWs) {
+        logsWs.close()
+        setLogsWs(null)
+      }
       setLogs('')
     }
-  }, [selectedService, loadLogs])
+
+    // Cleanup on unmount or service change
+    return () => {
+      if (logsWs) {
+        logsWs.close()
+        setLogsWs(null)
+      }
+    }
+  }, [selectedService])
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -576,14 +626,14 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     <TabsContent value="logs" className="flex-1 overflow-auto mt-0">
                       <Card className="p-3">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-sm">Container Logs</h3>
-                          <Button size="sm" onClick={() => loadLogs(selectedService.id)} disabled={logsLoading}>
+                          <h3 className="font-semibold text-sm">Container Logs (Live Stream)</h3>
+                          <Button size="sm" onClick={() => connectLogsWebSocket(selectedService.containerName)} disabled={logsLoading}>
                             <RotateCw className={cn("h-3 w-3 mr-1.5", logsLoading && "animate-spin")} />
-                            Refresh
+                            Reconnect
                           </Button>
                         </div>
-                        <pre className="p-3 bg-black text-green-400 rounded font-mono text-xs overflow-auto max-h-80">
-                          {logs || 'No logs available. Click Refresh to load logs.'}
+                        <pre className="p-3 bg-black text-green-400 rounded font-mono text-xs overflow-auto max-h-80 whitespace-pre-wrap">
+                          {logs || 'Connecting to log stream...'}
                         </pre>
                       </Card>
                     </TabsContent>

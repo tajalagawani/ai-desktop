@@ -33,9 +33,9 @@ app.prepare().then(() => {
   server.on('upgrade', (request, socket, head) => {
     const { pathname } = parse(request.url, true)
 
-    if (pathname === '/api/terminal/ws') {
+    if (pathname === '/api/terminal/ws' || pathname === '/api/services/logs/ws') {
       wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit('connection', ws, request)
+        wss.emit('connection', ws, request, pathname)
       })
     } else {
       socket.destroy()
@@ -43,7 +43,16 @@ app.prepare().then(() => {
   })
 
   // Handle WebSocket connections
-  wss.on('connection', (ws) => {
+  wss.on('connection', (ws, request, pathname) => {
+    if (pathname === '/api/services/logs/ws') {
+      handleLogsConnection(ws, request)
+    } else {
+      handleTerminalConnection(ws)
+    }
+  })
+
+  // Handle terminal WebSocket connections
+  function handleTerminalConnection(ws) {
     console.log('[Terminal] New WebSocket connection')
 
     const sessionId = Date.now().toString()
@@ -123,7 +132,87 @@ app.prepare().then(() => {
       sessionId,
       message: 'Terminal session established'
     }))
-  })
+  }
+
+  // Handle logs WebSocket connections
+  function handleLogsConnection(ws, request) {
+    console.log('[Logs] New WebSocket connection')
+
+    const { exec } = require('child_process')
+    const url = new URL(request.url, `http://${request.headers.host}`)
+    const containerName = url.searchParams.get('container')
+
+    if (!containerName) {
+      ws.send(JSON.stringify({ type: 'error', message: 'Container name required' }))
+      ws.close()
+      return
+    }
+
+    console.log(`[Logs] Streaming logs for container: ${containerName}`)
+
+    // Stream docker logs with follow flag
+    const logsProcess = exec(`docker logs -f --tail 100 ${containerName}`)
+
+    // Send stdout
+    logsProcess.stdout.on('data', (data) => {
+      try {
+        if (ws.readyState === 1) {
+          ws.send(JSON.stringify({ type: 'log', data: data.toString() }))
+        }
+      } catch (error) {
+        console.error('[Logs] Error sending stdout:', error)
+      }
+    })
+
+    // Send stderr
+    logsProcess.stderr.on('data', (data) => {
+      try {
+        if (ws.readyState === 1) {
+          ws.send(JSON.stringify({ type: 'log', data: data.toString() }))
+        }
+      } catch (error) {
+        console.error('[Logs] Error sending stderr:', error)
+      }
+    })
+
+    // Handle process errors
+    logsProcess.on('error', (error) => {
+      console.error('[Logs] Process error:', error)
+      try {
+        if (ws.readyState === 1) {
+          ws.send(JSON.stringify({ type: 'error', message: error.message }))
+        }
+      } catch {}
+    })
+
+    // Handle process exit
+    logsProcess.on('exit', (code) => {
+      console.log(`[Logs] Process exited with code: ${code}`)
+      try {
+        if (ws.readyState === 1) {
+          ws.send(JSON.stringify({ type: 'exit', code }))
+        }
+      } catch {}
+    })
+
+    // Handle WebSocket close
+    ws.on('close', () => {
+      console.log('[Logs] WebSocket closed, killing process')
+      logsProcess.kill()
+    })
+
+    // Handle WebSocket errors
+    ws.on('error', (error) => {
+      console.error('[Logs] WebSocket error:', error)
+      logsProcess.kill()
+    })
+
+    // Send connection success
+    ws.send(JSON.stringify({
+      type: 'connected',
+      message: `Streaming logs for ${containerName}`
+    }))
+  }
 
   server.listen(port, (err) => {
     if (err) throw err
