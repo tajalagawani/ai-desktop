@@ -377,7 +377,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
               </div>
 
               {/* Overview Content - Always Visible */}
-              <div className="space-y-3 overflow-auto flex-1">
+              <div className="space-y-3">
                   {/* Unified Connection Info Card */}
                   {selectedService.installed && (
                     <div className="p-3 bg-muted/50 rounded-lg space-y-2.5">
