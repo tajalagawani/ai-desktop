@@ -122,7 +122,7 @@ export function AppStore() {
       <div className="w-64 border-r border-border/50 p-4 bg-card/30">
         <div className="space-y-4">
           <div>
-            <h3 className="font-semibold mb-2">Categories</h3>
+            <h3 className="font-normal mb-2">Categories</h3>
             <div className="space-y-1">
               {categories.map((category) => (
                 <Button
@@ -139,7 +139,7 @@ export function AppStore() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-2">Installed Nodes</h3>
+            <h3 className="font-normal mb-2">Installed Nodes</h3>
             <div className="text-sm text-muted-foreground">
               {nodes.filter((n) => n.installed).length} of {nodes.length} installed
             </div>
@@ -151,7 +151,7 @@ export function AppStore() {
       <div className="flex-1 p-6">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">Node Registry</h1>
+          <h1 className="text-2xl font-normal mb-2">Node Registry</h1>
           <p className="text-muted-foreground mb-4">
             Discover and install nodes to extend your AI workflow capabilities
           </p>
@@ -176,7 +176,7 @@ export function AppStore() {
                 <div className="p-2 rounded-lg bg-primary/10 text-primary">{node.icon}</div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold">{node.name}</h3>
+                    <h3 className="font-normal">{node.name}</h3>
                     {node.installed && (
                       <Badge variant="secondary" className="text-xs">
                         Installed

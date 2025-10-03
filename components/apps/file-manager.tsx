@@ -245,7 +245,7 @@ function Sidebar({ isOpen, onNavigate }: any) {
               <CommandIcon className="size-4" />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{USER_PROFILE.company}</span>
+              <span className="truncate font-normal">{USER_PROFILE.company}</span>
               <span className="truncate text-xs">{USER_PROFILE.plan}</span>
             </div>
           </div>
@@ -327,7 +327,7 @@ function Header({ onToggleSidebar, breadcrumbs, onRefresh, onNewFolder }: any) {
 function QuickAccessSection({ items, onNavigate }: any) {
   return (
     <div className="px-3 py-2">
-      <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight">Quick Access</h2>
+      <h2 className="mb-2 px-2 text-lg font-normal tracking-tight">Quick Access</h2>
       <div className="space-y-1">
         {items.map((item: any) => {
           const Icon = getIcon(item.icon)
@@ -357,7 +357,7 @@ function QuickAccessSection({ items, onNavigate }: any) {
 function ProjectsSection({ projects }: any) {
   return (
     <div className="px-3 py-2">
-      <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight">Projects</h2>
+      <h2 className="mb-2 px-2 text-lg font-normal tracking-tight">Projects</h2>
       <div className="space-y-1">
         {projects.map((project: any) => {
           const Icon = getIcon(project.icon)
@@ -410,7 +410,7 @@ function UserSection({ profile }: any) {
               <AvatarFallback>{profile.initials}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{profile.name}</span>
+              <span className="truncate font-normal">{profile.name}</span>
               <span className="truncate text-xs">{profile.email}</span>
             </div>
             <ChevronsUpDown className="size-4" />

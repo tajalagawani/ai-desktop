@@ -184,7 +184,7 @@ function Header({ statistics, viewMode, setViewMode, onCheckUpdates, isCheckingU
       <div className="px-6 py-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold">Installed Applications</h1>
+            <h1 className="text-2xl font-normal">Installed Applications</h1>
             <p className="text-sm text-muted-foreground mt-1">
               Manage and monitor your installed applications
             </p>
@@ -222,17 +222,17 @@ function Header({ statistics, viewMode, setViewMode, onCheckUpdates, isCheckingU
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full" />
             <span className="text-muted-foreground">Active:</span>
-            <span className="font-medium">{statistics.activeApps}</span>
+            <span className="font-normal">{statistics.activeApps}</span>
           </div>
           <Separator orientation="vertical" className="h-4" />
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground">Total Apps:</span>
-            <span className="font-medium">{statistics.totalApps}</span>
+            <span className="font-normal">{statistics.totalApps}</span>
           </div>
           <Separator orientation="vertical" className="h-4" />
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground">Storage:</span>
-            <span className="font-medium">{statistics.totalSize}</span>
+            <span className="font-normal">{statistics.totalSize}</span>
           </div>
         </div>
       </div>
@@ -369,7 +369,7 @@ function Sidebar({ categories, currentCategory, onCategoryChange, statistics }: 
     <div className="w-64 border-r border-border bg-muted/30">
       <ScrollArea className="h-full">
         <div className="p-4">
-          <h3 className="font-semibold mb-3">Categories</h3>
+          <h3 className="font-normal mb-3">Categories</h3>
           <div className="space-y-1">
             {categories.map((category: any) => {
               const Icon = getIcon(category.icon)
@@ -475,7 +475,7 @@ function AppCard({ app, isSelected, onAction, onSelect }: any) {
         </div>
 
         {/* App Info */}
-        <h3 className="font-semibold text-sm mb-1">{app.displayName}</h3>
+        <h3 className="font-normal text-sm mb-1">{app.displayName}</h3>
         <p className="text-xs text-muted-foreground mb-2">{app.developer}</p>
         
         {/* Version and Size */}
@@ -589,7 +589,7 @@ function AppListItem({ app, isSelected, onAction, onSelect }: any) {
         {/* App Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold">{app.displayName}</h3>
+            <h3 className="font-normal">{app.displayName}</h3>
             {app.pinned && <Pin className="h-3 w-3 text-primary" />}
             <Badge variant="outline" className="text-xs">v{app.version}</Badge>
             {app.status === "updating" && (
@@ -683,7 +683,7 @@ function AppCompactItem({ app, isSelected, onAction, onSelect }: any) {
         
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-sm">{app.displayName}</span>
+            <span className="font-normal text-sm">{app.displayName}</span>
             {app.pinned && <Pin className="h-3 w-3 text-primary" />}
           </div>
           <div className="text-xs text-muted-foreground">

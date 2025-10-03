@@ -271,7 +271,7 @@ const DummyContent = ({ title, description }: { title: string; description: stri
   return (
     <div className="bg-gradient-to-br from-white to-gray-50 dark:from-neutral-800 dark:to-neutral-900 p-8 md:p-14 rounded-3xl mb-4 border border-gray-100 dark:border-neutral-700">
       <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto leading-relaxed">
-        <span className="font-bold text-neutral-700 dark:text-neutral-200 text-xl md:text-3xl block mb-4">
+        <span className="font-normal text-neutral-700 dark:text-neutral-200 text-xl md:text-3xl block mb-4">
           {title}
         </span>
         {description}
@@ -425,7 +425,7 @@ export function MacAppStore() {
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h1 className="text-4xl font-bold mb-2">{selectedApp.name}</h1>
+                    <h1 className="text-4xl font-normal mb-2">{selectedApp.name}</h1>
                     <p className="text-xl text-gray-600 dark:text-gray-300 mb-1">{selectedApp.developer}</p>
                     <p className="text-gray-500 dark:text-gray-400">{selectedApp.category}</p>
                   </div>
@@ -455,7 +455,7 @@ export function MacAppStore() {
                         />
                       ))}
                     </div>
-                    <span className="font-semibold text-lg">{selectedApp.rating}</span>
+                    <span className="font-normal text-lg">{selectedApp.rating}</span>
                     <span className="text-gray-500">({formatNumber(selectedApp.reviews)} reviews)</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-500">
@@ -498,7 +498,7 @@ export function MacAppStore() {
 
           {/* Screenshots */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Screenshots</h2>
+            <h2 className="text-2xl font-normal mb-4">Screenshots</h2>
             <div className="flex gap-4 overflow-x-auto pb-4">
               {selectedApp.screenshots.map((screenshot, index) => (
                 <motion.img
@@ -517,7 +517,7 @@ export function MacAppStore() {
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
               <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
-                <h2 className="text-2xl font-bold mb-4">About {selectedApp.name}</h2>
+                <h2 className="text-2xl font-normal mb-4">About {selectedApp.name}</h2>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
                   {selectedApp.description}
                 </p>
@@ -525,7 +525,7 @@ export function MacAppStore() {
 
               {selectedApp.whatsNew.length > 0 && (
                 <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
-                  <h2 className="text-2xl font-bold mb-4">What's New</h2>
+                  <h2 className="text-2xl font-normal mb-4">What's New</h2>
                   <ul className="space-y-3">
                     {selectedApp.whatsNew.map((item, index) => (
                       <li key={index} className="flex items-start gap-3">
@@ -540,29 +540,29 @@ export function MacAppStore() {
 
             <div className="space-y-6">
               <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
-                <h3 className="text-xl font-bold mb-4">Information</h3>
+                <h3 className="text-xl font-normal mb-4">Information</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Version</span>
-                    <span className="font-medium">{selectedApp.version}</span>
+                    <span className="font-normal">{selectedApp.version}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Size</span>
-                    <span className="font-medium">{selectedApp.size}</span>
+                    <span className="font-normal">{selectedApp.size}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Updated</span>
-                    <span className="font-medium">{selectedApp.lastUpdated}</span>
+                    <span className="font-normal">{selectedApp.lastUpdated}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">Age Rating</span>
-                    <span className="font-medium">{selectedApp.ageRating}</span>
+                    <span className="font-normal">{selectedApp.ageRating}</span>
                   </div>
                 </div>
               </div>
 
               <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
-                <h3 className="text-xl font-bold mb-4">Languages</h3>
+                <h3 className="text-xl font-normal mb-4">Languages</h3>
                 <div className="flex flex-wrap gap-2">
                   {selectedApp.languages.map((lang) => (
                     <Badge key={lang} variant="outline">{lang}</Badge>
@@ -571,7 +571,7 @@ export function MacAppStore() {
               </div>
 
               <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
-                <h3 className="text-xl font-bold mb-4">Tags</h3>
+                <h3 className="text-xl font-normal mb-4">Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   {selectedApp.tags.map((tag) => (
                     <Badge key={tag} variant="secondary">{tag}</Badge>
@@ -592,7 +592,7 @@ export function MacAppStore() {
         <div className="p-6">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-normal bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 App Store
               </h1>
               <div className="flex items-center gap-2">
@@ -646,7 +646,7 @@ export function MacAppStore() {
               >
                 <div className="flex flex-wrap gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">Sort by:</span>
+                    <span className="text-sm font-normal">Sort by:</span>
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as any)}

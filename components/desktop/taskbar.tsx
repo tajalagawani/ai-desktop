@@ -43,7 +43,7 @@ export function Taskbar({ windows, activeWindow, onWindowAction }: TaskbarProps)
       <div className="w-full overflow-hidden relative h-full rounded-3xl p-8 md:p-12 bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h3 className="text-4xl md:text-6xl font-bold mb-2 text-neutral-700 dark:text-white">{window.title}</h3>
+            <h3 className="text-4xl md:text-6xl font-normal mb-2 text-neutral-700 dark:text-white">{window.title}</h3>
             <p className="text-xl md:text-2xl text-neutral-500 dark:text-neutral-400">
               Status: {window.isMinimized ? "Minimized" : window.isMaximized ? "Maximized" : "Windowed"}
             </p>
@@ -160,7 +160,7 @@ export function Taskbar({ windows, activeWindow, onWindowAction }: TaskbarProps)
               <div className="h-full w-full p-8">
                 <div className="flex items-center justify-between mb-8">
                   <div>
-                    <h1 className="text-3xl font-bold text-neutral-700 dark:text-white">
+                    <h1 className="text-3xl font-normal text-neutral-700 dark:text-white">
                       Open Applications
                     </h1>
                     <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
@@ -182,7 +182,7 @@ export function Taskbar({ windows, activeWindow, onWindowAction }: TaskbarProps)
                     tabs={tabsData}
                     containerClassName="mb-4"
                     activeTabClassName="bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800"
-                    tabClassName="text-base font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-neutral-700 px-6 py-3 text-neutral-700 dark:text-neutral-300"
+                    tabClassName="text-base font-normal transition-all duration-200 hover:bg-gray-100 dark:hover:bg-neutral-700 px-6 py-3 text-neutral-700 dark:text-neutral-300"
                     contentClassName="mt-4 h-[calc(100%-80px)]"
                   />
                 </div>

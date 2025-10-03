@@ -88,7 +88,7 @@ export function TwoFactorAuth({ onAuthenticated }: TwoFactorAuthProps) {
                     <Shield className="h-8 w-8 text-slate-300" />
                   </div>
                 </div>
-                <h1 className="text-2xl font-bold text-foreground mb-2">Two-Factor Authentication</h1>
+                <h1 className="text-2xl font-normal text-foreground mb-2">Two-Factor Authentication</h1>
                 <p className="text-muted-foreground text-sm">
                   Enter the 6-digit code from your authenticator app to access AI Desktop
                 </p>
@@ -96,7 +96,7 @@ export function TwoFactorAuth({ onAuthenticated }: TwoFactorAuthProps) {
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-1">
-                  <label htmlFor="auth-code" className="text-sm font-medium text-foreground block mb-3">
+                  <label htmlFor="auth-code" className="text-sm font-normal text-foreground block mb-3">
                     Authentication Code
                   </label>
                   <div className="relative">

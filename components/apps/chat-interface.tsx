@@ -94,7 +94,7 @@ export function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
               <Sparkles className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="font-semibold">AI Assistant</h3>
+              <h3 className="font-normal">AI Assistant</h3>
               <p className="text-xs text-muted-foreground">Ready to help with workflows</p>
             </div>
           </div>

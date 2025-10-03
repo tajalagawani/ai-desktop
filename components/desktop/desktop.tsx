@@ -305,7 +305,7 @@ function DesktopIcons({
                   IconComponent && <IconComponent className="h-6 w-6 text-neutral-600 dark:text-neutral-300" />
                 )}
               </button>
-              <span className="text-xs text-foreground font-medium">{app.name}</span>
+              <span className="text-xs text-foreground font-normal">{app.name}</span>
             </div>
           )
         })}
@@ -347,7 +347,7 @@ function DesktopIcons({
                     IconComponent && <IconComponent className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
                   )}
                 </button>
-                <span className="text-xs text-foreground font-medium">{app.name}</span>
+                <span className="text-xs text-foreground font-normal">{app.name}</span>
               </div>
             </DesktopIconContextMenu>
           )
@@ -621,7 +621,7 @@ function DesktopFolder({ folder, onOpen }: any) {
       >
         <Folder className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
       </button>
-      <span className="text-xs text-foreground font-medium">{folder.name}</span>
+      <span className="text-xs text-foreground font-normal">{folder.name}</span>
     </div>
   )
 }

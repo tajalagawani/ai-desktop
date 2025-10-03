@@ -127,7 +127,7 @@ export function Window({
               }}
             />
           </div>
-          <span className="text-sm font-medium ml-2">{title}</span>
+          <span className="text-sm font-normal ml-2">{title}</span>
         </div>
       </div>
 

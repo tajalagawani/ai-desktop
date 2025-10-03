@@ -94,7 +94,7 @@ export function ChangelogModal({ isOpen, onClose }: ChangelogModalProps) {
                   <GitCommit className="w-5 h-5 text-slate-300" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold text-white">Recent Updates</h2>
+                  <h2 className="text-xl font-normal text-white">Recent Updates</h2>
                   <p className="text-sm text-slate-400">Latest changes from GitHub</p>
                 </div>
               </div>
@@ -139,7 +139,7 @@ export function ChangelogModal({ isOpen, onClose }: ChangelogModalProps) {
                       {/* Commit Info */}
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
-                          <p className="text-white font-medium mb-2 line-clamp-2">
+                          <p className="text-white font-normal mb-2 line-clamp-2">
                             {entry.message}
                           </p>
                           <div className="flex items-center gap-4 text-sm text-slate-400">

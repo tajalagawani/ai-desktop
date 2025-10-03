@@ -187,7 +187,7 @@ export function FloatingDockDemo({ openWindow, openWindows, dockApps, onDrop, on
               </svg>
             </Button>
             
-            <span className="text-neutral-400 text-xs font-medium">Design</span>
+            <span className="text-neutral-400 text-xs font-normal">Design</span>
             
             <Button
               className="rounded-full p-1 h-fit border dark:border-zinc-600"
@@ -222,7 +222,7 @@ export function FloatingDockDemo({ openWindow, openWindows, dockApps, onDrop, on
             <Button
               variant="ghost"
               size="sm"
-              className="text-slate-300 hover:text-white hover:bg-neutral-800 font-medium h-5 px-1"
+              className="text-slate-300 hover:text-white hover:bg-neutral-800 font-normal h-5 px-1"
               style={{ fontSize: '10px' }}
             >
               Upgrade Plan

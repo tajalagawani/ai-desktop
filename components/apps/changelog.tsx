@@ -109,7 +109,7 @@ export function Changelog() {
         <div className="max-w-4xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Changelog</h1>
+              <h1 className="text-3xl font-normal text-foreground mb-2">Changelog</h1>
               <p className="text-muted-foreground">
                 {currentSHA ? `Currently on ${currentSHA}` : `Latest: ${latestSHA}`} • v{currentVersion}
               </p>
@@ -141,7 +141,7 @@ export function Changelog() {
                     ) : (
                       <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
                     )}
-                    <p className={`font-medium ${
+                    <p className={`font-normal ${
                       updateAvailable
                         ? 'text-blue-900 dark:text-blue-100'
                         : 'text-green-900 dark:text-green-100'
@@ -182,7 +182,7 @@ export function Changelog() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ExternalLink className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
-                  <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
+                  <p className="text-sm font-normal text-yellow-900 dark:text-yellow-100">
                     Not deployed yet • Latest version {latestSHA} is available
                   </p>
                 </div>
@@ -204,7 +204,7 @@ export function Changelog() {
               <div className="flex items-center gap-3">
                 <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium text-foreground">Updating application...</p>
+                  <p className="text-sm font-normal text-foreground">Updating application...</p>
                   <p className="text-xs text-muted-foreground">This may take a few moments</p>
                 </div>
               </div>
@@ -272,7 +272,7 @@ export function Changelog() {
                       </time>
 
                       {/* Title/Message */}
-                      <h2 className="text-2xl font-bold text-foreground mb-3 leading-snug">
+                      <h2 className="text-2xl font-normal text-foreground mb-3 leading-snug">
                         {entry.message}
                       </h2>
 

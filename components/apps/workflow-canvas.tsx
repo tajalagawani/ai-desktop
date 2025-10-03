@@ -89,7 +89,7 @@ export function WorkflowCanvas() {
       <div className="border-b border-border/50 p-4 bg-card/30">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h2 className="font-semibold">PR → Summary → Slack</h2>
+            <h2 className="font-normal">PR → Summary → Slack</h2>
             <Badge variant="secondary">Draft</Badge>
           </div>
 
@@ -162,7 +162,7 @@ export function WorkflowCanvas() {
               <div className="p-1 rounded bg-primary/10 text-primary">{node.icon}</div>
               <div className={`w-2 h-2 rounded-full ${getStatusColor(node.status)}`} />
             </div>
-            <div className="text-xs font-medium text-balance">{node.name}</div>
+            <div className="text-xs font-normal text-balance">{node.name}</div>
             <Button size="sm" variant="ghost" className="w-full mt-2 h-6 text-xs">
               <Settings className="h-3 w-3 mr-1" />
               Config

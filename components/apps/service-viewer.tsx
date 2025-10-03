@@ -90,7 +90,7 @@ export function ServiceViewer({ service }: ServiceViewerProps) {
               <Database className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{service.name}</h1>
+              <h1 className="text-2xl font-normal">{service.name}</h1>
               <p className="text-sm text-muted-foreground">{service.description}</p>
             </div>
           </div>
@@ -114,7 +114,7 @@ export function ServiceViewer({ service }: ServiceViewerProps) {
         <TabsContent value="access" className="flex-1 overflow-auto p-6 space-y-4">
           {/* Connection Details */}
           <Card className="p-4">
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
+            <h3 className="font-normal mb-3 flex items-center gap-2">
               <Key className="h-4 w-4" />
               Connection Details
             </h3>
@@ -190,7 +190,7 @@ export function ServiceViewer({ service }: ServiceViewerProps) {
           {/* CLI Command */}
           {getConnectionString() && (
             <Card className="p-4">
-              <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <h3 className="font-normal mb-3 flex items-center gap-2">
                 <Terminal className="h-4 w-4" />
                 CLI Connection
               </h3>
@@ -210,7 +210,7 @@ export function ServiceViewer({ service }: ServiceViewerProps) {
           {/* Access URL */}
           {getAccessUrl() && (
             <Card className="p-4">
-              <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <h3 className="font-normal mb-3 flex items-center gap-2">
                 <Globe className="h-4 w-4" />
                 Web Access
               </h3>
@@ -242,11 +242,11 @@ export function ServiceViewer({ service }: ServiceViewerProps) {
           {/* Environment Variables */}
           {service.environment && Object.keys(service.environment).length > 0 && (
             <Card className="p-4">
-              <h3 className="font-semibold mb-3">Environment Variables</h3>
+              <h3 className="font-normal mb-3">Environment Variables</h3>
               <div className="space-y-2">
                 {Object.entries(service.environment).map(([key, value]) => (
                   <div key={key} className="flex items-center justify-between p-2 bg-muted rounded">
-                    <code className="text-sm font-semibold">{key}</code>
+                    <code className="text-sm font-normal">{key}</code>
                     <code className="text-sm text-muted-foreground">{value}</code>
                   </div>
                 ))}
@@ -258,7 +258,7 @@ export function ServiceViewer({ service }: ServiceViewerProps) {
         {/* Configuration Tab */}
         <TabsContent value="config" className="flex-1 overflow-auto p-6 space-y-4">
           <Card className="p-4">
-            <h3 className="font-semibold mb-3">Docker Configuration</h3>
+            <h3 className="font-normal mb-3">Docker Configuration</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between py-2 border-b">
                 <span className="text-muted-foreground">Container Name:</span>
@@ -284,7 +284,7 @@ export function ServiceViewer({ service }: ServiceViewerProps) {
         <TabsContent value="logs" className="flex-1 overflow-auto p-6">
           <Card className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold">Container Logs</h3>
+              <h3 className="font-normal">Container Logs</h3>
               <Button size="sm" onClick={loadLogs} disabled={loading}>
                 Refresh
               </Button>
