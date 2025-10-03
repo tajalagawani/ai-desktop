@@ -269,18 +269,46 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'remove') {
-      // Remove Docker container
-      await execAsync(`docker rm -f ${containerName}`)
+      try {
+        // 1. Stop and remove Docker container
+        await execAsync(`docker rm -f ${containerName}`)
 
-      // Close firewall ports for security
-      if (service.ports && service.ports.length > 0) {
-        await closeFirewallPort(service.id, service.ports)
+        // 2. Remove all associated volumes to free up disk space
+        const volumePrefix = `${containerName}-`
+        try {
+          const { stdout: volumeList } = await execAsync(`docker volume ls -q --filter "name=${volumePrefix}"`)
+          const volumes = volumeList.trim().split('\n').filter(Boolean)
+
+          if (volumes.length > 0) {
+            console.log(`Removing volumes for ${containerName}:`, volumes)
+            for (const volume of volumes) {
+              await execAsync(`docker volume rm ${volume}`)
+            }
+          }
+        } catch (volError: any) {
+          console.warn('Error removing volumes:', volError.message)
+        }
+
+        // 3. Remove Docker image to free up space (optional but recommended)
+        try {
+          await execAsync(`docker rmi ${service.dockerImage}`)
+        } catch (imgError: any) {
+          // Image might be in use by other containers or already removed
+          console.warn('Could not remove image (may be in use):', imgError.message)
+        }
+
+        // 4. Close firewall ports for security
+        if (service.ports && service.ports.length > 0) {
+          await closeFirewallPort(service.id, service.ports)
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: `${service.name} completely removed (container, volumes, image, and firewall ports)`
+        })
+      } catch (error: any) {
+        throw new Error(`Failed to remove service: ${error.message}`)
       }
-
-      return NextResponse.json({
-        success: true,
-        message: `${service.name} removed and firewall ports closed`
-      })
     }
 
     if (action === 'logs') {
