@@ -104,7 +104,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
   }
 
 
-  const loadLogs = async (serviceId: string) => {
+  const loadLogs = useCallback(async (serviceId: string) => {
     setLogsLoading(true)
     try {
       const response = await fetch('/api/services', {
@@ -121,7 +121,16 @@ export function ServiceManager(_props: ServiceManagerProps) {
     } finally {
       setLogsLoading(false)
     }
-  }
+  }, [])
+
+  // Auto-load logs when a running service is selected
+  useEffect(() => {
+    if (selectedService && selectedService.installed && selectedService.status === 'running') {
+      loadLogs(selectedService.id)
+    } else {
+      setLogs('')
+    }
+  }, [selectedService, loadLogs])
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -528,7 +537,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                   <Tabs defaultValue="logs" className="flex-1 flex flex-col mt-2">
                     <TabsList className="mb-2 justify-start w-auto">
                       {selectedService.status === 'running' && (
-                        <TabsTrigger value="logs" onClick={() => loadLogs(selectedService.id)}>
+                        <TabsTrigger value="logs">
                           Logs
                         </TabsTrigger>
                       )}
