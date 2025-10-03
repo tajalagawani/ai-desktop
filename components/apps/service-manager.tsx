@@ -295,7 +295,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
       <div className="flex flex-col items-center justify-center h-full p-8">
         <Alert className="max-w-2xl">
           <AlertCircle className="h-5 w-5" />
-          <AlertTitle className="text-xl font-bold mb-2">Docker Required</AlertTitle>
+          <AlertTitle className="text-xl font-normal mb-2">Docker Required</AlertTitle>
           <AlertDescription className="space-y-4">
             <p>
               Docker is required to install and manage services. Please install Docker on your VPS first.
@@ -318,7 +318,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
         {/* Left Panel - Static Info */}
         <div className="relative overflow-hidden border-r bg-background p-6 h-full flex flex-col">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-2">Service Manager</h2>
+            <h2 className="text-lg font-normal mb-2">Service Manager</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Install and manage Docker services on your VPS.
             </p>
@@ -327,22 +327,22 @@ export function ServiceManager(_props: ServiceManagerProps) {
           {/* Statistics Cards */}
           <div className="grid grid-cols-2 gap-2 mb-6">
             <Card className="p-3 border bg-card">
-              <div className="text-xl font-bold text-foreground">{stats.total}</div>
+              <div className="text-xl font-normal text-foreground">{stats.total}</div>
               <div className="text-xs text-muted-foreground">Total</div>
             </Card>
 
             <Card className="p-3 border bg-card">
-              <div className="text-xl font-bold text-foreground">{stats.running}</div>
+              <div className="text-xl font-normal text-foreground">{stats.running}</div>
               <div className="text-xs text-muted-foreground">Running</div>
             </Card>
 
             <Card className="p-3 border bg-card">
-              <div className="text-xl font-bold text-foreground">{stats.installed}</div>
+              <div className="text-xl font-normal text-foreground">{stats.installed}</div>
               <div className="text-xs text-muted-foreground">Installed</div>
             </Card>
 
             <Card className="p-3 border bg-card">
-              <div className="text-xl font-bold text-foreground">{stats.available}</div>
+              <div className="text-xl font-normal text-foreground">{stats.available}</div>
               <div className="text-xs text-muted-foreground">Available</div>
             </Card>
           </div>
@@ -388,7 +388,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h2 className="text-2xl font-semibold">{selectedService.name}</h2>
+                    <h2 className="text-2xl font-normal">{selectedService.name}</h2>
                     {selectedService.status === 'running' ? (
                       <Badge className="bg-primary text-primary-foreground hover:bg-primary/90">
                         <Check className="mr-1 h-3 w-3" />
@@ -456,7 +456,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     <div className="p-3 bg-muted/50 rounded-lg space-y-2.5">
                       {selectedService.defaultCredentials && (
                         <>
-                          <h3 className="font-medium text-sm flex items-center gap-2">
+                          <h3 className="font-normal text-sm flex items-center gap-2">
                             <Key className="h-3.5 w-3.5" />
                             Connection Details
                           </h3>
@@ -523,7 +523,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                       {getConnectionString(selectedService) && (
                         <>
                           <div className="border-t pt-2.5" />
-                          <h3 className="font-medium text-sm flex items-center gap-2">
+                          <h3 className="font-normal text-sm flex items-center gap-2">
                             <TerminalIcon className="h-3.5 w-3.5" />
                             CLI Connection
                           </h3>
@@ -547,7 +547,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                       {getAccessUrl(selectedService) && (
                         <>
                           <div className="border-t pt-2.5" />
-                          <h3 className="font-medium text-sm flex items-center gap-2">
+                          <h3 className="font-normal text-sm flex items-center gap-2">
                             <Globe className="h-3.5 w-3.5" />
                             Web Access
                           </h3>
@@ -583,11 +583,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
                   {/* Environment Variables */}
                   {selectedService.environment && Object.keys(selectedService.environment).length > 0 && (
                     <div className="p-3 bg-muted/50 rounded-lg">
-                      <h3 className="mb-2 font-medium text-sm">Environment Variables</h3>
+                      <h3 className="mb-2 font-normal text-sm">Environment Variables</h3>
                       <div className="space-y-1">
                         {Object.entries(selectedService.environment).map(([key, value]) => (
                           <div key={key} className="flex items-center justify-between py-1 text-sm">
-                            <code className="font-semibold text-xs">{key}</code>
+                            <code className="font-normal text-xs">{key}</code>
                             <code className="text-muted-foreground text-xs">{value}</code>
                           </div>
                         ))}
@@ -614,7 +614,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     {/* Configuration Tab */}
                     <TabsContent value="config" className="flex-1 overflow-auto mt-0">
                       <Card className="p-3">
-                        <h3 className="font-semibold mb-2 text-sm">Docker Configuration</h3>
+                        <h3 className="font-normal mb-2 text-sm">Docker Configuration</h3>
                         <div className="space-y-1.5 text-sm">
                           <div className="flex justify-between py-1.5 border-b">
                             <span className="text-muted-foreground">Container Name:</span>
@@ -640,7 +640,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     <TabsContent value="logs" className="flex-1 overflow-auto mt-0">
                       <Card className="p-3">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-sm">Container Logs (Live Stream)</h3>
+                          <h3 className="font-normal text-sm">Container Logs (Live Stream)</h3>
                           <Button size="sm" onClick={() => connectLogsWebSocket(selectedService.containerName)} disabled={logsLoading}>
                             <RotateCw className={cn("h-3 w-3 mr-1.5", logsLoading && "animate-spin")} />
                             Reconnect
@@ -668,7 +668,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
             <div>
               <div className="mb-6 flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <h2 className="mb-2 text-lg font-semibold">Available Services</h2>
+                  <h2 className="mb-2 text-lg font-normal">Available Services</h2>
                   <p className="text-sm text-muted-foreground">
                     Choose from a variety of services to install on your VPS.
                   </p>
@@ -690,7 +690,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                 <button
                   onClick={() => setSelectedCategory('all')}
                   className={cn(
-                    "px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px",
+                    "px-4 py-2 text-sm font-normal whitespace-nowrap transition-colors border-b-2 -mb-px",
                     selectedCategory === 'all'
                       ? "border-primary text-primary"
                       : "border-transparent text-muted-foreground hover:text-foreground"
@@ -703,7 +703,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
                     className={cn(
-                      "px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px",
+                      "px-4 py-2 text-sm font-normal whitespace-nowrap transition-colors border-b-2 -mb-px",
                       selectedCategory === cat.id
                         ? "border-primary text-primary"
                         : "border-transparent text-muted-foreground hover:text-foreground"
@@ -734,7 +734,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-medium">{service.name}</h3>
+                            <h3 className="font-normal">{service.name}</h3>
                           </div>
                           <p className="text-sm text-muted-foreground line-clamp-1">
                             {service.description}

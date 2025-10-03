@@ -105,7 +105,7 @@ export function SystemMonitor() {
       {stats && (
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold">System Monitor</h2>
+            <h2 className="text-2xl font-normal">System Monitor</h2>
             <p className="text-sm text-muted-foreground">
               {stats.hostname} • {stats.platform} • Uptime: {formatUptime(stats.uptime)}
             </p>
@@ -126,7 +126,7 @@ export function SystemMonitor() {
         <Card className="p-4 bg-red-500/10 border-red-500/20">
           <div className="flex items-center gap-2 text-red-500">
             <XCircle className="h-5 w-5" />
-            <span className="font-medium">Error: {error}</span>
+            <span className="font-normal">Error: {error}</span>
           </div>
         </Card>
       )}
@@ -147,7 +147,7 @@ export function SystemMonitor() {
           <Card className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Cpu className="h-5 w-5 text-primary" />
-              <span className="font-medium">CPU Usage</span>
+              <span className="font-normal">CPU Usage</span>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -164,7 +164,7 @@ export function SystemMonitor() {
           <Card className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <Memory className="h-5 w-5 text-accent" />
-              <span className="font-medium">Memory</span>
+              <span className="font-normal">Memory</span>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -183,7 +183,7 @@ export function SystemMonitor() {
           <Card className="p-4">
             <div className="flex items-center gap-2 mb-3">
               <HardDrive className="h-5 w-5 text-green-500" />
-              <span className="font-medium">Storage</span>
+              <span className="font-normal">Storage</span>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -208,14 +208,14 @@ export function SystemMonitor() {
 
       {/* Active Workflows */}
       <Card className="p-4">
-        <h3 className="font-semibold mb-4">Active Workflows</h3>
+        <h3 className="font-normal mb-4">Active Workflows</h3>
         <div className="space-y-3">
           {workflows.map((workflow) => (
             <div key={workflow.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
               <div className="flex items-center gap-3">
                 {getStatusIcon(workflow.status)}
                 <div>
-                  <div className="font-medium text-sm">{workflow.name}</div>
+                  <div className="font-normal text-sm">{workflow.name}</div>
                   <div className="text-xs text-muted-foreground">Last run: {workflow.lastRun}</div>
                 </div>
               </div>
@@ -227,7 +227,7 @@ export function SystemMonitor() {
 
       {/* System Logs */}
       <Card className="p-4">
-        <h3 className="font-semibold mb-4">System Logs</h3>
+        <h3 className="font-normal mb-4">System Logs</h3>
         <div className="space-y-2 max-h-64 overflow-auto">
           {logs.map((log, index) => (
             <div key={index} className="flex items-start gap-3 p-2 rounded text-sm font-mono">
