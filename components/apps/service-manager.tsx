@@ -637,8 +637,8 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     </TabsContent>
 
                     {/* Logs Tab */}
-                    <TabsContent value="logs" className="flex-1 overflow-auto mt-0">
-                      <Card className="p-3">
+                    <TabsContent value="logs" className="flex-1 flex flex-col mt-0">
+                      <Card className="p-3 flex-1 flex flex-col">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-normal text-sm">Container Logs (Live Stream)</h3>
                           <Button size="sm" onClick={() => connectLogsWebSocket(selectedService.containerName)} disabled={logsLoading}>
@@ -646,7 +646,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                             Reconnect
                           </Button>
                         </div>
-                        <pre className="p-3 bg-black text-green-400 rounded font-mono text-xs overflow-auto max-h-80 whitespace-pre-wrap">
+                        <pre className="flex-1 p-3 bg-black text-green-400 rounded font-mono text-xs overflow-auto whitespace-pre-wrap">
                           {logs || 'Connecting to log stream...'}
                         </pre>
                       </Card>
