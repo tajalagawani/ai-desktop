@@ -525,14 +525,14 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
                 {/* Tabs for Config, Logs, Web UI */}
                 {selectedService.installed && (
-                  <Tabs defaultValue="config" className="flex-1 flex flex-col mt-2">
+                  <Tabs defaultValue="logs" className="flex-1 flex flex-col mt-2">
                     <TabsList className="mb-2 justify-start w-auto">
-                      <TabsTrigger value="config">Configuration</TabsTrigger>
                       {selectedService.status === 'running' && (
                         <TabsTrigger value="logs" onClick={() => loadLogs(selectedService.id)}>
                           Logs
                         </TabsTrigger>
                       )}
+                      <TabsTrigger value="config">Configuration</TabsTrigger>
                       {getAccessUrl(selectedService) && (
                         <TabsTrigger value="ui">Web UI</TabsTrigger>
                       )}
