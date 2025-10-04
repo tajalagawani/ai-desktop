@@ -12,7 +12,9 @@
       "WebFetch(domain:logspot.vercel.app)",
       "WebFetch(domain:github.com)",
       "Bash(npm install:*)",
-      "Bash(curl -L \"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/2048px-Claude_AI_symbol.svg.png\" -o public/icons/claude.png)"
+      "Bash(curl -L \"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/2048px-Claude_AI_symbol.svg.png\" -o public/icons/claude.png)",
+      "Bash(curl:*)",
+      "Bash(all-services.ts)"
     ],
     "deny": [],
     "ask": []

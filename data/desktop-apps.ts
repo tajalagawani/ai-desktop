@@ -104,6 +104,14 @@ export const DOCK_APPS: AppConfig[] = [
     isSystem: true,
     description: "AI Context Protocol - Manage MCP servers"
   },
+  {
+    id: "security-center",
+    name: "Security Center",
+    icon: "Shield",
+    category: "system",
+    isSystem: true,
+    description: "Configure OAuth credentials for MCP servers"
+  },
 ]
 
 export const INSTALLED_APPS: AppConfig[] = [
@@ -219,6 +227,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     defaultHeight: 1000,
     minWidth: 1000,
     minHeight: 700,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "security-center": {
+    defaultWidth: 1200,
+    defaultHeight: 800,
+    minWidth: 800,
+    minHeight: 600,
     resizable: true,
     maximizable: true,
     minimizable: true,

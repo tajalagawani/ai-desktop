@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Soap Bubble Physics Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+        }
+        
+        .value-display {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+        
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            display: block;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 100%);
+            cursor: crosshair;
+        }
+        
+        .info-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .physics-note {
+            margin-top: 15px;
+            padding: 12px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🫧 Soap Bubble Physics Computing</h1>
+        <div class="subtitle">Real Surface Tension Simulation - Minimal Spanning Tree Solver</div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Number of Cities:</label>
+                <input type="range" id="numCities" min="3" max="20" value="8" step="1">
+                <span class="value-display" id="numCitiesValue">8 cities</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Surface Tension:</label>
+                <input type="range" id="surfaceTension" min="0.1" max="2" value="0.8" step="0.1">
+                <span class="value-display" id="surfaceTensionValue">0.8</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Simulation Speed:</label>
+                <input type="range" id="simSpeed" min="1" max="10" value="5" step="1">
+                <span class="value-display" id="simSpeedValue">5x</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Damping:</label>
+                <input type="range" id="damping" min="0.8" max="0.99" value="0.95" step="0.01">
+                <span class="value-display" id="dampingValue">0.95</span>
+            </div>
+            
+            <div class="control-group">
+                <label>Mesh Density:</label>
+                <input type="range" id="meshDensity" min="10" max="40" value="20" step="5">
+                <span class="value-display" id="meshDensityValue">20x20</span>
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+            <button class="btn-primary" onclick="resetCities()">🎲 New Random Cities</button>
+            <button class="btn-secondary" onclick="startSimulation()">▶️ Start Simulation</button>
+            <button class="btn-danger" onclick="stopSimulation()">⏸️ Pause</button>
+            <button class="btn-primary" onclick="resetMesh()">🔄 Reset Membrane</button>
+        </div>
+        
+        <canvas id="canvas" width="900" height="600"></canvas>
+        
+        <div class="info-panel">
+            <div class="info-item">
+                <div class="info-label">Total Energy</div>
+                <div class="info-value" id="totalEnergy">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Connection Length</div>
+                <div class="info-value" id="totalLength">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Iterations</div>
+                <div class="info-value" id="iterations">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Status</div>
+                <div class="info-value" id="status">Ready</div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <strong>📌 How This Works:</strong><br>
+            This simulation models a real soap film stretched between pegs (cities). The soap membrane is represented as a grid of connected points that pull on each other through surface tension forces. The physics engine calculates forces on each point based on:
+            <ul style="margin: 10px 0;">
+                <li><strong>Surface Tension:</strong> Points pull toward their neighbors to minimize surface area</li>
+                <li><strong>Pin Constraints:</strong> Cities are fixed points that anchor the membrane</li>
+                <li><strong>Elasticity:</strong> The membrane resists stretching like real soap film</li>
+                <li><strong>Damping:</strong> Energy dissipation that helps the system reach equilibrium</li>
+            </ul>
+            The soap film naturally finds the <strong>Minimal Spanning Tree</strong> - the shortest total path connecting all cities. This is exactly how real soap bubbles solve optimization problems through physics!
+        </div>
+        
+        <div class="physics-note">
+            <strong>⚡ Physics Notes:</strong> The simulation uses Verlet integration for numerical stability. Each mesh point has position, velocity, and forces applied from neighboring points (Hooke's law spring forces) and surface tension. The system evolves toward minimum potential energy, just like real soap films. Cities act as Dirichlet boundary conditions (fixed points).
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Simulation parameters
+        let cities = [];
+        let mesh = [];
+        let meshRows = 20;
+        let meshCols = 20;
+        let surfaceTension = 0.8;
+        let damping = 0.95;
+        let running = false;
+        let iterations = 0;
+        let simSpeed = 5;
+        
+        // Physics constants
+        const restLength = 30;
+        const stiffness = 0.5;
+        const dt = 0.3;
+        
+        // Mesh point class
+        class Point {
+            constructor(x, y, fixed = false) {
+                this.x = x;
+                this.y = y;
+                this.oldX = x;
+                this.oldY = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.fx = 0;
+                this.fy = 0;
+                this.fixed = fixed;
+                this.mass = 1.0;
+            }
+            
+            update() {
+                if (this.fixed) return;
+                
+                // Verlet integration
+                const newX = this.x + (this.x - this.oldX) * damping + this.fx * dt * dt;
+                const newY = this.y + (this.y - this.oldY) * damping + this.fy * dt * dt;
+                
+                this.oldX = this.x;
+                this.oldY = this.y;
+                this.x = newX;
+                this.y = newY;
+                
+                // Reset forces
+                this.fx = 0;
+                this.fy = 0;
+            }
+            
+            applyForce(fx, fy) {
+                this.fx += fx;
+                this.fy += fy;
+            }
+        }
+        
+        // Initialize cities
+        function resetCities() {
+            const numCities = parseInt(document.getElementById('numCities').value);
+            cities = [];
+            const margin = 100;
+            
+            for (let i = 0; i < numCities; i++) {
+                cities.push({
+                    x: margin + Math.random() * (canvas.width - 2 * margin),
+                    y: margin + Math.random() * (canvas.height - 2 * margin)
+                });
+            }
+            
+            resetMesh();
+        }
+        
+        // Initialize mesh
+        function resetMesh() {
+            iterations = 0;
+            meshRows = parseInt(document.getElementById('meshDensity').value);
+            meshCols = parseInt(document.getElementById('meshDensity').value);
+            mesh = [];
+            
+            const cellWidth = canvas.width / (meshCols - 1);
+            const cellHeight = canvas.height / (meshRows - 1);
+            
+            // Create grid of points
+            for (let i = 0; i < meshRows; i++) {
+                mesh[i] = [];
+                for (let j = 0; j < meshCols; j++) {
+                    const x = j * cellWidth;
+                    const y = i * cellHeight;
+                    mesh[i][j] = new Point(x, y, false);
+                }
+            }
+            
+            // Pin points near cities
+            const pinRadius = 20;
+            for (let i = 0; i < meshRows; i++) {
+                for (let j = 0; j < meshCols; j++) {
+                    const point = mesh[i][j];
+                    for (const city of cities) {
+                        const dx = point.x - city.x;
+                        const dy = point.y - city.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (dist < pinRadius) {
+                            point.x = city.x;
+                            point.y = city.y;
+                            point.oldX = city.x;
+                            point.oldY = city.y;
+                            point.fixed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Calculate spring forces
+        function applySpringForces() {
+            // Horizontal and vertical springs
+            for (let i = 0; i < meshRows; i++) {
+                for (let j = 0; j < meshCols; j++) {
+                    const p1 = mesh[i][j];
+                    
+                    // Right neighbor
+                    if (j < meshCols - 1) {
+                        const p2 = mesh[i][j + 1];
+                        applySpring(p1, p2);
+                    }
+                    
+                    // Down neighbor
+                    if (i < meshRows - 1) {
+                        const p2 = mesh[i + 1][j];
+                        applySpring(p1, p2);
+                    }
+                    
+                    // Diagonal springs for stability
+                    if (i < meshRows - 1 && j < meshCols - 1) {
+                        const p2 = mesh[i + 1][j + 1];
+                        applySpring(p1, p2, Math.sqrt(2));
+                    }
+                    
+                    if (i < meshRows - 1 && j > 0) {
+                        const p2 = mesh[i + 1][j - 1];
+                        applySpring(p1, p2, Math.sqrt(2));
+                    }
+                }
+            }
+        }
+        
+        function applySpring(p1, p2, lengthMultiplier = 1) {
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < 0.001) return;
+            
+            const targetLength = restLength * lengthMultiplier;
+            const force = (dist - targetLength) * stiffness * surfaceTension;
+            
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            
+            p1.applyForce(fx, fy);
+            p2.applyForce(-fx, -fy);
+        }
+        
+        // Simulation step
+        function step() {
+            for (let substep = 0; substep < simSpeed; substep++) {
+                applySpringForces();
+                
+                // Update all points
+                for (let i = 0; i < meshRows; i++) {
+                    for (let j = 0; j < meshCols; j++) {
+                        mesh[i][j].update();
+                    }
+                }
+                
+                iterations++;
+            }
+        }
+        
+        // Drawing
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#e0f7fa');
+            gradient.addColorStop(1, '#f3e5f5');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw mesh (soap film)
+            ctx.strokeStyle = 'rgba(100, 150, 255, 0.3)';
+            ctx.lineWidth = 1;
+            
+            // Horizontal lines
+            for (let i = 0; i < meshRows; i++) {
+                ctx.beginPath();
+                ctx.moveTo(mesh[i][0].x, mesh[i][0].y);
+                for (let j = 1; j < meshCols; j++) {
+                    ctx.lineTo(mesh[i][j].x, mesh[i][j].y);
+                }
+                ctx.stroke();
+            }
+            
+            // Vertical lines
+            for (let j = 0; j < meshCols; j++) {
+                ctx.beginPath();
+                ctx.moveTo(mesh[0][j].x, mesh[0][j].y);
+                for (let i = 1; i < meshRows; i++) {
+                    ctx.lineTo(mesh[i][j].x, mesh[i][j].y);
+                }
+                ctx.stroke();
+            }
+            
+            // Draw connections (thick lines where film is most active)
+            ctx.strokeStyle = 'rgba(102, 126, 234, 0.7)';
+            ctx.lineWidth = 3;
+            
+            const connections = findMainConnections();
+            for (const conn of connections) {
+                ctx.beginPath();
+                ctx.moveTo(conn.x1, conn.y1);
+                ctx.lineTo(conn.x2, conn.y2);
+                ctx.stroke();
+            }
+            
+            // Draw cities (pegs)
+            for (let i = 0; i < cities.length; i++) {
+                const city = cities[i];
+                
+                // Shadow
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.beginPath();
+                ctx.arc(city.x + 2, city.y + 2, 12, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Peg
+                ctx.fillStyle = '#ff6b6b';
+                ctx.beginPath();
+                ctx.arc(city.x, city.y, 12, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Border
+                ctx.strokeStyle = '#c92a2a';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Label
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(i + 1, city.x, city.y);
+            }
+            
+            // Update info panel
+            updateInfoPanel(connections);
+        }
+        
+        // Find main connections in the mesh
+        function findMainConnections() {
+            const connections = [];
+            const threshold = 50; // Distance threshold for "main" connections
+            
+            for (let i = 0; i < cities.length; i++) {
+                for (let j = i + 1; j < cities.length; j++) {
+                    const c1 = cities[i];
+                    const c2 = cities[j];
+                    
+                    // Check if there's a direct path in the mesh
+                    const hasPath = checkMeshPath(c1, c2, threshold);
+                    if (hasPath) {
+                        connections.push({
+                            x1: c1.x,
+                            y1: c1.y,
+                            x2: c2.x,
+                            y2: c2.y
+                        });
+                    }
+                }
+            }
+            
+            return connections;
+        }
+        
+        function checkMeshPath(c1, c2, threshold) {
+            // Simple heuristic: check if mesh points form a relatively straight path
+            const dx = c2.x - c1.x;
+            const dy = c2.y - c1.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist > 200) return false; // Too far apart
+            
+            let alignedPoints = 0;
+            const required = 3; // Need at least 3 aligned mesh points
+            
+            for (let i = 0; i < meshRows; i++) {
+                for (let j = 0; j < meshCols; j++) {
+                    const p = mesh[i][j];
+                    
+                    // Calculate distance from point to line segment
+                    const distToLine = pointToLineDistance(p.x, p.y, c1.x, c1.y, c2.x, c2.y);
+                    
+                    if (distToLine < threshold) {
+                        alignedPoints++;
+                    }
+                }
+            }
+            
+            return alignedPoints >= required;
+        }
+        
+        function pointToLineDistance(px, py, x1, y1, x2, y2) {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+            
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            let param = -1;
+            
+            if (lenSq !== 0) param = dot / lenSq;
+            
+            let xx, yy;
+            
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            } else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+            
+            const dx = px - xx;
+            const dy = py - yy;
+            
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        function updateInfoPanel(connections) {
+            // Calculate total energy
+            let energy = 0;
+            for (let i = 0; i < meshRows; i++) {
+                for (let j = 0; j < meshCols - 1; j++) {
+                    const p1 = mesh[i][j];
+                    const p2 = mesh[i][j + 1];
+                    const dx = p2.x - p1.x;
+                    const dy = p2.y - p1.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    energy += (dist - restLength) * (dist - restLength);
+                }
+            }
+            for (let i = 0; i < meshRows - 1; i++) {
+                for (let j = 0; j < meshCols; j++) {
+                    const p1 = mesh[i][j];
+                    const p2 = mesh[i + 1][j];
+                    const dx = p2.x - p1.x;
+                    const dy = p2.y - p1.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    energy += (dist - restLength) * (dist - restLength);
+                }
+            }
+            
+            // Calculate total connection length
+            let totalLength = 0;
+            for (const conn of connections) {
+                const dx = conn.x2 - conn.x1;
+                const dy = conn.y2 - conn.y1;
+                totalLength += Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            document.getElementById('totalEnergy').textContent = energy.toFixed(0);
+            document.getElementById('totalLength').textContent = totalLength.toFixed(0) + 'px';
+            document.getElementById('iterations').textContent = iterations;
+            document.getElementById('status').textContent = running ? '🟢 Running' : '🔴 Paused';
+        }
+        
+        // Animation loop
+        function animate() {
+            if (running) {
+                step();
+            }
+            draw();
+            requestAnimationFrame(animate);
+        }
+        
+        function startSimulation() {
+            running = true;
+        }
+        
+        function stopSimulation() {
+            running = false;
+        }
+        
+        // Control handlers
+        document.getElementById('numCities').addEventListener('input', (e) => {
+            document.getElementById('numCitiesValue').textContent = e.target.value + ' cities';
+        });
+        
+        document.getElementById('surfaceTension').addEventListener('input', (e) => {
+            surfaceTension = parseFloat(e.target.value);
+            document.getElementById('surfaceTensionValue').textContent = surfaceTension.toFixed(1);
+        });
+        
+        document.getElementById('simSpeed').addEventListener('input', (e) => {
+            simSpeed = parseInt(e.target.value);
+            document.getElementById('simSpeedValue').textContent = simSpeed + 'x';
+        });
+        
+        document.getElementById('damping').addEventListener('input', (e) => {
+            damping = parseFloat(e.target.value);
+            document.getElementById('dampingValue').textContent = damping.toFixed(2);
+        });
+        
+        document.getElementById('meshDensity').addEventListener('input', (e) => {
+            const value = e.target.value;
+            document.getElementById('meshDensityValue').textContent = value + 'x' + value;
+        });
+        
+        // Initialize and start
+        resetCities();
+        animate();
+    </script>
+</body>
+</html>

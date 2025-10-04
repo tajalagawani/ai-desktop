@@ -31,6 +31,7 @@ import { Changelog } from "@/components/apps/changelog"
 import { FileManager } from "@/components/apps/file-manager"
 import { ServiceManager } from "@/components/apps/service-manager"
 import { ACPAgent } from "@/components/apps/acp-agent"
+import { SecurityCenter } from "@/components/apps/security-center"
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
@@ -70,6 +71,7 @@ const getAppComponent = (
     "file-manager": <FileManager />,
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
     "acp-agent": <ACPAgent />,
+    "security-center": <SecurityCenter />,
     "github": <div>GitHub Desktop</div>,
     "chatgpt": <div>ChatGPT</div>,
     "slack": <div>Slack</div>,
