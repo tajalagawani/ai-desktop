@@ -30,6 +30,7 @@ import { ClaudeCLI } from "@/components/apps/claude-cli"
 import { Changelog } from "@/components/apps/changelog"
 import { FileManager } from "@/components/apps/file-manager"
 import { ServiceManager } from "@/components/apps/service-manager"
+import { ACPAgent } from "@/components/apps/acp-agent"
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
@@ -68,6 +69,7 @@ const getAppComponent = (
     "monitor": <SystemMonitor />,
     "file-manager": <FileManager />,
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
+    "acp-agent": <ACPAgent />,
     "github": <div>GitHub Desktop</div>,
     "chatgpt": <div>ChatGPT</div>,
     "slack": <div>Slack</div>,

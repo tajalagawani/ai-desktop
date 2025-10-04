@@ -96,6 +96,14 @@ export const DOCK_APPS: AppConfig[] = [
     isSystem: true,
     description: "Install and manage VPS services"
   },
+  {
+    id: "acp-agent",
+    name: "ACP Agent",
+    icon: "Bot",
+    category: "system",
+    isSystem: true,
+    description: "AI Context Protocol - Manage MCP servers"
+  },
 ]
 
 export const INSTALLED_APPS: AppConfig[] = [
@@ -197,6 +205,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     closable: true,
   },
   "service-manager": {
+    defaultWidth: 1600,
+    defaultHeight: 1000,
+    minWidth: 1000,
+    minHeight: 700,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "acp-agent": {
     defaultWidth: 1600,
     defaultHeight: 1000,
     minWidth: 1000,
