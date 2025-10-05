@@ -46,6 +46,10 @@ pip3 install flask flask-cors requests
 mkdir -p flows
 python3 docker-compose-generator.py
 docker-compose up -d --build
+
+# Start Flow Manager API (runs with the app)
+nohup python3 flow_manager_api.py > /var/www/ai-desktop/logs/flow-manager-api.log 2>&1 &
+
 cd /var/www/ai-desktop
 
 # Start Next.js app
@@ -95,6 +99,11 @@ cd components/apps/act-docker
 python3 docker-compose-generator.py
 docker-compose down
 docker-compose up -d --build
+
+# Restart Flow Manager API
+pkill -f "flow_manager_api.py"
+nohup python3 flow_manager_api.py > /var/www/ai-desktop/logs/flow-manager-api.log 2>&1 &
+
 cd /var/www/ai-desktop
 
 # Restart Next.js
@@ -110,6 +119,10 @@ pm2 logs ai-desktop
 # Check ACT Docker flows
 docker ps --filter "name=act-"
 docker-compose -f /var/www/ai-desktop/components/apps/act-docker/docker-compose.yml logs
+
+# Check Flow Manager API
+curl http://localhost:8000/api/flows
+tail -f /var/www/ai-desktop/logs/flow-manager-api.log
 
 # Check auto-update logs (if enabled)
 tail -f /var/www/ai-desktop/logs/auto-update.log

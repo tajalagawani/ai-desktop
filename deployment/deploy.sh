@@ -121,6 +121,16 @@ if [ -d "$ACT_DIR" ]; then
         docker ps --filter "name=act-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
     fi
 
+    # Start Flow Manager API (optional - for direct API access)
+    if [ -f "flow_manager_api.py" ]; then
+        # Kill existing Flow Manager API if running
+        pkill -f "flow_manager_api.py" 2>/dev/null || true
+
+        # Start Flow Manager API in background
+        nohup python3 flow_manager_api.py > "$APP_DIR/logs/flow-manager-api.log" 2>&1 &
+        print_success "Flow Manager API started on port 8000"
+    fi
+
     cd "$APP_DIR"
 else
     print_info "ACT Docker directory not found, skipping flow setup"
