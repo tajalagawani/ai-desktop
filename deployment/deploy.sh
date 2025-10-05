@@ -32,10 +32,9 @@ print_info() {
     echo -e "${YELLOW}→ $1${NC}"
 }
 
-# Check if running as correct user
+# Check if running as correct user (allow root for now, just warn)
 if [ "$EUID" -eq 0 ]; then
-    print_error "Don't run this script as root. Run as your deployment user."
-    exit 1
+    print_info "Running as root. For production, consider using a dedicated deployment user."
 fi
 
 print_info "Starting deployment of $APP_NAME..."
@@ -76,25 +75,24 @@ print_info "Setting up ACT Docker flows..."
 if ! command -v docker &> /dev/null; then
     print_error "Docker is not installed. Installing Docker..."
     curl -fsSL https://get.docker.com -o get-docker.sh
-    sudo sh get-docker.sh
-    sudo usermod -aG docker $USER
+    sh get-docker.sh
     rm get-docker.sh
     print_success "Docker installed"
 fi
 
 # Ensure Docker daemon is running
-if ! sudo systemctl is-active --quiet docker; then
+if ! systemctl is-active --quiet docker; then
     print_info "Starting Docker daemon..."
-    sudo systemctl start docker
-    sudo systemctl enable docker
+    systemctl start docker
+    systemctl enable docker
     print_success "Docker daemon started"
 fi
 
 # Check if docker compose is available (v2 plugin or v1 standalone)
 if ! docker compose version &> /dev/null && ! command -v docker-compose &> /dev/null; then
     print_error "Docker Compose is not installed. Installing plugin..."
-    sudo apt update
-    sudo apt install docker-compose-plugin -y
+    apt update
+    apt install docker-compose-plugin -y
     print_success "Docker Compose plugin installed"
 fi
 
