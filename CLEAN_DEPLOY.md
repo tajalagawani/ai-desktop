@@ -29,7 +29,16 @@ npm install -g pm2
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 rm get-docker.sh
-apt install docker-compose -y
+
+# Start Docker daemon
+systemctl start docker
+systemctl enable docker
+
+# Add current user to docker group (if not root)
+usermod -aG docker $USER
+
+# Install docker-compose plugin
+apt install docker-compose-plugin -y
 
 # Clone and setup
 mkdir -p /var/www
