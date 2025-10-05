@@ -109,7 +109,7 @@ export function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
             <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
               <div
                 className={`max-w-[80%] p-3 rounded-2xl ${
-                  message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
                 }`}
               >
                 <p className="text-sm">{message.content}</p>
@@ -122,7 +122,7 @@ export function ChatInterface({ isOpen, onClose }: ChatInterfaceProps) {
 
           {isTyping && (
             <div className="flex justify-start">
-              <div className="bg-muted text-muted-foreground p-3 rounded-2xl">
+              <div className="bg-muted text-foreground p-3 rounded-2xl">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-current rounded-full animate-bounce" />
                   <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />

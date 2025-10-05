@@ -34,6 +34,7 @@ import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
 import { FloatingDockDemo } from "@/components/desktop/floating-dock-demo"
+import { TopDock } from "@/components/desktop/top-dock"
 import { DesktopContextMenu } from "@/components/desktop/desktop-context-menu"
 import { DesktopIconContextMenu } from "@/components/desktop/desktop-icon-context-menu"
 import { Taskbar } from "@/components/desktop/taskbar"
@@ -193,9 +194,12 @@ export function Desktop() {
 
   return (
     <DesktopContextMenu onAction={handleContextMenuAction}>
-      <div className="h-screen w-full bg-background relative antialiased overflow-hidden">
+      <div className="h-screen w-full bg-[oklch(0.97_0.00_0)] dark:bg-[oklch(0.20_0.00_0)] relative antialiased overflow-hidden">
+        {/* Top Dock */}
+        <TopDock />
+
         {/* Desktop Icons */}
-        <DesktopIcons 
+        <DesktopIcons
           onOpenWindow={handleOpenWindow}
           installedApps={INSTALLED_APPS}
           windows={windows}
@@ -296,13 +300,13 @@ function DesktopIcons({
           return (
             <div key={app.id} className="flex flex-col items-center gap-2">
               <button
-                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center hover:scale-[1.2] transition-transform duration-200 overflow-hidden"
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:scale-[1.2] transition-transform duration-200 overflow-hidden"
                 onClick={() => onOpenWindow(app.id, app.name)}
               >
                 {isImageIcon ? (
                   <img src={app.icon} alt={app.name} className="h-8 w-8 object-contain" />
                 ) : (
-                  IconComponent && <IconComponent className="h-6 w-6 text-neutral-600 dark:text-neutral-300" />
+                  IconComponent && <IconComponent className="h-6 w-6 text-foreground" />
                 )}
               </button>
               <span className="text-xs text-foreground font-normal">{app.name}</span>
@@ -338,13 +342,13 @@ function DesktopIcons({
                 onDragEnd={() => setDraggedApp(null)}
               >
                 <button
-                  className="w-10 h-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center hover:scale-110 transition-transform duration-200 cursor-move overflow-hidden"
+                  className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:scale-110 transition-transform duration-200 cursor-move overflow-hidden"
                   onClick={() => onOpenWindow(app.id, app.name)}
                 >
                   {isImageIcon ? (
                     <img src={app.icon} alt={app.name} className="h-8 w-8 object-contain" />
                   ) : (
-                    IconComponent && <IconComponent className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
+                    IconComponent && <IconComponent className="h-6 w-6 text-foreground" />
                   )}
                 </button>
                 <span className="text-xs text-foreground font-normal">{app.name}</span>
@@ -616,10 +620,10 @@ function DesktopFolder({ folder, onOpen }: any) {
       style={{ left: folder.x, top: folder.y }}
     >
       <button
-        className="w-10 h-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center hover:scale-110 transition-transform duration-200"
+        className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:scale-110 transition-transform duration-200"
         onDoubleClick={onOpen}
       >
-        <Folder className="h-6 w-6 text-neutral-500 dark:text-neutral-300" />
+        <Folder className="h-6 w-6 text-foreground" />
       </button>
       <span className="text-xs text-foreground font-normal">{folder.name}</span>
     </div>

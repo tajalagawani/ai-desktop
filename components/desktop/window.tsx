@@ -45,7 +45,7 @@ export function Window({
   return (
     <motion.div
       ref={windowRef}
-      className={`absolute glass-effect rounded-2xl overflow-hidden shadow-sm select-none border border-gray-200 dark:border-neutral-800 ${
+      className={`absolute glass-effect rounded-2xl overflow-hidden select-none border border-border dark:border-transparent ${
         isActive ? "z-50" : "z-40"
       }`}
       style={{
@@ -100,7 +100,7 @@ export function Window({
 
       {/* Window Header */}
       <div
-        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-neutral-900 cursor-grab active:cursor-grabbing"
+        className="flex items-center justify-between p-3 bg-muted cursor-grab active:cursor-grabbing"
         onMouseDown={(e) => onDragStart(e, id)}
       >
         <div className="flex items-center gap-2">

@@ -19,6 +19,23 @@ export function TwoFactorAuth({ onAuthenticated }: TwoFactorAuthProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [showLogin, setShowLogin] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+
+  // Check if user is already authenticated (within 1 hour)
+  useEffect(() => {
+    const authExpiry = localStorage.getItem('authExpiry')
+    if (authExpiry) {
+      const expiryTime = parseInt(authExpiry, 10)
+      if (Date.now() < expiryTime) {
+        // Still authenticated
+        onAuthenticated()
+        return
+      } else {
+        // Expired, remove from storage
+        localStorage.removeItem('authExpiry')
+      }
+    }
+  }, [onAuthenticated])
 
   // Auto-transition to login after 3 seconds
   useEffect(() => {
@@ -43,6 +60,11 @@ export function TwoFactorAuth({ onAuthenticated }: TwoFactorAuthProps) {
       // For demo purposes, accept any 6-digit code
       // In a real app, this would validate against a backend
       if (code === "123456" || code.length === 6) {
+        // If remember me is checked, store auth expiry (1 hour from now)
+        if (rememberMe) {
+          const expiryTime = Date.now() + (60 * 60 * 1000) // 1 hour in milliseconds
+          localStorage.setItem('authExpiry', expiryTime.toString())
+        }
         onAuthenticated()
       } else {
         setError("Invalid authentication code")
@@ -113,6 +135,19 @@ export function TwoFactorAuth({ onAuthenticated }: TwoFactorAuthProps) {
                     <Smartphone className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   </div>
                   {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="remember-me"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded border-border bg-background text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                  />
+                  <label htmlFor="remember-me" className="text-sm font-normal text-foreground cursor-pointer">
+                    Remember me for 1 hour
+                  </label>
                 </div>
 
                 <Button type="submit" className="w-full" disabled={code.length !== 6 || isLoading}>
