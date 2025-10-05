@@ -112,6 +112,14 @@ export const DOCK_APPS: AppConfig[] = [
     isSystem: true,
     description: "Configure OAuth credentials for MCP servers"
   },
+  {
+    id: "flow-manager",
+    name: "Flow Manager",
+    icon: "Zap",
+    category: "system",
+    isSystem: true,
+    description: "Manage ACT workflow automation flows"
+  },
 ]
 
 export const INSTALLED_APPS: AppConfig[] = [
@@ -237,6 +245,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     defaultHeight: 800,
     minWidth: 800,
     minHeight: 600,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "flow-manager": {
+    defaultWidth: 1600,
+    defaultHeight: 1000,
+    minWidth: 1000,
+    minHeight: 700,
     resizable: true,
     maximizable: true,
     minimizable: true,

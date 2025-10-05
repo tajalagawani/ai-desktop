@@ -30,6 +30,7 @@ import { ClaudeCLI } from "@/components/apps/claude-cli"
 import { Changelog } from "@/components/apps/changelog"
 import { FileManager } from "@/components/apps/file-manager"
 import { ServiceManager } from "@/components/apps/service-manager"
+import { FlowManager } from "@/components/apps/flow-manager"
 import { ACPAgent } from "@/components/apps/acp-agent"
 import { SecurityCenter } from "@/components/apps/security-center"
 import { BackgroundBeams } from "@/components/ui/background-beams"
@@ -71,6 +72,7 @@ const getAppComponent = (
     "monitor": <SystemMonitor />,
     "file-manager": <FileManager />,
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
+    "flow-manager": <FlowManager />,
     "acp-agent": <ACPAgent />,
     "security-center": <SecurityCenter />,
     "github": <div>GitHub Desktop</div>,
