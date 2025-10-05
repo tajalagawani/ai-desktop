@@ -518,11 +518,14 @@ export function FlowManager(_props: FlowManagerProps) {
                       {selectedFlow.description}
                     </p>
                   )}
-                  <p className="text-sm text-muted-foreground">
-                    {selectedFlow.mode === 'agent' ? 'Agent Mode' : selectedFlow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'}
-                    {' • '}
-                    Port {selectedFlow.port}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs font-normal">
+                      {selectedFlow.mode === 'agent' ? 'Agent Mode' : selectedFlow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs font-normal">
+                      Port {selectedFlow.port}
+                    </Badge>
+                  </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -747,9 +750,14 @@ export function FlowManager(_props: FlowManagerProps) {
                             {flow.description}
                           </p>
                         )}
-                        <p className="text-xs text-muted-foreground/70 line-clamp-1">
-                          {flow.mode === 'agent' ? 'Agent Mode' : flow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'} • Port {flow.port}
-                        </p>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="outline" className="text-xs font-normal">
+                            {flow.mode === 'agent' ? 'Agent Mode' : flow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs font-normal">
+                            Port {flow.port}
+                          </Badge>
+                        </div>
                       </div>
 
                       {/* Status Badge & Action Buttons */}
