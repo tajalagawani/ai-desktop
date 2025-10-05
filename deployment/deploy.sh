@@ -125,13 +125,30 @@ if [ -d "$ACT_DIR" ]; then
 
     # Start/restart Docker containers
     if [ -f "docker-compose.yml" ]; then
-        docker-compose down 2>/dev/null || true
-        docker-compose up -d --build
-        print_success "ACT Docker flows started"
+        # Detect docker compose version (v2 or v1)
+        if docker compose version &> /dev/null; then
+            COMPOSE_CMD="docker compose"
+        else
+            COMPOSE_CMD="docker-compose"
+        fi
 
-        # Show running containers
-        print_info "Running flow containers:"
-        docker ps --filter "name=act-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+        print_info "Stopping existing flow containers..."
+        $COMPOSE_CMD down 2>/dev/null || true
+
+        print_info "Building and starting flow containers..."
+        $COMPOSE_CMD up -d --build
+
+        if [ $? -eq 0 ]; then
+            print_success "ACT Docker flows started"
+
+            # Show running containers
+            print_info "Running flow containers:"
+            docker ps --filter "name=act-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+        else
+            print_error "Failed to start Docker flows"
+        fi
+    else
+        print_info "No docker-compose.yml found, skipping flow containers"
     fi
 
     # Start Flow Manager API (optional - for direct API access)
