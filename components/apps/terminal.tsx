@@ -235,7 +235,7 @@ export function Terminal() {
         </div>
       )}
       {!isLoading && !isConnected && (
-        <div className="px-4 py-2 text-sm text-yellow-400 bg-yellow-900/20 border-b border-yellow-900/30">
+        <div className="px-4 py-2 text-sm text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-900/30">
           Connecting to terminal...
         </div>
       )}

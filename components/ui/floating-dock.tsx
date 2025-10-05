@@ -58,9 +58,9 @@ const FloatingDockMobile = ({
                 <Link
                   href={item.href}
                   key={item.title}
-                  className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center"
+                  className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"
                 >
-                  <div className="h-4 w-4">{item.icon}</div>
+                  <div className="h-4 w-4 text-foreground">{item.icon}</div>
                 </Link>
               </motion.div>
             ))}
@@ -69,7 +69,7 @@ const FloatingDockMobile = ({
       </AnimatePresence>
       <button
         onClick={() => setOpen(!open)}
-        className="h-10 w-10 rounded-full bg-gray-50 dark:bg-neutral-900 flex items-center justify-center"
+        className="h-10 w-10 rounded-full bg-muted flex items-center justify-center"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +81,7 @@ const FloatingDockMobile = ({
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="h-5 w-5 text-neutral-500 dark:text-neutral-400"
+          className="h-5 w-5 text-foreground"
         >
           <path d="M3 6h18" />
           <path d="M9 12h6" />
@@ -105,7 +105,7 @@ const FloatingDockDesktop = ({
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "mx-auto hidden md:flex h-16 gap-4 items-end rounded-2xl bg-gray-50 dark:bg-neutral-900 px-4 pb-3",
+        "mx-auto hidden md:flex h-16 gap-4 items-end rounded-2xl bg-muted px-4 pb-3",
         className
       )}
     >
@@ -153,7 +153,7 @@ function IconContainer({
       <motion.div
         ref={ref}
         style={{ width }}
-        className="aspect-square rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center relative"
+        className="aspect-square rounded-full bg-transparent flex items-center justify-center relative hover:bg-dock-hover"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -163,13 +163,13 @@ function IconContainer({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 2 }}
-              className="px-2 py-0.5 whitespace-pre rounded-md bg-gray-100 border dark:bg-neutral-800 dark:border-neutral-900 dark:text-white border-gray-200 text-neutral-700 absolute -top-10 left-1/2 transform -translate-x-1/2 w-fit text-xs z-50"
+              className="px-2 py-0.5 whitespace-pre rounded-md bg-card border border-border text-foreground absolute -top-10 left-1/2 transform -translate-x-1/2 w-fit text-xs z-50"
             >
               {title}
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="h-6 w-6">{icon}</div>
+        <div className="h-6 w-6 text-foreground">{icon}</div>
       </motion.div>
     </Link>
   )

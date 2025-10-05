@@ -269,9 +269,9 @@ const mockApps: App[] = [
 
 const DummyContent = ({ title, description }: { title: string; description: string }) => {
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 dark:from-neutral-800 dark:to-neutral-900 p-8 md:p-14 rounded-3xl mb-4 border border-gray-100 dark:border-neutral-700">
-      <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto leading-relaxed">
-        <span className="font-normal text-neutral-700 dark:text-neutral-200 text-xl md:text-3xl block mb-4">
+    <div className="bg-gradient-to-br from-card to-muted p-8 md:p-14 rounded-3xl mb-4 border border-border">
+      <p className="text-muted-foreground text-base md:text-2xl font-sans max-w-3xl mx-auto leading-relaxed">
+        <span className="font-normal text-foreground text-xl md:text-3xl block mb-4">
           {title}
         </span>
         {description}
@@ -390,14 +390,14 @@ export function MacAppStore() {
 
   if (selectedApp) {
     return (
-      <div className="h-full bg-gradient-to-br from-blue-50 to-white dark:from-neutral-900 dark:to-neutral-800 overflow-auto">
+      <div className="h-full bg-gradient-to-br from-blue-50 to-white dark:from-background dark:to-muted overflow-auto">
         <div className="max-w-6xl mx-auto p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => setSelectedApp(null)}
-              className="flex items-center gap-2 hover:bg-white/50 dark:hover:bg-neutral-800/50"
+              className="flex items-center gap-2 hover:bg-muted/50"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Store
@@ -413,11 +413,11 @@ export function MacAppStore() {
           </div>
 
           {/* App Header */}
-          <div className="bg-white dark:bg-neutral-800 rounded-3xl p-8 mb-8 shadow-lg border border-gray-100 dark:border-neutral-700">
+          <div className="bg-card rounded-3xl p-8 mb-8 shadow-lg border border-border">
             <div className="flex flex-col lg:flex-row gap-8">
               <div className="flex-shrink-0">
-                <img 
-                  src={selectedApp.icon} 
+                <img
+                  src={selectedApp.icon}
                   alt={selectedApp.name}
                   className="w-32 h-32 rounded-3xl shadow-lg"
                 />
@@ -426,8 +426,8 @@ export function MacAppStore() {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h1 className="text-4xl font-normal mb-2">{selectedApp.name}</h1>
-                    <p className="text-xl text-gray-600 dark:text-gray-300 mb-1">{selectedApp.developer}</p>
-                    <p className="text-gray-500 dark:text-gray-400">{selectedApp.category}</p>
+                    <p className="text-xl text-muted-foreground mb-1">{selectedApp.developer}</p>
+                    <p className="text-muted-foreground">{selectedApp.category}</p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     {selectedApp.editorChoice && (
@@ -456,9 +456,9 @@ export function MacAppStore() {
                       ))}
                     </div>
                     <span className="font-normal text-lg">{selectedApp.rating}</span>
-                    <span className="text-gray-500">({formatNumber(selectedApp.reviews)} reviews)</span>
+                    <span className="text-muted-foreground">({formatNumber(selectedApp.reviews)} reviews)</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-500">
+                  <div className="flex items-center gap-2 text-muted-foreground">
                     <Download className="h-4 w-4" />
                     <span>{selectedApp.downloads}</span>
                   </div>
@@ -516,21 +516,21 @@ export function MacAppStore() {
           {/* Description & Details */}
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
-              <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
+              <div className="bg-card rounded-2xl p-6 shadow-lg border border-border">
                 <h2 className="text-2xl font-normal mb-4">About {selectedApp.name}</h2>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+                <p className="text-foreground leading-relaxed text-lg">
                   {selectedApp.description}
                 </p>
               </div>
 
               {selectedApp.whatsNew.length > 0 && (
-                <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
+                <div className="bg-card rounded-2xl p-6 shadow-lg border border-border">
                   <h2 className="text-2xl font-normal mb-4">What's New</h2>
                   <ul className="space-y-3">
                     {selectedApp.whatsNew.map((item, index) => (
                       <li key={index} className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-blue-500 rounded-full mt-3 flex-shrink-0" />
-                        <span className="text-gray-700 dark:text-gray-300">{item}</span>
+                        <span className="text-foreground">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -539,29 +539,29 @@ export function MacAppStore() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
+              <div className="bg-card rounded-2xl p-6 shadow-lg border border-border">
                 <h3 className="text-xl font-normal mb-4">Information</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Version</span>
+                    <span className="text-muted-foreground">Version</span>
                     <span className="font-normal">{selectedApp.version}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Size</span>
+                    <span className="text-muted-foreground">Size</span>
                     <span className="font-normal">{selectedApp.size}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Updated</span>
+                    <span className="text-muted-foreground">Updated</span>
                     <span className="font-normal">{selectedApp.lastUpdated}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">Age Rating</span>
+                    <span className="text-muted-foreground">Age Rating</span>
                     <span className="font-normal">{selectedApp.ageRating}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
+              <div className="bg-card rounded-2xl p-6 shadow-lg border border-border">
                 <h3 className="text-xl font-normal mb-4">Languages</h3>
                 <div className="flex flex-wrap gap-2">
                   {selectedApp.languages.map((lang) => (
@@ -570,7 +570,7 @@ export function MacAppStore() {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-neutral-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-neutral-700">
+              <div className="bg-card rounded-2xl p-6 shadow-lg border border-border">
                 <h3 className="text-xl font-normal mb-4">Tags</h3>
                 <div className="flex flex-wrap gap-2">
                   {selectedApp.tags.map((tag) => (
@@ -586,9 +586,9 @@ export function MacAppStore() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-neutral-900 dark:via-neutral-800 dark:to-neutral-900">
+    <div className="h-full flex flex-col bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-background dark:via-muted dark:to-background">
       {/* Header */}
-      <div className="sticky top-0 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-xl border-b border-gray-200 dark:border-neutral-700 z-50">
+      <div className="sticky top-0 bg-card/80 backdrop-blur-xl border-b border-border z-50">
         <div className="p-6">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -615,12 +615,12 @@ export function MacAppStore() {
             
             <div className="flex items-center gap-4 w-full lg:w-auto">
               <div className="relative flex-1 lg:w-96">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   placeholder="Search for apps, games, and more..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 bg-white dark:bg-neutral-800 border-gray-200 dark:border-neutral-700 rounded-full h-12 shadow-sm"
+                  className="pl-12 bg-background border-border rounded-full h-12 shadow-sm"
                 />
               </div>
               <Button
@@ -642,7 +642,7 @@ export function MacAppStore() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-4 p-4 bg-gray-50 dark:bg-neutral-700 rounded-2xl"
+                className="mt-4 p-4 bg-muted/50 rounded-2xl"
               >
                 <div className="flex flex-wrap gap-4">
                   <div className="flex items-center gap-2">
@@ -650,7 +650,7 @@ export function MacAppStore() {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as any)}
-                      className="rounded-lg border border-gray-200 dark:border-neutral-600 bg-white dark:bg-neutral-800 px-3 py-1 text-sm"
+                      className="rounded-lg border border-border bg-background px-3 py-1 text-sm"
                     >
                       <option value="featured">Featured</option>
                       <option value="rating">Rating</option>
@@ -666,7 +666,7 @@ export function MacAppStore() {
       </div>
 
       {/* Categories */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-neutral-700 bg-white/50 dark:bg-neutral-800/50">
+      <div className="px-6 py-4 border-b border-border bg-card/50">
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
           {categories.map((category) => {
             const IconComponent = categoryIcons[category as keyof typeof categoryIcons]
@@ -676,9 +676,9 @@ export function MacAppStore() {
                 variant={selectedCategory === category ? "default" : "ghost"}
                 size="sm"
                 className={`flex items-center gap-2 whitespace-nowrap rounded-full ${
-                  selectedCategory === category 
-                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white" 
-                    : "hover:bg-gray-100 dark:hover:bg-neutral-700"
+                  selectedCategory === category
+                    ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+                    : "hover:bg-muted"
                 }`}
                 onClick={() => setSelectedCategory(category)}
               >

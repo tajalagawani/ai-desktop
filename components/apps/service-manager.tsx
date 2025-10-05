@@ -4,7 +4,6 @@ import React, { useEffect, useState, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { SERVICE_CATEGORIES, ServiceConfig } from "@/data/installable-services"
@@ -326,22 +325,22 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
           {/* Statistics Cards */}
           <div className="grid grid-cols-2 gap-2 mb-6">
-            <Card className="p-3 border bg-card">
+            <Card className="p-3 bg-muted/50">
               <div className="text-xl font-normal text-foreground">{stats.total}</div>
               <div className="text-xs text-muted-foreground">Total</div>
             </Card>
 
-            <Card className="p-3 border bg-card">
+            <Card className="p-3 bg-muted/50">
               <div className="text-xl font-normal text-foreground">{stats.running}</div>
               <div className="text-xs text-muted-foreground">Running</div>
             </Card>
 
-            <Card className="p-3 border bg-card">
+            <Card className="p-3 bg-muted/50">
               <div className="text-xl font-normal text-foreground">{stats.installed}</div>
               <div className="text-xs text-muted-foreground">Installed</div>
             </Card>
 
-            <Card className="p-3 border bg-card">
+            <Card className="p-3 bg-muted/50">
               <div className="text-xl font-normal text-foreground">{stats.available}</div>
               <div className="text-xs text-muted-foreground">Available</div>
             </Card>
@@ -665,8 +664,8 @@ export function ServiceManager(_props: ServiceManagerProps) {
             </div>
           ) : (
             // Services List View
-            <div>
-              <div className="mb-6 flex items-start justify-between gap-4">
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="mb-6 flex items-start justify-between gap-4 flex-shrink-0">
                 <div className="flex-1">
                   <h2 className="mb-2 text-lg font-normal">Available Services</h2>
                   <p className="text-sm text-muted-foreground">
@@ -686,7 +685,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
               </div>
 
               {/* Category Tabs */}
-              <div className="mb-6 flex gap-2 border-b overflow-x-auto">
+              <div className="mb-6 flex gap-2 border-b overflow-x-auto flex-shrink-0">
                 <button
                   onClick={() => setSelectedCategory('all')}
                   className={cn(
@@ -715,8 +714,8 @@ export function ServiceManager(_props: ServiceManagerProps) {
               </div>
 
               {/* Services List */}
-              <ScrollArea className="h-[calc(100vh-280px)]">
-                <div className="space-y-3 pr-4">
+              <div className="flex-1 min-h-0 overflow-auto pr-4">
+                <div className="space-y-3">
                   {filteredServices.map((service) => {
                     const Icon = service.iconType === 'image' ? null : getIcon(service.icon)
                     return (
@@ -812,7 +811,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                     )
                   })}
                 </div>
-              </ScrollArea>
+              </div>
             </div>
           )}
         </div>

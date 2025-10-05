@@ -123,8 +123,8 @@ export function SystemMonitor() {
 
       {/* Error State */}
       {error && (
-        <Card className="p-4 bg-red-500/10 border-red-500/20">
-          <div className="flex items-center gap-2 text-red-500">
+        <Card className="p-4 bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900">
+          <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
             <XCircle className="h-5 w-5" />
             <span className="font-normal">Error: {error}</span>
           </div>

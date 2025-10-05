@@ -366,7 +366,7 @@ function FilterBar({ filters, setFilter, resetFilters, sort, setSortBy, totalApp
 // Sidebar Component
 function Sidebar({ categories, currentCategory, onCategoryChange, statistics }: any) {
   return (
-    <div className="w-64 border-r border-border bg-muted/30">
+    <div className="w-64 border-r border-border bg-card/30">
       <ScrollArea className="h-full">
         <div className="p-4">
           <h3 className="font-normal mb-3">Categories</h3>
