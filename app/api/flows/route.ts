@@ -14,6 +14,7 @@ interface FlowConfig {
   port: number
   mode: string
   agent_name?: string
+  description?: string
   file: string
   auto_assigned?: boolean
 }
@@ -26,6 +27,7 @@ async function parseFlowFile(filePath: string): Promise<Partial<FlowConfig>> {
 
     let port: number | undefined
     let agent_name = ''
+    let description = ''
     let mode = 'miniact' // Default to miniact
     let hasAciNode = false
     let hasWorkflow = false
@@ -49,6 +51,14 @@ async function parseFlowFile(filePath: string): Promise<Partial<FlowConfig>> {
         }
       }
 
+      // Parse description
+      if (trimmed.startsWith('description =') || trimmed.startsWith('description=')) {
+        const descMatch = trimmed.match(/description\s*=\s*(.+)/)
+        if (descMatch) {
+          description = descMatch[1].replace(/['"]/g, '').trim()
+        }
+      }
+
       // Detect ACI nodes (agent mode indicator)
       if (trimmed.includes('type = aci') || trimmed.includes('type=aci') ||
           trimmed.includes('type = aci_node') || trimmed.includes('type=aci_node')) {
@@ -68,7 +78,7 @@ async function parseFlowFile(filePath: string): Promise<Partial<FlowConfig>> {
       mode = 'miniact'
     }
 
-    return { port, agent_name, mode }
+    return { port, agent_name, description, mode }
   } catch (error) {
     console.error('Error parsing flow file:', error)
     return {}
@@ -94,6 +104,7 @@ async function discoverFlows(): Promise<FlowConfig[]> {
         port: config.port || 9999,
         mode: config.mode || 'waiting',
         agent_name: config.agent_name,
+        description: config.description,
         auto_assigned: !config.port
       })
     }

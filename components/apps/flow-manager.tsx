@@ -32,6 +32,7 @@ interface FlowConfig {
   port: number
   mode: "agent" | "miniact" | "waiting"
   agent_name?: string
+  description?: string
   file: string
   auto_assigned?: boolean
   container?: {
@@ -512,6 +513,11 @@ export function FlowManager(_props: FlowManagerProps) {
                       </Badge>
                     )}
                   </div>
+                  {selectedFlow.description && (
+                    <p className="text-base text-muted-foreground mb-2">
+                      {selectedFlow.description}
+                    </p>
+                  )}
                   <p className="text-sm text-muted-foreground">
                     {selectedFlow.mode === 'agent' ? 'Agent Mode' : selectedFlow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'}
                     {' • '}
@@ -736,7 +742,12 @@ export function FlowManager(_props: FlowManagerProps) {
                             <Badge variant="outline" className="text-xs">Auto</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground line-clamp-1">
+                        {flow.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-1 mb-1">
+                            {flow.description}
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground/70 line-clamp-1">
                           {flow.mode === 'agent' ? 'Agent Mode' : flow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'} • Port {flow.port}
                         </p>
                       </div>
