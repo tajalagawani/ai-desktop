@@ -69,6 +69,63 @@ print_info "Setting up logs directory..."
 mkdir -p logs
 print_success "Logs directory ready"
 
+# Step 5.5: Setup ACT Docker flows
+print_info "Setting up ACT Docker flows..."
+
+# Check if Docker is installed
+if ! command -v docker &> /dev/null; then
+    print_error "Docker is not installed. Installing Docker..."
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sudo sh get-docker.sh
+    sudo usermod -aG docker $USER
+    rm get-docker.sh
+    print_success "Docker installed"
+fi
+
+# Check if docker-compose is installed
+if ! command -v docker-compose &> /dev/null; then
+    print_error "Docker Compose is not installed. Installing..."
+    sudo apt update
+    sudo apt install docker-compose -y
+    print_success "Docker Compose installed"
+fi
+
+# Setup ACT Docker
+ACT_DIR="$APP_DIR/components/apps/act-docker"
+if [ -d "$ACT_DIR" ]; then
+    print_info "Setting up ACT flows..."
+    cd "$ACT_DIR"
+
+    # Install Python dependencies if needed
+    if command -v pip3 &> /dev/null; then
+        pip3 install --quiet flask flask-cors requests 2>/dev/null || true
+    fi
+
+    # Create flows directory if it doesn't exist
+    mkdir -p flows
+
+    # Generate docker-compose.yml if python script exists
+    if [ -f "docker-compose-generator.py" ]; then
+        python3 docker-compose-generator.py
+        print_success "Docker compose generated"
+    fi
+
+    # Start/restart Docker containers
+    if [ -f "docker-compose.yml" ]; then
+        docker-compose down 2>/dev/null || true
+        docker-compose up -d --build
+        print_success "ACT Docker flows started"
+
+        # Show running containers
+        print_info "Running flow containers:"
+        docker ps --filter "name=act-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+    fi
+
+    cd "$APP_DIR"
+else
+    print_info "ACT Docker directory not found, skipping flow setup"
+fi
+
 # Step 6: Restart PM2 process
 print_info "Restarting PM2 process..."
 if pm2 describe $APP_NAME > /dev/null 2>&1; then
