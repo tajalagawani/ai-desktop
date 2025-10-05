@@ -1,0 +1,1086 @@
+{
+  "node_info": {
+    "name": "openai",
+    "display_name": "OpenAI",
+    "description": "Comprehensive OpenAI API integration for chat completions, embeddings, images, audio, fine-tuning, assistants, and more",
+    "version": "1.0.0",
+    "category": "ai",
+    "vendor": "openai",
+    "documentation": "https://platform.openai.com/docs/api-reference",
+    "repository": "https://github.com/openai/openai-python",
+    "icon": "🤖",
+    "tags": ["ai", "llm", "chat", "completion", "embedding", "image", "audio", "assistant"],
+    "author": "ACT Workflow Team",
+    "license": "MIT",
+    "status": "production"
+  },
+
+  "config": {
+    "base_url": "https://api.openai.com",
+    "authentication": {
+      "type": "bearer_token",
+      "header": "Authorization"
+    },
+    "default_headers": {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "User-Agent": "ACT-Workflow/1.0"
+    },
+    "retry_config": {
+      "max_attempts": 3,
+      "backoff": "exponential",
+      "retriable_codes": [429, 500, 502, 503, 504]
+    },
+    "rate_limiting": {
+      "requests_per_second": 50,
+      "burst_size": 100
+    },
+    "timeouts": {
+      "connect": 10.0,
+      "read": 30.0,
+      "total": 60.0
+    }
+  },
+
+  "operations": {
+    "chat_completions": {
+      "method": "POST",
+      "endpoint": "/v1/chat/completions",
+      "required_params": ["messages", "model"],
+      "description": "Create a chat completion",
+      "group": "Chat"
+    },
+    "completions": {
+      "method": "POST",
+      "endpoint": "/v1/completions",
+      "required_params": ["model", "prompt"],
+      "description": "Create a completion (legacy)",
+      "group": "Chat"
+    },
+    "embeddings": {
+      "method": "POST",
+      "endpoint": "/v1/embeddings",
+      "required_params": ["model", "input"],
+      "description": "Create embeddings",
+      "group": "Embeddings"
+    },
+    "create_image": {
+      "method": "POST",
+      "endpoint": "/v1/images/generations",
+      "required_params": ["prompt"],
+      "description": "Generate images from text",
+      "group": "Images"
+    },
+    "edit_image": {
+      "method": "POST",
+      "endpoint": "/v1/images/edits",
+      "required_params": ["image", "prompt"],
+      "description": "Edit an image",
+      "group": "Images"
+    },
+    "create_image_variation": {
+      "method": "POST",
+      "endpoint": "/v1/images/variations",
+      "required_params": ["image"],
+      "description": "Create variations of an image",
+      "group": "Images"
+    },
+    "create_transcription": {
+      "method": "POST",
+      "endpoint": "/v1/audio/transcriptions",
+      "required_params": ["file", "model"],
+      "description": "Transcribe audio",
+      "group": "Audio"
+    },
+    "create_translation": {
+      "method": "POST",
+      "endpoint": "/v1/audio/translations",
+      "required_params": ["file", "model"],
+      "description": "Translate audio",
+      "group": "Audio"
+    },
+    "create_speech": {
+      "method": "POST",
+      "endpoint": "/v1/audio/speech",
+      "required_params": ["model", "input", "voice"],
+      "description": "Generate speech from text",
+      "group": "Audio"
+    },
+    "list_files": {
+      "method": "GET",
+      "endpoint": "/v1/files",
+      "required_params": [],
+      "description": "List files",
+      "group": "Files"
+    },
+    "upload_file": {
+      "method": "POST",
+      "endpoint": "/v1/files",
+      "required_params": ["file", "purpose"],
+      "description": "Upload a file",
+      "group": "Files"
+    },
+    "delete_file": {
+      "method": "DELETE",
+      "endpoint": "/v1/files/{file_id}",
+      "required_params": ["file_id"],
+      "path_params": ["file_id"],
+      "description": "Delete a file",
+      "group": "Files"
+    },
+    "retrieve_file": {
+      "method": "GET",
+      "endpoint": "/v1/files/{file_id}",
+      "required_params": ["file_id"],
+      "path_params": ["file_id"],
+      "description": "Retrieve a file",
+      "group": "Files"
+    },
+    "download_file": {
+      "method": "GET",
+      "endpoint": "/v1/files/{file_id}/content",
+      "required_params": ["file_id"],
+      "path_params": ["file_id"],
+      "description": "Download file content",
+      "group": "Files"
+    },
+    "create_fine_tuning_job": {
+      "method": "POST",
+      "endpoint": "/v1/fine_tuning/jobs",
+      "required_params": ["training_file", "model"],
+      "description": "Create a fine-tuning job",
+      "group": "Fine-tuning"
+    },
+    "list_fine_tuning_jobs": {
+      "method": "GET",
+      "endpoint": "/v1/fine_tuning/jobs",
+      "required_params": [],
+      "description": "List fine-tuning jobs",
+      "group": "Fine-tuning"
+    },
+    "retrieve_fine_tuning_job": {
+      "method": "GET",
+      "endpoint": "/v1/fine_tuning/jobs/{fine_tuning_job_id}",
+      "required_params": ["fine_tuning_job_id"],
+      "path_params": ["fine_tuning_job_id"],
+      "description": "Retrieve a fine-tuning job",
+      "group": "Fine-tuning"
+    },
+    "cancel_fine_tuning": {
+      "method": "POST",
+      "endpoint": "/v1/fine_tuning/jobs/{fine_tuning_job_id}/cancel",
+      "required_params": ["fine_tuning_job_id"],
+      "path_params": ["fine_tuning_job_id"],
+      "description": "Cancel a fine-tuning job",
+      "group": "Fine-tuning"
+    },
+    "list_fine_tuning_events": {
+      "method": "GET",
+      "endpoint": "/v1/fine_tuning/jobs/{fine_tuning_job_id}/events",
+      "required_params": ["fine_tuning_job_id"],
+      "path_params": ["fine_tuning_job_id"],
+      "description": "List fine-tuning events",
+      "group": "Fine-tuning"
+    },
+    "list_models": {
+      "method": "GET",
+      "endpoint": "/v1/models",
+      "required_params": [],
+      "description": "List available models",
+      "group": "Models"
+    },
+    "retrieve_model": {
+      "method": "GET",
+      "endpoint": "/v1/models/{model}",
+      "required_params": ["model"],
+      "path_params": ["model"],
+      "description": "Retrieve a model",
+      "group": "Models"
+    },
+    "delete_model": {
+      "method": "DELETE",
+      "endpoint": "/v1/models/{model}",
+      "required_params": ["model"],
+      "path_params": ["model"],
+      "description": "Delete a fine-tuned model",
+      "group": "Models"
+    },
+    "create_moderation": {
+      "method": "POST",
+      "endpoint": "/v1/moderations",
+      "required_params": ["input"],
+      "description": "Create a moderation",
+      "group": "Moderations"
+    },
+    "create_assistant": {
+      "method": "POST",
+      "endpoint": "/v1/assistants",
+      "required_params": ["model"],
+      "description": "Create an assistant",
+      "group": "Assistants"
+    },
+    "list_assistants": {
+      "method": "GET",
+      "endpoint": "/v1/assistants",
+      "required_params": [],
+      "description": "List assistants",
+      "group": "Assistants"
+    },
+    "retrieve_assistant": {
+      "method": "GET",
+      "endpoint": "/v1/assistants/{assistant_id}",
+      "required_params": ["assistant_id"],
+      "path_params": ["assistant_id"],
+      "description": "Retrieve an assistant",
+      "group": "Assistants"
+    },
+    "modify_assistant": {
+      "method": "POST",
+      "endpoint": "/v1/assistants/{assistant_id}",
+      "required_params": ["assistant_id"],
+      "path_params": ["assistant_id"],
+      "description": "Modify an assistant",
+      "group": "Assistants"
+    },
+    "delete_assistant": {
+      "method": "DELETE",
+      "endpoint": "/v1/assistants/{assistant_id}",
+      "required_params": ["assistant_id"],
+      "path_params": ["assistant_id"],
+      "description": "Delete an assistant",
+      "group": "Assistants"
+    },
+    "create_thread": {
+      "method": "POST",
+      "endpoint": "/v1/threads",
+      "required_params": [],
+      "description": "Create a thread",
+      "group": "Threads"
+    },
+    "retrieve_thread": {
+      "method": "GET",
+      "endpoint": "/v1/threads/{thread_id}",
+      "required_params": ["thread_id"],
+      "path_params": ["thread_id"],
+      "description": "Retrieve a thread",
+      "group": "Threads"
+    },
+    "modify_thread": {
+      "method": "POST",
+      "endpoint": "/v1/threads/{thread_id}",
+      "required_params": ["thread_id"],
+      "path_params": ["thread_id"],
+      "description": "Modify a thread",
+      "group": "Threads"
+    },
+    "delete_thread": {
+      "method": "DELETE",
+      "endpoint": "/v1/threads/{thread_id}",
+      "required_params": ["thread_id"],
+      "path_params": ["thread_id"],
+      "description": "Delete a thread",
+      "group": "Threads"
+    },
+    "create_message": {
+      "method": "POST",
+      "endpoint": "/v1/threads/{thread_id}/messages",
+      "required_params": ["thread_id", "role", "content"],
+      "path_params": ["thread_id"],
+      "description": "Create a message",
+      "group": "Messages"
+    },
+    "list_messages": {
+      "method": "GET",
+      "endpoint": "/v1/threads/{thread_id}/messages",
+      "required_params": ["thread_id"],
+      "path_params": ["thread_id"],
+      "description": "List messages",
+      "group": "Messages"
+    },
+    "retrieve_message": {
+      "method": "GET",
+      "endpoint": "/v1/threads/{thread_id}/messages/{message_id}",
+      "required_params": ["thread_id", "message_id"],
+      "path_params": ["thread_id", "message_id"],
+      "description": "Retrieve a message",
+      "group": "Messages"
+    },
+    "modify_message": {
+      "method": "POST",
+      "endpoint": "/v1/threads/{thread_id}/messages/{message_id}",
+      "required_params": ["thread_id", "message_id"],
+      "path_params": ["thread_id", "message_id"],
+      "description": "Modify a message",
+      "group": "Messages"
+    },
+    "create_run": {
+      "method": "POST",
+      "endpoint": "/v1/threads/{thread_id}/runs",
+      "required_params": ["thread_id", "assistant_id"],
+      "path_params": ["thread_id"],
+      "description": "Create a run",
+      "group": "Runs"
+    },
+    "create_thread_and_run": {
+      "method": "POST",
+      "endpoint": "/v1/threads/runs",
+      "required_params": ["assistant_id"],
+      "description": "Create a thread and run",
+      "group": "Runs"
+    },
+    "list_runs": {
+      "method": "GET",
+      "endpoint": "/v1/threads/{thread_id}/runs",
+      "required_params": ["thread_id"],
+      "path_params": ["thread_id"],
+      "description": "List runs",
+      "group": "Runs"
+    },
+    "retrieve_run": {
+      "method": "GET",
+      "endpoint": "/v1/threads/{thread_id}/runs/{run_id}",
+      "required_params": ["thread_id", "run_id"],
+      "path_params": ["thread_id", "run_id"],
+      "description": "Retrieve a run",
+      "group": "Runs"
+    },
+    "modify_run": {
+      "method": "POST",
+      "endpoint": "/v1/threads/{thread_id}/runs/{run_id}",
+      "required_params": ["thread_id", "run_id"],
+      "path_params": ["thread_id", "run_id"],
+      "description": "Modify a run",
+      "group": "Runs"
+    },
+    "submit_tool_outputs": {
+      "method": "POST",
+      "endpoint": "/v1/threads/{thread_id}/runs/{run_id}/submit_tool_outputs",
+      "required_params": ["thread_id", "run_id", "tool_outputs"],
+      "path_params": ["thread_id", "run_id"],
+      "description": "Submit tool outputs",
+      "group": "Runs"
+    },
+    "cancel_run": {
+      "method": "POST",
+      "endpoint": "/v1/threads/{thread_id}/runs/{run_id}/cancel",
+      "required_params": ["thread_id", "run_id"],
+      "path_params": ["thread_id", "run_id"],
+      "description": "Cancel a run",
+      "group": "Runs"
+    },
+    "list_run_steps": {
+      "method": "GET",
+      "endpoint": "/v1/threads/{thread_id}/runs/{run_id}/steps",
+      "required_params": ["thread_id", "run_id"],
+      "path_params": ["thread_id", "run_id"],
+      "description": "List run steps",
+      "group": "Run Steps"
+    },
+    "retrieve_run_step": {
+      "method": "GET",
+      "endpoint": "/v1/threads/{thread_id}/runs/{run_id}/steps/{step_id}",
+      "required_params": ["thread_id", "run_id", "step_id"],
+      "path_params": ["thread_id", "run_id", "step_id"],
+      "description": "Retrieve a run step",
+      "group": "Run Steps"
+    }
+  },
+
+  "parameters": [
+    {
+      "name": "operation",
+      "type": "string",
+      "description": "The OpenAI operation to perform",
+      "required": true,
+      "group": "Core"
+    },
+    {
+      "name": "api_key",
+      "type": "string",
+      "description": "OpenAI API key",
+      "required": true,
+      "sensitive": true,
+      "group": "Authentication"
+    },
+    {
+      "name": "organization",
+      "type": "string",
+      "description": "OpenAI organization ID",
+      "required": false,
+      "sensitive": true,
+      "group": "Authentication"
+    },
+    {
+      "name": "project",
+      "type": "string",
+      "description": "OpenAI project ID",
+      "required": false,
+      "sensitive": true,
+      "group": "Authentication"
+    },
+
+    {
+      "name": "model",
+      "type": "string",
+      "description": "Model to use for the operation",
+      "required": false,
+      "default": "gpt-3.5-turbo",
+      "options": ["gpt-4", "gpt-4-turbo", "gpt-3.5-turbo", "gpt-3.5-turbo-16k", "text-embedding-ada-002", "whisper-1", "tts-1", "tts-1-hd", "dall-e-2", "dall-e-3"],
+      "group": "Model"
+    },
+
+    {
+      "name": "messages",
+      "type": "array",
+      "description": "List of messages for chat completion",
+      "required": false,
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "role": {"type": "string", "enum": ["system", "user", "assistant", "tool"]},
+            "content": {"type": "string"},
+            "name": {"type": "string"}
+          }
+        }
+      },
+      "group": "Chat"
+    },
+    {
+      "name": "prompt",
+      "type": "string",
+      "description": "Text prompt for completion or image generation",
+      "required": false,
+      "group": "Input"
+    },
+    {
+      "name": "max_tokens",
+      "type": "number",
+      "description": "Maximum number of tokens to generate",
+      "required": false,
+      "min": 1,
+      "max": 4096,
+      "group": "Generation"
+    },
+    {
+      "name": "temperature",
+      "type": "number",
+      "description": "Sampling temperature between 0 and 2",
+      "required": false,
+      "default": 1,
+      "min": 0,
+      "max": 2,
+      "group": "Generation"
+    },
+    {
+      "name": "top_p",
+      "type": "number",
+      "description": "Nucleus sampling parameter",
+      "required": false,
+      "default": 1,
+      "min": 0,
+      "max": 1,
+      "group": "Generation"
+    },
+    {
+      "name": "frequency_penalty",
+      "type": "number",
+      "description": "Frequency penalty between -2.0 and 2.0",
+      "required": false,
+      "default": 0,
+      "min": -2,
+      "max": 2,
+      "group": "Generation"
+    },
+    {
+      "name": "presence_penalty",
+      "type": "number",
+      "description": "Presence penalty between -2.0 and 2.0",
+      "required": false,
+      "default": 0,
+      "min": -2,
+      "max": 2,
+      "group": "Generation"
+    },
+    {
+      "name": "n",
+      "type": "number",
+      "description": "Number of completions to generate",
+      "required": false,
+      "default": 1,
+      "min": 1,
+      "max": 128,
+      "group": "Generation"
+    },
+    {
+      "name": "stream",
+      "type": "boolean",
+      "description": "Whether to stream back partial progress",
+      "required": false,
+      "default": false,
+      "group": "Generation"
+    },
+    {
+      "name": "stop",
+      "type": ["string", "array"],
+      "description": "Up to 4 sequences where the API will stop generating",
+      "required": false,
+      "group": "Generation"
+    },
+    {
+      "name": "logit_bias",
+      "type": "object",
+      "description": "Modify likelihood of specified tokens appearing",
+      "required": false,
+      "group": "Generation"
+    },
+    {
+      "name": "logprobs",
+      "type": "boolean",
+      "description": "Whether to return log probabilities",
+      "required": false,
+      "default": false,
+      "group": "Generation"
+    },
+    {
+      "name": "top_logprobs",
+      "type": "number",
+      "description": "Number of most likely tokens to return",
+      "required": false,
+      "min": 0,
+      "max": 5,
+      "group": "Generation"
+    },
+    {
+      "name": "user",
+      "type": "string",
+      "description": "Unique identifier representing end-user",
+      "required": false,
+      "group": "Tracking"
+    },
+    {
+      "name": "seed",
+      "type": "number",
+      "description": "Seed for deterministic sampling",
+      "required": false,
+      "group": "Generation"
+    },
+
+    {
+      "name": "functions",
+      "type": "array",
+      "description": "List of functions the model may call",
+      "required": false,
+      "deprecated": true,
+      "group": "Functions"
+    },
+    {
+      "name": "function_call",
+      "type": ["string", "object"],
+      "description": "Controls how the model calls functions",
+      "required": false,
+      "deprecated": true,
+      "group": "Functions"
+    },
+    {
+      "name": "tools",
+      "type": "array",
+      "description": "List of tools the model may call",
+      "required": false,
+      "group": "Tools"
+    },
+    {
+      "name": "tool_choice",
+      "type": ["string", "object"],
+      "description": "Controls which tool is called",
+      "required": false,
+      "group": "Tools"
+    },
+    {
+      "name": "response_format",
+      "type": "object",
+      "description": "Format of the model's output",
+      "required": false,
+      "group": "Output"
+    },
+
+    {
+      "name": "size",
+      "type": "string",
+      "description": "Image size for image generation",
+      "required": false,
+      "default": "1024x1024",
+      "options": ["256x256", "512x512", "1024x1024", "1792x1024", "1024x1792"],
+      "group": "Images"
+    },
+    {
+      "name": "quality",
+      "type": "string",
+      "description": "Quality of generated images",
+      "required": false,
+      "default": "standard",
+      "options": ["standard", "hd"],
+      "group": "Images"
+    },
+    {
+      "name": "style",
+      "type": "string",
+      "description": "Style of generated images",
+      "required": false,
+      "default": "vivid",
+      "options": ["vivid", "natural"],
+      "group": "Images"
+    },
+    {
+      "name": "image",
+      "type": "string",
+      "description": "Image file for editing or variations",
+      "required": false,
+      "group": "Images"
+    },
+    {
+      "name": "mask",
+      "type": "string",
+      "description": "Mask image for image editing",
+      "required": false,
+      "group": "Images"
+    },
+
+    {
+      "name": "input",
+      "type": ["string", "array", "object"],
+      "description": "Input data for embeddings, moderation, or TTS",
+      "required": false,
+      "group": "Input"
+    },
+    {
+      "name": "encoding_format",
+      "type": "string",
+      "description": "Format of embeddings",
+      "required": false,
+      "default": "float",
+      "options": ["float", "base64"],
+      "group": "Embeddings"
+    },
+    {
+      "name": "dimensions",
+      "type": "number",
+      "description": "Number of dimensions for embeddings",
+      "required": false,
+      "group": "Embeddings"
+    },
+
+    {
+      "name": "file",
+      "type": "string",
+      "description": "Audio file for transcription/translation",
+      "required": false,
+      "group": "Audio"
+    },
+    {
+      "name": "language",
+      "type": "string",
+      "description": "Language of audio input (ISO-639-1)",
+      "required": false,
+      "group": "Audio"
+    },
+    {
+      "name": "response_format",
+      "type": "string",
+      "description": "Format of audio response",
+      "required": false,
+      "default": "json",
+      "options": ["json", "text", "srt", "verbose_json", "vtt"],
+      "group": "Audio"
+    },
+    {
+      "name": "voice",
+      "type": "string",
+      "description": "Voice for text-to-speech",
+      "required": false,
+      "options": ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+      "group": "Audio"
+    },
+    {
+      "name": "speed",
+      "type": "number",
+      "description": "Speed of TTS audio",
+      "required": false,
+      "default": 1.0,
+      "min": 0.25,
+      "max": 4.0,
+      "group": "Audio"
+    },
+
+    {
+      "name": "purpose",
+      "type": "string",
+      "description": "Purpose of file upload",
+      "required": false,
+      "options": ["fine-tune", "assistants"],
+      "group": "Files"
+    },
+    {
+      "name": "file_id",
+      "type": "string",
+      "description": "ID of uploaded file",
+      "required": false,
+      "group": "Files"
+    },
+
+    {
+      "name": "training_file",
+      "type": "string",
+      "description": "File ID for training data",
+      "required": false,
+      "group": "Fine-tuning"
+    },
+    {
+      "name": "validation_file",
+      "type": "string",
+      "description": "File ID for validation data",
+      "required": false,
+      "group": "Fine-tuning"
+    },
+    {
+      "name": "hyperparameters",
+      "type": "object",
+      "description": "Hyperparameters for fine-tuning",
+      "required": false,
+      "group": "Fine-tuning"
+    },
+    {
+      "name": "suffix",
+      "type": "string",
+      "description": "Suffix for fine-tuned model name",
+      "required": false,
+      "group": "Fine-tuning"
+    },
+    {
+      "name": "fine_tuning_job_id",
+      "type": "string",
+      "description": "ID of fine-tuning job",
+      "required": false,
+      "group": "Fine-tuning"
+    },
+
+    {
+      "name": "name",
+      "type": "string",
+      "description": "Name of the assistant",
+      "required": false,
+      "group": "Assistants"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "description": "Description of the assistant",
+      "required": false,
+      "group": "Assistants"
+    },
+    {
+      "name": "instructions",
+      "type": "string",
+      "description": "System instructions for the assistant",
+      "required": false,
+      "group": "Assistants"
+    },
+    {
+      "name": "file_ids",
+      "type": "array",
+      "description": "List of file IDs attached to assistant",
+      "required": false,
+      "group": "Assistants"
+    },
+    {
+      "name": "metadata",
+      "type": "object",
+      "description": "Set of key-value pairs for metadata",
+      "required": false,
+      "group": "General"
+    },
+    {
+      "name": "assistant_id",
+      "type": "string",
+      "description": "ID of the assistant",
+      "required": false,
+      "group": "Assistants"
+    },
+
+    {
+      "name": "thread_id",
+      "type": "string",
+      "description": "ID of the thread",
+      "required": false,
+      "group": "Threads"
+    },
+    {
+      "name": "message_id",
+      "type": "string",
+      "description": "ID of the message",
+      "required": false,
+      "group": "Messages"
+    },
+    {
+      "name": "run_id",
+      "type": "string",
+      "description": "ID of the run",
+      "required": false,
+      "group": "Runs"
+    },
+    {
+      "name": "step_id",
+      "type": "string",
+      "description": "ID of the run step",
+      "required": false,
+      "group": "Run Steps"
+    },
+
+    {
+      "name": "role",
+      "type": "string",
+      "description": "Role of the message",
+      "required": false,
+      "options": ["user", "assistant"],
+      "group": "Messages"
+    },
+    {
+      "name": "content",
+      "type": "string",
+      "description": "Content of the message",
+      "required": false,
+      "group": "Messages"
+    },
+    {
+      "name": "attachments",
+      "type": "array",
+      "description": "Message attachments",
+      "required": false,
+      "group": "Messages"
+    },
+
+    {
+      "name": "additional_instructions",
+      "type": "string",
+      "description": "Additional instructions for the run",
+      "required": false,
+      "group": "Runs"
+    },
+    {
+      "name": "additional_messages",
+      "type": "array",
+      "description": "Additional messages for thread and run",
+      "required": false,
+      "group": "Runs"
+    },
+    {
+      "name": "tool_outputs",
+      "type": "array",
+      "description": "Tool outputs to submit",
+      "required": false,
+      "group": "Runs"
+    },
+    {
+      "name": "stream",
+      "type": "boolean",
+      "description": "Stream the run",
+      "required": false,
+      "default": false,
+      "group": "Runs"
+    },
+
+    {
+      "name": "limit",
+      "type": "number",
+      "description": "Number of results to return",
+      "required": false,
+      "default": 20,
+      "min": 1,
+      "max": 100,
+      "group": "Pagination"
+    },
+    {
+      "name": "order",
+      "type": "string",
+      "description": "Sort order for results",
+      "required": false,
+      "default": "desc",
+      "options": ["asc", "desc"],
+      "group": "Pagination"
+    },
+    {
+      "name": "after",
+      "type": "string",
+      "description": "Cursor for pagination",
+      "required": false,
+      "group": "Pagination"
+    },
+    {
+      "name": "before",
+      "type": "string",
+      "description": "Cursor for pagination",
+      "required": false,
+      "group": "Pagination"
+    },
+
+    {
+      "name": "data",
+      "type": "object",
+      "description": "Additional request data for operations that require a body",
+      "required": false,
+      "group": "Generic"
+    },
+    {
+      "name": "params",
+      "type": "object", 
+      "description": "Query parameters for the request",
+      "required": false,
+      "group": "Generic"
+    },
+    {
+      "name": "headers",
+      "type": "object",
+      "description": "Additional headers for the request",
+      "required": false,
+      "group": "Generic"
+    }
+  ],
+
+  "outputs": [
+    {
+      "name": "success",
+      "type": "boolean",
+      "description": "Whether the operation was successful"
+    },
+    {
+      "name": "error",
+      "type": "string",
+      "description": "Error message if operation failed"
+    },
+    {
+      "name": "data",
+      "type": "object",
+      "description": "Response data from OpenAI API"
+    },
+    {
+      "name": "status_code",
+      "type": "number", 
+      "description": "HTTP status code"
+    },
+    {
+      "name": "usage",
+      "type": "object",
+      "description": "Token usage information"
+    },
+    {
+      "name": "model",
+      "type": "string",
+      "description": "Model used for the operation"
+    },
+    {
+      "name": "choices",
+      "type": "array",
+      "description": "Generated choices/completions"
+    },
+    {
+      "name": "id",
+      "type": "string",
+      "description": "ID of created resource"
+    }
+  ],
+
+  "examples": [
+    {
+      "name": "Simple Chat Completion",
+      "description": "Generate a chat completion using GPT-3.5-turbo",
+      "operation": "chat_completions",
+      "parameters": {
+        "model": "gpt-3.5-turbo",
+        "messages": [
+          {"role": "user", "content": "Hello, how are you?"}
+        ],
+        "max_tokens": 150,
+        "temperature": 0.7
+      }
+    },
+    {
+      "name": "Function Calling",
+      "description": "Chat completion with function calling",
+      "operation": "chat_completions", 
+      "parameters": {
+        "model": "gpt-3.5-turbo",
+        "messages": [
+          {"role": "user", "content": "What's the weather in Boston?"}
+        ],
+        "tools": [
+          {
+            "type": "function",
+            "function": {
+              "name": "get_weather",
+              "description": "Get weather information",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "location": {"type": "string"}
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Image Generation",
+      "description": "Generate an image from a text prompt",
+      "operation": "create_image",
+      "parameters": {
+        "prompt": "A beautiful sunset over the mountains",
+        "size": "1024x1024",
+        "quality": "hd",
+        "n": 1
+      }
+    },
+    {
+      "name": "Text Embeddings",
+      "description": "Create embeddings for text input",
+      "operation": "embeddings",
+      "parameters": {
+        "model": "text-embedding-ada-002",
+        "input": "The food was delicious and the service was excellent."
+      }
+    },
+    {
+      "name": "Audio Transcription",
+      "description": "Transcribe an audio file",
+      "operation": "create_transcription",
+      "parameters": {
+        "file": "audio.mp3",
+        "model": "whisper-1",
+        "language": "en",
+        "response_format": "json"
+      }
+    },
+    {
+      "name": "Text to Speech",
+      "description": "Generate speech from text",
+      "operation": "create_speech",
+      "parameters": {
+        "model": "tts-1",
+        "input": "Hello world! This is a test.",
+        "voice": "alloy",
+        "response_format": "mp3"
+      }
+    }
+  ],
+
+  "error_codes": {
+    "400": "Bad Request - Invalid parameters",
+    "401": "Unauthorized - Invalid API key",
+    "403": "Forbidden - Access denied",
+    "404": "Not Found - Resource not found",
+    "429": "Too Many Requests - Rate limit exceeded",
+    "500": "Internal Server Error - OpenAI server error",
+    "503": "Service Unavailable - OpenAI service temporarily unavailable"
+  }
+}

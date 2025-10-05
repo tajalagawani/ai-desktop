@@ -1,0 +1,7 @@
+import logging; logger = logging.getLogger(__name__); class NodeValidationError(Exception): pass; class NodeExecutionError(Exception): pass; class NodeParameterType: ANY="any"; STRING="string"; BOOLEAN="boolean"; NUMBER="number"; ARRAY="array"; OBJECT="object"; SECRET="secret"; class NodeParameter: def __init__(self, name, type, description, required=True, default=None, enum=None, case_sensitive=None): pass; class NodeSchema: def __init__(self, node_type, version, description, parameters, outputs, tags=None, author=None): self.node_type=node_type; class BaseNode:
+        def __init__(self, sandbox_timeout=None): self.sandbox_timeout=sandbox_timeout; logger.debug(f"Initializing {type(self).__name__}")
+        def set_execution_manager(self, manager): self.manager = manager; logger.debug(f"Set execution manager for {type(self).__name__}")
+        def get_schema(self): logger.warning(f"Using dummy get_schema for {type(self).__name__}"); return NodeSchema(node_type='dummy_base', version='0.0', description='', parameters=[], outputs={})
+        async def execute(self, data): logger.warning(f"Dummy BaseNode execute called for {type(self).__name__}"); return {"status": "warning", "message": f"Dummy execute for {type(self).__name__}"}
+        def handle_error(self, error, context=""): logger.error(f"Error in {context}: {error}", exc_info=True); return {"status": "error", "message": f"Error in {context}: {error}", "error_type": type(error).__name__}
+        def _check_and_convert_string(self,v): return v # Dummy needed by IfNode example

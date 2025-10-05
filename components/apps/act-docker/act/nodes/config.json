@@ -1,0 +1,604 @@
+{
+  "metadata": {
+    "id": "openai",
+    "name": "OpenAI",
+    "description": "Comprehensive OpenAI API integration for chat completions, embeddings, image generation, audio processing, and fine-tuning capabilities",
+    "version": "1.0.0",
+    "category": "ai",
+    "tags": ["openai", "ai", "llm", "gpt", "chatgpt", "embeddings", "dall-e", "whisper"],
+    "author": "System",
+    "documentation_url": "https://platform.openai.com/docs/api-reference",
+    "icon_url": "/icons/openai.svg",
+    "color": "#10A37F",
+    "node_type": "api"
+  },
+
+  "resources": [
+    {
+      "id": "chat",
+      "name": "Chat Completions",
+      "type": "external_api",
+      "description": "Chat completion operations using OpenAI models",
+      "base_url": "https://api.openai.com/v1",
+      "authentication": {
+        "type": "bearer_token",
+        "header": "Authorization"
+      },
+      "icon": "💬",
+      "operations": ["chat_completion", "stream_chat_completion"]
+    },
+    {
+      "id": "embeddings",
+      "name": "Embeddings",
+      "type": "external_api",
+      "description": "Text embedding operations",
+      "base_url": "https://api.openai.com/v1",
+      "authentication": {
+        "type": "bearer_token",
+        "header": "Authorization"
+      },
+      "icon": "🔢",
+      "operations": ["create_embedding"]
+    },
+    {
+      "id": "images",
+      "name": "Image Generation",
+      "type": "external_api",
+      "description": "Image generation and editing with DALL-E",
+      "base_url": "https://api.openai.com/v1",
+      "authentication": {
+        "type": "bearer_token",
+        "header": "Authorization"
+      },
+      "icon": "🎨",
+      "operations": ["generate_image", "edit_image", "create_image_variation"]
+    },
+    {
+      "id": "audio",
+      "name": "Audio Processing",
+      "type": "external_api",
+      "description": "Speech-to-text and text-to-speech operations",
+      "base_url": "https://api.openai.com/v1",
+      "authentication": {
+        "type": "bearer_token",
+        "header": "Authorization"
+      },
+      "icon": "🎵",
+      "operations": ["transcribe_audio", "translate_audio", "text_to_speech"]
+    },
+    {
+      "id": "models",
+      "name": "Models",
+      "type": "external_api",
+      "description": "Model management and information",
+      "base_url": "https://api.openai.com/v1",
+      "authentication": {
+        "type": "bearer_token",
+        "header": "Authorization"
+      },
+      "icon": "🤖",
+      "operations": ["list_models", "retrieve_model"]
+    }
+  ],
+
+  "operations": [
+    {
+      "id": "chat_completion",
+      "name": "Chat Completion",
+      "description": "Generate text responses using OpenAI chat models",
+      "resource": "chat",
+      "method": "POST",
+      "endpoint": "/chat/completions",
+      "icon": "💬",
+      "category": "generation",
+
+      "inputs": {
+        "api_key": {
+          "type": "secret",
+          "label": "API Key",
+          "description": "OpenAI API key",
+          "required": true,
+          "placeholder": "sk-...",
+          "help": "Get your API key from https://platform.openai.com/api-keys"
+        },
+        "model": {
+          "type": "select",
+          "label": "Model",
+          "description": "The OpenAI model to use",
+          "required": true,
+          "default": "gpt-3.5-turbo",
+          "enum": [
+            "gpt-4",
+            "gpt-4-turbo",
+            "gpt-4-turbo-preview",
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-16k"
+          ]
+        },
+        "messages": {
+          "type": "array",
+          "label": "Messages",
+          "description": "Array of message objects for conversation",
+          "required": false,
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {"type": "string", "enum": ["system", "user", "assistant"]},
+              "content": {"type": "string"}
+            }
+          }
+        },
+        "prompt": {
+          "type": "textarea",
+          "label": "Prompt",
+          "description": "Simple text prompt (alternative to messages)",
+          "required": false,
+          "placeholder": "Enter your prompt here..."
+        },
+        "system_message": {
+          "type": "textarea",
+          "label": "System Message",
+          "description": "System message to set behavior and context",
+          "required": false,
+          "placeholder": "You are a helpful assistant..."
+        },
+        "temperature": {
+          "type": "number",
+          "label": "Temperature",
+          "description": "Controls randomness (0.0-2.0)",
+          "required": false,
+          "default": 0.7,
+          "min": 0.0,
+          "max": 2.0,
+          "step": 0.1
+        },
+        "max_tokens": {
+          "type": "number",
+          "label": "Max Tokens",
+          "description": "Maximum tokens in response",
+          "required": false,
+          "min": 1,
+          "max": 4096
+        },
+        "top_p": {
+          "type": "number",
+          "label": "Top P",
+          "description": "Nucleus sampling parameter",
+          "required": false,
+          "min": 0.0,
+          "max": 1.0,
+          "step": 0.1
+        },
+        "frequency_penalty": {
+          "type": "number",
+          "label": "Frequency Penalty",
+          "description": "Penalize repeated tokens (-2.0 to 2.0)",
+          "required": false,
+          "min": -2.0,
+          "max": 2.0,
+          "step": 0.1
+        },
+        "presence_penalty": {
+          "type": "number",
+          "label": "Presence Penalty",
+          "description": "Penalize new topics (-2.0 to 2.0)",
+          "required": false,
+          "min": -2.0,
+          "max": 2.0,
+          "step": 0.1
+        },
+        "stop": {
+          "type": "array",
+          "label": "Stop Sequences",
+          "description": "Sequences where generation should stop",
+          "required": false,
+          "items": {"type": "string"}
+        },
+        "stream": {
+          "type": "checkbox",
+          "label": "Stream Response",
+          "description": "Stream the response as it's generated",
+          "required": false,
+          "default": false
+        }
+      },
+
+      "outputs": {
+        "content": {
+          "type": "string",
+          "description": "Generated text response"
+        },
+        "finish_reason": {
+          "type": "string",
+          "description": "Reason generation stopped"
+        },
+        "usage": {
+          "type": "object",
+          "description": "Token usage statistics"
+        },
+        "model": {
+          "type": "string",
+          "description": "Model used for generation"
+        },
+        "role": {
+          "type": "string",
+          "description": "Role of the response"
+        }
+      },
+
+      "examples": [
+        {
+          "name": "Simple Question",
+          "description": "Ask a simple question",
+          "inputs": {
+            "model": "gpt-3.5-turbo",
+            "prompt": "What is the capital of France?",
+            "max_tokens": 50
+          }
+        },
+        {
+          "name": "Conversation",
+          "description": "Multi-turn conversation",
+          "inputs": {
+            "model": "gpt-3.5-turbo",
+            "messages": [
+              {"role": "system", "content": "You are a helpful assistant."},
+              {"role": "user", "content": "Hello! How are you?"}
+            ]
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "create_embedding",
+      "name": "Create Embedding",
+      "description": "Generate text embeddings for semantic analysis",
+      "resource": "embeddings",
+      "method": "POST",
+      "endpoint": "/embeddings",
+      "icon": "🔢",
+      "category": "analysis",
+
+      "inputs": {
+        "api_key": {
+          "type": "secret",
+          "label": "API Key",
+          "description": "OpenAI API key",
+          "required": true
+        },
+        "model": {
+          "type": "select",
+          "label": "Model",
+          "description": "Embedding model to use",
+          "required": true,
+          "default": "text-embedding-ada-002",
+          "enum": [
+            "text-embedding-ada-002",
+            "text-embedding-3-small",
+            "text-embedding-3-large"
+          ]
+        },
+        "input": {
+          "type": "textarea",
+          "label": "Text Input",
+          "description": "Text to generate embeddings for",
+          "required": true,
+          "placeholder": "Enter text to embed..."
+        },
+        "dimensions": {
+          "type": "number",
+          "label": "Dimensions",
+          "description": "Number of dimensions for the embedding",
+          "required": false,
+          "min": 1,
+          "max": 3072
+        }
+      },
+
+      "outputs": {
+        "embedding": {
+          "type": "array",
+          "description": "Vector embedding of the input text"
+        },
+        "model": {
+          "type": "string",
+          "description": "Model used for embedding"
+        },
+        "usage": {
+          "type": "object",
+          "description": "Token usage statistics"
+        }
+      }
+    },
+
+    {
+      "id": "generate_image",
+      "name": "Generate Image",
+      "description": "Generate images using DALL-E",
+      "resource": "images",
+      "method": "POST",
+      "endpoint": "/images/generations",
+      "icon": "🎨",
+      "category": "generation",
+
+      "inputs": {
+        "api_key": {
+          "type": "secret",
+          "label": "API Key",
+          "description": "OpenAI API key",
+          "required": true
+        },
+        "prompt": {
+          "type": "textarea",
+          "label": "Image Prompt",
+          "description": "Description of the image to generate",
+          "required": true,
+          "placeholder": "A futuristic city at sunset..."
+        },
+        "model": {
+          "type": "select",
+          "label": "Model",
+          "description": "Image generation model",
+          "required": false,
+          "default": "dall-e-3",
+          "enum": ["dall-e-2", "dall-e-3"]
+        },
+        "size": {
+          "type": "select",
+          "label": "Image Size",
+          "description": "Size of the generated image",
+          "required": false,
+          "default": "1024x1024",
+          "enum": ["256x256", "512x512", "1024x1024", "1792x1024", "1024x1792"]
+        },
+        "quality": {
+          "type": "select",
+          "label": "Quality",
+          "description": "Quality of the generated image",
+          "required": false,
+          "default": "standard",
+          "enum": ["standard", "hd"]
+        },
+        "n": {
+          "type": "number",
+          "label": "Number of Images",
+          "description": "Number of images to generate",
+          "required": false,
+          "default": 1,
+          "min": 1,
+          "max": 10
+        },
+        "style": {
+          "type": "select",
+          "label": "Style",
+          "description": "Style of the generated image",
+          "required": false,
+          "enum": ["vivid", "natural"]
+        }
+      },
+
+      "outputs": {
+        "images": {
+          "type": "array",
+          "description": "Generated image data"
+        },
+        "revised_prompt": {
+          "type": "string",
+          "description": "Revised prompt used for generation"
+        }
+      }
+    },
+
+    {
+      "id": "transcribe_audio",
+      "name": "Transcribe Audio",
+      "description": "Convert speech to text using Whisper",
+      "resource": "audio",
+      "method": "POST",
+      "endpoint": "/audio/transcriptions",
+      "icon": "🎵",
+      "category": "processing",
+
+      "inputs": {
+        "api_key": {
+          "type": "secret",
+          "label": "API Key",
+          "description": "OpenAI API key",
+          "required": true
+        },
+        "file": {
+          "type": "file",
+          "label": "Audio File",
+          "description": "Audio file to transcribe",
+          "required": true,
+          "accept": ".mp3,.mp4,.mpeg,.mpga,.m4a,.wav,.webm"
+        },
+        "model": {
+          "type": "select",
+          "label": "Model",
+          "description": "Whisper model to use",
+          "required": true,
+          "default": "whisper-1",
+          "enum": ["whisper-1"]
+        },
+        "language": {
+          "type": "text",
+          "label": "Language",
+          "description": "Language of the audio (ISO-639-1 code)",
+          "required": false,
+          "placeholder": "en"
+        },
+        "prompt": {
+          "type": "text",
+          "label": "Prompt",
+          "description": "Optional prompt to guide transcription",
+          "required": false
+        },
+        "response_format": {
+          "type": "select",
+          "label": "Response Format",
+          "description": "Format of the transcription response",
+          "required": false,
+          "default": "json",
+          "enum": ["json", "text", "srt", "verbose_json", "vtt"]
+        },
+        "temperature": {
+          "type": "number",
+          "label": "Temperature",
+          "description": "Sampling temperature (0-1)",
+          "required": false,
+          "min": 0,
+          "max": 1,
+          "step": 0.1
+        }
+      },
+
+      "outputs": {
+        "text": {
+          "type": "string",
+          "description": "Transcribed text"
+        },
+        "language": {
+          "type": "string",
+          "description": "Detected language"
+        },
+        "duration": {
+          "type": "number",
+          "description": "Audio duration in seconds"
+        }
+      }
+    },
+
+    {
+      "id": "list_models",
+      "name": "List Models",
+      "description": "List available OpenAI models",
+      "resource": "models",
+      "method": "GET",
+      "endpoint": "/models",
+      "icon": "🤖",
+      "category": "information",
+
+      "inputs": {
+        "api_key": {
+          "type": "secret",
+          "label": "API Key",
+          "description": "OpenAI API key",
+          "required": true
+        }
+      },
+
+      "outputs": {
+        "models": {
+          "type": "array",
+          "description": "List of available models"
+        },
+        "object": {
+          "type": "string",
+          "description": "Object type (list)"
+        }
+      }
+    }
+  ],
+
+  "ui_config": {
+    "form_layout": "vertical",
+    "sections": [
+      {
+        "title": "Operation",
+        "icon": "⚙️",
+        "fields": ["operation"]
+      },
+      {
+        "title": "Authentication",
+        "icon": "🔐",
+        "fields": ["api_key"],
+        "collapsible": true,
+        "default_collapsed": false
+      },
+      {
+        "title": "Model Configuration",
+        "icon": "🤖",
+        "fields": ["model"],
+        "conditional": {
+          "show_when": "operation != 'list_models'"
+        }
+      },
+      {
+        "title": "Input Content",
+        "icon": "📝",
+        "fields": ["prompt", "messages", "system_message", "input", "file"],
+        "conditional": {
+          "prompt": {"show_when": "operation in ['chat_completion', 'generate_image']"},
+          "messages": {"show_when": "operation == 'chat_completion'"},
+          "system_message": {"show_when": "operation == 'chat_completion'"},
+          "input": {"show_when": "operation == 'create_embedding'"},
+          "file": {"show_when": "operation == 'transcribe_audio'"}
+        }
+      },
+      {
+        "title": "Generation Parameters",
+        "icon": "🎛️",
+        "fields": ["temperature", "max_tokens", "top_p", "frequency_penalty", "presence_penalty", "stop"],
+        "collapsible": true,
+        "default_collapsed": true,
+        "conditional": {
+          "show_when": "operation == 'chat_completion'"
+        }
+      },
+      {
+        "title": "Image Settings",
+        "icon": "🎨",
+        "fields": ["size", "quality", "n", "style"],
+        "conditional": {
+          "show_when": "operation == 'generate_image'"
+        }
+      },
+      {
+        "title": "Audio Settings",
+        "icon": "🎵",
+        "fields": ["language", "response_format"],
+        "conditional": {
+          "show_when": "operation == 'transcribe_audio'"
+        }
+      },
+      {
+        "title": "Advanced Options",
+        "icon": "🔧",
+        "fields": ["stream", "dimensions"],
+        "collapsible": true,
+        "default_collapsed": true,
+        "conditional": {
+          "stream": {"show_when": "operation == 'chat_completion'"},
+          "dimensions": {"show_when": "operation == 'create_embedding'"}
+        }
+      }
+    ],
+    "preview": {
+      "enabled": true,
+      "fields": ["prompt", "messages", "input"]
+    },
+    "help": {
+      "enabled": true,
+      "sections": [
+        {
+          "title": "Getting Started",
+          "content": "OpenAI provides powerful AI models for text generation, embeddings, image creation, and audio processing. Get your API key from https://platform.openai.com/api-keys"
+        },
+        {
+          "title": "Model Selection",
+          "content": "Choose the right model for your task: GPT-4 for complex reasoning, GPT-3.5-turbo for fast responses, DALL-E for images, and Whisper for audio."
+        },
+        {
+          "title": "Message Format",
+          "content": "For chat completions, use messages array with role ('system', 'user', 'assistant') and content. System messages guide behavior, user messages are queries, assistant messages are responses."
+        },
+        {
+          "title": "Temperature Control",
+          "content": "Temperature controls randomness: 0 for deterministic responses, 1+ for more creative outputs. Adjust based on your use case."
+        }
+      ]
+    }
+  }
+}

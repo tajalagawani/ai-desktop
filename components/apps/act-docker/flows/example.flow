@@ -1,0 +1,29 @@
+[workflow]
+name = "Example Flow"
+description = "Simple example workflow"
+start_node = HelloWorld
+
+[deployment]
+port = 3100
+
+[agent]
+agent_name = "ExampleAgent"
+
+[node:HelloWorld]
+type = py
+label = "Hello World Node"
+code = """
+def hello_world():
+    return {
+        'message': 'Hello from Example Flow!',
+        'status': 'success'
+    }
+
+result = hello_world()
+print(result)
+"""
+next = End
+
+[node:End]
+type = end
+label = "Complete"

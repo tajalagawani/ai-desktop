@@ -1,0 +1,107 @@
+# REQUEST-BASED NODES TO CONVERT TO UNIVERSALREQUESTNODE
+# Generated: 2025-08-21
+# Total nodes identified: 55
+
+# These nodes currently use aiohttp, httpx, requests, or urllib for HTTP operations
+# They should be converted to use UniversalRequestNode for consistency
+
+## API SERVICE NODES (External Services)
+ActionNetworkNode.py                  # Action Network API integration
+ActiveCampaignNode.py                 # ActiveCampaign marketing automation API  
+AcuitySchedulingNode.py               # Acuity Scheduling API
+AdaloNode.py                          # Adalo no-code app platform API
+AffinityNode.py                       # Affinity CRM API
+AirtableNode.py                       # Airtable database API
+AirtopNode.py                         # Airtop AI automation API
+ApiTemplateIoNode.py                  # ApiTemplate.io document generation API
+ApolloNode.py                         # Apollo sales intelligence API
+AsanaNode.py                          # Asana project management API
+Auth0Node.py                          # Auth0 authentication API
+AutopilotNode.py                      # Autopilot marketing automation API
+AworkNode.py                          # Awork project management API
+
+## CLOUD PLATFORM NODES
+AwsNode.py                            # Amazon Web Services API
+AzureNode.py                          # Microsoft Azure API
+GoogleCloudNode.py                    # Google Cloud Platform API
+CloudflareNode.py                     # Cloudflare CDN/DNS API
+
+## COLLABORATION & PRODUCTIVITY NODES
+ClickUpNode.py                        # ClickUp project management API
+HubSpotNode.py                        # HubSpot CRM API
+IntercomNode.py                       # Intercom customer messaging API
+JiraNode.py                           # Atlassian Jira API
+LinearNode.py                         # Linear issue tracking API
+MondayNode.py                         # Monday.com work management API
+NotionNode.py                         # Notion workspace API
+TrelloNode.py                         # Trello kanban board API
+
+## COMMUNICATION NODES
+TelegramNode.py                       # Telegram bot API
+TeamsNode.py                          # Microsoft Teams API
+ZoomNode.py                           # Zoom video conferencing API
+
+## ECOMMERCE & PAYMENT NODES
+CoinbaseNode.py                       # Coinbase cryptocurrency API
+PayPalNode.py                         # PayPal payments API
+ShopifyNode.py                        # Shopify ecommerce API
+SquareNode.py                         # Square payments API
+WiseNode.py                           # Wise (TransferWise) payments API
+
+## DESIGN & DEVELOPMENT NODES
+FigmaNode.py                          # Figma design API
+VercelNode.py                         # Vercel deployment API
+JenkinsNode.py                        # Jenkins CI/CD API
+
+## AI & ML NODES  
+HuggingFaceNode.py                    # Hugging Face AI models API
+PineconeNode.py                       # Pinecone vector database API
+
+## MARKETING & ANALYTICS NODES
+FacebookAdsNode.py                    # Facebook Ads API
+GoogleAdsNode.py                      # Google Ads API
+GoogleAnalyticsNode.py                # Google Analytics API
+MailchimpNode.py                      # Mailchimp email marketing API
+
+## DATA & STORAGE NODES
+DropboxNode.py                        # Dropbox cloud storage API
+OneDriveNode.py                       # Microsoft OneDrive API
+SnowflakeNode.py                      # Snowflake data warehouse API
+
+## BUSINESS & FINANCIAL NODES
+PlaidNode.py                          # Plaid financial data API
+PowerBINode.py                        # Microsoft Power BI API
+QuickBooksNode.py                     # QuickBooks accounting API
+SalesforceNode.py                     # Salesforce CRM API
+
+## SECURITY & IDENTITY NODES
+CyberArkNode.py                       # CyberArk security API
+OktaNode.py                           # Okta identity management API
+OneLoginNode.py                       # OneLogin SSO API
+VaultNode.py                          # HashiCorp Vault API
+
+## MONITORING & OBSERVABILITY NODES
+DatadogNode.py                        # Datadog monitoring API
+
+## GENERIC REQUEST NODE
+RequestNode.py                        # Generic HTTP request node
+
+# CONVERSION PRIORITY:
+# HIGH: Popular services (Slack, Notion, Salesforce, HubSpot, etc.)
+# MEDIUM: Cloud platforms (AWS, Azure, GCP)
+# LOW: Specialized/niche services
+
+# CONVERSION PATTERN:
+# 1. Read current node structure and operations
+# 2. Create unified version with embedded CONFIG
+# 3. Map operations to HTTP methods and endpoints
+# 4. Use UniversalRequestNode for all HTTP operations
+# 5. Test with __main__ block
+# 6. Replace original file
+
+# ALREADY CONVERTED:
+# ✅ OpenaiNode.py - OpenAI API integration
+# ✅ ClaudeNode.py - Claude/Anthropic API integration  
+# ✅ GitHubNode.py - GitHub API integration
+
+# TOTAL TO CONVERT: 55 nodes

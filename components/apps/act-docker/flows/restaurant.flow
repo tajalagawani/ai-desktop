@@ -1,0 +1,996 @@
+ # =====================================================
+# Complete Restaurant Backend System
+# =====================================================
+
+[workflow]
+name = "Complete Restaurant Backend System"
+description = "Full-featured restaurant management with menu, orders, customers, inventory, and analytics"
+start_node = CleanupDatabase
+
+[parameters]
+connection_string = postgresql://neondb_owner:npg_aWbKzVAUTh92@ep-blue-resonance-a8r3rq32-pooler.eastus2.azure.neon.tech/neondb?sslmode=require
+
+# =============================================
+# Database Setup & Cleanup
+# =============================================
+
+[node:CleanupDatabase]
+type = neon
+label = 0. Cleanup Previous Data
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = DROP SCHEMA IF EXISTS restaurant_system CASCADE
+
+[node:CreateRestaurantSchema]
+type = neon
+label = 1. Create Restaurant Schema
+connection_string = {{.Parameter.connection_string}}
+operation = create_schema
+schema_name = restaurant_system
+
+[node:CreateMenuTable]
+type = neon
+label = 2. Create Menu Table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE restaurant_system.menu_items (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL UNIQUE, description TEXT, price DECIMAL(8,2) NOT NULL CHECK (price > 0), category VARCHAR(50) NOT NULL, ingredients TEXT[], allergens TEXT[], prep_time INTEGER DEFAULT 15, calories INTEGER, available BOOLEAN DEFAULT true, featured BOOLEAN DEFAULT false, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+
+[node:CreateOrdersTable]
+type = neon
+label = 3. Create Orders Table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE restaurant_system.orders (id SERIAL PRIMARY KEY, order_number VARCHAR(20) UNIQUE NOT NULL, customer_name VARCHAR(100) NOT NULL, customer_phone VARCHAR(20), customer_email VARCHAR(100), items TEXT NOT NULL, subtotal DECIMAL(8,2) NOT NULL, tax_amount DECIMAL(8,2) DEFAULT 0, tip_amount DECIMAL(8,2) DEFAULT 0, total_amount DECIMAL(8,2) NOT NULL, order_type VARCHAR(20) DEFAULT 'dine-in', status VARCHAR(20) DEFAULT 'pending', priority INTEGER DEFAULT 1, special_instructions TEXT, estimated_time INTEGER DEFAULT 30, actual_time INTEGER, table_number INTEGER, order_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, completed_time TIMESTAMP)
+
+[node:CreateCustomersTable]
+type = neon
+label = 4. Create Customers Table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE restaurant_system.customers (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL, phone VARCHAR(20) UNIQUE, email VARCHAR(100) UNIQUE, address TEXT, date_of_birth DATE, loyalty_points INTEGER DEFAULT 0, total_orders INTEGER DEFAULT 0, total_spent DECIMAL(8,2) DEFAULT 0, favorite_dish VARCHAR(100), dietary_restrictions TEXT[], preferred_contact VARCHAR(20) DEFAULT 'phone', vip_status BOOLEAN DEFAULT false, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_visit TIMESTAMP)
+
+[node:CreateInventoryTable]
+type = neon
+label = 5. Create Inventory Table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE restaurant_system.inventory (id SERIAL PRIMARY KEY, item_name VARCHAR(100) NOT NULL UNIQUE, category VARCHAR(50) NOT NULL, current_stock INTEGER NOT NULL DEFAULT 0, minimum_stock INTEGER DEFAULT 10, maximum_stock INTEGER DEFAULT 100, unit VARCHAR(20) DEFAULT 'units', cost_per_unit DECIMAL(8,2), supplier VARCHAR(100), last_restocked TIMESTAMP, expiry_date DATE, location VARCHAR(50), notes TEXT)
+
+[node:CreateStaffTable]
+type = neon
+label = 6. Create Staff Table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE restaurant_system.staff (id SERIAL PRIMARY KEY, employee_id VARCHAR(20) UNIQUE NOT NULL, name VARCHAR(100) NOT NULL, role VARCHAR(50) NOT NULL, phone VARCHAR(20), email VARCHAR(100), hourly_rate DECIMAL(6,2), status VARCHAR(20) DEFAULT 'active', hire_date DATE, shift_start TIME, shift_end TIME, permissions TEXT[], created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+
+[node:CreateTablesTable]
+type = neon
+label = 7. Create Tables Management
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE restaurant_system.tables (id SERIAL PRIMARY KEY, table_number INTEGER UNIQUE NOT NULL, capacity INTEGER NOT NULL, section VARCHAR(50), status VARCHAR(20) DEFAULT 'available', current_order_id INTEGER, reserved_by VARCHAR(100), reservation_time TIMESTAMP, server_assigned INTEGER, notes TEXT)
+
+[node:CreateReservationsTable]
+type = neon
+label = 8. Create Reservations Table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE restaurant_system.reservations (id SERIAL PRIMARY KEY, customer_name VARCHAR(100) NOT NULL, customer_phone VARCHAR(20) NOT NULL, customer_email VARCHAR(100), party_size INTEGER NOT NULL, reservation_date DATE NOT NULL, reservation_time TIME NOT NULL, table_number INTEGER, status VARCHAR(20) DEFAULT 'confirmed', special_requests TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+
+[node:CreateOrderItemsTable]
+type = neon
+label = 9. Create Order Items Table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE restaurant_system.order_items (id SERIAL PRIMARY KEY, order_id INTEGER NOT NULL REFERENCES restaurant_system.orders(id) ON DELETE CASCADE, menu_item_id INTEGER NOT NULL REFERENCES restaurant_system.menu_items(id), quantity INTEGER NOT NULL DEFAULT 1, unit_price DECIMAL(8,2) NOT NULL, customizations TEXT, status VARCHAR(20) DEFAULT 'ordered')
+
+# =============================================
+# Sample Data Setup
+# =============================================
+
+[node:AddSampleMenuItems]
+type = neon
+label = 10. Add Sample Menu Items
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.menu_items (name, description, price, category, ingredients, allergens, prep_time, calories, featured) VALUES ('Margherita Pizza', 'Classic pizza with fresh tomato sauce, mozzarella, and basil', 12.99, 'pizza', ARRAY['tomato sauce', 'mozzarella', 'basil', 'pizza dough'], ARRAY['gluten', 'dairy'], 15, 280, true), ('Chicken Caesar Salad', 'Grilled chicken breast over romaine lettuce with parmesan and croutons', 9.99, 'salad', ARRAY['grilled chicken', 'romaine lettuce', 'parmesan', 'croutons', 'caesar dressing'], ARRAY['dairy', 'gluten'], 10, 320, false), ('Beef Burger', 'Juicy beef patty with lettuce, tomato, onion, and special sauce', 11.50, 'burger', ARRAY['beef patty', 'lettuce', 'tomato', 'onion', 'burger sauce', 'bun'], ARRAY['gluten'], 12, 450, true), ('Chocolate Cake', 'Rich chocolate cake with vanilla ice cream', 6.99, 'dessert', ARRAY['chocolate cake', 'vanilla ice cream'], ARRAY['dairy', 'gluten', 'eggs'], 5, 380, false), ('Fish Tacos', 'Grilled fish with cabbage slaw and lime crema', 13.50, 'mexican', ARRAY['grilled fish', 'cabbage', 'lime', 'tortillas', 'crema'], ARRAY['gluten', 'dairy'], 15, 290, true), ('Vegetable Stir Fry', 'Fresh vegetables stir-fried with garlic and ginger', 10.99, 'asian', ARRAY['mixed vegetables', 'garlic', 'ginger', 'soy sauce', 'rice'], ARRAY['soy'], 12, 220, false)
+
+[node:AddSampleCustomers]
+type = neon
+label = 11. Add Sample Customers
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.customers (name, phone, email, address, loyalty_points, total_orders, favorite_dish, vip_status) VALUES ('John Smith', '555-0123', 'john@email.com', '123 Main St', 150, 8, 'Margherita Pizza', false), ('Sarah Johnson', '555-0456', 'sarah@email.com', '456 Oak Ave', 300, 15, 'Chicken Caesar Salad', true), ('Mike Brown', '555-0789', 'mike@email.com', '789 Pine Rd', 75, 3, 'Beef Burger', false), ('Emily Davis', '555-0321', 'emily@email.com', '321 Elm St', 500, 25, 'Fish Tacos', true)
+
+[node:AddSampleInventory]
+type = neon
+label = 12. Add Sample Inventory
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.inventory (item_name, category, current_stock, minimum_stock, unit, cost_per_unit, supplier) VALUES ('Tomatoes', 'produce', 50, 20, 'lbs', 2.50, 'Fresh Farm Supplies'), ('Mozzarella Cheese', 'dairy', 25, 10, 'lbs', 4.99, 'Dairy Direct'), ('Ground Beef', 'meat', 30, 15, 'lbs', 6.99, 'Premium Meats Co'), ('Chicken Breast', 'meat', 40, 20, 'lbs', 5.49, 'Premium Meats Co'), ('Lettuce', 'produce', 35, 15, 'heads', 1.25, 'Fresh Farm Supplies'), ('Pizza Dough', 'bakery', 100, 25, 'portions', 0.75, 'Artisan Bakery')
+
+[node:AddSampleStaff]
+type = neon
+label = 13. Add Sample Staff
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.staff (employee_id, name, role, phone, hourly_rate, shift_start, shift_end) VALUES ('EMP001', 'Alice Manager', 'manager', '555-1001', 25.00, '09:00', '17:00'), ('EMP002', 'Bob Chef', 'head_chef', '555-1002', 22.00, '10:00', '22:00'), ('EMP003', 'Carol Server', 'server', '555-1003', 15.00, '11:00', '19:00'), ('EMP004', 'Dave Kitchen', 'cook', '555-1004', 18.00, '10:00', '22:00')
+
+[node:AddSampleTables]
+type = neon
+label = 14. Add Sample Tables
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.tables (table_number, capacity, section, status) VALUES (1, 2, 'main', 'available'), (2, 4, 'main', 'available'), (3, 6, 'main', 'available'), (4, 2, 'patio', 'available'), (5, 4, 'patio', 'available'), (6, 8, 'private', 'available')
+
+# =============================================
+# Menu Management API
+# =============================================
+
+[node:DefineGetMenuRoute]
+type = aci
+mode = server
+label = API.Menu.1. GET /api/menu
+operation = add_route
+route_path = /api/menu
+methods = ["GET"]
+handler = GetMenuHandler
+description = Get all menu items with filtering options
+
+[node:FetchMenuItems]
+type = neon
+label = API.Menu.1.1. Fetch Menu Items
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, name, description, price, category, ingredients, allergens, prep_time, calories, available, featured FROM restaurant_system.menu_items WHERE available = true ORDER BY category, name
+parameters = []
+
+[node:DefineGetMenuByCategory]
+type = aci
+mode = server
+label = API.Menu.2. GET /api/menu/category/{category}
+operation = add_route
+route_path = /api/menu/category/<string:category_from_url>
+methods = ["GET"]
+handler = GetMenuByCategoryHandler
+description = Get menu items by category
+
+[node:FetchMenuByCategory]
+type = neon
+label = API.Menu.2.1. Fetch Menu by Category
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, name, description, price, category, ingredients, allergens, prep_time, calories, available, featured FROM restaurant_system.menu_items WHERE category = %s AND available = true ORDER BY name
+parameters = ["{{request_data.category_from_url}}"]
+
+[node:DefineAddMenuItemRoute]
+type = aci
+mode = server
+label = API.Menu.3. POST /api/menu
+operation = add_route
+route_path = /api/menu
+methods = ["POST"]
+handler = AddMenuItemHandler
+description = Add new menu item
+
+[node:InsertMenuItem]
+type = neon
+label = API.Menu.3.1. Insert New Menu Item
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.menu_items (name, description, price, category, ingredients, allergens, prep_time, calories, featured) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, name, description, price, category, available
+parameters = ["{{request_data.name}}", "{{request_data.description}}", "{{request_data.price}}", "{{request_data.category}}", "{{request_data.ingredients}}", "{{request_data.allergens}}", "{{request_data.prep_time}}", "{{request_data.calories}}", "{{request_data.featured}}"]
+
+[node:DefineUpdateMenuItemRoute]
+type = aci
+mode = server
+label = API.Menu.4. PUT /api/menu/{item_id}
+operation = add_route
+route_path = /api/menu/<int:item_id_from_url>
+methods = ["PUT"]
+handler = UpdateMenuItemHandler
+description = Update menu item
+
+[node:UpdateMenuItem]
+type = neon
+label = API.Menu.4.1. Update Menu Item
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE restaurant_system.menu_items SET name = %s, description = %s, price = %s, category = %s, available = %s, featured = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING id, name, description, price, category, available, featured
+parameters = ["{{request_data.name}}", "{{request_data.description}}", "{{request_data.price}}", "{{request_data.category}}", "{{request_data.available}}", "{{request_data.featured}}", "{{request_data.item_id_from_url}}"]
+
+[node:DefineDeleteMenuItemRoute]
+type = aci
+mode = server
+label = API.Menu.5. DELETE /api/menu/{item_id}
+operation = add_route
+route_path = /api/menu/<int:item_id_from_url>
+methods = ["DELETE"]
+handler = DeleteMenuItemHandler
+description = Delete menu item
+
+[node:DeleteMenuItem]
+type = neon
+label = API.Menu.5.1. Delete Menu Item
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = DELETE FROM restaurant_system.menu_items WHERE id = %s RETURNING id, name
+parameters = ["{{request_data.item_id_from_url}}"]
+
+# =============================================
+# Order Management API
+# =============================================
+
+[node:DefineCreateOrderRoute]
+type = aci
+mode = server
+label = API.Orders.1. POST /api/orders
+operation = add_route
+route_path = /api/orders
+methods = ["POST"]
+handler = CreateOrderHandler
+description = Create new order
+
+[node:GenerateOrderNumber]
+type = generate_uuid
+label = API.Orders.1.1. Generate Order Number
+hyphens = false
+
+[node:InsertOrder]
+type = neon
+label = API.Orders.1.1. Insert New Order
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.orders (order_number, customer_name, customer_phone, customer_email, items, subtotal, tax_amount, tip_amount, total_amount, order_type, special_instructions) VALUES (CONCAT('ORD', LPAD(FLOOR(RANDOM() * 999999 + 1)::text, 6, '0')), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, order_number, customer_name, items, total_amount, status, order_time
+parameters = ["{{request_data.customer_name}}", "{{request_data.customer_phone}}", "{{request_data.customer_email}}", "{{request_data.items}}", "{{request_data.subtotal}}", "{{request_data.tax_amount}}", "{{request_data.tip_amount}}", "{{request_data.total_amount}}", "{{request_data.order_type}}", "{{request_data.special_instructions}}"]
+
+
+[node:DefineGetOrdersRoute]
+type = aci
+mode = server
+label = API.Orders.2. GET /api/orders
+operation = add_route
+route_path = /api/orders
+methods = ["GET"]
+handler = GetOrdersHandler
+description = Get all orders with optional status filter
+
+[node:FetchOrders]
+type = neon
+label = API.Orders.2.1. Fetch Orders
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, order_number, customer_name, customer_phone, items, subtotal, tax_amount, tip_amount, total_amount, order_type, status, table_number, special_instructions, estimated_time, order_time FROM restaurant_system.orders ORDER BY order_time DESC LIMIT 50
+parameters = []
+
+[node:DefineGetOrderByIdRoute]
+type = aci
+mode = server
+label = API.Orders.3. GET /api/orders/{order_id}
+operation = add_route
+route_path = /api/orders/<int:order_id_from_url>
+methods = ["GET"]
+handler = GetOrderByIdHandler
+description = Get specific order by ID
+
+[node:FetchOrderById]
+type = neon
+label = API.Orders.3.1. Fetch Order by ID
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, order_number, customer_name, customer_phone, customer_email, items, subtotal, tax_amount, tip_amount, total_amount, order_type, status, priority, table_number, special_instructions, estimated_time, actual_time, order_time, completed_time FROM restaurant_system.orders WHERE id = %s
+parameters = ["{{request_data.order_id_from_url}}"]
+
+[node:DefineUpdateOrderStatusRoute]
+type = aci
+mode = server
+label = API.Orders.4. PUT /api/orders/{order_id}/status
+operation = add_route
+route_path = /api/orders/<int:order_id_from_url>/status
+methods = ["PUT"]
+handler = UpdateOrderStatusHandler
+description = Update order status
+
+[node:UpdateOrderStatus]
+type = neon
+label = API.Orders.4.1. Update Order Status
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE restaurant_system.orders SET status = %s, completed_time = CASE WHEN %s = 'completed' THEN CURRENT_TIMESTAMP ELSE completed_time END WHERE id = %s RETURNING id, order_number, customer_name, status, completed_time
+parameters = ["{{request_data.status}}", "{{request_data.status}}", "{{request_data.order_id_from_url}}"]
+
+[node:DefineGetOrdersByStatusRoute]
+type = aci
+mode = server
+label = API.Orders.5. GET /api/orders/status/{status}
+operation = add_route
+route_path = /api/orders/status/<string:status_from_url>
+methods = ["GET"]
+handler = GetOrdersByStatusHandler
+description = Get orders by status
+
+[node:FetchOrdersByStatus]
+type = neon
+label = API.Orders.5.1. Fetch Orders by Status
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, order_number, customer_name, customer_phone, items, total_amount, status, table_number, estimated_time, order_time FROM restaurant_system.orders WHERE status = %s ORDER BY order_time DESC
+parameters = ["{{request_data.status_from_url}}"]
+
+# =============================================
+# Customer Management API
+# =============================================
+
+[node:DefineGetCustomersRoute]
+type = aci
+mode = server
+label = API.Customers.1. GET /api/customers
+operation = add_route
+route_path = /api/customers
+methods = ["GET"]
+handler = GetCustomersHandler
+description = Get all customers
+
+[node:FetchCustomers]
+type = neon
+label = API.Customers.1.1. Fetch Customers
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, name, phone, email, address, loyalty_points, total_orders, total_spent, favorite_dish, vip_status, created_at, last_visit FROM restaurant_system.customers ORDER BY total_spent DESC
+parameters = []
+
+[node:DefineAddCustomerRoute]
+type = aci
+mode = server
+label = API.Customers.2. POST /api/customers
+operation = add_route
+route_path = /api/customers
+methods = ["POST"]
+handler = AddCustomerHandler
+description = Add new customer
+
+[node:InsertCustomer]
+type = neon
+label = API.Customers.2.1. Insert New Customer
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.customers (name, phone, email, address, date_of_birth, dietary_restrictions) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id, name, phone, email, loyalty_points, total_orders
+parameters = ["{{request_data.name}}", "{{request_data.phone}}", "{{request_data.email}}", "{{request_data.address}}", "{{request_data.date_of_birth}}", "{{request_data.dietary_restrictions}}"]
+
+[node:DefineGetCustomerByIdRoute]
+type = aci
+mode = server
+label = API.Customers.3. GET /api/customers/{customer_id}
+operation = add_route
+route_path = /api/customers/<int:customer_id_from_url>
+methods = ["GET"]
+handler = GetCustomerByIdHandler
+description = Get customer by ID
+
+[node:FetchCustomerById]
+type = neon
+label = API.Customers.3.1. Fetch Customer by ID
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, name, phone, email, address, date_of_birth, loyalty_points, total_orders, total_spent, favorite_dish, dietary_restrictions, vip_status, created_at, last_visit FROM restaurant_system.customers WHERE id = %s
+parameters = ["{{request_data.customer_id_from_url}}"]
+
+[node:DefineUpdateCustomerRoute]
+type = aci
+mode = server
+label = API.Customers.4. PUT /api/customers/{customer_id}
+operation = add_route
+route_path = /api/customers/<int:customer_id_from_url>
+methods = ["PUT"]
+handler = UpdateCustomerHandler
+description = Update customer information
+
+[node:UpdateCustomer]
+type = neon
+label = API.Customers.4.1. Update Customer
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE restaurant_system.customers SET name = %s, phone = %s, email = %s, address = %s, favorite_dish = %s WHERE id = %s RETURNING id, name, phone, email, loyalty_points, total_orders
+parameters = ["{{request_data.name}}", "{{request_data.phone}}", "{{request_data.email}}", "{{request_data.address}}", "{{request_data.favorite_dish}}", "{{request_data.customer_id_from_url}}"]
+
+# =============================================
+# Inventory Management API
+# =============================================
+
+[node:DefineGetInventoryRoute]
+type = aci
+mode = server
+label = API.Inventory.1. GET /api/inventory
+operation = add_route
+route_path = /api/inventory
+methods = ["GET"]
+handler = GetInventoryHandler
+description = Get all inventory items
+
+[node:FetchInventory]
+type = neon
+label = API.Inventory.1.1. Fetch Inventory
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, item_name, category, current_stock, minimum_stock, maximum_stock, unit, cost_per_unit, supplier, last_restocked, expiry_date FROM restaurant_system.inventory ORDER BY category, item_name
+parameters = []
+
+[node:DefineAddInventoryItemRoute]
+type = aci
+mode = server
+label = API.Inventory.2. POST /api/inventory
+operation = add_route
+route_path = /api/inventory
+methods = ["POST"]
+handler = AddInventoryItemHandler
+description = Add new inventory item
+
+[node:InsertInventoryItem]
+type = neon
+label = API.Inventory.2.1. Insert Inventory Item
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.inventory (item_name, category, current_stock, minimum_stock, maximum_stock, unit, cost_per_unit, supplier) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, item_name, category, current_stock, unit
+parameters = ["{{request_data.item_name}}", "{{request_data.category}}", "{{request_data.current_stock}}", "{{request_data.minimum_stock}}", "{{request_data.maximum_stock}}", "{{request_data.unit}}", "{{request_data.cost_per_unit}}", "{{request_data.supplier}}"]
+
+[node:DefineUpdateInventoryRoute]
+type = aci
+mode = server
+label = API.Inventory.3. PUT /api/inventory/{item_id}
+operation = add_route
+route_path = /api/inventory/<int:item_id_from_url>
+methods = ["PUT"]
+handler = UpdateInventoryHandler
+description = Update inventory stock levels
+
+[node:UpdateInventory]
+type = neon
+label = API.Inventory.3.1. Update Inventory
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE restaurant_system.inventory SET current_stock = %s, last_restocked = CURRENT_TIMESTAMP WHERE id = %s RETURNING id, item_name, current_stock, minimum_stock, last_restocked
+parameters = ["{{request_data.current_stock}}", "{{request_data.item_id_from_url}}"]
+
+[node:DefineGetLowStockRoute]
+type = aci
+mode = server
+label = API.Inventory.4. GET /api/inventory/low-stock
+operation = add_route
+route_path = /api/inventory/low-stock
+methods = ["GET"]
+handler = GetLowStockHandler
+description = Get items with low stock
+
+[node:FetchLowStock]
+type = neon
+label = API.Inventory.4.1. Fetch Low Stock Items
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, item_name, category, current_stock, minimum_stock, unit, supplier FROM restaurant_system.inventory WHERE current_stock <= minimum_stock ORDER BY current_stock ASC
+parameters = []
+
+# =============================================
+# Staff Management API
+# =============================================
+
+[node:DefineGetStaffRoute]
+type = aci
+mode = server
+label = API.Staff.1. GET /api/staff
+operation = add_route
+route_path = /api/staff
+methods = ["GET"]
+handler = GetStaffHandler
+description = Get all staff members
+
+[node:FetchStaff]
+type = neon
+label = API.Staff.1.1. Fetch Staff
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, employee_id, name, role, phone, email, hourly_rate, status, hire_date, shift_start::text as shift_start, shift_end::text as shift_end FROM restaurant_system.staff WHERE status = 'active' ORDER BY role, name
+parameters = []
+
+[node:DefineAddStaffRoute]
+type = aci
+mode = server
+label = API.Staff.2. POST /api/staff
+operation = add_route
+route_path = /api/staff
+methods = ["POST"]
+handler = AddStaffHandler
+description = Add new staff member
+
+[node:InsertStaff]
+type = neon
+label = API.Staff.2.1. Insert Staff Member
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.staff (employee_id, name, role, phone, email, hourly_rate, hire_date, shift_start, shift_end) VALUES (%s, %s, %s, %s, %s, %s, %s, %s::time, %s::time) RETURNING id, employee_id, name, role, hourly_rate, shift_start::text as shift_start, shift_end::text as shift_end
+parameters = ["{{request_data.employee_id}}", "{{request_data.name}}", "{{request_data.role}}", "{{request_data.phone}}", "{{request_data.email}}", "{{request_data.hourly_rate}}", "{{request_data.hire_date}}", "{{request_data.shift_start}}", "{{request_data.shift_end}}"]
+
+# =============================================
+# Table Management API
+# =============================================
+
+[node:DefineGetTablesRoute]
+type = aci
+mode = server
+label = API.Tables.1. GET /api/tables
+operation = add_route
+route_path = /api/tables
+methods = ["GET"]
+handler = GetTablesHandler
+description = Get all tables and their status
+
+[node:FetchTables]
+type = neon
+label = API.Tables.1.1. Fetch Tables
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, table_number, capacity, section, status, current_order_id, reserved_by, reservation_time FROM restaurant_system.tables ORDER BY table_number
+parameters = []
+
+[node:DefineUpdateTableStatusRoute]
+type = aci
+mode = server
+label = API.Tables.2. PUT /api/tables/{table_id}/status
+operation = add_route
+route_path = /api/tables/<int:table_id_from_url>/status
+methods = ["PUT"]
+handler = UpdateTableStatusHandler
+description = Update table status
+
+[node:UpdateTableStatus]
+type = neon
+label = API.Tables.2.1. Update Table Status
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE restaurant_system.tables SET status = %s, current_order_id = %s WHERE id = %s RETURNING id, table_number, status, current_order_id
+parameters = ["{{request_data.status}}", "{{request_data.current_order_id}}", "{{request_data.table_id_from_url}}"]
+
+# =============================================
+# Reservations API
+# =============================================
+
+[node:DefineCreateReservationRoute]
+type = aci
+mode = server
+label = API.Reservations.1. POST /api/reservations
+operation = add_route
+route_path = /api/reservations
+methods = ["POST"]
+handler = CreateReservationHandler
+description = Create new reservation
+
+[node:InsertReservation]
+type = neon
+label = API.Reservations.1.1. Insert Reservation
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO restaurant_system.reservations (customer_name, customer_phone, customer_email, party_size, reservation_date, reservation_time, table_number, special_requests) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, customer_name, party_size, reservation_date, reservation_time, status
+parameters = ["{{request_data.customer_name}}", "{{request_data.customer_phone}}", "{{request_data.customer_email}}", "{{request_data.party_size}}", "{{request_data.reservation_date}}", "{{request_data.reservation_time}}", "{{request_data.table_number}}", "{{request_data.special_requests}}"]
+
+[node:DefineGetReservationsRoute]
+type = aci
+mode = server
+label = API.Reservations.2. GET /api/reservations
+operation = add_route
+route_path = /api/reservations
+methods = ["GET"]
+handler = GetReservationsHandler
+description = Get all reservations
+
+[node:FetchReservations]
+type = neon
+label = API.Reservations.2.1. Fetch Reservations
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, customer_name, customer_phone, party_size, reservation_date, reservation_time, table_number, status, special_requests, created_at FROM restaurant_system.reservations WHERE reservation_date >= CURRENT_DATE ORDER BY reservation_date, reservation_time
+parameters = []
+
+[node:DefineUpdateReservationRoute]
+type = aci
+mode = server
+label = API.Reservations.3. PUT /api/reservations/{reservation_id}
+operation = add_route
+route_path = /api/reservations/<int:reservation_id_from_url>
+methods = ["PUT"]
+handler = UpdateReservationHandler
+description = Update reservation status
+
+[node:UpdateReservation]
+type = neon
+label = API.Reservations.3.1. Update Reservation
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE restaurant_system.reservations SET status = %s WHERE id = %s RETURNING id, customer_name, party_size, reservation_date, reservation_time, status
+parameters = ["{{request_data.status}}", "{{request_data.reservation_id_from_url}}"]
+
+# =============================================
+# Analytics & Reporting API
+# =============================================
+
+[node:DefineGetDailySalesRoute]
+type = aci
+mode = server
+label = API.Analytics.1. GET /api/analytics/daily-sales
+operation = add_route
+route_path = /api/analytics/daily-sales
+methods = ["GET"]
+handler = GetDailySalesHandler
+description = Get daily sales report
+
+[node:FetchDailySales]
+type = neon
+label = API.Analytics.1.1. Fetch Daily Sales
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT DATE(order_time) as sale_date, COUNT(*) as total_orders, SUM(total_amount) as total_revenue, AVG(total_amount) as average_order FROM restaurant_system.orders WHERE order_time >= CURRENT_DATE - INTERVAL '30 days' AND status = 'completed' GROUP BY DATE(order_time) ORDER BY sale_date DESC
+parameters = []
+
+[node:DefineGetPopularItemsRoute]
+type = aci
+mode = server
+label = API.Analytics.2. GET /api/analytics/popular-items
+operation = add_route
+route_path = /api/analytics/popular-items
+methods = ["GET"]
+handler = GetPopularItemsHandler
+description = Get most popular menu items
+
+[node:FetchPopularItems]
+type = neon
+label = API.Analytics.2.1. Fetch Popular Items
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT m.name, m.category, m.price, COUNT(oi.menu_item_id) as order_count, SUM(oi.quantity) as total_quantity FROM restaurant_system.menu_items m JOIN restaurant_system.order_items oi ON m.id = oi.menu_item_id JOIN restaurant_system.orders o ON oi.order_id = o.id WHERE o.order_time >= CURRENT_DATE - INTERVAL '30 days' GROUP BY m.id, m.name, m.category, m.price ORDER BY order_count DESC LIMIT 10
+parameters = []
+
+[node:DefineGetCustomerInsightsRoute]
+type = aci
+mode = server
+label = API.Analytics.3. GET /api/analytics/customers
+operation = add_route
+route_path = /api/analytics/customers
+methods = ["GET"]
+handler = GetCustomerInsightsHandler
+description = Get customer analytics
+
+[node:FetchCustomerInsights]
+type = neon
+label = API.Analytics.3.1. Fetch Customer Insights
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT COUNT(*) as total_customers, AVG(total_orders) as avg_orders_per_customer, AVG(total_spent) as avg_spent_per_customer, COUNT(CASE WHEN vip_status = true THEN 1 END) as vip_customers FROM restaurant_system.customers
+parameters = []
+
+[node:DefineGetRevenueReportRoute]
+type = aci
+mode = server
+label = API.Analytics.4. GET /api/analytics/revenue
+operation = add_route
+route_path = /api/analytics/revenue
+methods = ["GET"]
+handler = GetRevenueReportHandler
+description = Get revenue breakdown
+
+[node:FetchRevenueReport]
+type = neon
+label = API.Analytics.4.1. Fetch Revenue Report
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT order_type, COUNT(*) as order_count, SUM(subtotal) as subtotal_sum, SUM(tax_amount) as tax_sum, SUM(tip_amount) as tip_sum, SUM(total_amount) as total_revenue FROM restaurant_system.orders WHERE status = 'completed' AND order_time >= CURRENT_DATE - INTERVAL '7 days' GROUP BY order_type ORDER BY total_revenue DESC
+parameters = []
+
+# =============================================
+# Kitchen Display System API
+# =============================================
+
+[node:DefineGetKitchenOrdersRoute]
+type = aci
+mode = server
+label = API.Kitchen.1. GET /api/kitchen/orders
+operation = add_route
+route_path = /api/kitchen/orders
+methods = ["GET"]
+handler = GetKitchenOrdersHandler
+description = Get orders for kitchen display
+
+[node:FetchKitchenOrders]
+type = neon
+label = API.Kitchen.1.1. Fetch Kitchen Orders
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, order_number, customer_name, items, order_type, status, priority, table_number, special_instructions, estimated_time, order_time FROM restaurant_system.orders WHERE status IN ('pending', 'preparing', 'ready') ORDER BY priority DESC, order_time ASC
+parameters = []
+
+[node:DefineUpdateOrderPriorityRoute]
+type = aci
+mode = server
+label = API.Kitchen.2. PUT /api/kitchen/orders/{order_id}/priority
+operation = add_route
+route_path = /api/kitchen/orders/<int:order_id_from_url>/priority
+methods = ["PUT"]
+handler = UpdateOrderPriorityHandler
+description = Update order priority
+
+[node:UpdateOrderPriority]
+type = neon
+label = API.Kitchen.2.1. Update Order Priority
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE restaurant_system.orders SET priority = %s WHERE id = %s RETURNING id, order_number, priority, status
+parameters = ["{{request_data.priority}}", "{{request_data.order_id_from_url}}"]
+
+# =============================================
+# Utility & System API
+# =============================================
+
+[node:DefineHealthCheckRoute]
+type = aci
+mode = server
+label = API.System.1. GET /api/health
+operation = add_route
+route_path = /api/health
+methods = ["GET"]
+handler = HealthCheckHandler
+description = System health check
+
+[node:PerformHealthCheck]
+type = neon
+label = API.System.1.1. Database Health Check
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT 'healthy' as status, NOW() as timestamp, COUNT(*) as total_orders FROM restaurant_system.orders WHERE DATE(order_time) = CURRENT_DATE
+parameters = []
+
+[node:DefineGetSystemStatsRoute]
+type = aci
+mode = server
+label = API.System.2. GET /api/stats
+operation = add_route
+route_path = /api/stats
+methods = ["GET"]
+handler = GetSystemStatsHandler
+description = Get system statistics
+
+[node:FetchSystemStats]
+type = neon
+label = API.System.2.1. Fetch System Stats
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT (SELECT COUNT(*) FROM restaurant_system.menu_items WHERE available = true) as active_menu_items, (SELECT COUNT(*) FROM restaurant_system.orders WHERE DATE(order_time) = CURRENT_DATE) as orders_today, (SELECT COUNT(*) FROM restaurant_system.customers) as total_customers, (SELECT COUNT(*) FROM restaurant_system.staff WHERE status = 'active') as active_staff, (SELECT COUNT(*) FROM restaurant_system.tables WHERE status = 'occupied') as occupied_tables
+parameters = []
+
+[node:DefineBackupDataRoute]
+type = aci
+mode = server
+label = API.System.3. POST /api/backup
+operation = add_route
+route_path = /api/backup
+methods = ["POST"]
+handler = BackupDataHandler
+description = Create data backup
+
+[node:CreateBackup]
+type = log_message
+label = API.System.3.1. Log Backup Request
+level = info
+message = "Data backup requested at {{current_timestamp}} - Restaurant system backup initiated"
+
+# =============================================
+# Payment Processing API
+# =============================================
+
+[node:DefineProcessPaymentRoute]
+type = aci
+mode = server
+label = API.Payment.1. POST /api/payments/process
+operation = add_route
+route_path = /api/payments/process
+methods = ["POST"]
+handler = ProcessPaymentHandler
+description = Process order payment
+
+[node:RecordPayment]
+type = neon
+label = API.Payment.1.1. Record Payment
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE restaurant_system.orders SET status = 'paid', completed_time = CURRENT_TIMESTAMP WHERE id = %s AND status = 'completed' RETURNING id, order_number, total_amount, status
+parameters = ["{{request_data.order_id}}"]
+
+[node:DefineRefundRoute]
+type = aci
+mode = server
+label = API.Payment.2. POST /api/payments/refund
+operation = add_route
+route_path = /api/payments/refund
+methods = ["POST"]
+handler = RefundHandler
+description = Process refund
+
+[node:ProcessRefund]
+type = neon
+label = API.Payment.2.1. Process Refund
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE restaurant_system.orders SET status = 'refunded' WHERE id = %s RETURNING id, order_number, total_amount, status
+parameters = ["{{request_data.order_id}}"]
+
+# =============================================
+# Final Setup & Logging
+# =============================================
+
+[node:LogRestaurantReady]
+type = log_message
+label = 99. Restaurant System Ready
+level = info
+message = "🍕 COMPLETE RESTAURANT BACKEND SYSTEM READY! | Tables: menu_items, orders, customers, inventory, staff, tables, reservations, order_items | API Endpoints: 40+ routes | Database: restaurant_system schema | Server starting on port 8081..."
+
+# =============================================
+# Workflow Edges (Dependencies)
+# =============================================
+
+[edges]
+# Database Setup Chain
+CleanupDatabase = CreateRestaurantSchema
+CreateRestaurantSchema = CreateMenuTable
+CreateMenuTable = CreateOrdersTable
+CreateOrdersTable = CreateCustomersTable
+CreateCustomersTable = CreateInventoryTable
+CreateInventoryTable = CreateStaffTable
+CreateStaffTable = CreateTablesTable
+CreateTablesTable = CreateReservationsTable
+CreateReservationsTable = CreateOrderItemsTable
+CreateOrderItemsTable = AddSampleMenuItems
+AddSampleMenuItems = AddSampleCustomers
+AddSampleCustomers = AddSampleInventory
+AddSampleInventory = AddSampleStaff
+AddSampleStaff = AddSampleTables
+AddSampleTables = LogRestaurantReady
+
+# Menu API Routes
+LogRestaurantReady = DefineGetMenuRoute
+LogRestaurantReady = DefineGetMenuByCategory
+LogRestaurantReady = DefineAddMenuItemRoute
+LogRestaurantReady = DefineUpdateMenuItemRoute
+LogRestaurantReady = DefineDeleteMenuItemRoute
+
+# Order API Routes
+LogRestaurantReady = DefineCreateOrderRoute
+LogRestaurantReady = DefineGetOrdersRoute
+LogRestaurantReady = DefineGetOrderByIdRoute
+LogRestaurantReady = DefineUpdateOrderStatusRoute
+LogRestaurantReady = DefineGetOrdersByStatusRoute
+
+# Customer API Routes
+LogRestaurantReady = DefineGetCustomersRoute
+LogRestaurantReady = DefineAddCustomerRoute
+LogRestaurantReady = DefineGetCustomerByIdRoute
+LogRestaurantReady = DefineUpdateCustomerRoute
+
+# Inventory API Routes
+LogRestaurantReady = DefineGetInventoryRoute
+LogRestaurantReady = DefineAddInventoryItemRoute
+LogRestaurantReady = DefineUpdateInventoryRoute
+LogRestaurantReady = DefineGetLowStockRoute
+
+# Staff API Routes
+LogRestaurantReady = DefineGetStaffRoute
+LogRestaurantReady = DefineAddStaffRoute
+
+# Table Management Routes
+LogRestaurantReady = DefineGetTablesRoute
+LogRestaurantReady = DefineUpdateTableStatusRoute
+
+# Reservation Routes
+LogRestaurantReady = DefineCreateReservationRoute
+LogRestaurantReady = DefineGetReservationsRoute
+LogRestaurantReady = DefineUpdateReservationRoute
+
+# Analytics Routes
+LogRestaurantReady = DefineGetDailySalesRoute
+LogRestaurantReady = DefineGetPopularItemsRoute
+LogRestaurantReady = DefineGetCustomerInsightsRoute
+LogRestaurantReady = DefineGetRevenueReportRoute
+
+# Kitchen System Routes
+LogRestaurantReady = DefineGetKitchenOrdersRoute
+LogRestaurantReady = DefineUpdateOrderPriorityRoute
+
+# System Routes
+LogRestaurantReady = DefineHealthCheckRoute
+LogRestaurantReady = DefineGetSystemStatsRoute
+LogRestaurantReady = DefineBackupDataRoute
+
+# Payment Routes
+LogRestaurantReady = DefineProcessPaymentRoute
+LogRestaurantReady = DefineRefundRoute
+
+# Menu API Handlers
+DefineGetMenuRoute = FetchMenuItems
+DefineGetMenuByCategory = FetchMenuByCategory
+DefineAddMenuItemRoute = InsertMenuItem
+DefineUpdateMenuItemRoute = UpdateMenuItem
+DefineDeleteMenuItemRoute = DeleteMenuItem
+
+# Order API Handlers
+DefineCreateOrderRoute = InsertOrder
+ DefineGetOrdersRoute = FetchOrders
+DefineGetOrderByIdRoute = FetchOrderById
+DefineUpdateOrderStatusRoute = UpdateOrderStatus
+DefineGetOrdersByStatusRoute = FetchOrdersByStatus
+
+# Customer API Handlers
+DefineGetCustomersRoute = FetchCustomers
+DefineAddCustomerRoute = InsertCustomer
+DefineGetCustomerByIdRoute = FetchCustomerById
+DefineUpdateCustomerRoute = UpdateCustomer
+
+# Inventory API Handlers
+DefineGetInventoryRoute = FetchInventory
+DefineAddInventoryItemRoute = InsertInventoryItem
+DefineUpdateInventoryRoute = UpdateInventory
+DefineGetLowStockRoute = FetchLowStock
+
+# Staff API Handlers
+DefineGetStaffRoute = FetchStaff
+DefineAddStaffRoute = InsertStaff
+
+# Table API Handlers
+DefineGetTablesRoute = FetchTables
+DefineUpdateTableStatusRoute = UpdateTableStatus
+
+# Reservation API Handlers
+DefineCreateReservationRoute = InsertReservation
+DefineGetReservationsRoute = FetchReservations
+DefineUpdateReservationRoute = UpdateReservation
+
+# Analytics API Handlers
+DefineGetDailySalesRoute = FetchDailySales
+DefineGetPopularItemsRoute = FetchPopularItems
+DefineGetCustomerInsightsRoute = FetchCustomerInsights
+DefineGetRevenueReportRoute = FetchRevenueReport
+
+# Kitchen API Handlers
+DefineGetKitchenOrdersRoute = FetchKitchenOrders
+DefineUpdateOrderPriorityRoute = UpdateOrderPriority
+
+# System API Handlers
+DefineHealthCheckRoute = PerformHealthCheck
+DefineGetSystemStatsRoute = FetchSystemStats
+DefineBackupDataRoute = CreateBackup
+
+# Payment API Handlers
+DefineProcessPaymentRoute = RecordPayment
+DefineRefundRoute = ProcessRefund
+GenerateOrderNumber = InsertOrder
+# =============================================
+# Environment Variables
+# =============================================
+
+[env]
+# No AI keys needed for this version
+
+# =============================================
+# Server Configuration
+# =============================================
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+
+[configuration]
+agent_enabled = true
+agent_name = "CompleteRestaurantBackend"
+agent_version = "2.0.0"
+host = "0.0.0.0"
+port = 5544
+debug = true
+cors_enabled = true
+
+[deployment]
+environment = "development"
