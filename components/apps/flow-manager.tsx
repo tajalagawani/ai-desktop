@@ -211,7 +211,14 @@ export function FlowManager(_props: FlowManagerProps) {
       setLoading(true)
     }
     try {
-      const response = await fetch('/api/flows')
+      const response = await fetch('/api/flows', {
+        // Prevent caching to get fresh data
+        cache: 'no-store',
+        // Add timestamp to prevent browser caching
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
       const data = await response.json()
 
       // Check if ACT/Docker is installed
@@ -228,8 +235,6 @@ export function FlowManager(_props: FlowManagerProps) {
         throw new Error(data.error || 'Failed to load flows')
       }
 
-      setActInstalled(true)
-
       // Normalize health status - some flows return "ready", some return "healthy"
       const normalizedFlows = (data.flows || []).map((flow: FlowConfig) => {
         if (flow.health?.status === 'ready') {
@@ -241,12 +246,18 @@ export function FlowManager(_props: FlowManagerProps) {
         return flow
       })
 
-      setFlows(normalizedFlows)
+      // Use requestAnimationFrame to batch state updates and prevent scroll jank
+      requestAnimationFrame(() => {
+        setActInstalled(true)
+        setFlows(normalizedFlows)
+        if (!silent) {
+          setLoading(false)
+        }
+      })
     } catch (error) {
       console.error('Failed to load flows:', error)
       // Don't change actInstalled state on network errors, just clear flows
       setFlows([])
-    } finally {
       if (!silent) {
         setLoading(false)
       }
@@ -255,12 +266,12 @@ export function FlowManager(_props: FlowManagerProps) {
 
   useEffect(() => {
     loadFlows(false)
-    // Silent background refresh
+    // Silent background refresh - reduced frequency to avoid scroll interruption
     const interval = setInterval(() => {
       if (!actionLoading) {
         loadFlows(true) // Silent refresh to avoid flashing
       }
-    }, 10000) // Refresh every 10 seconds
+    }, 30000) // Refresh every 30 seconds
     return () => clearInterval(interval)
   }, [loadFlows, actionLoading])
 
@@ -279,7 +290,7 @@ export function FlowManager(_props: FlowManagerProps) {
         throw new Error(data.error || 'Flow action failed')
       }
 
-      await loadFlows()
+      await loadFlows(true) // Silent refresh to avoid flashing
 
       // Refresh selected flow if it's currently selected
       if (selectedFlow?.name === flowName) {
@@ -538,7 +549,11 @@ export function FlowManager(_props: FlowManagerProps) {
                       disabled={actionLoading === selectedFlow.name}
                       title="Stop flow"
                     >
-                      <Square className="h-3.5 w-3.5" />
+                      {actionLoading === selectedFlow.name ? (
+                        <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Square className="h-3.5 w-3.5" />
+                      )}
                     </Button>
                   ) : (
                     <Button
@@ -548,7 +563,11 @@ export function FlowManager(_props: FlowManagerProps) {
                       disabled={actionLoading === selectedFlow.name}
                       title="Start flow"
                     >
-                      <Play className="h-3.5 w-3.5" />
+                      {actionLoading === selectedFlow.name ? (
+                        <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Play className="h-3.5 w-3.5" />
+                      )}
                     </Button>
                   )}
                   <Button
@@ -558,7 +577,7 @@ export function FlowManager(_props: FlowManagerProps) {
                     disabled={actionLoading === selectedFlow.name}
                     title="Restart flow"
                   >
-                    <RotateCw className="h-3.5 w-3.5" />
+                    <RotateCw className={cn("h-3.5 w-3.5", actionLoading === selectedFlow.name && "animate-spin")} />
                   </Button>
                 </div>
               </div>
@@ -787,7 +806,11 @@ export function FlowManager(_props: FlowManagerProps) {
                               disabled={actionLoading === flow.name}
                               title="Stop flow"
                             >
-                              <Square className="h-3.5 w-3.5" />
+                              {actionLoading === flow.name ? (
+                                <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <Square className="h-3.5 w-3.5" />
+                              )}
                             </Button>
                           </>
                         ) : (
@@ -806,7 +829,11 @@ export function FlowManager(_props: FlowManagerProps) {
                               disabled={actionLoading === flow.name}
                               title="Start flow"
                             >
-                              <Play className="h-3.5 w-3.5" />
+                              {actionLoading === flow.name ? (
+                                <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <Play className="h-3.5 w-3.5" />
+                              )}
                             </Button>
                           </>
                         )}
@@ -820,7 +847,7 @@ export function FlowManager(_props: FlowManagerProps) {
                           disabled={actionLoading === flow.name}
                           title="Restart flow"
                         >
-                          <RotateCw className="h-3.5 w-3.5" />
+                          <RotateCw className={cn("h-3.5 w-3.5", actionLoading === flow.name && "animate-spin")} />
                         </Button>
                       </div>
                     </div>

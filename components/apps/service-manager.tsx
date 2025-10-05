@@ -39,6 +39,10 @@ interface ServiceManagerProps {
 
 // Main Component
 export function ServiceManager(_props: ServiceManagerProps) {
+  const renderCount = React.useRef(0)
+  renderCount.current++
+  console.log('[Service Manager] Render #', renderCount.current)
+
   const [services, setServices] = useState<ServiceWithStatus[]>([])
   const [loading, setLoading] = useState(true)
   const [dockerInstalled, setDockerInstalled] = useState(false)
@@ -50,28 +54,53 @@ export function ServiceManager(_props: ServiceManagerProps) {
   const [logsWs, setLogsWs] = useState<WebSocket | null>(null)
   const [searchQuery, setSearchQuery] = useState<string>("")
 
-  const loadServices = useCallback(async () => {
-    setLoading(true)
+  const loadServices = useCallback(async (silent = false) => {
+    console.log('[Service Manager] loadServices called', { silent, timestamp: Date.now() })
+    if (!silent) {
+      setLoading(true)
+    }
     try {
-      const response = await fetch('/api/services')
+      const response = await fetch('/api/services', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      })
       const data = await response.json()
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to load services')
       }
 
-      setDockerInstalled(data.dockerInstalled)
-      setServices(data.services || [])
+      console.log('[Service Manager] Data received, scheduling update', { silent, servicesCount: data.services?.length })
+
+      // Use requestAnimationFrame to batch state updates and prevent scroll jank
+      requestAnimationFrame(() => {
+        console.log('[Service Manager] Applying state update', { timestamp: Date.now() })
+        setDockerInstalled(data.dockerInstalled)
+        setServices(data.services || [])
+        if (!silent) {
+          setLoading(false)
+        }
+      })
     } catch (error) {
       console.error('Failed to load services:', error)
-    } finally {
-      setLoading(false)
+      if (!silent) {
+        setLoading(false)
+      }
     }
   }, [])
 
   useEffect(() => {
-    loadServices()
-  }, [loadServices])
+    loadServices(false)
+    // Silent background refresh - reduced frequency to avoid scroll interruption
+    const interval = setInterval(() => {
+      if (!actionLoading) {
+        loadServices(true) // Silent refresh to avoid flashing
+      }
+    }, 30000) // Refresh every 30 seconds
+    return () => clearInterval(interval)
+  }, [loadServices, actionLoading])
 
   const handleServiceAction = async (serviceId: string, action: string) => {
     setActionLoading(serviceId)
@@ -88,7 +117,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
         throw new Error(data.error || 'Service action failed')
       }
 
-      await loadServices()
+      await loadServices(true)
 
       // Refresh selected service if it's currently selected
       if (selectedService?.id === serviceId) {
@@ -349,7 +378,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
           <div className="flex-1" />
 
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={loadServices} className="flex-1 bg-transparent">
+            <Button size="sm" variant="outline" onClick={() => loadServices(false)} className="flex-1 bg-transparent">
               <RotateCw className="h-3 w-3" />
             </Button>
             <Button size="sm" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
@@ -413,7 +442,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
                         disabled={actionLoading === selectedService.id}
                         title="Stop service"
                       >
-                        <Square className="h-3.5 w-3.5" />
+                        {actionLoading === selectedService.id ? (
+                          <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Square className="h-3.5 w-3.5" />
+                        )}
                       </Button>
                     ) : (
                       <Button
@@ -423,7 +456,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
                         disabled={actionLoading === selectedService.id}
                         title="Start service"
                       >
-                        <Play className="h-3.5 w-3.5" />
+                        {actionLoading === selectedService.id ? (
+                          <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Play className="h-3.5 w-3.5" />
+                        )}
                       </Button>
                     )}
                     <Button
@@ -433,7 +470,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
                       disabled={actionLoading === selectedService.id}
                       title="Restart service"
                     >
-                      <RotateCw className="h-3.5 w-3.5" />
+                      <RotateCw className={cn("h-3.5 w-3.5", actionLoading === selectedService.id && "animate-spin")} />
                     </Button>
                     <Button
                       size="sm"
@@ -442,7 +479,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
                       disabled={actionLoading === selectedService.id}
                       title="Delete service"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      {actionLoading === selectedService.id ? (
+                        <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-3.5 w-3.5" />
+                      )}
                     </Button>
                   </div>
                 )}
@@ -716,7 +757,17 @@ export function ServiceManager(_props: ServiceManagerProps) {
               </div>
 
               {/* Services List */}
-              <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden pr-4 scrollbar-thin will-change-scroll">
+              <div
+                className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden pr-4 scrollbar-thin will-change-scroll"
+                onScroll={(e) => {
+                  console.log('[Service List Scroll]', {
+                    scrollTop: e.currentTarget.scrollTop,
+                    scrollHeight: e.currentTarget.scrollHeight,
+                    clientHeight: e.currentTarget.clientHeight,
+                    timestamp: Date.now()
+                  })
+                }}
+              >
                 <div className="space-y-3">
                   {filteredServices.map((service) => {
                     const Icon = service.iconType === 'image' ? null : getIcon(service.icon)
@@ -765,7 +816,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
                                   disabled={actionLoading === service.id}
                                   title="Stop service"
                                 >
-                                  <Square className="h-3.5 w-3.5" />
+                                  {actionLoading === service.id ? (
+                                    <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <Square className="h-3.5 w-3.5" />
+                                  )}
                                 </Button>
                               ) : (
                                 <Button
@@ -778,7 +833,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
                                   disabled={actionLoading === service.id}
                                   title="Start service"
                                 >
-                                  <Play className="h-3.5 w-3.5" />
+                                  {actionLoading === service.id ? (
+                                    <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <Play className="h-3.5 w-3.5" />
+                                  )}
                                 </Button>
                               )}
                               <Button
@@ -791,7 +850,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
                                 disabled={actionLoading === service.id}
                                 title="Delete service"
                               >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                {actionLoading === service.id ? (
+                                  <RotateCw className="h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                )}
                               </Button>
                             </>
                           ) : (
@@ -805,7 +868,14 @@ export function ServiceManager(_props: ServiceManagerProps) {
                               }}
                               disabled={actionLoading === service.id}
                             >
-                              {actionLoading === service.id ? 'Installing...' : 'Install'}
+                              {actionLoading === service.id ? (
+                                <>
+                                  <RotateCw className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                                  Installing...
+                                </>
+                              ) : (
+                                'Install'
+                              )}
                             </Button>
                           )}
                         </div>

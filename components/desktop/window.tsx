@@ -132,7 +132,7 @@ export function Window({
       </div>
 
       {/* Window Content */}
-      <div className="h-full overflow-auto bg-background" style={{ height: "calc(100% - 48px)" }}>
+      <div className="h-full overflow-hidden bg-background" style={{ height: "calc(100% - 48px)" }}>
         {children}
       </div>
     </motion.div>
