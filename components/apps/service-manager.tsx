@@ -39,10 +39,6 @@ interface ServiceManagerProps {
 
 // Main Component
 export function ServiceManager(_props: ServiceManagerProps) {
-  const renderCount = React.useRef(0)
-  renderCount.current++
-  console.log('[Service Manager] Render #', renderCount.current)
-
   const [services, setServices] = useState<ServiceWithStatus[]>([])
   const [loading, setLoading] = useState(true)
   const [dockerInstalled, setDockerInstalled] = useState(false)
@@ -54,8 +50,10 @@ export function ServiceManager(_props: ServiceManagerProps) {
   const [logsWs, setLogsWs] = useState<WebSocket | null>(null)
   const [searchQuery, setSearchQuery] = useState<string>("")
 
+  // Store last services data to compare
+  const lastServicesDataRef = React.useRef<string>("")
+
   const loadServices = useCallback(async (silent = false) => {
-    console.log('[Service Manager] loadServices called', { silent, timestamp: Date.now() })
     if (!silent) {
       setLoading(true)
     }
@@ -72,17 +70,18 @@ export function ServiceManager(_props: ServiceManagerProps) {
         throw new Error(data.error || 'Failed to load services')
       }
 
-      console.log('[Service Manager] Data received, scheduling update', { silent, servicesCount: data.services?.length })
+      // Only update if data actually changed
+      const newDataString = JSON.stringify(data.services)
+      const hasChanged = newDataString !== lastServicesDataRef.current
 
-      // Use requestAnimationFrame to batch state updates and prevent scroll jank
-      requestAnimationFrame(() => {
-        console.log('[Service Manager] Applying state update', { timestamp: Date.now() })
+      if (hasChanged || !silent) {
+        lastServicesDataRef.current = newDataString
         setDockerInstalled(data.dockerInstalled)
         setServices(data.services || [])
         if (!silent) {
           setLoading(false)
         }
-      })
+      }
     } catch (error) {
       console.error('Failed to load services:', error)
       if (!silent) {
@@ -117,19 +116,13 @@ export function ServiceManager(_props: ServiceManagerProps) {
         throw new Error(data.error || 'Service action failed')
       }
 
-      await loadServices(true)
-
-      // Refresh selected service if it's currently selected
-      if (selectedService?.id === serviceId) {
-        const updatedService = services.find(s => s.id === serviceId)
-        if (updatedService) {
-          setSelectedService({ ...updatedService })
-        }
-      }
+      // Don't reload - just show spinner briefly
+      setTimeout(() => {
+        setActionLoading(null)
+      }, 1000)
     } catch (error: any) {
       console.error('Service action error:', error)
       alert(error.message || 'Failed to perform action')
-    } finally {
       setActionLoading(null)
     }
   }
@@ -757,17 +750,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
               </div>
 
               {/* Services List */}
-              <div
-                className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden pr-4 scrollbar-thin will-change-scroll"
-                onScroll={(e) => {
-                  console.log('[Service List Scroll]', {
-                    scrollTop: e.currentTarget.scrollTop,
-                    scrollHeight: e.currentTarget.scrollHeight,
-                    clientHeight: e.currentTarget.clientHeight,
-                    timestamp: Date.now()
-                  })
-                }}
-              >
+              <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden pr-4 scrollbar-thin will-change-scroll">
                 <div className="space-y-3">
                   {filteredServices.map((service) => {
                     const Icon = service.iconType === 'image' ? null : getIcon(service.icon)

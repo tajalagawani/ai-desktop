@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useCallback, useMemo } from "react"
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
@@ -195,8 +195,8 @@ function ACIRoutesTab({ flow }: { flow: FlowConfig }) {
   )
 }
 
-// Main Component
-export function FlowManager(_props: FlowManagerProps) {
+// Main Component - Wrapped in memo to prevent unnecessary re-renders
+export const FlowManager = React.memo(function FlowManager(_props: FlowManagerProps) {
   const [flows, setFlows] = useState<FlowConfig[]>([])
   const [loading, setLoading] = useState(true)
   const [actInstalled, setActInstalled] = useState(false)
@@ -206,22 +206,22 @@ export function FlowManager(_props: FlowManagerProps) {
   const [logsLoading, setLogsLoading] = useState(false)
   const [searchQuery, setSearchQuery] = useState<string>("")
 
+  // Store last flows data to compare
+  const lastFlowsDataRef = useRef<string>("")
+
   const loadFlows = useCallback(async (silent = false) => {
     if (!silent) {
       setLoading(true)
     }
     try {
       const response = await fetch('/api/flows', {
-        // Prevent caching to get fresh data
         cache: 'no-store',
-        // Add timestamp to prevent browser caching
         headers: {
           'Cache-Control': 'no-cache'
         }
       })
       const data = await response.json()
 
-      // Check if ACT/Docker is installed
       if (data.actInstalled === false) {
         setActInstalled(false)
         setFlows([])
@@ -235,7 +235,6 @@ export function FlowManager(_props: FlowManagerProps) {
         throw new Error(data.error || 'Failed to load flows')
       }
 
-      // Normalize health status - some flows return "ready", some return "healthy"
       const normalizedFlows = (data.flows || []).map((flow: FlowConfig) => {
         if (flow.health?.status === 'ready') {
           return {
@@ -246,17 +245,20 @@ export function FlowManager(_props: FlowManagerProps) {
         return flow
       })
 
-      // Use requestAnimationFrame to batch state updates and prevent scroll jank
-      requestAnimationFrame(() => {
+      // Only update if data actually changed
+      const newDataString = JSON.stringify(normalizedFlows)
+      const hasChanged = newDataString !== lastFlowsDataRef.current
+
+      if (hasChanged || !silent) {
+        lastFlowsDataRef.current = newDataString
         setActInstalled(true)
         setFlows(normalizedFlows)
         if (!silent) {
           setLoading(false)
         }
-      })
+      }
     } catch (error) {
       console.error('Failed to load flows:', error)
-      // Don't change actInstalled state on network errors, just clear flows
       setFlows([])
       if (!silent) {
         setLoading(false)
@@ -266,12 +268,12 @@ export function FlowManager(_props: FlowManagerProps) {
 
   useEffect(() => {
     loadFlows(false)
-    // Silent background refresh - reduced frequency to avoid scroll interruption
+    // Background refresh every 30s
     const interval = setInterval(() => {
       if (!actionLoading) {
-        loadFlows(true) // Silent refresh to avoid flashing
+        loadFlows(true)
       }
-    }, 30000) // Refresh every 30 seconds
+    }, 30000)
     return () => clearInterval(interval)
   }, [loadFlows, actionLoading])
 
@@ -290,19 +292,13 @@ export function FlowManager(_props: FlowManagerProps) {
         throw new Error(data.error || 'Flow action failed')
       }
 
-      await loadFlows(true) // Silent refresh to avoid flashing
-
-      // Refresh selected flow if it's currently selected
-      if (selectedFlow?.name === flowName) {
-        const updatedFlow = flows.find(f => f.name === flowName)
-        if (updatedFlow) {
-          setSelectedFlow({ ...updatedFlow })
-        }
-      }
+      // Show spinner, no reload to prevent flash
+      setTimeout(() => {
+        setActionLoading(null)
+      }, 1000)
     } catch (error: any) {
       console.error('Flow action error:', error)
       alert(error.message || 'Failed to perform action')
-    } finally {
       setActionLoading(null)
     }
   }
@@ -330,9 +326,8 @@ export function FlowManager(_props: FlowManagerProps) {
   useEffect(() => {
     if (selectedFlow && selectedFlow.container?.running) {
       loadLogs(selectedFlow.name, false)
-      // Silent background refresh for logs
       const interval = setInterval(() => {
-        loadLogs(selectedFlow.name, true) // Silent refresh
+        loadLogs(selectedFlow.name, true)
       }, 5000)
       return () => clearInterval(interval)
     } else {
@@ -351,7 +346,6 @@ export function FlowManager(_props: FlowManagerProps) {
     return null
   }
 
-  // Filtered flows
   const filteredFlows = useMemo(() => {
     if (!searchQuery.trim()) return flows
 
@@ -364,7 +358,6 @@ export function FlowManager(_props: FlowManagerProps) {
     )
   }, [flows, searchQuery])
 
-  // Statistics
   const stats = useMemo(() => {
     return {
       total: flows.length,
@@ -378,7 +371,6 @@ export function FlowManager(_props: FlowManagerProps) {
     return (
       <div className="h-full bg-background">
         <div className="grid h-full grid-cols-[320px_1fr]">
-          {/* Left side skeleton */}
           <div className="border-r p-6 flex flex-col">
             <Skeleton className="h-8 w-48 mb-6" />
             <div className="space-y-4">
@@ -391,7 +383,6 @@ export function FlowManager(_props: FlowManagerProps) {
               <Skeleton className="h-10 w-full" />
             </div>
           </div>
-          {/* Right side skeleton */}
           <div className="p-8">
             <Skeleton className="h-8 w-48 mb-6" />
             <div className="space-y-3">
@@ -434,7 +425,7 @@ export function FlowManager(_props: FlowManagerProps) {
   return (
     <div className="h-full bg-background">
       <div className="grid h-full grid-cols-[320px_1fr]">
-        {/* Left Panel - Static Info */}
+        {/* Left Panel */}
         <div className="relative overflow-hidden border-r bg-background p-6 h-full flex flex-col">
           <div className="mb-6">
             <h2 className="text-lg font-normal mb-2">Flow Manager</h2>
@@ -443,7 +434,6 @@ export function FlowManager(_props: FlowManagerProps) {
             </p>
           </div>
 
-          {/* Statistics Cards */}
           <div className="grid grid-cols-2 gap-2 mb-6">
             <Card className="p-3 bg-muted/50">
               <div className="text-xl font-normal text-foreground">{stats.total}</div>
@@ -469,7 +459,7 @@ export function FlowManager(_props: FlowManagerProps) {
           <div className="flex-1" />
 
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={loadFlows} className="flex-1 bg-transparent">
+            <Button size="sm" variant="outline" onClick={() => loadFlows(false)} className="flex-1 bg-transparent">
               <RotateCw className="h-3 w-3" />
             </Button>
             <Button size="sm" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
@@ -478,10 +468,9 @@ export function FlowManager(_props: FlowManagerProps) {
           </div>
         </div>
 
-        {/* Right Panel - Dynamic Content */}
+        {/* Right Panel */}
         <div className="bg-background p-8 h-full overflow-hidden flex flex-col">
           {selectedFlow ? (
-            // Flow Detail View with Tabs
             <div className="flex flex-col flex-1 min-h-0">
               <Button
                 variant="ghost"
@@ -539,7 +528,6 @@ export function FlowManager(_props: FlowManagerProps) {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex gap-2 items-center flex-shrink-0">
                   {selectedFlow.container?.running ? (
                     <Button
@@ -582,9 +570,7 @@ export function FlowManager(_props: FlowManagerProps) {
                 </div>
               </div>
 
-              {/* Overview Content */}
               <div className="space-y-3 flex-shrink-0">
-                {/* Connection Info Card */}
                 <div className="p-3 bg-muted/50 rounded-lg space-y-2.5">
                   <h3 className="font-normal text-sm flex items-center gap-2">
                     <Globe className="h-3.5 w-3.5" />
@@ -621,7 +607,6 @@ export function FlowManager(_props: FlowManagerProps) {
                     </div>
                   </div>
 
-                  {/* Web Access */}
                   {selectedFlow.container?.running && (
                     <>
                       <div className="border-t pt-2.5" />
@@ -658,7 +643,6 @@ export function FlowManager(_props: FlowManagerProps) {
                 </div>
               </div>
 
-              {/* Tabs for Logs, Info, ACI */}
               {selectedFlow.container?.running && (
                 <Tabs defaultValue="logs" className="flex-1 flex flex-col mt-2 min-h-0">
                   <TabsList className="mb-2 justify-start w-auto flex-shrink-0">
@@ -669,7 +653,6 @@ export function FlowManager(_props: FlowManagerProps) {
                     )}
                   </TabsList>
 
-                  {/* Logs Tab */}
                   <TabsContent value="logs" className="flex-1 flex flex-col mt-0 min-h-0">
                     <Card className="p-3 flex-1 flex flex-col min-h-0 overflow-hidden">
                       <div className="flex items-center justify-between mb-2 flex-shrink-0">
@@ -687,7 +670,6 @@ export function FlowManager(_props: FlowManagerProps) {
                     </Card>
                   </TabsContent>
 
-                  {/* Info Tab */}
                   <TabsContent value="info" className="flex-1 overflow-auto mt-0 min-h-0">
                     <Card className="p-3">
                       <h3 className="font-normal mb-2 text-sm">Flow Configuration</h3>
@@ -714,7 +696,6 @@ export function FlowManager(_props: FlowManagerProps) {
                     </Card>
                   </TabsContent>
 
-                  {/* ACI Routes Tab */}
                   {selectedFlow.mode === 'agent' && (
                     <ACIRoutesTab flow={selectedFlow} />
                   )}
@@ -722,7 +703,6 @@ export function FlowManager(_props: FlowManagerProps) {
               )}
             </div>
           ) : (
-            // Flows List View
             <div className="flex flex-col flex-1 min-h-0">
               <div className="mb-6 flex items-start justify-between gap-4 flex-shrink-0">
                 <div className="flex-1">
@@ -743,7 +723,6 @@ export function FlowManager(_props: FlowManagerProps) {
                 </div>
               </div>
 
-              {/* Flows List */}
               <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden pr-4 scrollbar-thin will-change-scroll">
                 <div className="space-y-3">
                   {filteredFlows.map((flow) => (
@@ -781,7 +760,6 @@ export function FlowManager(_props: FlowManagerProps) {
                         </div>
                       </div>
 
-                      {/* Status Badge & Action Buttons */}
                       <div className="flex items-center gap-2 flex-shrink-0">
                         {flow.container?.running ? (
                           <>
@@ -860,4 +838,4 @@ export function FlowManager(_props: FlowManagerProps) {
       </div>
     </div>
   )
-}
+})
