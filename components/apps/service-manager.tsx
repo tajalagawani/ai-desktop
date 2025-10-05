@@ -637,7 +637,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
                     {/* Logs Tab */}
                     <TabsContent value="logs" className="flex-1 flex flex-col mt-0 min-h-0">
-                      <Card className="p-3 flex-1 flex flex-col min-h-0">
+                      <Card className="p-3 flex-1 flex flex-col min-h-0 overflow-hidden">
                         <div className="flex items-center justify-between mb-2 flex-shrink-0">
                           <h3 className="font-normal text-sm">Container Logs (Live Stream)</h3>
                           <Button size="sm" onClick={() => connectLogsWebSocket(selectedService.containerName)} disabled={logsLoading}>
@@ -645,9 +645,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
                             Reconnect
                           </Button>
                         </div>
-                        <pre className="flex-1 min-h-0 p-3 bg-black text-green-400 rounded font-mono text-xs overflow-auto whitespace-pre-wrap">
-                          {logs || 'Connecting to log stream...'}
-                        </pre>
+                        <div className="flex-1 min-h-0 bg-black rounded overflow-hidden">
+                          <pre className="h-full w-full p-3 text-green-400 font-mono text-xs overflow-y-scroll overflow-x-hidden whitespace-pre-wrap break-words scrollbar-thin will-change-scroll">
+                            {logs || 'Connecting to log stream...'}
+                          </pre>
+                        </div>
                       </Card>
                     </TabsContent>
 
@@ -714,7 +716,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
               </div>
 
               {/* Services List */}
-              <div className="flex-1 min-h-0 overflow-auto pr-4">
+              <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden pr-4 scrollbar-thin will-change-scroll">
                 <div className="space-y-3">
                   {filteredServices.map((service) => {
                     const Icon = service.iconType === 'image' ? null : getIcon(service.icon)

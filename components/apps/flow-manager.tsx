@@ -493,14 +493,6 @@ export function FlowManager(_props: FlowManagerProps) {
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <Badge className="text-xs font-normal bg-gradient-to-br from-primary/10 to-primary/5 text-foreground border-0">
-                      {selectedFlow.mode === 'agent' ? 'Agent Mode' : selectedFlow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'}
-                    </Badge>
-                    <Badge className="text-xs font-normal bg-gradient-to-br from-primary/10 to-primary/5 text-foreground border-0">
-                      Port {selectedFlow.port}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-2 mb-2">
                     <h2 className="text-2xl font-normal">{selectedFlow.agent_name || selectedFlow.name}</h2>
                     {selectedFlow.container?.running ? (
                       selectedFlow.health?.status === 'healthy' ? (
@@ -522,10 +514,18 @@ export function FlowManager(_props: FlowManagerProps) {
                     )}
                   </div>
                   {selectedFlow.description && (
-                    <p className="text-base text-muted-foreground max-w-2xl">
+                    <p className="text-base text-muted-foreground mb-2 max-w-2xl">
                       {selectedFlow.description}
                     </p>
                   )}
+                  <div className="flex items-center gap-2">
+                    <Badge className="text-[10px] font-normal bg-foreground text-background border-0 px-1.5 py-0.5">
+                      {selectedFlow.mode === 'agent' ? 'Agent Mode' : selectedFlow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'}
+                    </Badge>
+                    <Badge className="text-[10px] font-normal bg-foreground text-background border-0 px-1.5 py-0.5">
+                      Port {selectedFlow.port}
+                    </Badge>
+                  </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -652,7 +652,7 @@ export function FlowManager(_props: FlowManagerProps) {
 
                   {/* Logs Tab */}
                   <TabsContent value="logs" className="flex-1 flex flex-col mt-0 min-h-0">
-                    <Card className="p-3 flex-1 flex flex-col min-h-0">
+                    <Card className="p-3 flex-1 flex flex-col min-h-0 overflow-hidden">
                       <div className="flex items-center justify-between mb-2 flex-shrink-0">
                         <h3 className="font-normal text-sm">Container Logs (Live)</h3>
                         <Button size="sm" onClick={() => loadLogs(selectedFlow.name, false)} disabled={logsLoading}>
@@ -660,9 +660,11 @@ export function FlowManager(_props: FlowManagerProps) {
                           Refresh
                         </Button>
                       </div>
-                      <pre className="flex-1 min-h-0 p-3 bg-black text-green-400 rounded font-mono text-xs overflow-auto whitespace-pre-wrap">
-                        {logs || 'Loading logs...'}
-                      </pre>
+                      <div className="flex-1 min-h-0 bg-black rounded overflow-hidden">
+                        <pre className="h-full w-full p-3 text-green-400 font-mono text-xs overflow-y-scroll overflow-x-hidden whitespace-pre-wrap break-words scrollbar-thin will-change-scroll">
+                          {logs || 'Loading logs...'}
+                        </pre>
+                      </div>
                     </Card>
                   </TabsContent>
 
@@ -723,7 +725,7 @@ export function FlowManager(_props: FlowManagerProps) {
               </div>
 
               {/* Flows List */}
-              <div className="flex-1 min-h-0 overflow-auto pr-4">
+              <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden pr-4 scrollbar-thin will-change-scroll">
                 <div className="space-y-3">
                   {filteredFlows.map((flow) => (
                     <div
@@ -739,23 +741,25 @@ export function FlowManager(_props: FlowManagerProps) {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Badge className="text-xs font-normal bg-gradient-to-br from-primary/10 to-primary/5 text-foreground border-0">
-                            {flow.mode === 'agent' ? 'Agent Mode' : flow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'}
-                          </Badge>
-                          <Badge className="text-xs font-normal bg-gradient-to-br from-primary/10 to-primary/5 text-foreground border-0">
-                            Port {flow.port}
-                          </Badge>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-normal">{flow.agent_name || flow.name}</h3>
                           {flow.auto_assigned && (
-                            <Badge className="text-xs bg-gradient-to-br from-primary/10 to-primary/5 text-foreground border-0">Auto</Badge>
+                            <Badge className="text-[10px] bg-foreground text-background border-0 px-1.5 py-0.5">Auto</Badge>
                           )}
                         </div>
-                        <h3 className="font-normal mb-1">{flow.agent_name || flow.name}</h3>
                         {flow.description && (
-                          <p className="text-sm text-muted-foreground max-w-md">
+                          <p className="text-sm text-muted-foreground mb-1 max-w-md">
                             {flow.description}
                           </p>
                         )}
+                        <div className="flex items-center gap-1.5">
+                          <Badge className="text-[10px] font-normal bg-foreground text-background border-0 px-1.5 py-0.5">
+                            {flow.mode === 'agent' ? 'Agent Mode' : flow.mode === 'miniact' ? 'MiniACT Mode' : 'Waiting'}
+                          </Badge>
+                          <Badge className="text-[10px] font-normal bg-foreground text-background border-0 px-1.5 py-0.5">
+                            Port {flow.port}
+                          </Badge>
+                        </div>
                       </div>
 
                       {/* Status Badge & Action Buttons */}
