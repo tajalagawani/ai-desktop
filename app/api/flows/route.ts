@@ -320,7 +320,12 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'start':
+        // Try to start, if it fails, try up -d to create and start
         result = await dockerComposeCommand('start', serviceName)
+        if (!result.success && result.error?.includes('has no container')) {
+          // Container doesn't exist, create it
+          result = await dockerComposeCommand('up -d', serviceName)
+        }
         break
 
       case 'stop':
