@@ -31,9 +31,25 @@ async function parseFlowFile(filePath: string): Promise<Partial<FlowConfig>> {
     let mode = 'miniact' // Default to miniact
     let hasAciNode = false
     let hasWorkflow = false
+    let inWorkflowSection = false
+    let inOtherSection = false
 
     for (const line of lines) {
       const trimmed = line.trim()
+
+      // Track which section we're in
+      if (trimmed.startsWith('[')) {
+        inWorkflowSection = trimmed === '[workflow]'
+        inOtherSection = !inWorkflowSection && (trimmed.startsWith('[node:') || trimmed.startsWith('[deployment]') || trimmed.startsWith('[parameters]') || trimmed.startsWith('[agent]'))
+      }
+
+      // Parse description ONLY from [workflow] section
+      if (inWorkflowSection && !inOtherSection && (trimmed.startsWith('description =') || trimmed.startsWith('description='))) {
+        const descMatch = trimmed.match(/^description\s*=\s*(.+)$/)
+        if (descMatch) {
+          description = descMatch[1].replace(/['"]/g, '').trim()
+        }
+      }
 
       // Parse port
       if (trimmed.startsWith('port =') || trimmed.startsWith('port=')) {
@@ -48,14 +64,6 @@ async function parseFlowFile(filePath: string): Promise<Partial<FlowConfig>> {
         const nameMatch = trimmed.match(/agent_name\s*=\s*(.+)/)
         if (nameMatch) {
           agent_name = nameMatch[1].replace(/['"]/g, '').trim()
-        }
-      }
-
-      // Parse description
-      if (trimmed.startsWith('description =') || trimmed.startsWith('description=')) {
-        const descMatch = trimmed.match(/description\s*=\s*(.+)/)
-        if (descMatch) {
-          description = descMatch[1].replace(/['"]/g, '').trim()
         }
       }
 

@@ -514,7 +514,7 @@ export function FlowManager(_props: FlowManagerProps) {
                     )}
                   </div>
                   {selectedFlow.description && (
-                    <p className="text-base text-muted-foreground mb-2">
+                    <p className="text-base text-muted-foreground mb-2 max-w-2xl">
                       {selectedFlow.description}
                     </p>
                   )}
@@ -743,7 +743,7 @@ export function FlowManager(_props: FlowManagerProps) {
                           )}
                         </div>
                         {flow.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-1 mb-1">
+                          <p className="text-sm text-muted-foreground mb-1 max-w-md">
                             {flow.description}
                           </p>
                         )}
