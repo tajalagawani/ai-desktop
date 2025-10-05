@@ -97,22 +97,6 @@ export const DOCK_APPS: AppConfig[] = [
     description: "Install and manage VPS services"
   },
   {
-    id: "acp-agent",
-    name: "ACP Agent",
-    icon: "Bot",
-    category: "system",
-    isSystem: true,
-    description: "AI Context Protocol - Manage MCP servers"
-  },
-  {
-    id: "security-center",
-    name: "Security Center",
-    icon: "Shield",
-    category: "system",
-    isSystem: true,
-    description: "Configure OAuth credentials for MCP servers"
-  },
-  {
     id: "flow-manager",
     name: "Flow Manager",
     icon: "Zap",
@@ -225,26 +209,6 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     defaultHeight: 1000,
     minWidth: 1000,
     minHeight: 700,
-    resizable: true,
-    maximizable: true,
-    minimizable: true,
-    closable: true,
-  },
-  "acp-agent": {
-    defaultWidth: 1600,
-    defaultHeight: 1000,
-    minWidth: 1000,
-    minHeight: 700,
-    resizable: true,
-    maximizable: true,
-    minimizable: true,
-    closable: true,
-  },
-  "security-center": {
-    defaultWidth: 1200,
-    defaultHeight: 800,
-    minWidth: 800,
-    minHeight: 600,
     resizable: true,
     maximizable: true,
     minimizable: true,
