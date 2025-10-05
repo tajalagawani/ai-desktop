@@ -186,12 +186,23 @@ async function getContainerLogs(flowName: string, lines: number = 100) {
   }
 }
 
-// Docker compose command
+// Docker compose command (supports both v1 and v2)
 async function dockerComposeCommand(command: string, service?: string) {
   try {
+    // Try docker compose (v2) first, fallback to docker-compose (v1)
+    let composeCmd = 'docker compose'
+
+    // Check if docker compose v2 is available
+    try {
+      await execAsync('docker compose version', { timeout: 5000 })
+    } catch {
+      // Fallback to v1
+      composeCmd = 'docker-compose'
+    }
+
     const cmd = service
-      ? `cd ${ACT_DOCKER_DIR} && docker-compose ${command} ${service}`
-      : `cd ${ACT_DOCKER_DIR} && docker-compose ${command}`
+      ? `cd ${ACT_DOCKER_DIR} && ${composeCmd} ${command} ${service}`
+      : `cd ${ACT_DOCKER_DIR} && ${composeCmd} ${command}`
 
     const { stdout, stderr } = await execAsync(cmd, {
       timeout: 30000
