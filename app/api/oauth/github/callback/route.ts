@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { OAUTH_PROVIDERS } from '@/lib/mcp/oauth-config'
+import { getOAuthProvider } from '@/lib/mcp/oauth-config'
 import { saveToken } from '@/lib/mcp/token-store'
 
 export async function GET(request: NextRequest) {
@@ -29,7 +29,10 @@ export async function GET(request: NextRequest) {
       throw new Error('No authorization code received')
     }
 
-    const provider = OAUTH_PROVIDERS.github
+    const provider = await getOAuthProvider('github')
+    if (!provider) {
+      throw new Error('GitHub OAuth not configured. Please set up credentials in Security Center.')
+    }
 
     // Exchange code for access token
     const tokenResponse = await fetch(provider.tokenUrl, {
