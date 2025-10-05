@@ -135,6 +135,13 @@ if [ -d "$ACT_DIR" ]; then
         print_info "Stopping existing flow containers..."
         $COMPOSE_CMD down 2>/dev/null || true
 
+        print_info "Cleaning up old Docker images..."
+        # Remove dangling images (untagged images from previous builds)
+        docker image prune -f 2>/dev/null || true
+
+        # Remove old act-docker images to force fresh build
+        docker images | grep "act-docker" | awk '{print $3}' | xargs -r docker rmi -f 2>/dev/null || true
+
         print_info "Building and starting flow containers..."
         $COMPOSE_CMD up -d --build
 
