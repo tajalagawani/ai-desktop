@@ -73,19 +73,26 @@ print_info "Setting up ACT Docker flows..."
 
 # Check if Docker is installed
 if ! command -v docker &> /dev/null; then
-    print_error "Docker is not installed. Installing Docker..."
+    print_info "Docker is not installed. Installing Docker..."
     curl -fsSL https://get.docker.com -o get-docker.sh
     sh get-docker.sh
     rm get-docker.sh
-    print_success "Docker installed"
-fi
 
-# Ensure Docker daemon is running
-if ! systemctl is-active --quiet docker; then
-    print_info "Starting Docker daemon..."
+    # Wait a moment for Docker to initialize
+    sleep 2
+
+    # Start Docker service
     systemctl start docker
     systemctl enable docker
-    print_success "Docker daemon started"
+    print_success "Docker installed and started"
+else
+    # Ensure Docker daemon is running if already installed
+    if ! systemctl is-active --quiet docker 2>/dev/null; then
+        print_info "Starting Docker daemon..."
+        systemctl start docker 2>/dev/null || true
+        systemctl enable docker 2>/dev/null || true
+        print_success "Docker daemon started"
+    fi
 fi
 
 # Check if docker compose is available (v2 plugin or v1 standalone)
