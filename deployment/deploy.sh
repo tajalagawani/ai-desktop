@@ -82,12 +82,20 @@ if ! command -v docker &> /dev/null; then
     print_success "Docker installed"
 fi
 
-# Check if docker-compose is installed
-if ! command -v docker-compose &> /dev/null; then
-    print_error "Docker Compose is not installed. Installing..."
+# Ensure Docker daemon is running
+if ! sudo systemctl is-active --quiet docker; then
+    print_info "Starting Docker daemon..."
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    print_success "Docker daemon started"
+fi
+
+# Check if docker compose is available (v2 plugin or v1 standalone)
+if ! docker compose version &> /dev/null && ! command -v docker-compose &> /dev/null; then
+    print_error "Docker Compose is not installed. Installing plugin..."
     sudo apt update
-    sudo apt install docker-compose -y
-    print_success "Docker Compose installed"
+    sudo apt install docker-compose-plugin -y
+    print_success "Docker Compose plugin installed"
 fi
 
 # Setup ACT Docker
