@@ -94,12 +94,10 @@ export function ServiceManager(_props: ServiceManagerProps) {
     loadServices(false)
     // Silent background refresh - reduced frequency to avoid scroll interruption
     const interval = setInterval(() => {
-      if (!actionLoading) {
-        loadServices(true) // Silent refresh to avoid flashing
-      }
+      loadServices(true) // Silent refresh to avoid flashing
     }, 30000) // Refresh every 30 seconds
     return () => clearInterval(interval)
-  }, [loadServices, actionLoading])
+  }, [loadServices])
 
   const handleServiceAction = async (serviceId: string, action: string) => {
     setActionLoading(serviceId)

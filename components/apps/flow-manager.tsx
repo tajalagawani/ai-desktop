@@ -258,7 +258,7 @@ export const FlowManager = React.memo(function FlowManager(_props: FlowManagerPr
         }
       }
     } catch (error) {
-      console.error('Failed to load flows:', error)
+      console.error('Error loading flows:', error)
       setFlows([])
       if (!silent) {
         setLoading(false)
@@ -270,12 +270,10 @@ export const FlowManager = React.memo(function FlowManager(_props: FlowManagerPr
     loadFlows(false)
     // Background refresh every 30s
     const interval = setInterval(() => {
-      if (!actionLoading) {
-        loadFlows(true)
-      }
+      loadFlows(true)
     }, 30000)
     return () => clearInterval(interval)
-  }, [loadFlows, actionLoading])
+  }, [loadFlows])
 
   const handleFlowAction = async (flowName: string, action: string) => {
     setActionLoading(flowName)

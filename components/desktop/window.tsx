@@ -20,17 +20,17 @@ interface WindowProps {
   onFocus: (id: string) => void
 }
 
-export function Window({ 
+export function Window({
   id,
-  title, 
-  children, 
+  title,
+  children,
   isActive,
   isMinimized,
   isMaximized,
   position,
   size,
-  onClose, 
-  onMinimize, 
+  onClose,
+  onMinimize,
   onMaximize,
   onDragStart,
   onResizeStart,
