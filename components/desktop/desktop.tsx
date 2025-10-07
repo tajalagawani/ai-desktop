@@ -46,7 +46,6 @@ import type { SystemStats } from "@/lib/system-stats"
 // Import data and utilities
 import {
   DOCK_APPS,
-  INSTALLED_APPS,
   SYSTEM_STATUS,
   RECENT_ACTIVITY
 } from "@/data/desktop-apps"
@@ -78,11 +77,20 @@ const getAppComponent = (
   return componentMap[id] || null
 }
 
+interface InstalledService {
+  id: string
+  name: string
+  icon: string
+  iconType?: 'lucide' | 'image'
+  ports?: number[]
+  status: string
+}
+
 export function Desktop() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
-  const [draggedApp, setDraggedApp] = useState<any>(null)
   const [systemStats, setSystemStats] = useState<SystemStats | null>(null)
+  const [installedServices, setInstalledServices] = useState<InstalledService[]>([])
 
   // Custom hooks for clean state management
   const {
@@ -128,6 +136,31 @@ export function Desktop() {
     }
   }, [isAuthenticated])
 
+  // Fetch installed services
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch('/api/services')
+        if (response.ok) {
+          const data = await response.json()
+          const running = data.services?.filter((s: InstalledService) =>
+            s.status === 'running' && s.ports && s.ports.length > 0
+          ) || []
+          setInstalledServices(running)
+        }
+      } catch (error) {
+        console.error('Error fetching services:', error)
+      }
+    }
+
+    if (isAuthenticated) {
+      fetchServices()
+      // Update every 10 seconds
+      const interval = setInterval(fetchServices, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [isAuthenticated])
+
   // Handle window operations
   const handleOpenWindow = (id: string, title: string) => {
     const component = getAppComponent(id, openWindow, toggleMaximizeWindow, setActiveWindow)
@@ -164,32 +197,6 @@ export function Desktop() {
     actions[action]?.()
   }
 
-  const handleIconContextMenuAction = (action: string, appId: string) => {
-    const app = INSTALLED_APPS.find(a => a.id === appId)
-    
-    const actions: Record<string, () => void> = {
-      open: () => app && handleOpenWindow(app.id, app.name),
-      pause: () => console.log(`Pausing app: ${appId}`),
-      resume: () => console.log(`Resuming app: ${appId}`),
-      rename: () => {
-        const newName = prompt("Enter new name:")
-        if (newName) console.log(`Renaming ${appId} to ${newName}`)
-      },
-      copy: () => console.log(`Copying app: ${appId}`),
-      pin: () => console.log(`Pinning app: ${appId}`),
-      unpin: () => console.log(`Unpinning app: ${appId}`),
-      "add-to-dock": () => app && addToDock(app),
-      settings: () => console.log(`Opening settings for: ${appId}`),
-      properties: () => console.log(`Opening properties for: ${appId}`),
-      delete: () => {
-        if (confirm(`Delete this app?`)) {
-          console.log(`Deleting app: ${appId}`)
-        }
-      },
-    }
-    actions[action]?.()
-  }
-
   if (!isAuthenticated) {
     return <TwoFactorAuth onAuthenticated={() => setIsAuthenticated(true)} />
   }
@@ -203,10 +210,7 @@ export function Desktop() {
         {/* Desktop Icons */}
         <DesktopIcons
           onOpenWindow={handleOpenWindow}
-          installedApps={INSTALLED_APPS}
-          windows={windows}
-          onIconContextMenuAction={handleIconContextMenuAction}
-          setDraggedApp={setDraggedApp}
+          installedServices={installedServices}
         />
 
         {/* System Widgets */}
@@ -284,13 +288,18 @@ export function Desktop() {
 }
 
 // Sub-components
-function DesktopIcons({ 
-  onOpenWindow, 
-  installedApps, 
-  windows, 
-  onIconContextMenuAction,
-  setDraggedApp 
+function DesktopIcons({
+  onOpenWindow,
+  installedServices,
 }: any) {
+
+  const handleServiceClick = (service: any) => {
+    const port = service.ports?.[0]
+    if (!port) return
+    const url = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:${port}`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <>
       {/* System Icons */}
@@ -317,45 +326,26 @@ function DesktopIcons({
         })}
       </div>
 
-      {/* Installed Apps */}
+      {/* Installed Services */}
       <div className="absolute top-4 right-4 md:top-8 md:right-80 grid grid-cols-1 gap-3 md:gap-4 z-20">
-        {installedApps.map((app: any) => {
-          const isImageIcon = app.iconType === "image"
-          const IconComponent = !isImageIcon ? getIcon(app.icon) : null
-          const isRunning = windows.some((w: any) => w.id === app.id)
+        {installedServices.map((service: any) => {
+          const isImageIcon = service.iconType === "image"
+          const IconComponent = !isImageIcon ? getIcon(service.icon) : null
 
           return (
-            <DesktopIconContextMenu
-              key={app.id}
-              appId={app.id}
-              appName={app.name}
-              isRunning={isRunning}
-              isPinned={true}
-              onAction={onIconContextMenuAction}
-            >
-              <div
-                className="flex flex-col items-center gap-2"
-                draggable
-                onDragStart={(e) => {
-                  setDraggedApp(app)
-                  e.dataTransfer.effectAllowed = "copy"
-                  e.dataTransfer.setData("application/json", JSON.stringify(app))
-                }}
-                onDragEnd={() => setDraggedApp(null)}
+            <div key={service.id} className="flex flex-col items-center gap-2">
+              <button
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:scale-[1.2] transition-transform duration-200 overflow-hidden"
+                onClick={() => handleServiceClick(service)}
               >
-                <button
-                  className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:scale-110 transition-transform duration-200 cursor-move overflow-hidden"
-                  onClick={() => onOpenWindow(app.id, app.name)}
-                >
-                  {isImageIcon ? (
-                    <img src={app.icon} alt={app.name} className="h-8 w-8 object-contain" />
-                  ) : (
-                    IconComponent && <IconComponent className="h-6 w-6 text-foreground" />
-                  )}
-                </button>
-                <span className="text-xs text-foreground font-normal">{app.name}</span>
-              </div>
-            </DesktopIconContextMenu>
+                {isImageIcon ? (
+                  <img src={service.icon} alt={service.name} className="h-8 w-8 object-contain" />
+                ) : (
+                  IconComponent && <IconComponent className="h-6 w-6 text-foreground" />
+                )}
+              </button>
+              <span className="text-xs text-foreground font-normal">{service.name}</span>
+            </div>
           )
         })}
       </div>
