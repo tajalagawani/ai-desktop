@@ -72,7 +72,11 @@ export function ServiceDetails({ serviceId }: ServiceDetailsProps) {
     setLogs("")
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const ws = new WebSocket(`${protocol}//${window.location.host}/api/services/logs?container=${containerName}`)
+    const wsUrl = `${protocol}//${window.location.host}/api/services/logs/ws?container=${containerName}`
+
+    console.log('[Service Details] Connecting to logs:', wsUrl)
+
+    const ws = new WebSocket(wsUrl)
 
     ws.onopen = () => {
       setLogsLoading(false)
