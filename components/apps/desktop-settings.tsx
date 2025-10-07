@@ -15,17 +15,15 @@ const BACKGROUNDS = [
   {
     id: 'gradient-beige',
     name: 'Beige Waves',
-    type: 'gradient',
+    type: 'gradient' as const,
     light: 'linear-gradient(135deg, #e8dcc8 0%, #f5f0e8 25%, #d4c4a8 50%, #e8d8c0 75%, #f2ebe0 100%)',
-    dark: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #252525 100%)',
-    preview: '/backgrounds/beige-waves.jpg'
+    dark: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #252525 100%)'
   },
   {
     id: 'image-abstract',
     name: 'Abstract Art',
-    type: 'image',
-    value: '/backgrounds/abstract-art.jpg',
-    preview: '/backgrounds/abstract-art.jpg'
+    type: 'image' as const,
+    value: '/backgrounds/abstract-art.jpg'
   }
 ]
 

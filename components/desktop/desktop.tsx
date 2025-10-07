@@ -99,8 +99,8 @@ const BACKGROUNDS: Record<string, { light: string; dark: string; type: 'gradient
   },
   'image-abstract': {
     type: 'image',
-    light: 'url(/backgrounds/abstract-art.jpg) center/cover no-repeat',
-    dark: 'url(/backgrounds/abstract-art.jpg) center/cover no-repeat'
+    light: 'url(/backgrounds/abstract-art.jpg) no-repeat center / cover',
+    dark: 'url(/backgrounds/abstract-art.jpg) no-repeat center / cover'
   }
 }
 
@@ -142,15 +142,16 @@ export function Desktop() {
 
   // Handle background change
   const handleBackgroundChange = (bgId: string) => {
+    console.log('Background changing to:', bgId)
     setCurrentBackground(bgId)
     localStorage.setItem('desktop-background', bgId)
   }
 
   // Get current background style
-  const getBackgroundStyle = () => {
-    const bg = BACKGROUNDS[currentBackground] || BACKGROUNDS['gradient-beige']
-    return isDarkMode ? bg.dark : bg.light
-  }
+  const bg = BACKGROUNDS[currentBackground] || BACKGROUNDS['gradient-beige']
+  const backgroundStyle = isDarkMode ? bg.dark : bg.light
+
+  console.log('Current background:', currentBackground, 'Style:', backgroundStyle)
 
   // Fetch system stats
   useEffect(() => {
@@ -244,7 +245,7 @@ export function Desktop() {
       <div
         className="h-screen w-full relative antialiased overflow-hidden"
         style={{
-          background: getBackgroundStyle()
+          background: backgroundStyle
         }}
       >
         {/* Top Dock */}
