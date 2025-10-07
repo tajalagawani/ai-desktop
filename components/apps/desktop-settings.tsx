@@ -13,12 +13,6 @@ interface DesktopSettingsProps {
 
 const BACKGROUNDS = [
   {
-    id: 'component-beams',
-    name: 'Animated Beams',
-    type: 'component' as const,
-    preview: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 50%, #f0f0f0 100%)'
-  },
-  {
     id: 'image-abstract',
     name: 'Abstract Art',
     type: 'image' as const,
@@ -31,6 +25,12 @@ const BACKGROUNDS = [
     value: '/backgrounds/blue-abstract.avif'
   }
 ]
+
+const DEFAULT_OPTION = {
+  id: 'component-beams',
+  name: 'Default',
+  type: 'component' as const
+}
 
 export function DesktopSettings({ currentBackground, onBackgroundChange }: DesktopSettingsProps) {
   const [selectedBg, setSelectedBg] = useState(currentBackground)
@@ -59,11 +59,33 @@ export function DesktopSettings({ currentBackground, onBackgroundChange }: Deskt
           <TabsContent value="background" className="space-y-4 mt-4">
             <div>
               <Label className="text-base font-medium">Choose Background</Label>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-2">
                 Select a background for your desktop
               </p>
 
-              <div className="grid grid-cols-5 gap-2">
+              {/* Default Option */}
+              <Card
+                className={`cursor-pointer mb-4 transition-all hover:scale-[1.02] ${
+                  selectedBg === DEFAULT_OPTION.id ? 'ring-2 ring-primary' : ''
+                }`}
+                onClick={() => handleSelect(DEFAULT_OPTION.id)}
+              >
+                <div className="p-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">{DEFAULT_OPTION.name}</p>
+                    <p className="text-xs text-muted-foreground">Animated background beams</p>
+                  </div>
+                  {selectedBg === DEFAULT_OPTION.id && (
+                    <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                      <Check className="w-3 h-3 text-primary-foreground" />
+                    </div>
+                  )}
+                </div>
+              </Card>
+
+              {/* Wallpapers */}
+              <Label className="text-sm font-medium">Wallpapers</Label>
+              <div className="grid grid-cols-5 gap-2 mt-2">
                 {BACKGROUNDS.map((bg) => (
                   <Card
                     key={bg.id}
@@ -73,18 +95,11 @@ export function DesktopSettings({ currentBackground, onBackgroundChange }: Deskt
                     onClick={() => handleSelect(bg.id)}
                   >
                     <div className="aspect-video relative">
-                      {bg.type === 'component' ? (
-                        <div
-                          className="w-full h-full"
-                          style={{ background: bg.preview }}
-                        />
-                      ) : (
-                        <img
-                          src={bg.value}
-                          alt={bg.name}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
+                      <img
+                        src={bg.value}
+                        alt={bg.name}
+                        className="w-full h-full object-cover"
+                      />
                       {selectedBg === bg.id && (
                         <div className="absolute top-0.5 right-0.5 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 text-primary-foreground" />
