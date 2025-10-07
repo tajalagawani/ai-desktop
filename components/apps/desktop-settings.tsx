@@ -13,17 +13,16 @@ interface DesktopSettingsProps {
 
 const BACKGROUNDS = [
   {
-    id: 'gradient-beige',
-    name: 'Beige Waves',
-    type: 'gradient' as const,
-    light: 'linear-gradient(135deg, #e8dcc8 0%, #f5f0e8 25%, #d4c4a8 50%, #e8d8c0 75%, #f2ebe0 100%)',
-    dark: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #252525 100%)'
-  },
-  {
     id: 'image-abstract',
     name: 'Abstract Art',
     type: 'image' as const,
     value: '/backgrounds/abstract-art.jpg'
+  },
+  {
+    id: 'image-blue',
+    name: 'Blue Abstract',
+    type: 'image' as const,
+    value: '/backgrounds/blue-abstract.avif'
   }
 ]
 
@@ -58,7 +57,7 @@ export function DesktopSettings({ currentBackground, onBackgroundChange }: Deskt
                 Select a background for your desktop
               </p>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 {BACKGROUNDS.map((bg) => (
                   <Card
                     key={bg.id}
@@ -68,26 +67,19 @@ export function DesktopSettings({ currentBackground, onBackgroundChange }: Deskt
                     onClick={() => handleSelect(bg.id)}
                   >
                     <div className="aspect-video relative">
-                      {bg.type === 'gradient' ? (
-                        <div
-                          className="w-full h-full"
-                          style={{ background: bg.light }}
-                        />
-                      ) : (
-                        <img
-                          src={bg.value}
-                          alt={bg.name}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
+                      <img
+                        src={bg.value}
+                        alt={bg.name}
+                        className="w-full h-full object-cover"
+                      />
                       {selectedBg === bg.id && (
-                        <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                          <Check className="w-4 h-4 text-primary-foreground" />
+                        <div className="absolute top-1 right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                          <Check className="w-3 h-3 text-primary-foreground" />
                         </div>
                       )}
                     </div>
-                    <div className="p-3">
-                      <p className="text-sm font-medium">{bg.name}</p>
+                    <div className="p-2">
+                      <p className="text-xs font-medium">{bg.name}</p>
                     </div>
                   </Card>
                 ))}

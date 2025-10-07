@@ -73,7 +73,7 @@ const getAppComponent = (
     "file-manager": <FileManager />,
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
     "flow-manager": <FlowManager />,
-    "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'gradient-beige'} onBackgroundChange={onBackgroundChange || (() => {})} />,
+    "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
     "github": <div>GitHub Desktop</div>,
     "chatgpt": <div>ChatGPT</div>,
     "slack": <div>Slack</div>,
@@ -92,15 +92,15 @@ interface InstalledService {
 
 // Background configurations
 const BACKGROUNDS: Record<string, { light: string; dark: string; type: 'gradient' | 'image' }> = {
-  'gradient-beige': {
-    type: 'gradient',
-    light: 'linear-gradient(135deg, #e8dcc8 0%, #f5f0e8 25%, #d4c4a8 50%, #e8d8c0 75%, #f2ebe0 100%)',
-    dark: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #252525 100%)'
-  },
   'image-abstract': {
     type: 'image',
     light: 'url(/backgrounds/abstract-art.jpg) no-repeat center / cover',
     dark: 'url(/backgrounds/abstract-art.jpg) no-repeat center / cover'
+  },
+  'image-blue': {
+    type: 'image',
+    light: 'url(/backgrounds/blue-abstract.avif) no-repeat center / cover',
+    dark: 'url(/backgrounds/blue-abstract.avif) no-repeat center / cover'
   }
 }
 
@@ -109,7 +109,7 @@ export function Desktop() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [systemStats, setSystemStats] = useState<SystemStats | null>(null)
   const [installedServices, setInstalledServices] = useState<InstalledService[]>([])
-  const [currentBackground, setCurrentBackground] = useState<string>('gradient-beige')
+  const [currentBackground, setCurrentBackground] = useState<string>('image-abstract')
 
   // Custom hooks for clean state management
   const {
@@ -148,7 +148,7 @@ export function Desktop() {
   }
 
   // Get current background style
-  const bg = BACKGROUNDS[currentBackground] || BACKGROUNDS['gradient-beige']
+  const bg = BACKGROUNDS[currentBackground] || BACKGROUNDS['image-abstract']
   const backgroundStyle = isDarkMode ? bg.dark : bg.light
 
   console.log('Current background:', currentBackground, 'Style:', backgroundStyle)
