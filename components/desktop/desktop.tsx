@@ -340,11 +340,11 @@ function DesktopIcons({
       },
       logs: async () => {
         // Open Service Manager window (it will show logs for selected service)
-        handleOpenWindow('service-manager', 'Services')
+        onOpenWindow('service-manager', 'Services')
       },
       properties: async () => {
         // Open Service Manager window to view properties
-        handleOpenWindow('service-manager', 'Services')
+        onOpenWindow('service-manager', 'Services')
       }
     }
     await actions[action]?.()
