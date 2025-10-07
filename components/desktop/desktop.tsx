@@ -33,6 +33,7 @@ import { ServiceManager } from "@/components/apps/service-manager"
 import { FlowManager } from "@/components/apps/flow-manager"
 import { ServiceDetails } from "@/components/apps/service-details"
 import { DesktopSettings } from "@/components/apps/desktop-settings"
+import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
 import { FloatingDockDemo } from "@/components/desktop/floating-dock-demo"
@@ -50,7 +51,7 @@ import {
   SYSTEM_STATUS,
   RECENT_ACTIVITY
 } from "@/data/desktop-apps"
-import { useDesktop, useTheme, useDockApps } from "@/hooks/use-desktop"
+import { useDesktop, useMouseActivity, useTheme, useDockApps } from "@/hooks/use-desktop"
 import { getIcon, getIconProps } from "@/utils/icon-mapper"
 
 // Component map for dynamic loading
@@ -91,7 +92,12 @@ interface InstalledService {
 }
 
 // Background configurations
-const BACKGROUNDS: Record<string, { light: string; dark: string; type: 'gradient' | 'image' }> = {
+const BACKGROUNDS: Record<string, { light: string; dark: string; type: 'gradient' | 'image' | 'component' }> = {
+  'component-beams': {
+    type: 'component',
+    light: 'bg-[oklch(0.97_0.00_0)]',
+    dark: 'bg-[oklch(0.20_0.00_0)]'
+  },
   'image-abstract': {
     type: 'image',
     light: 'url(/backgrounds/abstract-art.jpg) no-repeat center / cover',
@@ -131,6 +137,7 @@ export function Desktop() {
 
   const { isDarkMode, toggleTheme } = useTheme()
   const { dockApps, addToDock, removeFromDock } = useDockApps(DOCK_APPS)
+  const isMouseActive = useMouseActivity(3000)
 
   // Load background from localStorage
   useEffect(() => {
@@ -149,9 +156,11 @@ export function Desktop() {
 
   // Get current background style
   const bg = BACKGROUNDS[currentBackground] || BACKGROUNDS['image-abstract']
-  const backgroundStyle = isDarkMode ? bg.dark : bg.light
+  const isComponentBg = bg.type === 'component'
+  const backgroundStyle = isComponentBg ? '' : (isDarkMode ? bg.dark : bg.light)
+  const backgroundClass = isComponentBg ? (isDarkMode ? bg.dark : bg.light) : ''
 
-  console.log('Current background:', currentBackground, 'Style:', backgroundStyle)
+  console.log('Current background:', currentBackground, 'Type:', bg.type, 'Style:', backgroundStyle || backgroundClass)
 
   // Fetch system stats
   useEffect(() => {
@@ -243,10 +252,10 @@ export function Desktop() {
   return (
     <DesktopContextMenu onAction={handleContextMenuAction}>
       <div
-        className="h-screen w-full relative antialiased overflow-hidden"
-        style={{
+        className={`h-screen w-full relative antialiased overflow-hidden ${backgroundClass}`}
+        style={backgroundStyle ? {
           background: backgroundStyle
-        }}
+        } : undefined}
       >
         {/* Top Dock */}
         <TopDock />
@@ -318,6 +327,9 @@ export function Desktop() {
             onOpen={() => handleOpenWindow(`folder-${folder.id}`, folder.name)}
           />
         ))}
+
+        {/* Background Component (if component type) */}
+        {isComponentBg && <BackgroundBeams paused={isMouseActive} />}
 
         {/* Taskbar */}
         <Taskbar 

@@ -13,6 +13,12 @@ interface DesktopSettingsProps {
 
 const BACKGROUNDS = [
   {
+    id: 'component-beams',
+    name: 'Animated Beams',
+    type: 'component' as const,
+    preview: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 50%, #f0f0f0 100%)'
+  },
+  {
     id: 'image-abstract',
     name: 'Abstract Art',
     type: 'image' as const,
@@ -67,11 +73,18 @@ export function DesktopSettings({ currentBackground, onBackgroundChange }: Deskt
                     onClick={() => handleSelect(bg.id)}
                   >
                     <div className="aspect-video relative">
-                      <img
-                        src={bg.value}
-                        alt={bg.name}
-                        className="w-full h-full object-cover"
-                      />
+                      {bg.type === 'component' ? (
+                        <div
+                          className="w-full h-full"
+                          style={{ background: bg.preview }}
+                        />
+                      ) : (
+                        <img
+                          src={bg.value}
+                          alt={bg.name}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
                       {selectedBg === bg.id && (
                         <div className="absolute top-0.5 right-0.5 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
                           <Check className="w-2.5 h-2.5 text-primary-foreground" />
