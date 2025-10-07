@@ -37,7 +37,7 @@ import { SystemControlMenu } from "@/components/desktop/system-control-menu"
 import { FloatingDockDemo } from "@/components/desktop/floating-dock-demo"
 import { TopDock } from "@/components/desktop/top-dock"
 import { DesktopContextMenu } from "@/components/desktop/desktop-context-menu"
-import { DesktopIconContextMenu } from "@/components/desktop/desktop-icon-context-menu"
+import { ServiceIconContextMenu } from "@/components/desktop/service-icon-context-menu"
 import { Taskbar } from "@/components/desktop/taskbar"
 import { Window } from "@/components/desktop/window"
 import { Widget } from "@/components/desktop/widget"
@@ -301,6 +301,55 @@ function DesktopIcons({
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
+  const handleServiceAction = async (action: string, service: any) => {
+    const actions: Record<string, () => Promise<void>> = {
+      open: async () => {
+        if (service.status === 'running') {
+          handleServiceClick(service)
+        }
+      },
+      start: async () => {
+        await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'start', serviceId: service.id })
+        })
+      },
+      stop: async () => {
+        await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'stop', serviceId: service.id })
+        })
+      },
+      restart: async () => {
+        await fetch('/api/services', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'restart', serviceId: service.id })
+        })
+      },
+      remove: async () => {
+        if (confirm(`Remove ${service.name}? This will stop and delete the container.`)) {
+          await fetch('/api/services', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'remove', serviceId: service.id })
+          })
+        }
+      },
+      logs: async () => {
+        // Open Service Manager window (it will show logs for selected service)
+        handleOpenWindow('service-manager', 'Services')
+      },
+      properties: async () => {
+        // Open Service Manager window to view properties
+        handleOpenWindow('service-manager', 'Services')
+      }
+    }
+    await actions[action]?.()
+  }
+
   return (
     <>
       {/* System Icons */}
@@ -337,38 +386,47 @@ function DesktopIcons({
           const isStopped = service.status === 'stopped' || service.status === 'exited'
 
           return (
-            <div key={service.id} className="flex flex-col items-center gap-1 relative">
-              <button
-                className={`w-10 h-10 rounded-full bg-muted flex items-center justify-center transition-all duration-200 overflow-hidden ${
-                  isRunning ? 'hover:scale-[1.2] cursor-pointer' : 'cursor-default'
-                } ${
-                  isStopped || isInstalling ? 'opacity-50' : ''
-                }`}
-                onClick={() => handleServiceClick(service)}
-                disabled={!isRunning}
-              >
-                {isImageIcon ? (
-                  <img
-                    src={service.icon}
-                    alt={service.name}
-                    className={`h-8 w-8 object-contain ${isInstalling ? 'animate-pulse' : ''}`}
-                  />
-                ) : (
-                  IconComponent && <IconComponent className={`h-6 w-6 text-foreground ${isInstalling ? 'animate-pulse' : ''}`} />
+            <ServiceIconContextMenu
+              key={service.id}
+              serviceName={service.name}
+              isRunning={isRunning}
+              isStopped={isStopped}
+              isInstalling={isInstalling}
+              onAction={(action) => handleServiceAction(action, service)}
+            >
+              <div className="flex flex-col items-center gap-1 relative">
+                <button
+                  className={`w-10 h-10 rounded-full bg-muted flex items-center justify-center transition-all duration-200 overflow-hidden ${
+                    isRunning ? 'hover:scale-[1.2] cursor-pointer' : 'cursor-default'
+                  } ${
+                    isStopped || isInstalling ? 'opacity-50' : ''
+                  }`}
+                  onClick={() => handleServiceClick(service)}
+                  disabled={!isRunning}
+                >
+                  {isImageIcon ? (
+                    <img
+                      src={service.icon}
+                      alt={service.name}
+                      className={`h-8 w-8 object-contain ${isInstalling ? 'animate-pulse' : ''}`}
+                    />
+                  ) : (
+                    IconComponent && <IconComponent className={`h-6 w-6 text-foreground ${isInstalling ? 'animate-pulse' : ''}`} />
+                  )}
+                </button>
+
+                {/* Status indicator */}
+                {isInstalling && (
+                  <div className="w-10 h-1 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full bg-primary animate-pulse w-full" />
+                  </div>
                 )}
-              </button>
 
-              {/* Status indicator */}
-              {isInstalling && (
-                <div className="w-10 h-1 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary animate-pulse w-full" />
-                </div>
-              )}
-
-              <span className={`text-xs font-normal ${isRunning ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {service.name}
-              </span>
-            </div>
+                <span className={`text-xs font-normal ${isRunning ? 'text-foreground' : 'text-muted-foreground'}`}>
+                  {service.name}
+                </span>
+              </div>
+            </ServiceIconContextMenu>
           )
         })}
       </div>
