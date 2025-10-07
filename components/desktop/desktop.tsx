@@ -32,6 +32,7 @@ import { FileManager } from "@/components/apps/file-manager"
 import { ServiceManager } from "@/components/apps/service-manager"
 import { FlowManager } from "@/components/apps/flow-manager"
 import { ServiceDetails } from "@/components/apps/service-details"
+import { DesktopSettings } from "@/components/apps/desktop-settings"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
 import { FloatingDockDemo } from "@/components/desktop/floating-dock-demo"
@@ -57,7 +58,9 @@ const getAppComponent = (
   id: string,
   openWindowFn?: (id: string, title: string, component: React.ReactNode) => void,
   toggleMaximizeFn?: (id: string) => void,
-  bringToFrontFn?: (id: string) => void
+  bringToFrontFn?: (id: string) => void,
+  currentBackground?: string,
+  onBackgroundChange?: (bg: string) => void
 ): React.ReactNode => {
   const componentMap: Record<string, React.ReactNode> = {
     "app-store": <MacAppStore />,
@@ -70,6 +73,7 @@ const getAppComponent = (
     "file-manager": <FileManager />,
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
     "flow-manager": <FlowManager />,
+    "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'gradient-beige'} onBackgroundChange={onBackgroundChange || (() => {})} />,
     "github": <div>GitHub Desktop</div>,
     "chatgpt": <div>ChatGPT</div>,
     "slack": <div>Slack</div>,
@@ -86,11 +90,26 @@ interface InstalledService {
   status: string
 }
 
+// Background configurations
+const BACKGROUNDS: Record<string, { light: string; dark: string; type: 'gradient' | 'image' }> = {
+  'gradient-beige': {
+    type: 'gradient',
+    light: 'linear-gradient(135deg, #e8dcc8 0%, #f5f0e8 25%, #d4c4a8 50%, #e8d8c0 75%, #f2ebe0 100%)',
+    dark: 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #252525 100%)'
+  },
+  'image-abstract': {
+    type: 'image',
+    light: 'url(/backgrounds/abstract-art.jpg) center/cover no-repeat',
+    dark: 'url(/backgrounds/abstract-art.jpg) center/cover no-repeat'
+  }
+}
+
 export function Desktop() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [systemStats, setSystemStats] = useState<SystemStats | null>(null)
   const [installedServices, setInstalledServices] = useState<InstalledService[]>([])
+  const [currentBackground, setCurrentBackground] = useState<string>('gradient-beige')
 
   // Custom hooks for clean state management
   const {
@@ -112,6 +131,26 @@ export function Desktop() {
 
   const { isDarkMode, toggleTheme } = useTheme()
   const { dockApps, addToDock, removeFromDock } = useDockApps(DOCK_APPS)
+
+  // Load background from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('desktop-background')
+    if (saved && BACKGROUNDS[saved]) {
+      setCurrentBackground(saved)
+    }
+  }, [])
+
+  // Handle background change
+  const handleBackgroundChange = (bgId: string) => {
+    setCurrentBackground(bgId)
+    localStorage.setItem('desktop-background', bgId)
+  }
+
+  // Get current background style
+  const getBackgroundStyle = () => {
+    const bg = BACKGROUNDS[currentBackground] || BACKGROUNDS['gradient-beige']
+    return isDarkMode ? bg.dark : bg.light
+  }
 
   // Fetch system stats
   useEffect(() => {
@@ -162,7 +201,7 @@ export function Desktop() {
 
   // Handle window operations
   const handleOpenWindow = (id: string, title: string) => {
-    const component = getAppComponent(id, openWindow, toggleMaximizeWindow, setActiveWindow)
+    const component = getAppComponent(id, openWindow, toggleMaximizeWindow, setActiveWindow, currentBackground, handleBackgroundChange)
     openWindow(id, title, component)
 
     // Auto-maximize changelog window
@@ -190,7 +229,7 @@ export function Desktop() {
       "sort-date": () => console.log("Sort by date"),
       "view-large": () => console.log("Large icons view"),
       "view-grid": () => console.log("Grid view"),
-      settings: () => handleOpenWindow("settings", "Desktop Settings"),
+      settings: () => handleOpenWindow("desktop-settings", "Desktop Settings"),
       properties: () => handleOpenWindow("properties", "Desktop Properties"),
     }
     actions[action]?.()
@@ -205,9 +244,7 @@ export function Desktop() {
       <div
         className="h-screen w-full relative antialiased overflow-hidden"
         style={{
-          background: isDarkMode
-            ? 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #252525 100%)'
-            : 'linear-gradient(135deg, #e8dcc8 0%, #f5f0e8 25%, #d4c4a8 50%, #e8d8c0 75%, #f2ebe0 100%)'
+          background: getBackgroundStyle()
         }}
       >
         {/* Top Dock */}
