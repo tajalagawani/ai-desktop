@@ -32,6 +32,7 @@ export function ServiceDetails({ serviceId }: ServiceDetailsProps) {
   const [logs, setLogs] = useState<string>("")
   const [logsLoading, setLogsLoading] = useState(false)
   const [logsWs, setLogsWs] = useState<WebSocket | null>(null)
+  const logsConnectedRef = React.useRef<string | null>(null)
 
   // Fetch service details
   useEffect(() => {
@@ -52,7 +53,13 @@ export function ServiceDetails({ serviceId }: ServiceDetailsProps) {
 
     fetchService()
     const interval = setInterval(fetchService, 2000)
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      // Cleanup WebSocket on unmount
+      if (logsWs) {
+        logsWs.close()
+      }
+    }
   }, [serviceId])
 
   // WebSocket for logs
@@ -75,27 +82,42 @@ export function ServiceDetails({ serviceId }: ServiceDetailsProps) {
       setLogs((prev) => prev + event.data)
     }
 
-    ws.onerror = () => {
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error)
       setLogsLoading(false)
-      setLogs((prev) => prev + '\n[Error: Failed to connect to log stream]')
+      setLogs((prev) => prev + '\n[Error: Failed to connect to log stream. Service may not be running or logs API is unavailable.]')
     }
 
-    ws.onclose = () => {
+    ws.onclose = (event) => {
+      console.log('WebSocket closed:', event.code, event.reason)
       setLogsLoading(false)
+      if (event.code !== 1000 && event.code !== 1001) {
+        // Abnormal closure
+        setLogs((prev) => prev + '\n[Connection closed. Click Reconnect to retry.]')
+      }
     }
 
     setLogsWs(ws)
   }
 
-  // Auto-connect logs when service is running
+  // Auto-connect logs when service is running - only connect once per container
   useEffect(() => {
     if (service?.status === 'running' && service?.containerName) {
-      connectLogsWebSocket(service.containerName)
-    }
-    return () => {
-      if (logsWs) {
-        logsWs.close()
+      // Only connect if not already connected to this container
+      if (logsConnectedRef.current !== service.containerName) {
+        // Close previous connection if exists
+        if (logsWs) {
+          logsWs.close()
+        }
+        connectLogsWebSocket(service.containerName)
+        logsConnectedRef.current = service.containerName
       }
+    } else if (service?.status !== 'running' && logsWs) {
+      // Close logs if service stopped
+      logsWs.close()
+      setLogsWs(null)
+      logsConnectedRef.current = null
+      setLogs('')
     }
   }, [service?.status, service?.containerName])
 
