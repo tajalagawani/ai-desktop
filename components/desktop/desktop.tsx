@@ -32,7 +32,6 @@ import { FileManager } from "@/components/apps/file-manager"
 import { ServiceManager } from "@/components/apps/service-manager"
 import { FlowManager } from "@/components/apps/flow-manager"
 import { ServiceDetails } from "@/components/apps/service-details"
-import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
 import { FloatingDockDemo } from "@/components/desktop/floating-dock-demo"
@@ -50,7 +49,7 @@ import {
   SYSTEM_STATUS,
   RECENT_ACTIVITY
 } from "@/data/desktop-apps"
-import { useDesktop, useMouseActivity, useTheme, useDockApps } from "@/hooks/use-desktop"
+import { useDesktop, useTheme, useDockApps } from "@/hooks/use-desktop"
 import { getIcon, getIconProps } from "@/utils/icon-mapper"
 
 // Component map for dynamic loading
@@ -111,7 +110,6 @@ export function Desktop() {
     renameFolder,
   } = useDesktop()
 
-  const isMouseActive = useMouseActivity(3000)
   const { isDarkMode, toggleTheme } = useTheme()
   const { dockApps, addToDock, removeFromDock } = useDockApps(DOCK_APPS)
 
@@ -204,7 +202,14 @@ export function Desktop() {
 
   return (
     <DesktopContextMenu onAction={handleContextMenuAction}>
-      <div className="h-screen w-full bg-[oklch(0.97_0.00_0)] dark:bg-[oklch(0.20_0.00_0)] relative antialiased overflow-hidden">
+      <div
+        className="h-screen w-full relative antialiased overflow-hidden"
+        style={{
+          background: isDarkMode
+            ? 'linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #252525 100%)'
+            : 'linear-gradient(135deg, #e8dcc8 0%, #f5f0e8 25%, #d4c4a8 50%, #e8d8c0 75%, #f2ebe0 100%)'
+        }}
+      >
         {/* Top Dock */}
         <TopDock />
 
@@ -275,8 +280,6 @@ export function Desktop() {
             onOpen={() => handleOpenWindow(`folder-${folder.id}`, folder.name)}
           />
         ))}
-
-        <BackgroundBeams paused={isMouseActive} />
 
         {/* Taskbar */}
         <Taskbar 
