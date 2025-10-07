@@ -57,7 +57,7 @@ export function DesktopSettings({ currentBackground, onBackgroundChange }: Deskt
                 Select a background for your desktop
               </p>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-5 gap-2">
                 {BACKGROUNDS.map((bg) => (
                   <Card
                     key={bg.id}
@@ -73,13 +73,13 @@ export function DesktopSettings({ currentBackground, onBackgroundChange }: Deskt
                         className="w-full h-full object-cover"
                       />
                       {selectedBg === bg.id && (
-                        <div className="absolute top-1 right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                          <Check className="w-3 h-3 text-primary-foreground" />
+                        <div className="absolute top-0.5 right-0.5 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                          <Check className="w-2.5 h-2.5 text-primary-foreground" />
                         </div>
                       )}
                     </div>
-                    <div className="p-2">
-                      <p className="text-xs font-medium">{bg.name}</p>
+                    <div className="p-1.5">
+                      <p className="text-[10px] font-medium truncate">{bg.name}</p>
                     </div>
                   </Card>
                 ))}
