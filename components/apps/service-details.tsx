@@ -19,7 +19,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getIcon } from "@/utils/icon-mapper"
-import { SERVICE_CATEGORIES } from "@/data/all-services"
+import { SERVICE_CATEGORIES } from "@/data/installable-services"
 
 interface ServiceDetailsProps {
   serviceId: string
