@@ -102,7 +102,7 @@ export function ServiceIconContextMenu({
           variant="destructive"
         >
           <Trash2 className="mr-2 h-4 w-4" />
-          Remove Service
+          Delete Service & Images
           <ContextMenuShortcut>Del</ContextMenuShortcut>
         </ContextMenuItem>
       </ContextMenuContent>

@@ -289,12 +289,21 @@ export async function POST(request: NextRequest) {
           console.warn('Error removing volumes:', volError.message)
         }
 
-        // 3. Remove Docker image to free up space (optional but recommended)
+        // 3. Remove Docker image to free up space - FORCE remove all related images
         try {
-          await execAsync(`docker rmi ${service.dockerImage}`)
+          // Force remove the image even if it has stopped containers
+          await execAsync(`docker rmi -f ${service.dockerImage}`)
+          console.log(`Removed Docker image: ${service.dockerImage}`)
         } catch (imgError: any) {
-          // Image might be in use by other containers or already removed
-          console.warn('Could not remove image (may be in use):', imgError.message)
+          console.warn('Could not remove image:', imgError.message)
+        }
+
+        // Also remove any dangling images to free up space
+        try {
+          await execAsync(`docker image prune -f`)
+          console.log('Cleaned up dangling images')
+        } catch (pruneError: any) {
+          console.warn('Could not prune dangling images:', pruneError.message)
         }
 
         // 4. Close firewall ports for security
@@ -304,7 +313,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          message: `${service.name} completely removed (container, volumes, image, and firewall ports)`
+          message: `${service.name} completely removed (container, volumes, Docker images, and firewall ports)`
         })
       } catch (error: any) {
         throw new Error(`Failed to remove service: ${error.message}`)

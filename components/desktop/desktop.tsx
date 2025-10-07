@@ -338,7 +338,7 @@ function DesktopIcons({
         })
       },
       remove: async () => {
-        if (confirm(`Remove ${service.name}? This will stop and delete the container.`)) {
+        if (confirm(`Delete ${service.name}?\n\nThis will:\n• Stop and remove the container\n• Delete all volumes\n• Delete Docker images\n• Close firewall ports\n\nThis action cannot be undone.`)) {
           await fetch('/api/services', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
