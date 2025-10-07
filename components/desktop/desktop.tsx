@@ -143,10 +143,10 @@ export function Desktop() {
         const response = await fetch('/api/services')
         if (response.ok) {
           const data = await response.json()
-          const running = data.services?.filter((s: InstalledService) =>
-            s.status === 'running' && s.ports && s.ports.length > 0
+          const installed = data.services?.filter((s: InstalledService) =>
+            s.status !== 'not-installed' && s.ports && s.ports.length > 0
           ) || []
-          setInstalledServices(running)
+          setInstalledServices(installed)
         }
       } catch (error) {
         console.error('Error fetching services:', error)
@@ -155,8 +155,8 @@ export function Desktop() {
 
     if (isAuthenticated) {
       fetchServices()
-      // Update every 10 seconds
-      const interval = setInterval(fetchServices, 10000)
+      // Update every 2 seconds for faster UI updates
+      const interval = setInterval(fetchServices, 2000)
       return () => clearInterval(interval)
     }
   }, [isAuthenticated])
@@ -294,6 +294,7 @@ function DesktopIcons({
 }: any) {
 
   const handleServiceClick = (service: any) => {
+    if (service.status !== 'running') return // Only open if running
     const port = service.ports?.[0]
     if (!port) return
     const url = `http://${typeof window !== 'undefined' ? window.location.hostname : 'localhost'}:${port}`
@@ -331,20 +332,42 @@ function DesktopIcons({
         {installedServices.map((service: any) => {
           const isImageIcon = service.iconType === "image"
           const IconComponent = !isImageIcon ? getIcon(service.icon) : null
+          const isInstalling = service.status === 'installing'
+          const isRunning = service.status === 'running'
+          const isStopped = service.status === 'stopped' || service.status === 'exited'
 
           return (
-            <div key={service.id} className="flex flex-col items-center gap-2">
+            <div key={service.id} className="flex flex-col items-center gap-1 relative">
               <button
-                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:scale-[1.2] transition-transform duration-200 overflow-hidden"
+                className={`w-10 h-10 rounded-full bg-muted flex items-center justify-center transition-all duration-200 overflow-hidden ${
+                  isRunning ? 'hover:scale-[1.2] cursor-pointer' : 'cursor-default'
+                } ${
+                  isStopped || isInstalling ? 'opacity-50' : ''
+                }`}
                 onClick={() => handleServiceClick(service)}
+                disabled={!isRunning}
               >
                 {isImageIcon ? (
-                  <img src={service.icon} alt={service.name} className="h-8 w-8 object-contain" />
+                  <img
+                    src={service.icon}
+                    alt={service.name}
+                    className={`h-8 w-8 object-contain ${isInstalling ? 'animate-pulse' : ''}`}
+                  />
                 ) : (
-                  IconComponent && <IconComponent className="h-6 w-6 text-foreground" />
+                  IconComponent && <IconComponent className={`h-6 w-6 text-foreground ${isInstalling ? 'animate-pulse' : ''}`} />
                 )}
               </button>
-              <span className="text-xs text-foreground font-normal">{service.name}</span>
+
+              {/* Status indicator */}
+              {isInstalling && (
+                <div className="w-10 h-1 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary animate-pulse w-full" />
+                </div>
+              )}
+
+              <span className={`text-xs font-normal ${isRunning ? 'text-foreground' : 'text-muted-foreground'}`}>
+                {service.name}
+              </span>
             </div>
           )
         })}
