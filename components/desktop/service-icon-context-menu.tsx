@@ -43,12 +43,19 @@ export function ServiceIconContextMenu({
       </ContextMenuTrigger>
       <ContextMenuContent className="w-56">
         <ContextMenuItem
+          onSelect={() => onAction("details")}
+        >
+          <Info className="mr-2 h-4 w-4" />
+          View Details
+          <ContextMenuShortcut>Enter</ContextMenuShortcut>
+        </ContextMenuItem>
+
+        <ContextMenuItem
           onSelect={() => onAction("open")}
           disabled={!isRunning}
         >
           <ExternalLink className="mr-2 h-4 w-4" />
           Open in New Tab
-          <ContextMenuShortcut>Enter</ContextMenuShortcut>
         </ContextMenuItem>
 
         <ContextMenuSeparator />

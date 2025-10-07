@@ -31,6 +31,7 @@ import { Changelog } from "@/components/apps/changelog"
 import { FileManager } from "@/components/apps/file-manager"
 import { ServiceManager } from "@/components/apps/service-manager"
 import { FlowManager } from "@/components/apps/flow-manager"
+import { ServiceDetails } from "@/components/apps/service-details"
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
@@ -210,6 +211,7 @@ export function Desktop() {
         {/* Desktop Icons */}
         <DesktopIcons
           onOpenWindow={handleOpenWindow}
+          openWindow={openWindow}
           installedServices={installedServices}
         />
 
@@ -290,6 +292,7 @@ export function Desktop() {
 // Sub-components
 function DesktopIcons({
   onOpenWindow,
+  openWindow,
   installedServices,
 }: any) {
 
@@ -303,6 +306,11 @@ function DesktopIcons({
 
   const handleServiceAction = async (action: string, service: any) => {
     const actions: Record<string, () => Promise<void>> = {
+      details: async () => {
+        // Open service details window
+        const component = <ServiceDetails serviceId={service.id} />
+        openWindow(`service-${service.id}`, service.name, component)
+      },
       open: async () => {
         if (service.status === 'running') {
           handleServiceClick(service)
@@ -339,12 +347,14 @@ function DesktopIcons({
         }
       },
       logs: async () => {
-        // Open Service Manager window (it will show logs for selected service)
-        onOpenWindow('service-manager', 'Services')
+        // Open service details window (it shows logs)
+        const component = <ServiceDetails serviceId={service.id} />
+        openWindow(`service-${service.id}`, service.name, component)
       },
       properties: async () => {
-        // Open Service Manager window to view properties
-        onOpenWindow('service-manager', 'Services')
+        // Open service details window (it shows properties)
+        const component = <ServiceDetails serviceId={service.id} />
+        openWindow(`service-${service.id}`, service.name, component)
       }
     }
     await actions[action]?.()
