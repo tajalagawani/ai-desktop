@@ -33,6 +33,7 @@ import { ServiceManager } from "@/components/apps/service-manager"
 import { FlowManager } from "@/components/apps/flow-manager"
 import { ServiceDetails } from "@/components/apps/service-details"
 import { DesktopSettings } from "@/components/apps/desktop-settings"
+import { ActionBuilder } from "@/components/apps/action-builder"
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
@@ -74,6 +75,7 @@ const getAppComponent = (
     "file-manager": <FileManager />,
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
     "flow-manager": <FlowManager />,
+    "action-builder": <ActionBuilder />,
     "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
     "github": <div>GitHub Desktop</div>,
     "chatgpt": <div>ChatGPT</div>,
@@ -159,8 +161,6 @@ export function Desktop() {
   const isComponentBg = bg.type === 'component'
   const backgroundStyle = isComponentBg ? '' : (isDarkMode ? bg.dark : bg.light)
   const backgroundClass = isComponentBg ? (isDarkMode ? bg.dark : bg.light) : ''
-
-  console.log('Current background:', currentBackground, 'Type:', bg.type, 'Style:', backgroundStyle || backgroundClass)
 
   // Fetch system stats
   useEffect(() => {

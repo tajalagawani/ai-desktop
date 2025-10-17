@@ -16,10 +16,8 @@ help:
 	@echo "  make clean      - Stop and remove all containers"
 	@echo ""
 # Individual flow commands:
-# make start-math, stop-math, logs-math
-# make start-restaurant, stop-restaurant, logs-restaurant
-# make start-restaurant2, stop-restaurant2, logs-restaurant2
-# make start-risk, stop-risk, logs-risk
+# make start-action-builder, stop-action-builder, logs-action-builder
+# make start-iss-location, stop-iss-location, logs-iss-location
 
 start:
 	@echo "🚀 Starting all flows..."
@@ -49,50 +47,26 @@ clean:
 	@echo "🧹 Cleaning up..."
 	docker-compose down -v
 
-start-math:
-	docker-compose up -d act-math
+start-action-builder:
+	docker-compose up -d act-action-builder
 
-stop-math:
-	docker-compose stop act-math
+stop-action-builder:
+	docker-compose stop act-action-builder
 
-restart-math:
-	docker-compose restart act-math
+restart-action-builder:
+	docker-compose restart act-action-builder
 
-logs-math:
-	docker-compose logs -f act-math
+logs-action-builder:
+	docker-compose logs -f act-action-builder
 
-start-restaurant:
-	docker-compose up -d act-restaurant
+start-iss-location:
+	docker-compose up -d act-iss-location
 
-stop-restaurant:
-	docker-compose stop act-restaurant
+stop-iss-location:
+	docker-compose stop act-iss-location
 
-restart-restaurant:
-	docker-compose restart act-restaurant
+restart-iss-location:
+	docker-compose restart act-iss-location
 
-logs-restaurant:
-	docker-compose logs -f act-restaurant
-
-start-restaurant2:
-	docker-compose up -d act-restaurant2
-
-stop-restaurant2:
-	docker-compose stop act-restaurant2
-
-restart-restaurant2:
-	docker-compose restart act-restaurant2
-
-logs-restaurant2:
-	docker-compose logs -f act-restaurant2
-
-start-risk:
-	docker-compose up -d act-risk
-
-stop-risk:
-	docker-compose stop act-risk
-
-restart-risk:
-	docker-compose restart act-risk
-
-logs-risk:
-	docker-compose logs -f act-risk
+logs-iss-location:
+	docker-compose logs -f act-iss-location

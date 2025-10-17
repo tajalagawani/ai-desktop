@@ -299,7 +299,11 @@ export async function GET(request: NextRequest) {
         console.log(`[Flow Manager] Health result for ${flow.name}:`, health)
         flow.health = health as any
       } else {
-        console.log(`[Flow Manager] Container ${flow.name} is not running`)
+        console.log(`[Flow Manager] Container ${flow.name} 
+          
+          
+          
+          `)
         flow.health = { status: 'stopped' } as any
       }
     }
@@ -321,11 +325,38 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// Regenerate docker-compose.yml from flows
+async function regenerateDockerCompose(): Promise<{ success: boolean, error?: string }> {
+  try {
+    console.log('[Flow Manager] 🔄 Regenerating docker-compose.yml...')
+
+    const { stdout, stderr } = await execAsync(
+      `cd ${ACT_DOCKER_DIR} && python3 docker-compose-generator.py`,
+      { timeout: 30000 }
+    )
+
+    console.log('[Flow Manager] ✅ Docker compose regenerated successfully')
+    if (stdout) console.log('[Flow Manager] Generator output:', stdout)
+    if (stderr) console.log('[Flow Manager] Generator stderr:', stderr)
+
+    return { success: true }
+  } catch (error: any) {
+    console.error('[Flow Manager] ❌ Failed to regenerate docker-compose.yml:', error.message)
+    return { success: false, error: error.message }
+  }
+}
+
 // POST handler - Control flows (start, stop, restart, etc.)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { action, flowName } = body
+
+    console.log('[Flow Manager] ========================================')
+    console.log('[Flow Manager] POST /api/flows')
+    console.log('[Flow Manager]   Action:', action)
+    console.log('[Flow Manager]   Flow:', flowName)
+    console.log('[Flow Manager] ========================================')
 
     if (!flowName) {
       return NextResponse.json(
@@ -339,24 +370,55 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'start':
+        console.log('[Flow Manager] 🚀 Starting flow:', flowName)
+        console.log('[Flow Manager] Service name:', serviceName)
+
+        // Regenerate docker-compose.yml to ensure flow is included
+        console.log('[Flow Manager] Step 1: Regenerating docker-compose.yml...')
+        const regenerateResult = await regenerateDockerCompose()
+        if (!regenerateResult.success) {
+          console.error('[Flow Manager] ❌ Failed to regenerate compose file')
+          return NextResponse.json(
+            { error: `Failed to regenerate docker-compose.yml: ${regenerateResult.error}` },
+            { status: 500 }
+          )
+        }
+
+        console.log('[Flow Manager] Step 2: Starting Docker service...')
         // Try to start, if it fails, try up -d to create and start
         result = await dockerComposeCommand('start', serviceName)
+        console.log('[Flow Manager] Start result:', result)
+
         if (!result.success && result.error?.includes('has no container')) {
+          console.log('[Flow Manager] Container does not exist, creating with up -d...')
           // Container doesn't exist, create it
           result = await dockerComposeCommand('up -d', serviceName)
+          console.log('[Flow Manager] Up -d result:', result)
+        }
+
+        if (result.success) {
+          console.log('[Flow Manager] ✅ Flow started successfully:', flowName)
+        } else {
+          console.error('[Flow Manager] ❌ Failed to start flow:', result.error)
         }
         break
 
       case 'stop':
+        console.log('[Flow Manager] 🛑 Stopping flow:', flowName)
         result = await dockerComposeCommand('stop', serviceName)
+        console.log('[Flow Manager] Stop result:', result)
         break
 
       case 'restart':
+        console.log('[Flow Manager] 🔄 Restarting flow:', flowName)
         result = await dockerComposeCommand('restart', serviceName)
+        console.log('[Flow Manager] Restart result:', result)
         break
 
       case 'remove':
+        console.log('[Flow Manager] 🗑️  Removing flow:', flowName)
         result = await dockerComposeCommand('rm -f', serviceName)
+        console.log('[Flow Manager] Remove result:', result)
         break
 
       default:
@@ -367,11 +429,19 @@ export async function POST(request: NextRequest) {
     }
 
     if (!result.success) {
+      console.error('[Flow Manager] ========================================')
+      console.error('[Flow Manager] ❌ Action failed:', result.error)
+      console.error('[Flow Manager] ========================================')
       return NextResponse.json(
         { error: result.error || 'Action failed' },
         { status: 500 }
       )
     }
+
+    console.log('[Flow Manager] ========================================')
+    console.log('[Flow Manager] ✅ Action completed successfully')
+    console.log(`[Flow Manager] Flow '${flowName}' ${action}ed`)
+    console.log('[Flow Manager] ========================================')
 
     return NextResponse.json({
       success: true,
@@ -379,7 +449,11 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error('Error in POST /api/flows:', error)
+    console.error('[Flow Manager] ========================================')
+    console.error('[Flow Manager] ❌ Exception in POST /api/flows:', error)
+    console.error('[Flow Manager] Error message:', error.message)
+    console.error('[Flow Manager] Error stack:', error.stack)
+    console.error('[Flow Manager] ========================================')
     return NextResponse.json(
       { error: error.message || 'Failed to perform action' },
       { status: 500 }

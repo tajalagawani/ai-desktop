@@ -104,6 +104,13 @@ export const DOCK_APPS: AppConfig[] = [
     isSystem: true,
     description: "Manage ACT workflow automation flows"
   },
+  {
+    id: "action-builder",
+    name: "Action Builder",
+    icon: "Workflow",
+    category: "development",
+    description: "AI-powered workflow creation with Flow Architect agent"
+  },
 ]
 
 export const INSTALLED_APPS: AppConfig[] = [
