@@ -16,8 +16,7 @@ help:
 	@echo "  make clean      - Stop and remove all containers"
 	@echo ""
 # Individual flow commands:
-# make start-action-builder, stop-action-builder, logs-action-builder
-# make start-iss-location, stop-iss-location, logs-iss-location
+# make start-syria-weather-api, stop-syria-weather-api, logs-syria-weather-api
 
 start:
 	@echo "🚀 Starting all flows..."
@@ -47,26 +46,14 @@ clean:
 	@echo "🧹 Cleaning up..."
 	docker-compose down -v
 
-start-action-builder:
-	docker-compose up -d act-action-builder
+start-syria-weather-api:
+	docker-compose up -d act-syria-weather-api
 
-stop-action-builder:
-	docker-compose stop act-action-builder
+stop-syria-weather-api:
+	docker-compose stop act-syria-weather-api
 
-restart-action-builder:
-	docker-compose restart act-action-builder
+restart-syria-weather-api:
+	docker-compose restart act-syria-weather-api
 
-logs-action-builder:
-	docker-compose logs -f act-action-builder
-
-start-iss-location:
-	docker-compose up -d act-iss-location
-
-stop-iss-location:
-	docker-compose stop act-iss-location
-
-restart-iss-location:
-	docker-compose restart act-iss-location
-
-logs-iss-location:
-	docker-compose logs -f act-iss-location
+logs-syria-weather-api:
+	docker-compose logs -f act-syria-weather-api

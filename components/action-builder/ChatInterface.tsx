@@ -4,9 +4,12 @@ import MessageList from './MessageList';
 import InputArea from './InputArea';
 import ActionsList from './ActionsList';
 import ClaudeStatus from './ClaudeStatus';
+import FlowStatusView from './FlowStatusView';
+import ExecutionHistoryTab from './ExecutionHistoryTab';
 import { useChatStore } from '@/lib/action-builder/stores/chatStore';
-import { MessageSquare, Settings, Plus, Menu } from 'lucide-react';
+import { MessageSquare, Settings, Plus, Menu, Zap, History } from 'lucide-react';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 export default function ChatInterface() {
   const [showActions, setShowActions] = useState(true);
@@ -23,12 +26,18 @@ export default function ChatInterface() {
   const isLoading = useChatStore(state => state.isLoading);
   const isConnected = useChatStore(state => state.isConnected);
 
+  // NEW: Flow-related state
+  const selectedFlow = useChatStore(state => state.selectedFlow);
+  const mainContentTab = useChatStore(state => state.mainContentTab);
+  const setMainContentTab = useChatStore(state => state.setMainContentTab);
+  const loadFlows = useChatStore(state => state.loadFlows);
+
   return (
     <div className="h-full flex flex-col bg-background text-foreground">
       {/* Header */}
       <header className="flex-shrink-0 border-b border-border bg-background">
         <div className="flex items-center justify-between px-4 py-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {/* Mobile Menu Button */}
             {isMobile && (
               <button
@@ -49,6 +58,52 @@ export default function ChatInterface() {
               </h1>
               <p className="text-xs text-muted-foreground">Action Builder</p>
             </div>
+
+            {/* Tabs - Only show when session exists */}
+            {currentSession && (
+              <div className="flex items-center gap-1 ml-4">
+                <button
+                  onClick={() => setMainContentTab('messages')}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5",
+                    mainContentTab === 'messages'
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted text-muted-foreground"
+                  )}
+                >
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  Messages
+                </button>
+
+                {selectedFlow && (
+                  <button
+                    onClick={() => setMainContentTab('flow-status')}
+                    className={cn(
+                      "px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5",
+                      mainContentTab === 'flow-status'
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted text-muted-foreground"
+                    )}
+                  >
+                    <Zap className="h-3.5 w-3.5" />
+                    Flow Status
+                  </button>
+                )}
+
+                <button
+                  onClick={() => setMainContentTab('executions')}
+                  className={cn(
+                    "px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5",
+                    mainContentTab === 'executions'
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted text-muted-foreground"
+                  )}
+                >
+                  <History className="h-3.5 w-3.5" />
+                  Executions
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -90,14 +145,40 @@ export default function ChatInterface() {
       <div className="flex-1 flex min-h-0 overflow-hidden relative">
         {/* Chat Area */}
         <div className="flex-1 flex flex-col min-w-0">
-          <MessageList />
-          {/* Show status only in Dev Mode */}
-          {isDevMode && <ClaudeStatus />}
-          <InputArea />
+          {/* Tab Content */}
+          {currentSession ? (
+            <>
+              {mainContentTab === 'messages' ? (
+                <>
+                  <MessageList />
+                  {isDevMode && <ClaudeStatus />}
+                  <InputArea />
+                </>
+              ) : mainContentTab === 'flow-status' && selectedFlow ? (
+                <FlowStatusView flow={selectedFlow} onFlowUpdate={loadFlows} />
+              ) : mainContentTab === 'executions' ? (
+                <ExecutionHistoryTab />
+              ) : (
+                /* Fallback to messages if invalid state */
+                <>
+                  <MessageList />
+                  {isDevMode && <ClaudeStatus />}
+                  <InputArea />
+                </>
+              )}
+            </>
+          ) : (
+            /* No session view */
+            <>
+              <MessageList />
+              {isDevMode && <ClaudeStatus />}
+              <InputArea />
+            </>
+          )}
         </div>
 
-        {/* Actions Sidebar - Desktop only */}
-        {!isMobile && showActions && (
+        {/* Actions Sidebar - Desktop only, hide when flow status or executions is shown */}
+        {!isMobile && showActions && mainContentTab === 'messages' && (
           <div className="w-80 border-l border-border bg-muted/30 flex flex-col overflow-hidden">
             <div className="flex-shrink-0 p-4 border-b border-border">
               <h2 className="text-sm font-semibold">Actions</h2>

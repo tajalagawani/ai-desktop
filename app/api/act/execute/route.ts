@@ -20,6 +20,7 @@ const execAsync = promisify(exec)
  */
 export async function POST(request: NextRequest) {
   const executionId = randomUUID()
+  const startTime = Date.now()
 
   try {
     console.log('[ACT Execute] ========================================')
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     console.log('[ACT Execute] ========================================')
 
     const body = await request.json()
-    const { flowContent, flowName } = body
+    const { flowContent, flowName, sessionId, projectName } = body
 
     if (!flowContent) {
       return NextResponse.json(
@@ -161,6 +162,35 @@ except Exception as e:
       console.log('[ACT Execute] ========================================')
       console.log('[ACT Execute] Execution result:', result.success ? '✅ Success' : '❌ Failed')
       console.log('[ACT Execute] ========================================')
+
+      // Save execution to history if sessionId and projectName provided
+      if (sessionId && projectName) {
+        const duration = Date.now() - startTime
+        try {
+          const serverPort = process.env.PORT || '3000'
+          await fetch(`http://localhost:${serverPort}/api/projects/${projectName}/sessions/${sessionId}/executions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              executionId,
+              flowName,
+              flowContent,
+              mode: result.mode,
+              success: result.success,
+              duration,
+              result: result.result,
+              deployment: result.deployment,
+              error: result.error,
+              errorType: result.error_type,
+              traceback: result.traceback
+            })
+          })
+          console.log('[ACT Execute] ✅ Execution saved to history')
+        } catch (historyError: any) {
+          console.warn('[ACT Execute] ⚠️  Failed to save execution history:', historyError.message)
+          // Don't fail the execution if history save fails
+        }
+      }
 
       // Auto-deploy if this is an API workflow
       if (result.success && result.mode === 'agent' && result.requires_deployment) {

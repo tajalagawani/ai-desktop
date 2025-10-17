@@ -1,7 +1,7 @@
 'use client';
 
 import ChatInterface from '@/components/action-builder/ChatInterface';
-import SidebarSimple from '@/components/action-builder/SidebarSimple';
+import EnhancedSidebar from '@/components/action-builder/EnhancedSidebar';
 import { useEffect } from 'react';
 import { useChatStore } from '@/lib/action-builder/stores/chatStore';
 
@@ -85,15 +85,8 @@ export function ActionBuilder() {
   return (
     <div className="w-full h-full flex bg-background">
       {/* Sidebar - 25% width */}
-      <div className="w-1/4 min-w-[250px] max-w-[350px] border-r border-border overflow-hidden">
-        <SidebarSimple
-          selectedSession={currentSession}
-          onSessionSelect={handleSessionSelect}
-          onNewSession={handleNewSession}
-          onSessionDelete={() => {}}
-          onShowSettings={() => {}}
-          isMobile={false}
-        />
+      <div className="w-1/4 min-w-[250px] max-w-[350px] overflow-hidden">
+        <EnhancedSidebar isMobile={false} />
       </div>
 
       {/* Chat Interface - 75% width */}

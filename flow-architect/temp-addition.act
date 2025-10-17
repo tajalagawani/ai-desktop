@@ -1,0 +1,13 @@
+[workflow]
+name = "Addition Calculator"
+description = "Calculate 5211 + 457"
+start_node = Calculate
+
+[node:Calculate]
+type = py
+code = """
+def calculate():
+    result = 5211 + 457
+    return {"result": result}
+"""
+function = calculate

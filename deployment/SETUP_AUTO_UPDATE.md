@@ -1,4 +1,4 @@
-# Update System Guide
+.# Update System Guide
 
 This guide shows you how to use the update system for your AI Desktop deployment on VPS.
 

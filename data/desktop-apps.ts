@@ -231,6 +231,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     minimizable: true,
     closable: true,
   },
+  "action-builder": {
+    defaultWidth: 1600,
+    defaultHeight: 1000,
+    minWidth: 1000,
+    minHeight: 700,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
   default: {
     defaultWidth: 800,
     defaultHeight: 600,

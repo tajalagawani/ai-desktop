@@ -142,13 +142,30 @@ app.prepare().then(() => {
           const { spawn: spawnChild } = require('child_process')
           console.log('[Action Builder] Spawning Claude process...')
 
+          // Check if user wants to use Claude CLI auth instead of API key
+          const useClaudeAuth = process.env.USE_CLAUDE_CLI_AUTH === 'true'
+
+          // Build clean environment without Node debug flags
+          const cleanEnv = { ...process.env }
+          delete cleanEnv.NODE_OPTIONS // Remove any Node debugging flags
+
+          if (useClaudeAuth) {
+            // Use Claude CLI authentication (from `claude login`)
+            console.log('[Action Builder] Using Claude CLI authentication (no API key)')
+            // Remove ANTHROPIC_API_KEY to force Claude to use CLI auth
+            delete cleanEnv.ANTHROPIC_API_KEY
+          } else {
+            // Use API key from environment
+            console.log('[Action Builder] Using ANTHROPIC_API_KEY from environment')
+            cleanEnv.ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+          }
+
           claudeProcess = spawnChild('claude', args, {
             cwd: workingDir,
             stdio: ['pipe', 'pipe', 'pipe'],
-            env: {
-              ...process.env,
-              ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY
-            }
+            env: cleanEnv,
+            detached: false,
+            shell: false
           })
 
           console.log('[Action Builder] ✅ Claude process spawned, PID:', claudeProcess.pid)

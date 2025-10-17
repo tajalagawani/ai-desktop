@@ -15,21 +15,9 @@ x-act-base: &act-base
 
 services:
 
-  act-action-builder:
+  act-syria-weather-api:
     <<: *act-base
-    container_name: act-action-builder
-    ports:
-      - "9002:9002"
-    environment:
-      - PYTHONUNBUFFERED=1
-      - ACT_PORT=9002
-    volumes:
-      - ./act:/app/act
-      - ./flows/action-builder.flow:/app/flow
-
-  act-iss-location:
-    <<: *act-base
-    container_name: act-iss-location
+    container_name: act-syria-weather-api
     ports:
       - "9001:9001"
     environment:
@@ -37,7 +25,7 @@ services:
       - ACT_PORT=9001
     volumes:
       - ./act:/app/act
-      - ./flows/iss-location.flow:/app/flow
+      - ./flows/syria-weather-api.flow:/app/flow
 
 networks:
   act-network:

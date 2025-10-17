@@ -93,6 +93,48 @@ interface User {
   username: string;
 }
 
+interface FlowConfig {
+  name: string;
+  port: number;
+  mode: 'agent' | 'miniact' | 'waiting';
+  agent_name?: string;
+  description?: string;
+  file: string;
+  auto_assigned?: boolean;
+  metadata?: {
+    id: string;
+    sessionId?: string;
+    created: string;
+    author: string;
+  };
+  container?: {
+    running: boolean;
+    status: string;
+    started_at?: string;
+    pid?: number;
+  };
+  health?: {
+    status: string;
+    port?: number;
+  };
+}
+
+interface ExecutionRecord {
+  executionId: string;
+  timestamp: string;
+  flowName: string;
+  flowContent?: string;
+  mode: 'miniact' | 'agent';
+  success: boolean;
+  duration: number;
+  result?: any;
+  deployment?: any;
+  error?: string;
+  errorType?: string;
+  traceback?: string;
+  sessionId: string;
+}
+
 interface ChatStore {
   // === Messages & Sessions ===
   messages: Message[];
@@ -106,6 +148,17 @@ interface ChatStore {
   currentProject: Project | null;
   selectedProject: Project | null;
   isLoadingProjects: boolean;
+
+  // === Flows (NEW) ===
+  flows: FlowConfig[];
+  selectedFlow: FlowConfig | null;
+  isLoadingFlows: boolean;
+  sidebarView: 'chats' | 'flows';
+  mainContentTab: 'messages' | 'flow-status' | 'executions';
+
+  // === Executions (NEW) ===
+  executions: ExecutionRecord[];
+  isLoadingExecutions: boolean;
 
   // === Auth State ===
   user: User | null;
@@ -171,6 +224,20 @@ interface ChatStore {
   setCurrentProject: (project: Project | null) => void;
   setSelectedProject: (project: Project | null) => void;
   setIsLoadingProjects: (loading: boolean) => void;
+
+  // === Actions - Flows (NEW) ===
+  setFlows: (flows: FlowConfig[]) => void;
+  setSelectedFlow: (flow: FlowConfig | null) => void;
+  setIsLoadingFlows: (loading: boolean) => void;
+  setSidebarView: (view: 'chats' | 'flows') => void;
+  setMainContentTab: (tab: 'messages' | 'flow-status' | 'executions') => void;
+  loadFlows: (silent?: boolean) => Promise<void>;
+  selectFlowAndLoadSession: (flow: FlowConfig) => Promise<void>;
+
+  // === Actions - Executions (NEW) ===
+  setExecutions: (executions: ExecutionRecord[]) => void;
+  setIsLoadingExecutions: (loading: boolean) => void;
+  loadExecutions: () => Promise<void>;
 
   // === Actions - Auth ===
   setUser: (user: User | null) => void;
@@ -245,6 +312,17 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   selectedProject: null,
   isLoadingProjects: false,
 
+  // === Initial State - Flows (NEW) ===
+  flows: [],
+  selectedFlow: null,
+  isLoadingFlows: false,
+  sidebarView: 'chats',
+  mainContentTab: 'messages',
+
+  // === Initial State - Executions (NEW) ===
+  executions: [],
+  isLoadingExecutions: false,
+
   // === Initial State - Auth ===
   user: null,
   token: null,
@@ -315,6 +393,17 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   setCurrentProject: (project) => set({ currentProject: project }),
   setSelectedProject: (project) => set({ selectedProject: project }),
   setIsLoadingProjects: (loading) => set({ isLoadingProjects: loading }),
+
+  // === Setters - Flows (NEW) ===
+  setFlows: (flows) => set({ flows }),
+  setSelectedFlow: (flow) => set({ selectedFlow: flow }),
+  setIsLoadingFlows: (loading) => set({ isLoadingFlows: loading }),
+  setSidebarView: (view) => set({ sidebarView: view }),
+  setMainContentTab: (tab) => set({ mainContentTab: tab }),
+
+  // === Setters - Executions (NEW) ===
+  setExecutions: (executions) => set({ executions }),
+  setIsLoadingExecutions: (loading) => set({ isLoadingExecutions: loading }),
 
   // === Setters - Auth ===
   setUser: (user) => set({ user }),
@@ -700,11 +789,20 @@ export const useChatStore = create<ChatStore>((set, get) => ({
                 updated: new Date().toISOString(),
               };
 
-              // Set as current session and add to list
-              set({
-                currentSession: newSession,
-                sessions: [newSession, ...get().sessions]
-              });
+              // Check if session already exists in list
+              const existingSessions = get().sessions;
+              const sessionExists = existingSessions.some(s => s.id === message.sessionId);
+
+              // Set as current session and add to list if not exists
+              if (!sessionExists) {
+                set({
+                  currentSession: newSession,
+                  sessions: [newSession, ...existingSessions]
+                });
+              } else {
+                // Just set as current
+                set({ currentSession: newSession });
+              }
 
               // Navigate to new session
               if (typeof window !== 'undefined') {
@@ -736,6 +834,29 @@ export const useChatStore = create<ChatStore>((set, get) => ({
             console.log('✅ Session completed');
             set({ streamingMessageId: null, claudeStatus: null });
             store.setIsLoading(false);
+
+            // Update session in sidebar with message count
+            const currentSession = get().currentSession;
+            if (currentSession) {
+              const messageCount = get().messages.length;
+              const updatedSession = {
+                ...currentSession,
+                messageCount,
+                lastActivity: new Date().toISOString(),
+                updated: new Date().toISOString(),
+              };
+
+              // Update in sessions list
+              const sessions = get().sessions;
+              const updatedSessions = sessions.map(s =>
+                s.id === currentSession.id ? updatedSession : s
+              );
+
+              set({
+                currentSession: updatedSession,
+                sessions: updatedSessions
+              });
+            }
             break;
 
           case 'claude-error':
@@ -803,6 +924,104 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       console.error('[ChatStore] Error fetching projects:', error);
     } finally {
       set({ isLoadingProjects: false });
+    }
+  },
+
+  // === Async operations - Flows (NEW) ===
+  loadFlows: async (silent = false) => {
+    console.log('[ChatStore] Loading flows...');
+    try {
+      // Only show loading state for non-silent refreshes
+      if (!silent) {
+        set({ isLoadingFlows: true });
+      }
+
+      const response = await fetch('/api/flows');
+      const data = await response.json();
+
+      if (data.success && data.flows) {
+        console.log('[ChatStore] Flows loaded:', data.flows.length);
+
+        // Only update if data has actually changed
+        const currentFlows = get().flows;
+        const hasChanged = JSON.stringify(currentFlows) !== JSON.stringify(data.flows);
+
+        if (hasChanged) {
+          console.log('[ChatStore] Flows data changed, updating state');
+          set({ flows: data.flows });
+        } else {
+          console.log('[ChatStore] Flows data unchanged, skipping update');
+        }
+      }
+    } catch (error) {
+      console.error('[ChatStore] Error loading flows:', error);
+    } finally {
+      if (!silent) {
+        set({ isLoadingFlows: false });
+      }
+    }
+  },
+
+  selectFlowAndLoadSession: async (flow: FlowConfig) => {
+    console.log('[ChatStore] Flow selected:', flow.name);
+    set({
+      selectedFlow: flow,
+      mainContentTab: 'flow-status' // Auto-switch to Flow Status tab
+    });
+
+    // If flow has metadata with sessionId, load that session
+    if (flow.metadata?.sessionId) {
+      console.log('[ChatStore] Loading linked session:', flow.metadata.sessionId);
+      const { currentProject } = get();
+      if (currentProject) {
+        try {
+          // Find the session in existing sessions
+          const { sessions } = get();
+          const linkedSession = sessions.find(s => s.id === flow.metadata?.sessionId);
+
+          if (linkedSession) {
+            set({ currentSession: linkedSession });
+            // Load messages for this session
+            const store = get();
+            await store.loadSessionMessages(currentProject.name, flow.metadata.sessionId);
+          } else {
+            console.warn('[ChatStore] Session not found:', flow.metadata.sessionId);
+          }
+        } catch (error) {
+          console.error('[ChatStore] Error loading linked session:', error);
+        }
+      }
+    }
+  },
+
+  // === Async operations - Executions (NEW) ===
+  loadExecutions: async () => {
+    const { currentProject, currentSession } = get();
+    if (!currentProject || !currentSession) {
+      console.log('[ChatStore] No project or session - skipping execution load');
+      return;
+    }
+
+    console.log('[ChatStore] Loading executions for session:', currentSession.id);
+    try {
+      set({ isLoadingExecutions: true });
+      const response = await fetch(
+        `/api/projects/${currentProject.name}/sessions/${currentSession.id}/executions`
+      );
+      const data = await response.json();
+
+      if (data.success && data.executions) {
+        console.log('[ChatStore] Executions loaded:', data.executions.length);
+        set({ executions: data.executions });
+      } else {
+        console.log('[ChatStore] No executions found');
+        set({ executions: [] });
+      }
+    } catch (error) {
+      console.error('[ChatStore] Error loading executions:', error);
+      set({ executions: [] });
+    } finally {
+      set({ isLoadingExecutions: false });
     }
   },
 
