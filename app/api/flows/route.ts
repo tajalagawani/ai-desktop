@@ -17,6 +17,14 @@ interface FlowConfig {
   description?: string
   file: string
   auto_assigned?: boolean
+  metadata?: {
+    sessionId?: string
+    projectName?: string
+    createdAt?: string
+    [key: string]: any
+  }
+  container?: any
+  health?: any
 }
 
 // Parse .flow file to extract configuration
@@ -32,7 +40,9 @@ async function parseFlowFile(filePath: string): Promise<Partial<FlowConfig>> {
     let hasAciNode = false
     let hasWorkflow = false
     let inWorkflowSection = false
+    let inMetadataSection = false
     let inOtherSection = false
+    let metadata: any = {}
 
     for (const line of lines) {
       const trimmed = line.trim()
@@ -40,7 +50,17 @@ async function parseFlowFile(filePath: string): Promise<Partial<FlowConfig>> {
       // Track which section we're in
       if (trimmed.startsWith('[')) {
         inWorkflowSection = trimmed === '[workflow]'
-        inOtherSection = !inWorkflowSection && (trimmed.startsWith('[node:') || trimmed.startsWith('[deployment]') || trimmed.startsWith('[parameters]') || trimmed.startsWith('[agent]'))
+        inMetadataSection = trimmed === '[metadata]'
+        inOtherSection = !inWorkflowSection && !inMetadataSection && (trimmed.startsWith('[node:') || trimmed.startsWith('[deployment]') || trimmed.startsWith('[parameters]') || trimmed.startsWith('[agent]'))
+      }
+
+      // Parse metadata section
+      if (inMetadataSection && !inOtherSection) {
+        const metaMatch = trimmed.match(/^(\w+)\s*=\s*(.+)$/)
+        if (metaMatch) {
+          const [, key, value] = metaMatch
+          metadata[key] = value.replace(/['"]/g, '').trim()
+        }
       }
 
       // Parse description ONLY from [workflow] section
@@ -86,7 +106,13 @@ async function parseFlowFile(filePath: string): Promise<Partial<FlowConfig>> {
       mode = 'miniact'
     }
 
-    return { port, agent_name, description, mode }
+    return {
+      port,
+      agent_name,
+      description,
+      mode,
+      metadata: Object.keys(metadata).length > 0 ? metadata : undefined
+    }
   } catch (error) {
     console.error('Error parsing flow file:', error)
     return {}
@@ -113,7 +139,8 @@ async function discoverFlows(): Promise<FlowConfig[]> {
         mode: config.mode || 'waiting',
         agent_name: config.agent_name,
         description: config.description,
-        auto_assigned: !config.port
+        auto_assigned: !config.port,
+        metadata: config.metadata
       })
     }
 

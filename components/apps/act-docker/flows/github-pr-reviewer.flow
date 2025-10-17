@@ -1,0 +1,357 @@
+[workflow]
+name = "GitHub PR Reviewer API"
+description = "Monitor GitHub PRs, review with OpenAI, post to Slack"
+start_node = DefineReviewPRRoute
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+
+[configuration]
+agent_enabled = true
+agent_name = "github-pr-reviewer"
+agent_version = "1.0.0"
+host = "0.0.0.0"
+port = 9002
+debug = true
+cors_enabled = true
+
+[deployment]
+port = 9002
+agent_name = "github-pr-reviewer-agent"
+environment = "development"
+
+# ===== ROUTE 1: Review New PRs =====
+[node:DefineReviewPRRoute]
+type = aci
+mode = server
+operation = add_route
+route_path = /api/review-prs
+methods = ["POST"]
+handler = FetchNewPRs
+description = "Review new GitHub PRs with OpenAI and post to Slack"
+
+[node:FetchNewPRs]
+type = py
+code = """
+import urllib.request
+import json
+import os
+
+def fetch_prs(request_data):
+    # Extract params from request
+    github_token = request_data.get('github_token', os.getenv('GITHUB_TOKEN', ''))
+    repo_owner = request_data.get('repo_owner')
+    repo_name = request_data.get('repo_name')
+
+    if not repo_owner or not repo_name:
+        return {
+            "error": "Missing required parameters: repo_owner, repo_name",
+            "status_code": 400
+        }
+
+    # Fetch PRs from GitHub API
+    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls?state=open"
+
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'User-agent': 'PR-Reviewer-Bot'
+    }
+
+    if github_token:
+        headers['Authorization'] = f'token {github_token}'
+
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req) as response:
+            prs = json.loads(response.read().decode())
+
+        # Extract relevant PR data
+        pr_data = []
+        for pr in prs:
+            pr_data.append({
+                'number': pr['number'],
+                'title': pr['title'],
+                'user': pr['user']['login'],
+                'created_at': pr['created_at'],
+                'html_url': pr['html_url'],
+                'body': pr['body'] or '',
+                'diff_url': pr['diff_url']
+            })
+
+        return {
+            "result": {
+                "prs": pr_data,
+                "count": len(pr_data),
+                "repo": f"{repo_owner}/{repo_name}"
+            }
+        }
+
+    except Exception as e:
+        return {
+            "error": f"Failed to fetch PRs: {str(e)}",
+            "status_code": 500
+        }
+"""
+function = fetch_prs
+
+[node:ReviewWithOpenAI]
+type = py
+code = """
+import urllib.request
+import json
+import os
+
+def review_prs(previous_result):
+    # Extract PR data and OpenAI key
+    prs = previous_result.get('result', {}).get('prs', [])
+    openai_key = os.getenv('OPENAI_API_KEY', '')
+
+    if not openai_key:
+        return {
+            "error": "OPENAI_API_KEY not set",
+            "status_code": 500
+        }
+
+    if not prs:
+        return {
+            "result": {
+                "reviews": [],
+                "message": "No PRs to review"
+            }
+        }
+
+    reviews = []
+
+    for pr in prs:
+        # Create review prompt
+        prompt = f'''Review this GitHub Pull Request:
+
+Title: {pr['title']}
+Author: {pr['user']}
+Created: {pr['created_at']}
+URL: {pr['html_url']}
+
+Description:
+{pr['body']}
+
+Please provide:
+1. A brief summary (2-3 sentences)
+2. Key changes identified
+3. Potential concerns or issues
+4. Recommendation (Approve/Request Changes/Comment)
+5. Overall quality score (1-10)
+
+Format as JSON with keys: summary, key_changes (array), concerns (array), recommendation, quality_score'''
+
+        # Call OpenAI API
+        url = "https://api.openai.com/v1/chat/completions"
+
+        payload = {
+            "model": "gpt-4",
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are an expert code reviewer. Analyze pull requests and provide constructive feedback."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "temperature": 0.3,
+            "max_tokens": 1000
+        }
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {openai_key}'
+        }
+
+        try:
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode('utf-8'),
+                headers=headers
+            )
+
+            with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read().decode())
+                review_text = result['choices'][0]['message']['content']
+
+                # Try to parse as JSON, fallback to text
+                try:
+                    review_data = json.loads(review_text)
+                except:
+                    review_data = {"raw_review": review_text}
+
+                reviews.append({
+                    "pr_number": pr['number'],
+                    "pr_title": pr['title'],
+                    "pr_url": pr['html_url'],
+                    "review": review_data
+                })
+
+        except Exception as e:
+            reviews.append({
+                "pr_number": pr['number'],
+                "pr_title": pr['title'],
+                "error": f"Review failed: {str(e)}"
+            })
+
+    return {
+        "result": {
+            "reviews": reviews,
+            "total_reviewed": len(reviews)
+        }
+    }
+"""
+function = review_prs
+
+[node:PostToSlack]
+type = py
+code = """
+import urllib.request
+import json
+import os
+
+def post_to_slack(previous_result):
+    slack_webhook = os.getenv('SLACK_WEBHOOK_URL', '')
+
+    if not slack_webhook:
+        return {
+            "error": "SLACK_WEBHOOK_URL not set",
+            "status_code": 500
+        }
+
+    reviews = previous_result.get('result', {}).get('reviews', [])
+
+    if not reviews:
+        return {
+            "result": {
+                "message": "No reviews to post",
+                "posted": 0
+            }
+        }
+
+    # Build Slack message
+    blocks = [
+        {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": "🔍 GitHub PR Review Summary"
+            }
+        },
+        {
+            "type": "divider"
+        }
+    ]
+
+    for review in reviews:
+        if 'error' in review:
+            # Error case
+            blocks.append({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"*PR #{review['pr_number']}: {review['pr_title']}*\\n❌ {review['error']}"
+                }
+            })
+        else:
+            # Successful review
+            review_data = review['review']
+
+            summary = review_data.get('summary', 'No summary provided')
+            recommendation = review_data.get('recommendation', 'N/A')
+            quality_score = review_data.get('quality_score', 'N/A')
+
+            # Emoji based on recommendation
+            emoji = "✅" if recommendation == "Approve" else "⚠️" if recommendation == "Request Changes" else "💬"
+
+            text = f"*{emoji} PR #{review['pr_number']}: {review['pr_title']}*\\n"
+            text += f"🔗 <{review['pr_url']}|View PR>\\n\\n"
+            text += f"*Summary:* {summary}\\n"
+            text += f"*Recommendation:* {recommendation}\\n"
+            text += f"*Quality Score:* {quality_score}/10\\n"
+
+            if 'concerns' in review_data and review_data['concerns']:
+                text += f"*Concerns:*\\n"
+                for concern in review_data['concerns'][:3]:  # Limit to 3
+                    text += f"• {concern}\\n"
+
+            blocks.append({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": text
+                }
+            })
+
+            blocks.append({"type": "divider"})
+
+    # Send to Slack
+    payload = {
+        "blocks": blocks,
+        "text": f"GitHub PR Review Summary - {len(reviews)} PRs reviewed"
+    }
+
+    try:
+        req = urllib.request.Request(
+            slack_webhook,
+            data=json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
+
+        with urllib.request.urlopen(req) as response:
+            response.read()
+
+        return {
+            "result": {
+                "message": "Reviews posted to Slack successfully",
+                "posted": len(reviews),
+                "status_code": 200
+            }
+        }
+
+    except Exception as e:
+        return {
+            "error": f"Failed to post to Slack: {str(e)}",
+            "status_code": 500
+        }
+"""
+function = post_to_slack
+
+# ===== ROUTE 2: Health Check =====
+[node:DefineHealthRoute]
+type = aci
+mode = server
+operation = add_route
+route_path = /api/health
+methods = ["GET"]
+handler = HealthCheck
+description = "Health check endpoint"
+
+[node:HealthCheck]
+type = py
+code = """
+import time
+
+def health():
+    return {
+        "result": {
+            "status": "healthy",
+            "service": "GitHub PR Reviewer",
+            "timestamp": int(time.time())
+        }
+    }
+"""
+function = health
+
+# ===== EDGES =====
+[edges]
+DefineReviewPRRoute = FetchNewPRs
+FetchNewPRs = ReviewWithOpenAI
+ReviewWithOpenAI = PostToSlack
+DefineHealthRoute = HealthCheck

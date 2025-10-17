@@ -16,6 +16,7 @@ help:
 	@echo "  make clean      - Stop and remove all containers"
 	@echo ""
 # Individual flow commands:
+# make start-github-pr-reviewer, stop-github-pr-reviewer, logs-github-pr-reviewer
 # make start-syria-weather-api, stop-syria-weather-api, logs-syria-weather-api
 
 start:
@@ -45,6 +46,18 @@ rebuild:
 clean:
 	@echo "🧹 Cleaning up..."
 	docker-compose down -v
+
+start-github-pr-reviewer:
+	docker-compose up -d act-github-pr-reviewer
+
+stop-github-pr-reviewer:
+	docker-compose stop act-github-pr-reviewer
+
+restart-github-pr-reviewer:
+	docker-compose restart act-github-pr-reviewer
+
+logs-github-pr-reviewer:
+	docker-compose logs -f act-github-pr-reviewer
 
 start-syria-weather-api:
 	docker-compose up -d act-syria-weather-api

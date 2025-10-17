@@ -15,6 +15,18 @@ x-act-base: &act-base
 
 services:
 
+  act-github-pr-reviewer:
+    <<: *act-base
+    container_name: act-github-pr-reviewer
+    ports:
+      - "9002:9002"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ACT_PORT=9002
+    volumes:
+      - ./act:/app/act
+      - ./flows/github-pr-reviewer.flow:/app/flow
+
   act-syria-weather-api:
     <<: *act-base
     container_name: act-syria-weather-api

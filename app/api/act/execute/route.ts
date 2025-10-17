@@ -201,16 +201,40 @@ except Exception as e:
           const flowsDir = path.join(process.cwd(), 'components/apps/act-docker/flows')
           await fs.mkdir(flowsDir, { recursive: true })
 
-          const finalFlowPath = path.join(flowsDir, result.flow_file)
-
-          // Write the flow content to flows directory
-          await fs.writeFile(finalFlowPath, flowContent, 'utf-8')
-
-          console.log('[ACT Execute] Flow file saved to:', finalFlowPath)
-
-          // Extract flow name from file (remove .act/.flow extension)
+          // Extract flow name (remove extension)
           const flowNameMatch = result.flow_file.match(/^(.+)\.(act|flow)$/)
           const deployFlowName = flowNameMatch ? flowNameMatch[1] : result.flow_file.replace(/\.(act|flow)$/, '')
+
+          // ALWAYS save agent workflows with .flow extension (required for docker-compose discovery)
+          const flowFileName = `${deployFlowName}.flow`
+          const finalFlowPath = path.join(flowsDir, flowFileName)
+
+          // Inject metadata section into flow content for session linking
+          let enhancedFlowContent = flowContent
+          if (sessionId && projectName) {
+            // Check if metadata section already exists
+            if (!flowContent.includes('[metadata]')) {
+              // Add metadata section after [workflow] section
+              const metadataSection = `\n[metadata]\nsessionId = "${sessionId}"\nprojectName = "${projectName}"\ncreatedAt = "${new Date().toISOString()}"\n`
+
+              // Find the end of [workflow] section (next section starting with [)
+              const workflowMatch = flowContent.match(/\[workflow\][\s\S]*?(?=\n\[)/m)
+              if (workflowMatch) {
+                const insertIndex = workflowMatch.index! + workflowMatch[0].length
+                enhancedFlowContent = flowContent.slice(0, insertIndex) + metadataSection + flowContent.slice(insertIndex)
+              } else {
+                // If we can't find the workflow section, append at the beginning after [workflow]
+                enhancedFlowContent = flowContent.replace('[workflow]', `[workflow]${metadataSection}`)
+              }
+
+              console.log('[ACT Execute] Added metadata section to flow:', { sessionId, projectName })
+            }
+          }
+
+          // Write the flow content to flows directory
+          await fs.writeFile(finalFlowPath, enhancedFlowContent, 'utf-8')
+
+          console.log('[ACT Execute] Flow file saved to:', finalFlowPath)
 
           console.log('[ACT Execute] Starting deployment for flow:', deployFlowName)
 
