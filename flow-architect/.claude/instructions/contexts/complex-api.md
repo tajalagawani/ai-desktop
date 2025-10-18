@@ -315,11 +315,11 @@ DefineRoute3 = Handler3
 - Each route connects ONLY to its handler
 - DO NOT chain routes together
 
-### Step 14: Save and Deploy
+### Step 14: Save (Do NOT Execute)
 
 **Path:** `flows/[system]-api.flow`
 
-**Execute:** Deploy as persistent service
+**Do NOT execute** - User deploys manually via Docker when ready
 
 ---
 
@@ -500,7 +500,7 @@ parameters = ["{{request_data.id}}"]
 
 **Response:**
 ```
-"✓ Todo API active at http://localhost:9004
+"✓ Todo API created: flows/todo-api.flow
 
 **Task Management:**
 • GET /api/tasks - List all tasks
@@ -517,9 +517,10 @@ parameters = ["{{request_data.id}}"]
 • GET /api/tags - List tags
 • POST /api/tags - Create tag
 
-Try it: curl http://localhost:9004/api/tasks
+**To deploy:** Use the Flow Manager UI to start the service
 
-Sample data loaded and ready to use!"
+**Port:** 9004
+**Database:** 4 tables (tasks, categories, tags, task_tags) created on first run"
 ```
 
 ---
@@ -582,7 +583,7 @@ CREATE INDEX idx_tasks_category ON tasks(category_id);
 
 **Response:**
 ```
-"✓ Todo API active at http://localhost:9004
+"✓ Todo API created: flows/todo-api.flow
 
 **Tasks:**
 • GET /api/tasks - List all tasks
@@ -595,7 +596,10 @@ CREATE INDEX idx_tasks_category ON tasks(category_id);
 • GET /api/categories - List categories
 • POST /api/categories - Create category
 
-Database initialized. Ready to use!"
+**To deploy:** Use the Flow Manager UI to start the service
+
+**Port:** 9004
+**Database:** 2 tables (tasks, categories) created on first run"
 ```
 
 ---
@@ -632,7 +636,7 @@ Database initialized. Ready to use!"
 - Each route → handler
 - Parameterized queries
 - Service catalog registration
-- Permanent deployment
-- List all endpoints in response
+- Save .flow file (do NOT execute)
+- List all endpoints and deployment instructions in response
 
 **That's it.**

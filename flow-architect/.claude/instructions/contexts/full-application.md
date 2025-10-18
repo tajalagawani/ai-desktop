@@ -324,11 +324,11 @@ DefineRoute2 = Handler2
 # ... (15-40+ handlers)
 ```
 
-### Step 16: Deploy and Register
+### Step 16: Save (Do NOT Execute)
 
 **Save:** `flows/[system]-management.flow`
 
-**Deploy:** POST to `/api/act/execute`
+**Do NOT execute** - User deploys manually via Docker when ready
 
 **Register:** Included in service catalog
 
@@ -515,7 +515,7 @@ endpoints = [
 
 **Response:**
 ```
-"✓ Restaurant Management System active at http://localhost:9005
+"✓ Restaurant Management System created: flows/restaurant-management.flow
 
 **Complete Operations:**
 → Order management (create, track, update)
@@ -523,8 +523,6 @@ endpoints = [
 → Customer database (profiles, history)
 → Table management (availability, assignments)
 → Reservations (booking, scheduling)
-
-**API Access:** http://localhost:9005
 
 **Available Endpoints:**
 
@@ -549,7 +547,10 @@ endpoints = [
 **Tables:**
 • GET /api/tables - View table availability
 
-Database initialized with sample data. Ready for production use!"
+**To deploy:** Use the Flow Manager UI to start the service
+
+**Port:** 9005
+**Database:** 6 tables created on first run"
 ```
 
 ---
@@ -592,8 +593,8 @@ Database initialized with sample data. Ready for production use!"
 - [ ] Did I include full server config?
 - [ ] Did I list ALL endpoints in catalog?
 - [ ] Did I save as permanent .flow?
-- [ ] Did I deploy successfully?
-- [ ] Did I respond with feature overview?
+- [ ] Did I NOT execute/deploy (user does this manually)?
+- [ ] Did I respond with file location and deployment instructions?
 
 **If any checkbox is unchecked, DO NOT RESPOND YET.**
 
@@ -608,8 +609,9 @@ Database initialized with sample data. Ready for production use!"
 - 15-40+ API endpoints
 - Full CRUD operations
 - Business logic support
-- Production-ready
+- Production-ready .flow file
 - Complete service catalog
-- Feature-rich response
+- Save only (user deploys manually)
+- Feature-rich response with deployment instructions
 
 **That's it.**

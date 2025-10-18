@@ -284,20 +284,26 @@ DefineAdd[Resource]Route = Add[Resource]
 
 **NOT temp/** - This is a persistent service
 
-### Step 12: Deploy and Respond
+### Step 12: Save and Respond
 
-**Execute the flow** - It will deploy as a running service
+**Save the .flow file** - Do NOT execute it
+
+**User deploys manually** via Docker if they want to run it
 
 **Response Pattern:**
 ```
-"✓ [Resource] API active at http://[machine]:[port]
+"✓ [Resource] API created: flows/[resource]-api.flow
 
-Endpoints:
+**Endpoints defined:**
 • POST /api/[resource] - Create [resource]
 • GET /api/[resource] - List [resources]
 [Additional endpoints if applicable]
 
-Try it: curl http://[machine]:[port]/api/[resource]"
+**To deploy:** Navigate to the Flow Manager UI to start the service, or use:
+docker compose up -d act-[resource]-api
+
+**Port:** [PORT]
+**Database:** PostgreSQL tables created on first run"
 ```
 
 ---
@@ -589,9 +595,9 @@ ProcessQuote = SaveProcessedQuote
 - [ ] Did I assign a port (9001+)?
 - [ ] Did I register in service catalog?
 - [ ] Did I save as permanent .flow file?
-- [ ] Did I execute the flow?
+- [ ] Did I NOT execute the flow (user deploys manually)?
 - [ ] Does each route connect ONLY to its handler?
-- [ ] Did I respond with access URL and endpoint list?
+- [ ] Did I respond with file location and deployment instructions?
 
 **If any checkbox is unchecked, DO NOT RESPOND YET.**
 
@@ -608,7 +614,7 @@ ProcessQuote = SaveProcessedQuote
 - Create handlers (Neon nodes)
 - Full server config
 - Register in catalog
-- Deploy
-- Provide access info
+- Save as .flow file (do NOT execute)
+- Provide deployment instructions
 
 **That's it.**

@@ -39,6 +39,30 @@ services:
       - ./act:/app/act
       - ./flows/iss-weather-api.flow:/app/flow
 
+  act-price-monitor-simple:
+    <<: *act-base
+    container_name: act-price-monitor-simple
+    ports:
+      - "9007:9007"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ACT_PORT=9007
+    volumes:
+      - ./act:/app/act
+      - ./flows/price-monitor-simple.flow:/app/flow
+
+  act-price-monitor:
+    <<: *act-base
+    container_name: act-price-monitor
+    ports:
+      - "9004:9004"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ACT_PORT=9004
+    volumes:
+      - ./act:/app/act
+      - ./flows/price-monitor.flow:/app/flow
+
   act-syria-weather-api:
     <<: *act-base
     container_name: act-syria-weather-api
@@ -51,22 +75,21 @@ services:
       - ./act:/app/act
       - ./flows/syria-weather-api.flow:/app/flow
 
-  act-price-monitor:
+  act-todo-api:
     <<: *act-base
-    container_name: act-price-monitor
+    container_name: act-todo-api
     ports:
-      - "9004:9004"
+      - "9006:9006"
     environment:
       - PYTHONUNBUFFERED=1
-      - ACT_PORT=9004
+      - ACT_PORT=9006
     volumes:
       - ./act:/app/act
-      - ./flows/price-monitor-simple.flow:/app/flow
-      - price-monitor-data:/app
+      - ./flows/todo-api.flow:/app/flow
 
-  act-vix-filter-agent:
+  act-vix-filter-api:
     <<: *act-base
-    container_name: act-vix-filter-agent
+    container_name: act-vix-filter-api
     ports:
       - "9005:9005"
     environment:
@@ -79,6 +102,3 @@ services:
 networks:
   act-network:
     driver: bridge
-
-volumes:
-  price-monitor-data:

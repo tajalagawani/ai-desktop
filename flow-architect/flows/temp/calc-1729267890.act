@@ -1,0 +1,14 @@
+[workflow]
+name = "Calculate 156 * 37"
+description = "Multiply 156 and 37"
+start_node = Calculate
+
+[node:Calculate]
+type = "py"
+label = "Perform multiplication"
+code = """
+def calculate():
+    result = 156 * 37
+    return {"result": result}
+"""
+function = "calculate"

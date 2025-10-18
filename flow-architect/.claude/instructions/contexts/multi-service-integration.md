@@ -515,15 +515,13 @@ schedule = "* * * * *"  # ❌ Every minute might hit rate limits
 
 **Response:**
 ```
-"✓ Price monitoring system active
+"✓ Price monitoring system created: flows/price-monitor.flow
 
 **Monitoring:**
-→ Checking competitor prices every 4 hours
-→ Tracking price history in database
-→ Detecting price changes automatically
-→ Sending email alerts when prices change
-
-**Data Access:** http://localhost:9006
+→ Checks competitor prices every 4 hours
+→ Tracks price history in database
+→ Detects price changes automatically
+→ Sends email alerts when prices change
 
 **Endpoints:**
 • GET /api/prices/current - Latest prices
@@ -532,11 +530,13 @@ schedule = "* * * * *"  # ❌ Every minute might hit rate limits
 • GET /api/competitors - Tracked competitors
 • POST /api/competitors - Add competitor
 
-**Alert Email:** alerts@yourcompany.com
+**To deploy:** Use the Flow Manager UI to start the service
 
-First check running now...
-
-Next check: [timestamp]"
+**Port:** 9006
+**Schedule:** Every 4 hours (0 */4 * * *)
+**Email:** Configured to send alerts
+**Requirements:** API keys and SMTP credentials in environment variables
+**Database:** 3 tables (price_history, competitors, price_alerts) created on first run"
 ```
 
 ---
@@ -580,9 +580,8 @@ Next check: [timestamp]"
 - [ ] Did I include full server config?
 - [ ] Did I register in service catalog?
 - [ ] Did I save as permanent .flow?
-- [ ] Did I deploy successfully?
-- [ ] Did I run first execution?
-- [ ] Did I respond with system overview?
+- [ ] Did I NOT execute/deploy (user does this manually)?
+- [ ] Did I respond with file location and deployment instructions?
 
 **If any checkbox is unchecked, DO NOT RESPOND YET.**
 
@@ -600,6 +599,7 @@ Next check: [timestamp]"
 - History tracking
 - API access layer
 - Scheduled/event-driven
-- Production monitoring
+- Save as .flow file (do NOT execute)
+- User deploys when ready
 
 **That's it.**

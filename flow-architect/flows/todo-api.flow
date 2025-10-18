@@ -1,0 +1,537 @@
+[workflow]
+name = "Todo Management API"
+description = "Complete todo management system with tasks, projects, and tags"
+start_node = CreateProjectsTable
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "todo-management-api-agent"
+agent_version = "1.0.0"
+
+[server]
+host = "0.0.0.0"
+port = 9006
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[deployment]
+environment = "production"
+
+[service_catalog]
+register = true
+service_name = "Todo Management API"
+service_type = "api"
+description = "Complete task management with projects, tasks, and tags"
+icon = "✓"
+category = "productivity"
+endpoints = [
+  {path = "/api/projects", method = "GET", description = "List all projects"},
+  {path = "/api/projects/<int:id>", method = "GET", description = "Get project by ID"},
+  {path = "/api/projects", method = "POST", description = "Create new project"},
+  {path = "/api/projects/<int:id>", method = "PUT", description = "Update project"},
+  {path = "/api/projects/<int:id>", method = "DELETE", description = "Delete project"},
+  {path = "/api/tasks", method = "GET", description = "List all tasks"},
+  {path = "/api/tasks/<int:id>", method = "GET", description = "Get task by ID"},
+  {path = "/api/tasks", method = "POST", description = "Create new task"},
+  {path = "/api/tasks/<int:id>", method = "PUT", description = "Update task"},
+  {path = "/api/tasks/<int:id>", method = "DELETE", description = "Delete task"},
+  {path = "/api/tags", method = "GET", description = "List all tags"},
+  {path = "/api/tags/<int:id>", method = "GET", description = "Get tag by ID"},
+  {path = "/api/tags", method = "POST", description = "Create new tag"},
+  {path = "/api/tags/<int:id>", method = "PUT", description = "Update tag"},
+  {path = "/api/tags/<int:id>", method = "DELETE", description = "Delete tag"},
+  {path = "/api/tasks/<int:task_id>/tags/<int:tag_id>", method = "POST", description = "Add tag to task"},
+  {path = "/api/tasks/<int:task_id>/tags/<int:tag_id>", method = "DELETE", description = "Remove tag from task"}
+]
+
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+
+[env]
+DATABASE_URL = "postgresql://neondb_owner:9PSqFZN5K1S4@ep-solitary-cell-a5q1pkuq.us-east-2.aws.neon.tech/neondb?sslmode=require"
+
+# ==============================================
+# Database Setup - Tables Created Sequentially
+# ==============================================
+
+[node:CreateProjectsTable]
+type = "neon"
+label = "Create projects table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS projects (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    color VARCHAR(7) DEFAULT '#3B82F6',
+    is_archived BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_projects_archived ON projects(is_archived);
+"""
+
+[node:CreateTasksTable]
+type = "neon"
+label = "Create tasks table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS tasks (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+    completed BOOLEAN DEFAULT FALSE,
+    priority VARCHAR(20) DEFAULT 'medium',
+    due_date TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks(project_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_completed ON tasks(completed);
+CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority);
+CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks(due_date);
+"""
+
+[node:CreateTagsTable]
+type = "neon"
+label = "Create tags table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS tags (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    color VARCHAR(7) DEFAULT '#6B7280',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+[node:CreateTaskTagsTable]
+type = "neon"
+label = "Create task_tags junction table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS task_tags (
+    task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
+    tag_id INTEGER REFERENCES tags(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (task_id, tag_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_tags_task_id ON task_tags(task_id);
+CREATE INDEX IF NOT EXISTS idx_task_tags_tag_id ON task_tags(tag_id);
+"""
+
+# ==============================================
+# PROJECTS API - Full CRUD
+# ==============================================
+
+[node:DefineGetProjectsRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/projects"
+operation = "add_route"
+route_path = "/api/projects"
+methods = ["GET"]
+handler = "FetchProjects"
+description = "Get all projects"
+
+[node:FetchProjects]
+type = "neon"
+label = "Fetch all projects"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, name, description, color, is_archived, created_at, updated_at FROM projects ORDER BY created_at DESC"
+
+[node:DefineGetProjectByIdRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/projects/<id>"
+operation = "add_route"
+route_path = "/api/projects/<int:id_from_url>"
+methods = ["GET"]
+handler = "FetchProjectById"
+description = "Get project by ID"
+
+[node:FetchProjectById]
+type = "neon"
+label = "Fetch project by ID"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, name, description, color, is_archived, created_at, updated_at FROM projects WHERE id = %s"
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateProjectRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/projects"
+operation = "add_route"
+route_path = "/api/projects"
+methods = ["POST"]
+handler = "CreateProject"
+description = "Create new project"
+
+[node:CreateProject]
+type = "neon"
+label = "Insert project"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO projects (name, description, color) VALUES (%s, %s, %s) RETURNING id, name, description, color, is_archived, created_at"
+parameters = ["{{request_data.name}}", "{{request_data.description}}", "{{request_data.color}}"]
+
+[node:DefineUpdateProjectRoute]
+type = "aci"
+mode = "server"
+label = "PUT /api/projects/<id>"
+operation = "add_route"
+route_path = "/api/projects/<int:id_from_url>"
+methods = ["PUT"]
+handler = "UpdateProject"
+description = "Update project"
+
+[node:UpdateProject]
+type = "neon"
+label = "Update project"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE projects SET name = %s, description = %s, color = %s, is_archived = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING id, name, description, color, is_archived, updated_at"
+parameters = ["{{request_data.name}}", "{{request_data.description}}", "{{request_data.color}}", "{{request_data.is_archived}}", "{{request_data.id_from_url}}"]
+
+[node:DefineDeleteProjectRoute]
+type = "aci"
+mode = "server"
+label = "DELETE /api/projects/<id>"
+operation = "add_route"
+route_path = "/api/projects/<int:id_from_url>"
+methods = ["DELETE"]
+handler = "DeleteProject"
+description = "Delete project"
+
+[node:DeleteProject]
+type = "neon"
+label = "Delete project"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "DELETE FROM projects WHERE id = %s RETURNING id"
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# TASKS API - Full CRUD
+# ==============================================
+
+[node:DefineGetTasksRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/tasks"
+operation = "add_route"
+route_path = "/api/tasks"
+methods = ["GET"]
+handler = "FetchTasks"
+description = "Get all tasks"
+
+[node:FetchTasks]
+type = "neon"
+label = "Fetch all tasks with tags"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+SELECT
+    t.id, t.title, t.description, t.project_id, t.completed,
+    t.priority, t.due_date, t.created_at, t.updated_at,
+    p.name as project_name,
+    COALESCE(
+        json_agg(
+            json_build_object('id', tg.id, 'name', tg.name, 'color', tg.color)
+        ) FILTER (WHERE tg.id IS NOT NULL),
+        '[]'
+    ) as tags
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.id
+LEFT JOIN task_tags tt ON t.id = tt.task_id
+LEFT JOIN tags tg ON tt.tag_id = tg.id
+GROUP BY t.id, p.name
+ORDER BY t.created_at DESC
+"""
+
+[node:DefineGetTaskByIdRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/tasks/<id>"
+operation = "add_route"
+route_path = "/api/tasks/<int:id_from_url>"
+methods = ["GET"]
+handler = "FetchTaskById"
+description = "Get task by ID"
+
+[node:FetchTaskById]
+type = "neon"
+label = "Fetch task by ID with tags"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+SELECT
+    t.id, t.title, t.description, t.project_id, t.completed,
+    t.priority, t.due_date, t.created_at, t.updated_at,
+    p.name as project_name,
+    COALESCE(
+        json_agg(
+            json_build_object('id', tg.id, 'name', tg.name, 'color', tg.color)
+        ) FILTER (WHERE tg.id IS NOT NULL),
+        '[]'
+    ) as tags
+FROM tasks t
+LEFT JOIN projects p ON t.project_id = p.id
+LEFT JOIN task_tags tt ON t.id = tt.task_id
+LEFT JOIN tags tg ON tt.tag_id = tg.id
+WHERE t.id = %s
+GROUP BY t.id, p.name
+"""
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateTaskRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/tasks"
+operation = "add_route"
+route_path = "/api/tasks"
+methods = ["POST"]
+handler = "CreateTask"
+description = "Create new task"
+
+[node:CreateTask]
+type = "neon"
+label = "Insert task"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO tasks (title, description, project_id, priority, due_date) VALUES (%s, %s, %s, %s, %s) RETURNING id, title, description, project_id, completed, priority, due_date, created_at"
+parameters = ["{{request_data.title}}", "{{request_data.description}}", "{{request_data.project_id}}", "{{request_data.priority}}", "{{request_data.due_date}}"]
+
+[node:DefineUpdateTaskRoute]
+type = "aci"
+mode = "server"
+label = "PUT /api/tasks/<id>"
+operation = "add_route"
+route_path = "/api/tasks/<int:id_from_url>"
+methods = ["PUT"]
+handler = "UpdateTask"
+description = "Update task"
+
+[node:UpdateTask]
+type = "neon"
+label = "Update task"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE tasks SET title = %s, description = %s, project_id = %s, completed = %s, priority = %s, due_date = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING id, title, description, project_id, completed, priority, due_date, updated_at"
+parameters = ["{{request_data.title}}", "{{request_data.description}}", "{{request_data.project_id}}", "{{request_data.completed}}", "{{request_data.priority}}", "{{request_data.due_date}}", "{{request_data.id_from_url}}"]
+
+[node:DefineDeleteTaskRoute]
+type = "aci"
+mode = "server"
+label = "DELETE /api/tasks/<id>"
+operation = "add_route"
+route_path = "/api/tasks/<int:id_from_url>"
+methods = ["DELETE"]
+handler = "DeleteTask"
+description = "Delete task"
+
+[node:DeleteTask]
+type = "neon"
+label = "Delete task"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "DELETE FROM tasks WHERE id = %s RETURNING id"
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# TAGS API - Full CRUD
+# ==============================================
+
+[node:DefineGetTagsRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/tags"
+operation = "add_route"
+route_path = "/api/tags"
+methods = ["GET"]
+handler = "FetchTags"
+description = "Get all tags"
+
+[node:FetchTags]
+type = "neon"
+label = "Fetch all tags"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, name, color, created_at FROM tags ORDER BY name ASC"
+
+[node:DefineGetTagByIdRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/tags/<id>"
+operation = "add_route"
+route_path = "/api/tags/<int:id_from_url>"
+methods = ["GET"]
+handler = "FetchTagById"
+description = "Get tag by ID"
+
+[node:FetchTagById]
+type = "neon"
+label = "Fetch tag by ID"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, name, color, created_at FROM tags WHERE id = %s"
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateTagRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/tags"
+operation = "add_route"
+route_path = "/api/tags"
+methods = ["POST"]
+handler = "CreateTag"
+description = "Create new tag"
+
+[node:CreateTag]
+type = "neon"
+label = "Insert tag"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO tags (name, color) VALUES (%s, %s) RETURNING id, name, color, created_at"
+parameters = ["{{request_data.name}}", "{{request_data.color}}"]
+
+[node:DefineUpdateTagRoute]
+type = "aci"
+mode = "server"
+label = "PUT /api/tags/<id>"
+operation = "add_route"
+route_path = "/api/tags/<int:id_from_url>"
+methods = ["PUT"]
+handler = "UpdateTag"
+description = "Update tag"
+
+[node:UpdateTag]
+type = "neon"
+label = "Update tag"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE tags SET name = %s, color = %s WHERE id = %s RETURNING id, name, color"
+parameters = ["{{request_data.name}}", "{{request_data.color}}", "{{request_data.id_from_url}}"]
+
+[node:DefineDeleteTagRoute]
+type = "aci"
+mode = "server"
+label = "DELETE /api/tags/<id>"
+operation = "add_route"
+route_path = "/api/tags/<int:id_from_url>"
+methods = ["DELETE"]
+handler = "DeleteTag"
+description = "Delete tag"
+
+[node:DeleteTag]
+type = "neon"
+label = "Delete tag"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "DELETE FROM tags WHERE id = %s RETURNING id"
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# TASK-TAG RELATIONSHIPS
+# ==============================================
+
+[node:DefineAddTagToTaskRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/tasks/<task_id>/tags/<tag_id>"
+operation = "add_route"
+route_path = "/api/tasks/<int:task_id_from_url>/tags/<int:tag_id_from_url>"
+methods = ["POST"]
+handler = "AddTagToTask"
+description = "Add tag to task"
+
+[node:AddTagToTask]
+type = "neon"
+label = "Insert task-tag relationship"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO task_tags (task_id, tag_id) VALUES (%s, %s) ON CONFLICT DO NOTHING RETURNING task_id, tag_id"
+parameters = ["{{request_data.task_id_from_url}}", "{{request_data.tag_id_from_url}}"]
+
+[node:DefineRemoveTagFromTaskRoute]
+type = "aci"
+mode = "server"
+label = "DELETE /api/tasks/<task_id>/tags/<tag_id>"
+operation = "add_route"
+route_path = "/api/tasks/<int:task_id_from_url>/tags/<int:tag_id_from_url>"
+methods = ["DELETE"]
+handler = "RemoveTagFromTask"
+description = "Remove tag from task"
+
+[node:RemoveTagFromTask]
+type = "neon"
+label = "Delete task-tag relationship"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "DELETE FROM task_tags WHERE task_id = %s AND tag_id = %s RETURNING task_id, tag_id"
+parameters = ["{{request_data.task_id_from_url}}", "{{request_data.tag_id_from_url}}"]
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+# Sequential table creation
+CreateProjectsTable = CreateTasksTable
+CreateTasksTable = CreateTagsTable
+CreateTagsTable = CreateTaskTagsTable
+
+# Connect last table to all route definitions (fan-out)
+CreateTaskTagsTable = DefineGetProjectsRoute
+CreateTaskTagsTable = DefineGetProjectByIdRoute
+CreateTaskTagsTable = DefineCreateProjectRoute
+CreateTaskTagsTable = DefineUpdateProjectRoute
+CreateTaskTagsTable = DefineDeleteProjectRoute
+CreateTaskTagsTable = DefineGetTasksRoute
+CreateTaskTagsTable = DefineGetTaskByIdRoute
+CreateTaskTagsTable = DefineCreateTaskRoute
+CreateTaskTagsTable = DefineUpdateTaskRoute
+CreateTaskTagsTable = DefineDeleteTaskRoute
+CreateTaskTagsTable = DefineGetTagsRoute
+CreateTaskTagsTable = DefineGetTagByIdRoute
+CreateTaskTagsTable = DefineCreateTagRoute
+CreateTaskTagsTable = DefineUpdateTagRoute
+CreateTaskTagsTable = DefineDeleteTagRoute
+CreateTaskTagsTable = DefineAddTagToTaskRoute
+CreateTaskTagsTable = DefineRemoveTagFromTaskRoute
+
+# Each route connects to its handler
+DefineGetProjectsRoute = FetchProjects
+DefineGetProjectByIdRoute = FetchProjectById
+DefineCreateProjectRoute = CreateProject
+DefineUpdateProjectRoute = UpdateProject
+DefineDeleteProjectRoute = DeleteProject
+DefineGetTasksRoute = FetchTasks
+DefineGetTaskByIdRoute = FetchTaskById
+DefineCreateTaskRoute = CreateTask
+DefineUpdateTaskRoute = UpdateTask
+DefineDeleteTaskRoute = DeleteTask
+DefineGetTagsRoute = FetchTags
+DefineGetTagByIdRoute = FetchTagById
+DefineCreateTagRoute = CreateTag
+DefineUpdateTagRoute = UpdateTag
+DefineDeleteTagRoute = DeleteTag
+DefineAddTagToTaskRoute = AddTagToTask
+DefineRemoveTagFromTaskRoute = RemoveTagFromTask

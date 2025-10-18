@@ -473,13 +473,15 @@ timeout_seconds = 30
 
 **Response:**
 ```
-"✓ Random number generator active
+"✓ Random number generator created: flows/random-scheduler.flow
 
-Generating a random number every hour and storing results.
+Generates a random number every hour and stores results.
 
-Service running on port 9001
+**To deploy:** Use the Flow Manager UI to start the service
 
-First generation: 42"
+**Port:** 9001
+**Schedule:** Every hour (0 * * * *)
+**Database:** numbers table created on first run"
 ```
 
 ---
@@ -490,13 +492,16 @@ First generation: 42"
 
 **Response:**
 ```
-"✓ ISS tracking active
+"✓ ISS tracking created: flows/iss-tracker.flow
 
-Checking location every 5 minutes and storing history.
+Checks location every 5 minutes and stores history.
 
-View data at: http://localhost:9002/api/iss/history
+**To deploy:** Use the Flow Manager UI to start the service
 
-First check: Lat 45.23°, Lon -12.45°"
+**Port:** 9002
+**Schedule:** Every 5 minutes (*/5 * * * *)
+**API:** GET /api/iss/history - View tracking data
+**Database:** iss_tracking table created on first run"
 ```
 
 ---
@@ -507,13 +512,16 @@ First check: Lat 45.23°, Lon -12.45°"
 
 **Response:**
 ```
-"✓ Daily weather reports scheduled
+"✓ Daily weather reports created: flows/weather-scheduler.flow
 
-You'll receive an email every day at 8:00 AM UTC with current weather.
+Sends email every day at 8:00 AM UTC with current weather.
 
-Service configured and ready.
+**To deploy:** Use the Flow Manager UI to start the service
 
-First report will be sent tomorrow at 8:00 AM."
+**Port:** 9003
+**Schedule:** Daily at 8:00 AM UTC (0 8 * * *)
+**Email:** Configured to send to your email
+**Requirements:** SMTP credentials in environment variables"
 ```
 
 ---
@@ -584,13 +592,15 @@ First report will be sent tomorrow at 8:00 AM."
 9. **Respond:**
 
 ```
-"✓ Random number generator active
+"✓ Random number generator created: flows/random-scheduler.flow
 
-Generating a random number every hour and storing results.
+Generates a random number every hour and stores results.
 
-Service running on port 9001
+**To deploy:** Use the Flow Manager UI to start the service
 
-First generation: 42"
+**Port:** 9001
+**Schedule:** Every hour (0 * * * *)
+**Database:** numbers table created on first run"
 ```
 
 ---
@@ -608,9 +618,8 @@ First generation: 42"
 - [ ] Did I assign a port?
 - [ ] Did I register in service catalog?
 - [ ] Did I save as permanent .flow file?
-- [ ] Did I execute the flow?
-- [ ] Did I run first task execution?
-- [ ] Did I respond with status and first result?
+- [ ] Did I NOT execute the flow (user deploys manually)?
+- [ ] Did I respond with file location and deployment instructions?
 
 **If any checkbox is unchecked, DO NOT RESPOND YET.**
 
@@ -626,8 +635,7 @@ First generation: 42"
 - Store results if tracking data
 - Full server config
 - Register in catalog
-- Permanent .flow file
-- Run first execution
-- Confirm to user
+- Save as .flow file (do NOT execute)
+- Provide deployment instructions to user
 
 **That's it.**

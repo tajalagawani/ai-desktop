@@ -18,7 +18,11 @@ help:
 # Individual flow commands:
 # make start-github-pr-reviewer, stop-github-pr-reviewer, logs-github-pr-reviewer
 # make start-iss-weather-api, stop-iss-weather-api, logs-iss-weather-api
+# make start-price-monitor-simple, stop-price-monitor-simple, logs-price-monitor-simple
+# make start-price-monitor, stop-price-monitor, logs-price-monitor
 # make start-syria-weather-api, stop-syria-weather-api, logs-syria-weather-api
+# make start-todo-api, stop-todo-api, logs-todo-api
+# make start-vix-filter-api, stop-vix-filter-api, logs-vix-filter-api
 
 start:
 	@echo "🚀 Starting all flows..."
@@ -72,6 +76,30 @@ restart-iss-weather-api:
 logs-iss-weather-api:
 	docker-compose logs -f act-iss-weather-api
 
+start-price-monitor-simple:
+	docker-compose up -d act-price-monitor-simple
+
+stop-price-monitor-simple:
+	docker-compose stop act-price-monitor-simple
+
+restart-price-monitor-simple:
+	docker-compose restart act-price-monitor-simple
+
+logs-price-monitor-simple:
+	docker-compose logs -f act-price-monitor-simple
+
+start-price-monitor:
+	docker-compose up -d act-price-monitor
+
+stop-price-monitor:
+	docker-compose stop act-price-monitor
+
+restart-price-monitor:
+	docker-compose restart act-price-monitor
+
+logs-price-monitor:
+	docker-compose logs -f act-price-monitor
+
 start-syria-weather-api:
 	docker-compose up -d act-syria-weather-api
 
@@ -83,3 +111,27 @@ restart-syria-weather-api:
 
 logs-syria-weather-api:
 	docker-compose logs -f act-syria-weather-api
+
+start-todo-api:
+	docker-compose up -d act-todo-api
+
+stop-todo-api:
+	docker-compose stop act-todo-api
+
+restart-todo-api:
+	docker-compose restart act-todo-api
+
+logs-todo-api:
+	docker-compose logs -f act-todo-api
+
+start-vix-filter-api:
+	docker-compose up -d act-vix-filter-api
+
+stop-vix-filter-api:
+	docker-compose stop act-vix-filter-api
+
+restart-vix-filter-api:
+	docker-compose restart act-vix-filter-api
+
+logs-vix-filter-api:
+	docker-compose logs -f act-vix-filter-api
