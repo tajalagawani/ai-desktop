@@ -168,7 +168,7 @@ CREATE INDEX idx_comments_post_id ON comments(post_id);
 ### Step 5: Find Next Available Port
 
 ```bash
-grep "^port = " flows/*.flow | sort -t= -k2 -n | tail -1
+grep "^port = " ../components/apps/act-docker/flows/*.flow | sort -t= -k2 -n | tail -1
 ```
 
 **Output:** `port = 9003`
@@ -317,7 +317,7 @@ DefineRoute3 = Handler3
 
 ### Step 14: Save (Do NOT Execute)
 
-**Path:** `flows/[system]-api.flow`
+**Path:** `../components/apps/act-docker/flows/[system]-api.flow`
 
 **Do NOT execute** - User deploys manually via Docker when ready
 
@@ -500,7 +500,7 @@ parameters = ["{{request_data.id}}"]
 
 **Response:**
 ```
-"✓ Todo API created: flows/todo-api.flow
+"✓ Todo API created: ../components/apps/act-docker/flows/todo-api.flow
 
 **Task Management:**
 • GET /api/tasks - List all tasks
@@ -583,7 +583,7 @@ CREATE INDEX idx_tasks_category ON tasks(category_id);
 
 **Response:**
 ```
-"✓ Todo API created: flows/todo-api.flow
+"✓ Todo API created: ../components/apps/act-docker/flows/todo-api.flow
 
 **Tasks:**
 • GET /api/tasks - List all tasks

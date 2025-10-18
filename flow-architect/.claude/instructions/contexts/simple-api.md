@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS quotes (
 
 **Check existing ports:**
 ```bash
-grep "^port = " flows/*.flow | sort -t= -k2 -n | tail -1
+grep "^port = " ../components/apps/act-docker/flows/*.flow | sort -t= -k2 -n | tail -1
 ```
 
 **Output example:** `port = 9002`
@@ -278,9 +278,9 @@ DefineAdd[Resource]Route = Add[Resource]
 
 ### Step 11: Save to Permanent Location
 
-**Path:** `flows/[resource]-api.flow`
+**Path:** `../components/apps/act-docker/flows/[resource]-api.flow`
 
-**Example:** `flows/quotes-api.flow`
+**Example:** `../components/apps/act-docker/flows/quotes-api.flow`
 
 **NOT temp/** - This is a persistent service
 
@@ -292,7 +292,7 @@ DefineAdd[Resource]Route = Add[Resource]
 
 **Response Pattern:**
 ```
-"✓ [Resource] API created: flows/[resource]-api.flow
+"✓ [Resource] API created: ../components/apps/act-docker/flows/[resource]-api.flow
 
 **Endpoints defined:**
 • POST /api/[resource] - Create [resource]

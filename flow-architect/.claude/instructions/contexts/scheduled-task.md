@@ -84,7 +84,7 @@ Timer → [Task Logic] → [Store Result] → [Optional: Notify/Log]
 Even if no API endpoints, scheduled services need server config:
 
 ```bash
-grep "^port = " flows/*.flow | sort -t= -k2 -n | tail -1
+grep "^port = " ../components/apps/act-docker/flows/*.flow | sort -t= -k2 -n | tail -1
 ```
 
 **Output example:** `port = 9002`
@@ -473,7 +473,7 @@ timeout_seconds = 30
 
 **Response:**
 ```
-"✓ Random number generator created: flows/random-scheduler.flow
+"✓ Random number generator created: ../components/apps/act-docker/flows/random-scheduler.flow
 
 Generates a random number every hour and stores results.
 
@@ -492,7 +492,7 @@ Generates a random number every hour and stores results.
 
 **Response:**
 ```
-"✓ ISS tracking created: flows/iss-tracker.flow
+"✓ ISS tracking created: ../components/apps/act-docker/flows/iss-tracker.flow
 
 Checks location every 5 minutes and stores history.
 
@@ -512,7 +512,7 @@ Checks location every 5 minutes and stores history.
 
 **Response:**
 ```
-"✓ Daily weather reports created: flows/weather-scheduler.flow
+"✓ Daily weather reports created: ../components/apps/act-docker/flows/weather-scheduler.flow
 
 Sends email every day at 8:00 AM UTC with current weather.
 
@@ -592,7 +592,7 @@ Sends email every day at 8:00 AM UTC with current weather.
 9. **Respond:**
 
 ```
-"✓ Random number generator created: flows/random-scheduler.flow
+"✓ Random number generator created: ../components/apps/act-docker/flows/random-scheduler.flow
 
 Generates a random number every hour and stores results.
 

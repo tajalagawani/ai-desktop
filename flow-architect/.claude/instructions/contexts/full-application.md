@@ -185,7 +185,7 @@ Total: 11 endpoints
 ### Step 5: Find Next Available Port
 
 ```bash
-grep "^port = " flows/*.flow | sort -t= -k2 -n | tail -1
+grep "^port = " ../components/apps/act-docker/flows/*.flow | sort -t= -k2 -n | tail -1
 ```
 
 Next available port (e.g., 9005)
@@ -326,7 +326,7 @@ DefineRoute2 = Handler2
 
 ### Step 16: Save (Do NOT Execute)
 
-**Save:** `flows/[system]-management.flow`
+**Save:** `../components/apps/act-docker/flows/[system]-management.flow`
 
 **Do NOT execute** - User deploys manually via Docker when ready
 
@@ -515,7 +515,7 @@ endpoints = [
 
 **Response:**
 ```
-"✓ Restaurant Management System created: flows/restaurant-management.flow
+"✓ Restaurant Management System created: ../components/apps/act-docker/flows/restaurant-management.flow
 
 **Complete Operations:**
 → Order management (create, track, update)

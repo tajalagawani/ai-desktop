@@ -515,7 +515,7 @@ schedule = "* * * * *"  # ❌ Every minute might hit rate limits
 
 **Response:**
 ```
-"✓ Price monitoring system created: flows/price-monitor.flow
+"✓ Price monitoring system created: ../components/apps/act-docker/flows/price-monitor.flow
 
 **Monitoring:**
 → Checks competitor prices every 4 hours
