@@ -254,7 +254,7 @@ handler = "FetchCompetitors"
 
 ```toml
 [node:FetchCompetitorPrices]
-type = "http_request"
+type = "request"
 label = "Fetch competitor prices"
 method = "GET"
 url = "https://api.competitor.com/prices"
@@ -448,7 +448,7 @@ DefineGetAnalyticsRoute = GetAnalytics
 
 ```toml
 [node:FetchData]
-type = "http_request"
+type = "request"
 url = "https://external-api.com"
 # ❌ No retry or timeout
 ```

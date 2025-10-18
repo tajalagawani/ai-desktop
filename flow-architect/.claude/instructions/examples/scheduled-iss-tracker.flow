@@ -76,7 +76,7 @@ timezone = "UTC"
 handler = "FetchISSLocation"
 
 [node:FetchISSLocation]
-type = "http_request"
+type = "request"
 label = "Get ISS coordinates"
 method = "GET"
 url = "http://api.open-notify.org/iss-now.json"

@@ -1,0 +1,39 @@
+[workflow]
+name = "ISS Location Tracker"
+description = "Fetch current International Space Station location"
+start_node = FetchAndParse
+
+[node:FetchAndParse]
+type = "py"
+label = "Fetch and parse ISS coordinates"
+code = """
+import requests
+import json
+
+def fetch(**kwargs):
+    try:
+        response = requests.get('http://api.open-notify.org/iss-now.json', timeout=10)
+        response.raise_for_status()
+        data = response.json()
+
+        if 'iss_position' in data:
+            lat = float(data['iss_position']['latitude'])
+            lon = float(data['iss_position']['longitude'])
+            timestamp = data.get('timestamp', 0)
+
+            return {
+                "result": {
+                    "latitude": lat,
+                    "longitude": lon,
+                    "timestamp": timestamp
+                }
+            }
+        else:
+            return {"error": "ISS position not found in response"}
+    except Exception as e:
+        return {"error": f"Failed to fetch ISS location: {str(e)}"}
+"""
+function = "fetch"
+timeout_seconds = 15
+retry_on_failure = true
+max_retries = 2

@@ -4,7 +4,7 @@ description = "Fetch current International Space Station location"
 start_node = FetchLocation
 
 [node:FetchLocation]
-type = "http_request"
+type = "request"
 label = "Get ISS coordinates"
 method = "GET"
 url = "http://api.open-notify.org/iss-now.json"

@@ -171,7 +171,7 @@ handler = "[NextNodeName]"
 **Example: Data fetching**
 ```toml
 [node:FetchData]
-type = "http_request"
+type = "request"
 label = "Fetch [resource]"
 method = "GET"
 url = "[API_URL]"
@@ -325,7 +325,7 @@ schedule = "*/5 * * * *"  # Every 5 minutes
 handler = "FetchLocation"
 
 [node:FetchLocation]
-type = "http_request"
+type = "request"
 url = "http://api.open-notify.org/iss-now.json"
 
 [node:ParseData]
@@ -364,7 +364,7 @@ schedule = "0 8 * * *"  # 8am UTC
 handler = "FetchPrice"
 
 [node:FetchPrice]
-type = "http_request"
+type = "request"
 url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
 
 [node:SendEmail]
@@ -422,7 +422,7 @@ schedule = "*/5 * * * *"  # ✅ Correct cron format
 # User: "check prices every hour and track them"
 
 [node:FetchPrice]
-type = "http_request"
+type = "request"
 # ❌ Missing database storage
 ```
 
@@ -448,7 +448,7 @@ type = "http_request"
 
 ```toml
 [node:FetchData]
-type = "http_request"
+type = "request"
 url = "https://unreliable-api.com"
 # Missing retry logic  ❌
 ```

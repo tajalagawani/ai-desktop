@@ -71,7 +71,7 @@ description = "Fetch [what data]"
 start_node = FetchData
 
 [node:FetchData]
-type = "http_request"
+type = "request"
 label = "Get [resource] data"
 method = "GET"
 url = "[API_ENDPOINT]"
@@ -90,7 +90,7 @@ api_key = "{{.env.API_KEY}}"
 API_KEY = "your-api-key-here"
 
 [node:FetchData]
-type = "http_request"
+type = "request"
 url = "[API_ENDPOINT]"
 headers = {"Authorization": "Bearer {{.Parameter.api_key}}"}
 ```
@@ -205,7 +205,7 @@ description = "Fetch current International Space Station location"
 start_node = FetchLocation
 
 [node:FetchLocation]
-type = "http_request"
+type = "request"
 label = "Get ISS coordinates"
 method = "GET"
 url = "http://api.open-notify.org/iss-now.json"
@@ -256,7 +256,7 @@ description = "Get current Bitcoin price"
 start_node = FetchPrice
 
 [node:FetchPrice]
-type = "http_request"
+type = "request"
 label = "Get BTC price"
 method = "GET"
 url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
@@ -302,7 +302,7 @@ start_node = FetchUser
 username = "octocat"
 
 [node:FetchUser]
-type = "http_request"
+type = "request"
 label = "Get user data"
 method = "GET"
 url = "https://api.github.com/users/{{.Parameter.username}}"
@@ -374,7 +374,7 @@ def parse(**kwargs):
 
 ```toml
 [node:FetchData]
-type = "http_request"
+type = "request"
 url = "https://slow-api.com/data"
 # Missing timeout_seconds  ❌
 ```
@@ -384,7 +384,7 @@ url = "https://slow-api.com/data"
 **Fix:**
 ```toml
 [node:FetchData]
-type = "http_request"
+type = "request"
 url = "https://slow-api.com/data"
 timeout_seconds = 15  # ✅ Always set timeout
 retry_on_failure = true
@@ -552,7 +552,7 @@ name = "ISS Location Tracker"
 start_node = FetchLocation
 
 [node:FetchLocation]
-type = "http_request"
+type = "request"
 method = "GET"
 url = "http://api.open-notify.org/iss-now.json"
 timeout_seconds = 10

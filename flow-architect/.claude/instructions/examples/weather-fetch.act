@@ -8,7 +8,7 @@ city = "London"
 country_code = "uk"
 
 [node:FetchWeather]
-type = "http_request"
+type = "request"
 label = "Get weather data"
 method = "GET"
 url = "https://api.openweathermap.org/data/2.5/weather?q={{.Parameter.city}},{{.Parameter.country_code}}&units=metric&appid={{.env.OPENWEATHER_API_KEY}}"

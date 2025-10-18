@@ -134,7 +134,7 @@ operation = "execute_query"
 query = "SELECT id, name, website, api_endpoint FROM competitors WHERE active = TRUE"
 
 [node:FetchCompetitorPrices]
-type = "http_request"
+type = "request"
 label = "Fetch competitor prices"
 method = "GET"
 url = "{{FetchCompetitors.result[0].api_endpoint}}"
