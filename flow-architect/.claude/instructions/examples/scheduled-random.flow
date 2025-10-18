@@ -1,0 +1,115 @@
+[workflow]
+name = "Scheduled Random Number Generator"
+description = "Generate random numbers every hour and store them"
+start_node = CreateNumbersTable
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 300
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "random-scheduler-agent"
+agent_version = "1.0.0"
+
+[server]
+host = "0.0.0.0"
+port = 9001
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[deployment]
+environment = "production"
+
+[service_catalog]
+register = true
+service_name = "Random Number Scheduler"
+service_type = "scheduler"
+description = "Generates and stores random numbers every hour"
+icon = "🎲"
+category = "utility"
+
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+min_value = 1
+max_value = 100
+
+[env]
+DATABASE_URL = "postgresql://connection-string-here"
+
+# ==============================================
+# Database Setup
+# ==============================================
+
+[node:CreateNumbersTable]
+type = "neon"
+label = "Create random_numbers table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS random_numbers (
+    id SERIAL PRIMARY KEY,
+    value INTEGER NOT NULL,
+    generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+# ==============================================
+# Scheduled Task - Runs Every Hour
+# ==============================================
+
+[node:ScheduleGeneration]
+type = "timer"
+label = "Trigger every hour"
+schedule = "0 * * * *"
+mode = "cron"
+timezone = "UTC"
+handler = "GenerateNumber"
+
+[node:GenerateNumber]
+type = "py"
+label = "Generate random number"
+code = """
+import random
+
+def generate(**kwargs):
+    min_val = kwargs.get('parameters', {}).get('min_value', 1)
+    max_val = kwargs.get('parameters', {}).get('max_value', 100)
+
+    number = random.randint(min_val, max_val)
+
+    return {
+        "result": {
+            "value": number,
+            "range": f"{min_val}-{max_val}"
+        }
+    }
+"""
+function = "generate"
+
+[node:StoreNumber]
+type = "neon"
+label = "Store in database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO random_numbers (value) VALUES (%s) RETURNING id, value, generated_at"
+parameters = ["{{GenerateNumber.result.value}}"]
+
+[node:LogGeneration]
+type = "log_message"
+label = "Log success"
+level = "info"
+message = "Generated and stored random number: {{GenerateNumber.result.value}}"
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+CreateNumbersTable = ScheduleGeneration
+ScheduleGeneration = []  # Timer handles its own routing
+GenerateNumber = StoreNumber
+StoreNumber = LogGeneration

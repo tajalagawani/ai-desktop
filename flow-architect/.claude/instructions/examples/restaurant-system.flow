@@ -1,0 +1,409 @@
+[workflow]
+name = "Restaurant Management System"
+description = "Complete restaurant management with orders, menu, customers, and reservations"
+start_node = CreateMenuTable
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "restaurant-system-agent"
+agent_version = "1.0.0"
+
+[server]
+host = "0.0.0.0"
+port = 9005
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[deployment]
+environment = "production"
+
+[service_catalog]
+register = true
+service_name = "Restaurant Management System"
+service_type = "api"
+description = "Complete restaurant operations: orders, menu, customers, reservations, tables"
+icon = "🍽️"
+category = "business"
+endpoints = [
+  {path = "/api/menu", method = "GET", description = "Get all menu items"},
+  {path = "/api/menu", method = "POST", description = "Add menu item"},
+  {path = "/api/orders", method = "GET", description = "Get all orders"},
+  {path = "/api/orders", method = "POST", description = "Create order"},
+  {path = "/api/orders/<int:id>", method = "GET", description = "Get order details"},
+  {path = "/api/orders/<int:id>", method = "PUT", description = "Update order status"},
+  {path = "/api/customers", method = "GET", description = "Get all customers"},
+  {path = "/api/customers", method = "POST", description = "Add customer"},
+  {path = "/api/reservations", method = "GET", description = "Get all reservations"},
+  {path = "/api/reservations", method = "POST", description = "Create reservation"},
+  {path = "/api/tables", method = "GET", description = "Get table availability"}
+]
+
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+
+[env]
+DATABASE_URL = "postgresql://connection-string-here"
+
+# ==============================================
+# Database Setup - All Tables
+# ==============================================
+
+[node:CreateMenuTable]
+type = "neon"
+label = "Create menu_items table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS menu_items (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    category VARCHAR(50) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    available BOOLEAN DEFAULT TRUE,
+    image_url VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_menu_category ON menu_items(category);
+"""
+
+[node:CreateCustomersTable]
+type = "neon"
+label = "Create customers table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS customers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20),
+    address TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email);
+"""
+
+[node:CreateOrdersTable]
+type = "neon"
+label = "Create orders table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    customer_id INTEGER,
+    table_number INTEGER,
+    status VARCHAR(20) DEFAULT 'pending',
+    total DECIMAL(10,2) NOT NULL,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);
+"""
+
+[node:CreateOrderItemsTable]
+type = "neon"
+label = "Create order_items table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS order_items (
+    id SERIAL PRIMARY KEY,
+    order_id INTEGER NOT NULL,
+    menu_item_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    notes TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
+"""
+
+[node:CreateTablesTable]
+type = "neon"
+label = "Create tables table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS restaurant_tables (
+    id SERIAL PRIMARY KEY,
+    table_number INTEGER UNIQUE NOT NULL,
+    capacity INTEGER NOT NULL,
+    location VARCHAR(50),
+    status VARCHAR(20) DEFAULT 'available'
+);
+"""
+
+[node:CreateReservationsTable]
+type = "neon"
+label = "Create reservations table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS reservations (
+    id SERIAL PRIMARY KEY,
+    customer_id INTEGER NOT NULL,
+    table_id INTEGER NOT NULL,
+    reservation_time TIMESTAMP NOT NULL,
+    party_size INTEGER NOT NULL,
+    status VARCHAR(20) DEFAULT 'confirmed',
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_reservations_time ON reservations(reservation_time);
+"""
+
+# ==============================================
+# Menu Endpoints
+# ==============================================
+
+[node:DefineGetMenuRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/menu"
+operation = "add_route"
+route_path = "/api/menu"
+methods = ["GET"]
+handler = "FetchMenu"
+description = "Get all menu items"
+
+[node:FetchMenu]
+type = "neon"
+label = "Fetch menu"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, name, description, category, price, available, image_url FROM menu_items WHERE available = TRUE ORDER BY category, name"
+
+[node:DefineCreateMenuItemRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/menu"
+operation = "add_route"
+route_path = "/api/menu"
+methods = ["POST"]
+handler = "CreateMenuItem"
+description = "Add menu item"
+
+[node:CreateMenuItem]
+type = "neon"
+label = "Insert menu item"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO menu_items (name, description, category, price, image_url) VALUES (%s, %s, %s, %s, %s) RETURNING *"
+parameters = ["{{request_data.name}}", "{{request_data.description}}", "{{request_data.category}}", "{{request_data.price}}", "{{request_data.image_url}}"]
+
+# ==============================================
+# Orders Endpoints
+# ==============================================
+
+[node:DefineGetOrdersRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/orders"
+operation = "add_route"
+route_path = "/api/orders"
+methods = ["GET"]
+handler = "FetchOrders"
+description = "Get all orders"
+
+[node:FetchOrders]
+type = "neon"
+label = "Fetch orders"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, customer_id, table_number, status, total, notes, created_at FROM orders ORDER BY created_at DESC"
+
+[node:DefineGetOrderByIdRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/orders/<id>"
+operation = "add_route"
+route_path = "/api/orders/<int:id_from_url>"
+methods = ["GET"]
+handler = "FetchOrderById"
+description = "Get order details"
+
+[node:FetchOrderById]
+type = "neon"
+label = "Fetch order by ID"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT * FROM orders WHERE id = %s"
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateOrderRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/orders"
+operation = "add_route"
+route_path = "/api/orders"
+methods = ["POST"]
+handler = "CreateOrder"
+description = "Create order"
+
+[node:CreateOrder]
+type = "neon"
+label = "Insert order"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO orders (customer_id, table_number, total, notes) VALUES (%s, %s, %s, %s) RETURNING *"
+parameters = ["{{request_data.customer_id}}", "{{request_data.table_number}}", "{{request_data.total}}", "{{request_data.notes}}"]
+
+[node:DefineUpdateOrderRoute]
+type = "aci"
+mode = "server"
+label = "PUT /api/orders/<id>"
+operation = "add_route"
+route_path = "/api/orders/<int:id_from_url>"
+methods = ["PUT"]
+handler = "UpdateOrder"
+description = "Update order status"
+
+[node:UpdateOrder]
+type = "neon"
+label = "Update order"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE orders SET status = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *"
+parameters = ["{{request_data.status}}", "{{request_data.id_from_url}}"]
+
+# ==============================================
+# Customers Endpoints
+# ==============================================
+
+[node:DefineGetCustomersRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/customers"
+operation = "add_route"
+route_path = "/api/customers"
+methods = ["GET"]
+handler = "FetchCustomers"
+description = "Get all customers"
+
+[node:FetchCustomers]
+type = "neon"
+label = "Fetch customers"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, name, email, phone, address, created_at FROM customers ORDER BY name"
+
+[node:DefineCreateCustomerRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/customers"
+operation = "add_route"
+route_path = "/api/customers"
+methods = ["POST"]
+handler = "CreateCustomer"
+description = "Add customer"
+
+[node:CreateCustomer]
+type = "neon"
+label = "Insert customer"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO customers (name, email, phone, address) VALUES (%s, %s, %s, %s) RETURNING *"
+parameters = ["{{request_data.name}}", "{{request_data.email}}", "{{request_data.phone}}", "{{request_data.address}}"]
+
+# ==============================================
+# Reservations Endpoints
+# ==============================================
+
+[node:DefineGetReservationsRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/reservations"
+operation = "add_route"
+route_path = "/api/reservations"
+methods = ["GET"]
+handler = "FetchReservations"
+description = "Get all reservations"
+
+[node:FetchReservations]
+type = "neon"
+label = "Fetch reservations"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, customer_id, table_id, reservation_time, party_size, status, notes FROM reservations ORDER BY reservation_time"
+
+[node:DefineCreateReservationRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/reservations"
+operation = "add_route"
+route_path = "/api/reservations"
+methods = ["POST"]
+handler = "CreateReservation"
+description = "Create reservation"
+
+[node:CreateReservation]
+type = "neon"
+label = "Insert reservation"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO reservations (customer_id, table_id, reservation_time, party_size, notes) VALUES (%s, %s, %s, %s, %s) RETURNING *"
+parameters = ["{{request_data.customer_id}}", "{{request_data.table_id}}", "{{request_data.reservation_time}}", "{{request_data.party_size}}", "{{request_data.notes}}"]
+
+# ==============================================
+# Tables Endpoints
+# ==============================================
+
+[node:DefineGetTablesRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/tables"
+operation = "add_route"
+route_path = "/api/tables"
+methods = ["GET"]
+handler = "FetchTables"
+description = "Get table availability"
+
+[node:FetchTables]
+type = "neon"
+label = "Fetch tables"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, table_number, capacity, location, status FROM restaurant_tables ORDER BY table_number"
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+CreateMenuTable = CreateCustomersTable
+CreateCustomersTable = CreateOrdersTable
+CreateOrdersTable = CreateOrderItemsTable
+CreateOrderItemsTable = CreateTablesTable
+CreateTablesTable = CreateReservationsTable
+CreateReservationsTable = DefineGetMenuRoute
+CreateReservationsTable = DefineCreateMenuItemRoute
+CreateReservationsTable = DefineGetOrdersRoute
+CreateReservationsTable = DefineGetOrderByIdRoute
+CreateReservationsTable = DefineCreateOrderRoute
+CreateReservationsTable = DefineUpdateOrderRoute
+CreateReservationsTable = DefineGetCustomersRoute
+CreateReservationsTable = DefineCreateCustomerRoute
+CreateReservationsTable = DefineGetReservationsRoute
+CreateReservationsTable = DefineCreateReservationRoute
+CreateReservationsTable = DefineGetTablesRoute
+DefineGetMenuRoute = FetchMenu
+DefineCreateMenuItemRoute = CreateMenuItem
+DefineGetOrdersRoute = FetchOrders
+DefineGetOrderByIdRoute = FetchOrderById
+DefineCreateOrderRoute = CreateOrder
+DefineUpdateOrderRoute = UpdateOrder
+DefineGetCustomersRoute = FetchCustomers
+DefineCreateCustomerRoute = CreateCustomer
+DefineGetReservationsRoute = FetchReservations
+DefineCreateReservationRoute = CreateReservation
+DefineGetTablesRoute = FetchTables

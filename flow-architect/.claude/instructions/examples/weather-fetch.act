@@ -1,0 +1,44 @@
+[workflow]
+name = "Weather Data Fetcher"
+description = "Fetch weather data for a specific location"
+start_node = FetchWeather
+
+[parameters]
+city = "London"
+country_code = "uk"
+
+[node:FetchWeather]
+type = "http_request"
+label = "Get weather data"
+method = "GET"
+url = "https://api.openweathermap.org/data/2.5/weather?q={{.Parameter.city}},{{.Parameter.country_code}}&units=metric&appid={{.env.OPENWEATHER_API_KEY}}"
+timeout_seconds = 15
+retry_on_failure = true
+max_retries = 3
+
+[node:ParseWeather]
+type = "py"
+label = "Extract weather info"
+code = """
+def parse(**kwargs):
+    data = kwargs.get('FetchWeather', {}).get('result', {})
+
+    if 'main' in data and 'weather' in data:
+        return {
+            "result": {
+                "location": data.get('name', 'Unknown'),
+                "temperature": data['main'].get('temp', 0),
+                "feels_like": data['main'].get('feels_like', 0),
+                "humidity": data['main'].get('humidity', 0),
+                "description": data['weather'][0].get('description', 'No description'),
+                "icon": data['weather'][0].get('icon', ''),
+                "wind_speed": data.get('wind', {}).get('speed', 0)
+            }
+        }
+
+    return {"error": "Failed to parse weather data"}
+"""
+function = "parse"
+
+[edges]
+FetchWeather = ParseWeather

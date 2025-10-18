@@ -1,0 +1,373 @@
+[workflow]
+name = "Price Monitoring System"
+description = "Monitor competitor prices, detect changes, store history, and send alerts"
+start_node = CreatePricesTable
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "price-monitor-agent"
+agent_version = "1.0.0"
+
+[server]
+host = "0.0.0.0"
+port = 9006
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[deployment]
+environment = "production"
+
+[service_catalog]
+register = true
+service_name = "Price Monitoring System"
+service_type = "monitor"
+description = "Track competitor prices, detect changes, and alert on price drops"
+icon = "💰"
+category = "analytics"
+endpoints = [
+  {path = "/api/prices/current", method = "GET", description = "Get current prices"},
+  {path = "/api/prices/history", method = "GET", description = "Get price history"},
+  {path = "/api/prices/analytics", method = "GET", description = "Get price analytics"},
+  {path = "/api/competitors", method = "GET", description = "Get tracked competitors"},
+  {path = "/api/competitors", method = "POST", description = "Add competitor to track"}
+]
+
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+alert_email = "{{.env.ALERT_EMAIL}}"
+smtp_host = "{{.env.SMTP_HOST}}"
+smtp_port = "{{.env.SMTP_PORT}}"
+smtp_user = "{{.env.SMTP_USER}}"
+smtp_password = "{{.env.SMTP_PASSWORD}}"
+
+[env]
+DATABASE_URL = "postgresql://connection-string-here"
+ALERT_EMAIL = "alerts@yourcompany.com"
+SMTP_HOST = "smtp.gmail.com"
+SMTP_PORT = "587"
+SMTP_USER = "your-email@gmail.com"
+SMTP_PASSWORD = "your-app-password"
+
+# ==============================================
+# Database Setup
+# ==============================================
+
+[node:CreatePricesTable]
+type = "neon"
+label = "Create price_history table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS price_history (
+    id SERIAL PRIMARY KEY,
+    competitor_id INTEGER NOT NULL,
+    product_name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(3) DEFAULT 'USD',
+    url VARCHAR(500),
+    checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_price_history_competitor ON price_history(competitor_id);
+CREATE INDEX IF NOT EXISTS idx_price_history_product ON price_history(product_name);
+CREATE INDEX IF NOT EXISTS idx_price_history_checked ON price_history(checked_at DESC);
+"""
+
+[node:CreateCompetitorsTable]
+type = "neon"
+label = "Create competitors table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS competitors (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    website VARCHAR(500) NOT NULL,
+    api_endpoint VARCHAR(500),
+    product_selector VARCHAR(255),
+    active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+[node:CreateAlertsTable]
+type = "neon"
+label = "Create price_alerts table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS price_alerts (
+    id SERIAL PRIMARY KEY,
+    competitor_id INTEGER NOT NULL,
+    product_name VARCHAR(255) NOT NULL,
+    old_price DECIMAL(10,2) NOT NULL,
+    new_price DECIMAL(10,2) NOT NULL,
+    change_percent DECIMAL(5,2),
+    alert_sent BOOLEAN DEFAULT FALSE,
+    detected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+# ==============================================
+# Scheduled Price Checking - Every 4 Hours
+# ==============================================
+
+[node:SchedulePriceCheck]
+type = "timer"
+label = "Check prices every 4 hours"
+schedule = "0 */4 * * *"
+mode = "cron"
+timezone = "UTC"
+handler = "FetchCompetitors"
+
+[node:FetchCompetitors]
+type = "neon"
+label = "Get active competitors"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, name, website, api_endpoint FROM competitors WHERE active = TRUE"
+
+[node:FetchCompetitorPrices]
+type = "http_request"
+label = "Fetch competitor prices"
+method = "GET"
+url = "{{FetchCompetitors.result[0].api_endpoint}}"
+timeout_seconds = 30
+retry_on_failure = true
+max_retries = 3
+
+[node:ParsePriceData]
+type = "py"
+label = "Extract price information"
+code = """
+def parse(**kwargs):
+    price_data = kwargs.get('FetchCompetitorPrices', {}).get('result', {})
+    competitor = kwargs.get('FetchCompetitors', {}).get('result', [{}])[0]
+
+    # Example: Parse JSON response with product prices
+    products = []
+    if isinstance(price_data, dict) and 'products' in price_data:
+        for product in price_data['products']:
+            products.append({
+                'competitor_id': competitor.get('id'),
+                'name': product.get('name'),
+                'price': float(product.get('price', 0)),
+                'currency': product.get('currency', 'USD'),
+                'url': product.get('url', '')
+            })
+
+    return {'result': {'products': products}}
+"""
+function = "parse"
+
+[node:StorePrices]
+type = "neon"
+label = "Store current prices"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO price_history (competitor_id, product_name, price, currency, url) VALUES (%s, %s, %s, %s, %s) RETURNING id"
+parameters = ["{{ParsePriceData.result.products[0].competitor_id}}", "{{ParsePriceData.result.products[0].name}}", "{{ParsePriceData.result.products[0].price}}", "{{ParsePriceData.result.products[0].currency}}", "{{ParsePriceData.result.products[0].url}}"]
+
+[node:DetectPriceChanges]
+type = "py"
+label = "Detect price changes"
+code = """
+def detect(**kwargs):
+    current_products = kwargs.get('ParsePriceData', {}).get('result', {}).get('products', [])
+
+    # This would typically query previous prices and compare
+    # For this example, we'll return a simplified change detection
+    changes = []
+
+    for product in current_products:
+        # Simulate previous price lookup (would be DB query in real implementation)
+        previous_price = product['price'] * 1.1  # Example: 10% higher before
+
+        if previous_price != product['price']:
+            change_percent = ((product['price'] - previous_price) / previous_price) * 100
+
+            changes.append({
+                'competitor_id': product['competitor_id'],
+                'product_name': product['name'],
+                'old_price': previous_price,
+                'new_price': product['price'],
+                'change_percent': round(change_percent, 2)
+            })
+
+    return {'result': {'changes': changes, 'has_changes': len(changes) > 0}}
+"""
+function = "detect"
+
+[node:CheckIfAlertNeeded]
+type = "if"
+label = "Check if alert needed"
+condition = "{{DetectPriceChanges.result.has_changes}} == true"
+on_true = "SendPriceAlert"
+on_false = "LogNoChanges"
+
+[node:SendPriceAlert]
+type = "email"
+label = "Send price change alert"
+smtp_host = "{{.Parameter.smtp_host}}"
+smtp_port = "{{.Parameter.smtp_port}}"
+smtp_user = "{{.Parameter.smtp_user}}"
+smtp_password = "{{.Parameter.smtp_password}}"
+from_email = "{{.Parameter.smtp_user}}"
+to_email = "{{.Parameter.alert_email}}"
+subject = "Price Change Detected - Competitor Monitor"
+body = """
+Price changes detected:
+
+{% for change in DetectPriceChanges.result.changes %}
+Product: {{ change.product_name }}
+Old Price: ${{ change.old_price }}
+New Price: ${{ change.new_price }}
+Change: {{ change.change_percent }}%
+---
+{% endfor %}
+
+Check full details at: http://localhost:9006/api/prices/analytics
+"""
+
+[node:LogNoChanges]
+type = "log_message"
+label = "Log no changes"
+level = "info"
+message = "No price changes detected in this check cycle"
+
+# ==============================================
+# API Endpoints for Data Access
+# ==============================================
+
+[node:DefineGetCurrentPricesRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/prices/current"
+operation = "add_route"
+route_path = "/api/prices/current"
+methods = ["GET"]
+handler = "GetCurrentPrices"
+description = "Get current prices"
+
+[node:GetCurrentPrices]
+type = "neon"
+label = "Fetch latest prices"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+SELECT DISTINCT ON (product_name)
+    product_name, price, currency, competitor_id, checked_at
+FROM price_history
+ORDER BY product_name, checked_at DESC
+"""
+
+[node:DefineGetHistoryRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/prices/history"
+operation = "add_route"
+route_path = "/api/prices/history"
+methods = ["GET"]
+handler = "GetPriceHistory"
+description = "Get price history"
+
+[node:GetPriceHistory]
+type = "neon"
+label = "Fetch price history"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT * FROM price_history ORDER BY checked_at DESC LIMIT 200"
+
+[node:DefineGetAnalyticsRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/prices/analytics"
+operation = "add_route"
+route_path = "/api/prices/analytics"
+methods = ["GET"]
+handler = "GetAnalytics"
+description = "Get price analytics"
+
+[node:GetAnalytics]
+type = "neon"
+label = "Calculate analytics"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+SELECT
+    product_name,
+    COUNT(*) as checks,
+    MIN(price) as lowest_price,
+    MAX(price) as highest_price,
+    AVG(price) as average_price
+FROM price_history
+GROUP BY product_name
+ORDER BY product_name
+"""
+
+[node:DefineGetCompetitorsRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/competitors"
+operation = "add_route"
+route_path = "/api/competitors"
+methods = ["GET"]
+handler = "GetCompetitors"
+description = "Get tracked competitors"
+
+[node:GetCompetitors]
+type = "neon"
+label = "Fetch competitors"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, name, website, active, created_at FROM competitors ORDER BY name"
+
+[node:DefineAddCompetitorRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/competitors"
+operation = "add_route"
+route_path = "/api/competitors"
+methods = ["POST"]
+handler = "AddCompetitor"
+description = "Add competitor to track"
+
+[node:AddCompetitor]
+type = "neon"
+label = "Insert competitor"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO competitors (name, website, api_endpoint) VALUES (%s, %s, %s) RETURNING *"
+parameters = ["{{request_data.name}}", "{{request_data.website}}", "{{request_data.api_endpoint}}"]
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+CreatePricesTable = CreateCompetitorsTable
+CreateCompetitorsTable = CreateAlertsTable
+CreateAlertsTable = SchedulePriceCheck
+CreateAlertsTable = DefineGetCurrentPricesRoute
+CreateAlertsTable = DefineGetHistoryRoute
+CreateAlertsTable = DefineGetAnalyticsRoute
+CreateAlertsTable = DefineGetCompetitorsRoute
+CreateAlertsTable = DefineAddCompetitorRoute
+SchedulePriceCheck = []  # Timer handles its own routing
+FetchCompetitors = FetchCompetitorPrices
+FetchCompetitorPrices = ParsePriceData
+ParsePriceData = StorePrices
+StorePrices = DetectPriceChanges
+DetectPriceChanges = CheckIfAlertNeeded
+CheckIfAlertNeeded = []  # Conditional handles routing
+DefineGetCurrentPricesRoute = GetCurrentPrices
+DefineGetHistoryRoute = GetPriceHistory
+DefineGetAnalyticsRoute = GetAnalytics
+DefineGetCompetitorsRoute = GetCompetitors
+DefineAddCompetitorRoute = AddCompetitor

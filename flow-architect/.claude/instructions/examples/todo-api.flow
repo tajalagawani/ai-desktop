@@ -1,0 +1,196 @@
+[workflow]
+name = "Todo API"
+description = "Full CRUD API for managing todo items"
+start_node = CreateTodosTable
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "todo-api-agent"
+agent_version = "1.0.0"
+
+[server]
+host = "0.0.0.0"
+port = 9003
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[deployment]
+environment = "production"
+
+[service_catalog]
+register = true
+service_name = "Todo API"
+service_type = "api"
+description = "Manage todo items with full CRUD operations"
+icon = "✓"
+category = "utility"
+endpoints = [
+  {path = "/api/todos", method = "GET", description = "Get all todos"},
+  {path = "/api/todos/<int:id>", method = "GET", description = "Get todo by ID"},
+  {path = "/api/todos", method = "POST", description = "Create new todo"},
+  {path = "/api/todos/<int:id>", method = "PUT", description = "Update todo"},
+  {path = "/api/todos/<int:id>", method = "DELETE", description = "Delete todo"}
+]
+
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+
+[env]
+DATABASE_URL = "postgresql://connection-string-here"
+
+# ==============================================
+# Database Setup
+# ==============================================
+
+[node:CreateTodosTable]
+type = "neon"
+label = "Create todos table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS todos (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    completed BOOLEAN DEFAULT FALSE,
+    priority VARCHAR(20) DEFAULT 'medium',
+    due_date TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_completed ON todos(completed);
+CREATE INDEX IF NOT EXISTS idx_priority ON todos(priority);
+"""
+
+# ==============================================
+# GET /api/todos - List All Todos
+# ==============================================
+
+[node:DefineGetTodosRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/todos"
+operation = "add_route"
+route_path = "/api/todos"
+methods = ["GET"]
+handler = "FetchTodos"
+description = "Get all todos"
+
+[node:FetchTodos]
+type = "neon"
+label = "Fetch all todos"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, title, description, completed, priority, due_date, created_at, updated_at FROM todos ORDER BY created_at DESC"
+
+# ==============================================
+# GET /api/todos/<id> - Get Single Todo
+# ==============================================
+
+[node:DefineGetTodoByIdRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/todos/<id>"
+operation = "add_route"
+route_path = "/api/todos/<int:id_from_url>"
+methods = ["GET"]
+handler = "FetchTodoById"
+description = "Get todo by ID"
+
+[node:FetchTodoById]
+type = "neon"
+label = "Fetch todo by ID"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, title, description, completed, priority, due_date, created_at, updated_at FROM todos WHERE id = %s"
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# POST /api/todos - Create New Todo
+# ==============================================
+
+[node:DefineCreateTodoRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/todos"
+operation = "add_route"
+route_path = "/api/todos"
+methods = ["POST"]
+handler = "CreateTodo"
+description = "Create new todo"
+
+[node:CreateTodo]
+type = "neon"
+label = "Insert todo"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO todos (title, description, priority, due_date) VALUES (%s, %s, %s, %s) RETURNING id, title, description, completed, priority, due_date, created_at"
+parameters = ["{{request_data.title}}", "{{request_data.description}}", "{{request_data.priority}}", "{{request_data.due_date}}"]
+
+# ==============================================
+# PUT /api/todos/<id> - Update Todo
+# ==============================================
+
+[node:DefineUpdateTodoRoute]
+type = "aci"
+mode = "server"
+label = "PUT /api/todos/<id>"
+operation = "add_route"
+route_path = "/api/todos/<int:id_from_url>"
+methods = ["PUT"]
+handler = "UpdateTodo"
+description = "Update todo"
+
+[node:UpdateTodo]
+type = "neon"
+label = "Update todo"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE todos SET title = %s, description = %s, completed = %s, priority = %s, due_date = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING id, title, description, completed, priority, due_date, updated_at"
+parameters = ["{{request_data.title}}", "{{request_data.description}}", "{{request_data.completed}}", "{{request_data.priority}}", "{{request_data.due_date}}", "{{request_data.id_from_url}}"]
+
+# ==============================================
+# DELETE /api/todos/<id> - Delete Todo
+# ==============================================
+
+[node:DefineDeleteTodoRoute]
+type = "aci"
+mode = "server"
+label = "DELETE /api/todos/<id>"
+operation = "add_route"
+route_path = "/api/todos/<int:id_from_url>"
+methods = ["DELETE"]
+handler = "DeleteTodo"
+description = "Delete todo"
+
+[node:DeleteTodo]
+type = "neon"
+label = "Delete todo"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "DELETE FROM todos WHERE id = %s RETURNING id"
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+CreateTodosTable = DefineGetTodosRoute
+CreateTodosTable = DefineGetTodoByIdRoute
+CreateTodosTable = DefineCreateTodoRoute
+CreateTodosTable = DefineUpdateTodoRoute
+CreateTodosTable = DefineDeleteTodoRoute
+DefineGetTodosRoute = FetchTodos
+DefineGetTodoByIdRoute = FetchTodoById
+DefineCreateTodoRoute = CreateTodo
+DefineUpdateTodoRoute = UpdateTodo
+DefineDeleteTodoRoute = DeleteTodo

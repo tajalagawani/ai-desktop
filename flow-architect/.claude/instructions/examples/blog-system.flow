@@ -1,0 +1,307 @@
+[workflow]
+name = "Blog System API"
+description = "Complete blog platform with posts, comments, and categories"
+start_node = CreatePostsTable
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "blog-system-agent"
+agent_version = "1.0.0"
+
+[server]
+host = "0.0.0.0"
+port = 9004
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[deployment]
+environment = "production"
+
+[service_catalog]
+register = true
+service_name = "Blog System API"
+service_type = "api"
+description = "Complete blog platform with posts, comments, categories, and tags"
+icon = "📝"
+category = "content"
+endpoints = [
+  {path = "/api/posts", method = "GET", description = "Get all posts"},
+  {path = "/api/posts/<int:id>", method = "GET", description = "Get post by ID"},
+  {path = "/api/posts", method = "POST", description = "Create post"},
+  {path = "/api/posts/<int:id>", method = "PUT", description = "Update post"},
+  {path = "/api/posts/<int:id>", method = "DELETE", description = "Delete post"},
+  {path = "/api/comments", method = "GET", description = "Get all comments"},
+  {path = "/api/comments", method = "POST", description = "Add comment"},
+  {path = "/api/categories", method = "GET", description = "Get all categories"},
+  {path = "/api/categories", method = "POST", description = "Create category"}
+]
+
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+
+[env]
+DATABASE_URL = "postgresql://connection-string-here"
+
+# ==============================================
+# Database Setup - Create All Tables
+# ==============================================
+
+[node:CreatePostsTable]
+type = "neon"
+label = "Create posts table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS posts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    excerpt TEXT,
+    author VARCHAR(100) NOT NULL,
+    category_id INTEGER,
+    status VARCHAR(20) DEFAULT 'draft',
+    published_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
+CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+"""
+
+[node:CreateCategoriesTable]
+type = "neon"
+label = "Create categories table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+[node:CreateCommentsTable]
+type = "neon"
+label = "Create comments table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS comments (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER NOT NULL,
+    author VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
+"""
+
+# ==============================================
+# Posts Endpoints
+# ==============================================
+
+[node:DefineGetPostsRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/posts"
+operation = "add_route"
+route_path = "/api/posts"
+methods = ["GET"]
+handler = "FetchPosts"
+description = "Get all posts"
+
+[node:FetchPosts]
+type = "neon"
+label = "Fetch all posts"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, title, slug, excerpt, author, category_id, status, published_at, created_at FROM posts ORDER BY created_at DESC"
+
+[node:DefineGetPostByIdRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/posts/<id>"
+operation = "add_route"
+route_path = "/api/posts/<int:id_from_url>"
+methods = ["GET"]
+handler = "FetchPostById"
+description = "Get post by ID"
+
+[node:FetchPostById]
+type = "neon"
+label = "Fetch post by ID"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT * FROM posts WHERE id = %s"
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreatePostRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/posts"
+operation = "add_route"
+route_path = "/api/posts"
+methods = ["POST"]
+handler = "CreatePost"
+description = "Create new post"
+
+[node:CreatePost]
+type = "neon"
+label = "Insert post"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO posts (title, slug, content, excerpt, author, category_id, status) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING *"
+parameters = ["{{request_data.title}}", "{{request_data.slug}}", "{{request_data.content}}", "{{request_data.excerpt}}", "{{request_data.author}}", "{{request_data.category_id}}", "{{request_data.status}}"]
+
+[node:DefineUpdatePostRoute]
+type = "aci"
+mode = "server"
+label = "PUT /api/posts/<id>"
+operation = "add_route"
+route_path = "/api/posts/<int:id_from_url>"
+methods = ["PUT"]
+handler = "UpdatePost"
+description = "Update post"
+
+[node:UpdatePost]
+type = "neon"
+label = "Update post"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE posts SET title = %s, content = %s, excerpt = %s, status = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *"
+parameters = ["{{request_data.title}}", "{{request_data.content}}", "{{request_data.excerpt}}", "{{request_data.status}}", "{{request_data.id_from_url}}"]
+
+[node:DefineDeletePostRoute]
+type = "aci"
+mode = "server"
+label = "DELETE /api/posts/<id>"
+operation = "add_route"
+route_path = "/api/posts/<int:id_from_url>"
+methods = ["DELETE"]
+handler = "DeletePost"
+description = "Delete post"
+
+[node:DeletePost]
+type = "neon"
+label = "Delete post"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "DELETE FROM posts WHERE id = %s RETURNING id"
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# Comments Endpoints
+# ==============================================
+
+[node:DefineGetCommentsRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/comments"
+operation = "add_route"
+route_path = "/api/comments"
+methods = ["GET"]
+handler = "FetchComments"
+description = "Get all comments"
+
+[node:FetchComments]
+type = "neon"
+label = "Fetch comments"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, post_id, author, email, content, status, created_at FROM comments ORDER BY created_at DESC"
+
+[node:DefineCreateCommentRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/comments"
+operation = "add_route"
+route_path = "/api/comments"
+methods = ["POST"]
+handler = "CreateComment"
+description = "Add comment"
+
+[node:CreateComment]
+type = "neon"
+label = "Insert comment"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO comments (post_id, author, email, content) VALUES (%s, %s, %s, %s) RETURNING *"
+parameters = ["{{request_data.post_id}}", "{{request_data.author}}", "{{request_data.email}}", "{{request_data.content}}"]
+
+# ==============================================
+# Categories Endpoints
+# ==============================================
+
+[node:DefineGetCategoriesRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/categories"
+operation = "add_route"
+route_path = "/api/categories"
+methods = ["GET"]
+handler = "FetchCategories"
+description = "Get all categories"
+
+[node:FetchCategories]
+type = "neon"
+label = "Fetch categories"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, name, slug, description, created_at FROM categories ORDER BY name ASC"
+
+[node:DefineCreateCategoryRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/categories"
+operation = "add_route"
+route_path = "/api/categories"
+methods = ["POST"]
+handler = "CreateCategory"
+description = "Create category"
+
+[node:CreateCategory]
+type = "neon"
+label = "Insert category"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO categories (name, slug, description) VALUES (%s, %s, %s) RETURNING *"
+parameters = ["{{request_data.name}}", "{{request_data.slug}}", "{{request_data.description}}"]
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+CreatePostsTable = CreateCategoriesTable
+CreateCategoriesTable = CreateCommentsTable
+CreateCommentsTable = DefineGetPostsRoute
+CreateCommentsTable = DefineGetPostByIdRoute
+CreateCommentsTable = DefineCreatePostRoute
+CreateCommentsTable = DefineUpdatePostRoute
+CreateCommentsTable = DefineDeletePostRoute
+CreateCommentsTable = DefineGetCommentsRoute
+CreateCommentsTable = DefineCreateCommentRoute
+CreateCommentsTable = DefineGetCategoriesRoute
+CreateCommentsTable = DefineCreateCategoryRoute
+DefineGetPostsRoute = FetchPosts
+DefineGetPostByIdRoute = FetchPostById
+DefineCreatePostRoute = CreatePost
+DefineUpdatePostRoute = UpdatePost
+DefineDeletePostRoute = DeletePost
+DefineGetCommentsRoute = FetchComments
+DefineCreateCommentRoute = CreateComment
+DefineGetCategoriesRoute = FetchCategories
+DefineCreateCategoryRoute = CreateCategory

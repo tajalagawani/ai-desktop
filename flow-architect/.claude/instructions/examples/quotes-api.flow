@@ -1,0 +1,114 @@
+[workflow]
+name = "Quotes API"
+description = "Simple API to store and retrieve quotes"
+start_node = CreateQuotesTable
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "quotes-api-agent"
+agent_version = "1.0.0"
+
+[server]
+host = "0.0.0.0"
+port = 9001
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[deployment]
+environment = "production"
+
+[service_catalog]
+register = true
+service_name = "Quotes API"
+service_type = "api"
+description = "Store and retrieve favorite quotes"
+icon = "💬"
+category = "utility"
+endpoints = [
+  {path = "/api/quotes", method = "GET", description = "Get all quotes"},
+  {path = "/api/quotes", method = "POST", description = "Add new quote"}
+]
+
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+
+[env]
+DATABASE_URL = "postgresql://connection-string-here"
+
+# ==============================================
+# Database Setup
+# ==============================================
+
+[node:CreateQuotesTable]
+type = "neon"
+label = "Create quotes table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS quotes (
+    id SERIAL PRIMARY KEY,
+    text TEXT NOT NULL,
+    author VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""
+
+# ==============================================
+# GET /api/quotes - List All Quotes
+# ==============================================
+
+[node:DefineGetQuotesRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/quotes"
+operation = "add_route"
+route_path = "/api/quotes"
+methods = ["GET"]
+handler = "FetchQuotes"
+description = "Get all quotes"
+
+[node:FetchQuotes]
+type = "neon"
+label = "Fetch all quotes"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT id, text, author, created_at FROM quotes ORDER BY created_at DESC"
+
+# ==============================================
+# POST /api/quotes - Add New Quote
+# ==============================================
+
+[node:DefineAddQuoteRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/quotes"
+operation = "add_route"
+route_path = "/api/quotes"
+methods = ["POST"]
+handler = "AddQuote"
+description = "Add new quote"
+
+[node:AddQuote]
+type = "neon"
+label = "Insert quote"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO quotes (text, author) VALUES (%s, %s) RETURNING id, text, author, created_at"
+parameters = ["{{request_data.text}}", "{{request_data.author}}"]
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+CreateQuotesTable = DefineGetQuotesRoute
+CreateQuotesTable = DefineAddQuoteRoute
+DefineGetQuotesRoute = FetchQuotes
+DefineAddQuoteRoute = AddQuote

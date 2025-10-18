@@ -1,6 +1,71 @@
 {
   "version": "1.0.0",
-  "last_updated": "2025-10-17T13:21:35.894Z",
-  "services": [],
-  "description": "Service catalog for Flow Architect. Add your running services here."
+  "last_updated": "2025-10-18T15:00:00Z",
+  "services": [
+    {
+      "id": "neon-postgres-primary",
+      "name": "Neon PostgreSQL",
+      "type": "database",
+      "subtype": "postgresql",
+      "status": "available",
+      "connection": {
+        "string": "postgresql://user:pass@host:5432/dbname",
+        "host": "host.neon.tech",
+        "port": 5432,
+        "database": "neondb",
+        "ssl": true
+      },
+      "capabilities": ["sql", "relations", "transactions", "jsonb"],
+      "related_node_type": "neon",
+      "documentation_url": ".claude/instructions/node-types/neon.md",
+      "max_connections": 100,
+      "current_connections": 5
+    },
+    {
+      "id": "mongodb-local",
+      "name": "MongoDB Local",
+      "type": "database",
+      "subtype": "mongodb",
+      "status": "available",
+      "connection": {
+        "string": "mongodb://localhost:27017",
+        "host": "localhost",
+        "port": 27017
+      },
+      "capabilities": ["documents", "aggregation", "geospatial"],
+      "related_node_type": "mongo",
+      "documentation_url": ".claude/instructions/node-types/mongo.md"
+    },
+    {
+      "id": "redis-cache",
+      "name": "Redis Cache",
+      "type": "cache",
+      "subtype": "redis",
+      "status": "available",
+      "connection": {
+        "string": "redis://localhost:6379",
+        "host": "localhost",
+        "port": 6379
+      },
+      "capabilities": ["key-value", "pub-sub", "lists", "sets"],
+      "related_node_type": "redis",
+      "documentation_url": ".claude/instructions/node-types/redis.md"
+    },
+    {
+      "id": "smtp-gmail",
+      "name": "Gmail SMTP",
+      "type": "notification",
+      "subtype": "email",
+      "status": "available",
+      "connection": {
+        "host": "smtp.gmail.com",
+        "port": 587,
+        "secure": true
+      },
+      "capabilities": ["send_email", "attachments"],
+      "related_node_type": "email",
+      "requires_credentials": true
+    }
+  ],
+  "description": "Service catalog for Flow Architect. Lists available runtime services (databases, caches, notification systems, etc.)"
 }

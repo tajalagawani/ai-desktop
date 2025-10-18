@@ -1,0 +1,176 @@
+[workflow]
+name = "ISS Location Tracker"
+description = "Track International Space Station location every 5 minutes"
+start_node = CreateISSTable
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "iss-tracker-agent"
+agent_version = "1.0.0"
+
+[server]
+host = "0.0.0.0"
+port = 9002
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[deployment]
+environment = "production"
+
+[service_catalog]
+register = true
+service_name = "ISS Location Tracker"
+service_type = "scheduler"
+description = "Track and store ISS coordinates every 5 minutes"
+icon = "🛰️"
+category = "data"
+endpoints = [
+  {path = "/api/iss/current", method = "GET", description = "Get latest ISS location"},
+  {path = "/api/iss/history", method = "GET", description = "Get tracking history"}
+]
+
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+
+[env]
+DATABASE_URL = "postgresql://connection-string-here"
+
+# ==============================================
+# Database Setup
+# ==============================================
+
+[node:CreateISSTable]
+type = "neon"
+label = "Create iss_tracking table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS iss_tracking (
+    id SERIAL PRIMARY KEY,
+    latitude DECIMAL(9,6) NOT NULL,
+    longitude DECIMAL(9,6) NOT NULL,
+    timestamp BIGINT NOT NULL,
+    tracked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_tracked_at ON iss_tracking(tracked_at DESC);
+"""
+
+# ==============================================
+# Scheduled Tracking - Every 5 Minutes
+# ==============================================
+
+[node:ScheduleTracking]
+type = "timer"
+label = "Trigger every 5 minutes"
+schedule = "*/5 * * * *"
+mode = "cron"
+timezone = "UTC"
+handler = "FetchISSLocation"
+
+[node:FetchISSLocation]
+type = "http_request"
+label = "Get ISS coordinates"
+method = "GET"
+url = "http://api.open-notify.org/iss-now.json"
+timeout_seconds = 10
+retry_on_failure = true
+max_retries = 2
+
+[node:ParseCoordinates]
+type = "py"
+label = "Extract coordinates"
+code = """
+def parse(**kwargs):
+    data = kwargs.get('FetchISSLocation', {}).get('result', {})
+
+    if 'iss_position' in data:
+        lat = float(data['iss_position']['latitude'])
+        lon = float(data['iss_position']['longitude'])
+        timestamp = int(data.get('timestamp', 0))
+
+        return {
+            "result": {
+                "latitude": lat,
+                "longitude": lon,
+                "timestamp": timestamp
+            }
+        }
+
+    return {"error": "Failed to parse ISS data"}
+"""
+function = "parse"
+
+[node:StoreLocation]
+type = "neon"
+label = "Store coordinates"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO iss_tracking (latitude, longitude, timestamp) VALUES (%s, %s, %s) RETURNING id"
+parameters = ["{{ParseCoordinates.result.latitude}}", "{{ParseCoordinates.result.longitude}}", "{{ParseCoordinates.result.timestamp}}"]
+
+[node:LogTracking]
+type = "log_message"
+label = "Log tracking"
+level = "info"
+message = "ISS tracked at Lat: {{ParseCoordinates.result.latitude}}, Lon: {{ParseCoordinates.result.longitude}}"
+
+# ==============================================
+# API Endpoints for Querying Data
+# ==============================================
+
+[node:DefineGetCurrentRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/iss/current"
+operation = "add_route"
+route_path = "/api/iss/current"
+methods = ["GET"]
+handler = "GetCurrent"
+description = "Get latest ISS location"
+
+[node:GetCurrent]
+type = "neon"
+label = "Fetch latest location"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT latitude, longitude, timestamp, tracked_at FROM iss_tracking ORDER BY tracked_at DESC LIMIT 1"
+
+[node:DefineGetHistoryRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/iss/history"
+operation = "add_route"
+route_path = "/api/iss/history"
+methods = ["GET"]
+handler = "GetHistory"
+description = "Get tracking history"
+
+[node:GetHistory]
+type = "neon"
+label = "Fetch tracking history"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT latitude, longitude, timestamp, tracked_at FROM iss_tracking ORDER BY tracked_at DESC LIMIT 100"
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+CreateISSTable = ScheduleTracking
+CreateISSTable = DefineGetCurrentRoute
+CreateISSTable = DefineGetHistoryRoute
+ScheduleTracking = []  # Timer handles its own routing
+FetchISSLocation = ParseCoordinates
+ParseCoordinates = StoreLocation
+StoreLocation = LogTracking
+DefineGetCurrentRoute = GetCurrent
+DefineGetHistoryRoute = GetHistory

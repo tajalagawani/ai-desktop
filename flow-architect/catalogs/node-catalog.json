@@ -1,181 +1,267 @@
 {
   "version": "1.0.0",
-  "last_updated": "2025-10-17T13:21:35.896Z",
+  "last_updated": "2025-10-18T15:00:00Z",
+  "categories": ["computation", "database", "api", "logic", "notification", "scheduling", "ai"],
   "nodes": [
+    {
+      "type": "py",
+      "name": "Python Execution",
+      "category": "computation",
+      "description": "Execute Python code with full standard library access",
+      "requires_service": false,
+      "documentation_url": ".claude/instructions/node-types/python.md",
+      "parameters": {
+        "required": ["code", "function"],
+        "optional": ["timeout_seconds", "retry_on_failure", "max_retries", "on_error"]
+      },
+      "example_usage": ".claude/instructions/examples/simple-calc.act",
+      "common_use_cases": ["calculations", "data processing", "transformations", "business logic"]
+    },
+    {
+      "type": "neon",
+      "name": "Neon PostgreSQL",
+      "category": "database",
+      "description": "PostgreSQL database operations via Neon",
+      "requires_service": true,
+      "service_type": "postgresql",
+      "documentation_url": ".claude/instructions/node-types/neon.md",
+      "parameters": {
+        "required": ["connection_string", "operation"],
+        "optional": ["query", "parameters", "retry_on_failure", "max_retries"]
+      },
+      "operations": [
+        {
+          "name": "execute_query",
+          "description": "Execute SQL query",
+          "returns": "query results"
+        },
+        {
+          "name": "create_schema",
+          "description": "Create database schema",
+          "returns": "success status"
+        }
+      ],
+      "example_usage": ".claude/instructions/examples/quotes-api.flow"
+    },
+    {
+      "type": "aci",
+      "name": "API Route Definition",
+      "category": "api",
+      "description": "Define REST API endpoints",
+      "requires_service": false,
+      "requires_server_config": true,
+      "documentation_url": ".claude/instructions/node-types/aci.md",
+      "parameters": {
+        "required": ["mode", "operation", "route_path", "methods", "handler"],
+        "optional": ["description", "auth_required", "rate_limit", "validate_input"]
+      },
+      "supported_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+      "example_usage": ".claude/instructions/examples/quotes-api.flow"
+    },
+    {
+      "type": "timer",
+      "name": "Scheduled Task",
+      "category": "scheduling",
+      "description": "Execute tasks on a schedule using cron syntax",
+      "requires_service": false,
+      "documentation_url": ".claude/instructions/node-types/timer.md",
+      "parameters": {
+        "required": ["schedule", "on_tick"],
+        "optional": ["timezone", "enabled"]
+      },
+      "schedule_format": "cron",
+      "example_schedules": {
+        "every_5_min": "*/5 * * * *",
+        "hourly": "0 * * * *",
+        "daily_9am": "0 9 * * *"
+      },
+      "example_usage": ".claude/instructions/examples/scheduled-random.flow"
+    },
+    {
+      "type": "http_request",
+      "name": "HTTP Request",
+      "category": "integration",
+      "description": "Make outbound HTTP requests to external APIs",
+      "requires_service": false,
+      "documentation_url": ".claude/instructions/node-types/http-request.md",
+      "parameters": {
+        "required": ["method", "url"],
+        "optional": ["headers", "query_params", "body", "timeout_seconds", "retry_on_failure"]
+      },
+      "supported_methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+      "example_usage": ".claude/instructions/examples/iss-location.act"
+    },
+    {
+      "type": "email",
+      "name": "Email Notification",
+      "category": "notification",
+      "description": "Send email notifications via SMTP",
+      "requires_service": true,
+      "service_type": "email",
+      "documentation_url": ".claude/instructions/node-types/email.md",
+      "parameters": {
+        "required": ["smtp_host", "smtp_port", "from", "to", "subject", "body"],
+        "optional": ["cc", "bcc", "attachments", "body_type"]
+      },
+      "example_usage": ".claude/instructions/examples/price-monitor.flow"
+    },
+    {
+      "type": "if",
+      "name": "Conditional Branch",
+      "category": "logic",
+      "description": "Branch execution based on boolean condition",
+      "requires_service": false,
+      "documentation_url": ".claude/instructions/node-types/conditional.md",
+      "parameters": {
+        "required": ["condition", "on_true", "on_false"],
+        "optional": []
+      },
+      "example_usage": ".claude/instructions/examples/price-monitor.flow"
+    },
     {
       "type": "mongo",
       "name": "MongoDB Node",
+      "category": "database",
       "description": "MongoDB database operations",
-      "requires_service": "mongodb",
-      "parameters": [
-        "connection_string",
-        "operation",
-        "collection",
-        "query"
-      ]
+      "requires_service": true,
+      "service_type": "mongodb",
+      "documentation_url": ".claude/instructions/node-types/mongo.md",
+      "parameters": {
+        "required": ["connection_string", "operation", "collection"],
+        "optional": ["query", "document", "retry_on_failure"]
+      }
     },
     {
       "type": "neo4j",
       "name": "Neo4j Node",
+      "category": "database",
       "description": "Neo4j graph database operations",
-      "requires_service": "neo4j",
-      "parameters": [
-        "connection_string",
-        "operation",
-        "query"
-      ]
-    },
-    {
-      "type": "neon",
-      "name": "Neon PostgreSQL Node",
-      "description": "Neon PostgreSQL database operations",
-      "requires_service": "postgresql",
-      "parameters": [
-        "connection_string",
-        "operation",
-        "query"
-      ]
+      "requires_service": true,
+      "service_type": "neo4j",
+      "documentation_url": ".claude/instructions/node-types/neo4j.md",
+      "parameters": {
+        "required": ["connection_string", "operation", "query"],
+        "optional": ["parameters", "retry_on_failure"]
+      }
     },
     {
       "type": "mysql",
       "name": "MySQL Node",
+      "category": "database",
       "description": "MySQL database operations",
-      "requires_service": "mysql",
-      "parameters": [
-        "connection_string",
-        "operation",
-        "query"
-      ]
+      "requires_service": true,
+      "service_type": "mysql",
+      "documentation_url": ".claude/instructions/node-types/mysql.md",
+      "parameters": {
+        "required": ["connection_string", "operation", "query"],
+        "optional": ["parameters", "retry_on_failure"]
+      }
     },
     {
       "type": "redis",
       "name": "Redis Node",
+      "category": "database",
       "description": "Redis cache operations",
-      "requires_service": "redis",
-      "parameters": [
-        "connection_string",
-        "operation",
-        "key",
-        "value"
-      ]
+      "requires_service": true,
+      "service_type": "redis",
+      "documentation_url": ".claude/instructions/node-types/redis.md",
+      "parameters": {
+        "required": ["connection_string", "operation"],
+        "optional": ["key", "value", "ttl", "retry_on_failure"]
+      }
     },
     {
       "type": "claude",
       "name": "Claude AI Node",
+      "category": "ai",
       "description": "Anthropic Claude AI processing",
-      "requires_service": null,
-      "parameters": [
-        "api_key",
-        "model",
-        "messages",
-        "temperature",
-        "max_tokens"
-      ]
+      "requires_service": false,
+      "documentation_url": ".claude/instructions/node-types/claude-ai.md",
+      "parameters": {
+        "required": ["model", "messages"],
+        "optional": ["api_key", "temperature", "max_tokens", "system_prompt"]
+      }
     },
     {
       "type": "gemini",
       "name": "Gemini AI Node",
+      "category": "ai",
       "description": "Google Gemini AI processing",
-      "requires_service": null,
-      "parameters": [
-        "api_key",
-        "model",
-        "messages"
-      ]
+      "requires_service": false,
+      "documentation_url": ".claude/instructions/node-types/gemini.md",
+      "parameters": {
+        "required": ["model", "messages"],
+        "optional": ["api_key", "temperature"]
+      }
     },
     {
       "type": "openai",
       "name": "OpenAI Node",
+      "category": "ai",
       "description": "OpenAI GPT processing",
-      "requires_service": null,
-      "parameters": [
-        "api_key",
-        "model",
-        "messages",
-        "temperature",
-        "max_tokens"
-      ]
-    },
-    {
-      "type": "py",
-      "name": "Python Node",
-      "description": "Execute Python code",
-      "requires_service": null,
-      "parameters": [
-        "code",
-        "packages"
-      ]
-    },
-    {
-      "type": "if",
-      "name": "If Node",
-      "description": "Boolean conditional branching",
-      "requires_service": null,
-      "parameters": [
-        "condition",
-        "true_path",
-        "false_path"
-      ]
+      "requires_service": false,
+      "documentation_url": ".claude/instructions/node-types/openai.md",
+      "parameters": {
+        "required": ["model", "messages"],
+        "optional": ["api_key", "temperature", "max_tokens"]
+      }
     },
     {
       "type": "switch",
       "name": "Switch Node",
+      "category": "logic",
       "description": "Multi-way branching",
-      "requires_service": null,
-      "parameters": [
-        "value",
-        "cases"
-      ]
+      "requires_service": false,
+      "documentation_url": ".claude/instructions/node-types/conditional.md",
+      "parameters": {
+        "required": ["value", "cases"],
+        "optional": ["default"]
+      }
     },
     {
       "type": "set",
       "name": "Set Node",
-      "description": "Store values",
-      "requires_service": null,
-      "parameters": [
-        "key",
-        "value"
-      ]
+      "category": "logic",
+      "description": "Store values in workflow context",
+      "requires_service": false,
+      "parameters": {
+        "required": ["key", "value"],
+        "optional": []
+      }
     },
     {
       "type": "data",
       "name": "Data Node",
-      "description": "Data transformation",
-      "requires_service": null,
-      "parameters": [
-        "operation",
-        "input",
-        "output"
-      ]
-    },
-    {
-      "type": "aci",
-      "name": "ACI Node",
-      "description": "Define REST API routes",
-      "requires_service": null,
-      "parameters": [
-        "method",
-        "path",
-        "handler"
-      ]
+      "category": "computation",
+      "description": "Data transformation operations",
+      "requires_service": false,
+      "parameters": {
+        "required": ["operation", "input"],
+        "optional": ["output", "transform"]
+      }
     },
     {
       "type": "log_message",
       "name": "Log Message Node",
+      "category": "utility",
       "description": "Logging operations",
-      "requires_service": null,
-      "parameters": [
-        "message",
-        "level"
-      ]
+      "requires_service": false,
+      "parameters": {
+        "required": ["message"],
+        "optional": ["level"]
+      }
     },
     {
       "type": "generate_uuid",
       "name": "Generate UUID Node",
+      "category": "utility",
       "description": "UUID generation",
-      "requires_service": null,
-      "parameters": []
+      "requires_service": false,
+      "parameters": {
+        "required": [],
+        "optional": ["version"]
+      }
     }
   ],
-  "description": "Node catalog for Flow Architect. Defines all available node types."
+  "description": "Node catalog for Flow Architect. Defines all available node types with parameters, requirements, and documentation links."
 }

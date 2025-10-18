@@ -1,0 +1,16 @@
+[workflow]
+name = "Random Number Generator"
+description = "Generate random number between 1 and 50"
+start_node = Generate
+
+[node:Generate]
+type = "py"
+label = "Generate random number"
+code = """
+import random
+
+def generate():
+    number = random.randint(1, 50)
+    return {"result": number}
+"""
+function = "generate"

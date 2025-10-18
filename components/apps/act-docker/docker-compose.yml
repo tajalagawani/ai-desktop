@@ -64,6 +64,18 @@ services:
       - ./flows/price-monitor-simple.flow:/app/flow
       - price-monitor-data:/app
 
+  act-vix-filter-agent:
+    <<: *act-base
+    container_name: act-vix-filter-agent
+    ports:
+      - "9005:9005"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ACT_PORT=9005
+    volumes:
+      - ./act:/app/act
+      - ./flows/vix-filter-api.flow:/app/flow
+
 networks:
   act-network:
     driver: bridge
