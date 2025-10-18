@@ -321,16 +321,9 @@ export async function GET(request: NextRequest) {
       flow.port = actualPort
 
       if (containerStatus.running) {
-        console.log(`[Flow Manager] Checking health for ${flow.name} on port ${actualPort}`)
         const health = await getFlowHealth(actualPort)
-        console.log(`[Flow Manager] Health result for ${flow.name}:`, health)
         flow.health = health as any
       } else {
-        console.log(`[Flow Manager] Container ${flow.name} 
-          
-          
-          
-          `)
         flow.health = { status: 'stopped' } as any
       }
     }
