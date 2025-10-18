@@ -90,7 +90,7 @@ Timer → Extract (HTTP) → Transform (Python) → Load (Database) → Notify
 
 ---
 
-## Build Process (18 Steps)
+## Build Process (19 Steps)
 
 ### Step 1: Read Catalogs
 
@@ -209,55 +209,66 @@ CREATE TABLE price_alerts (
 **Example:**
 ```toml
 [parameters]
-competitor_api_key = "{{.env.COMPETITOR_API_KEY}}"
-smtp_host = "{{.env.SMTP_HOST}}"
-alert_email = "{{.env.ALERT_EMAIL}}"
-
-[env]
-COMPETITOR_API_KEY = "your-api-key"
-SMTP_HOST = "smtp.gmail.com"
-SMTP_PORT = "587"
-SMTP_USER = "your-email@gmail.com"
-SMTP_PASSWORD = "your-password"
-ALERT_EMAIL = "alerts@yourcompany.com"
+connection_string = postgresql://neondb_owner:password@host:5432/db?sslmode=require
+competitor_api_key = your-api-key-here
+smtp_host = smtp.gmail.com
+smtp_port = 587
+smtp_user = your-email@gmail.com
+smtp_password = your-app-password
+alert_email = alerts@yourcompany.com
 ```
 
 ### Step 6-10: Create Database Tables
 
+**CRITICAL:** No quotes on type/operation. Use {{.Parameter.connection_string}}
+
 ```toml
 [node:CreateHistoryTable]
-type = "neon"
-query = """CREATE TABLE IF NOT EXISTS price_history (...);"""
+type = neon
+label = 1. Create price history table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS price_history (id SERIAL PRIMARY KEY, competitor_id INTEGER, product_name VARCHAR(255), price DECIMAL(10,2), checked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 
 [node:CreateConfigTable]
-type = "neon"
-query = """CREATE TABLE IF NOT EXISTS competitors (...);"""
+type = neon
+label = 2. Create competitors table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS competitors (id SERIAL PRIMARY KEY, name VARCHAR(255), api_endpoint VARCHAR(500), active BOOLEAN DEFAULT TRUE)
 
 [node:CreateAlertsTable]
-type = "neon"
-query = """CREATE TABLE IF NOT EXISTS price_alerts (...);"""
+type = neon
+label = 3. Create price alerts table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS price_alerts (id SERIAL PRIMARY KEY, product_name VARCHAR(255), old_price DECIMAL(10,2), new_price DECIMAL(10,2), change_percent DECIMAL(5,2), detected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 ```
 
 ### Step 11: Create Timer/Trigger Node
 
+**CRITICAL:** No quotes on type/mode/handler
+
 ```toml
 [node:ScheduleMonitoring]
-type = "timer"
-label = "Check every 4 hours"
-schedule = "0 */4 * * *"
-mode = "cron"
-timezone = "UTC"
-handler = "FetchCompetitors"
+type = timer
+label = 4. Check every 4 hours
+schedule = 0 */4 * * *
+mode = cron
+timezone = UTC
+handler = FetchCompetitors
 ```
 
 ### Step 12: Create External API Fetch Nodes
 
+**CRITICAL:** No quotes on type/method
+
 ```toml
 [node:FetchCompetitorPrices]
-type = "request"
-label = "Fetch competitor prices"
-method = "GET"
-url = "https://api.competitor.com/prices"
+type = request
+label = 5. Fetch competitor prices
+method = GET
+url = https://api.competitor.com/prices
 headers = {"Authorization": "Bearer {{.Parameter.competitor_api_key}}"}
 timeout_seconds = 30
 retry_on_failure = true
@@ -266,10 +277,12 @@ max_retries = 3
 
 ### Step 13: Create Data Processing Nodes
 
+**CRITICAL:** No quotes on type/function
+
 ```toml
 [node:ParseAndCompare]
-type = "py"
-label = "Detect price changes"
+type = py
+label = 6. Detect price changes
 code = """
 def detect_changes(**kwargs):
     current_prices = kwargs.get('FetchCompetitorPrices', {}).get('result', {})
@@ -297,34 +310,38 @@ def detect_changes(**kwargs):
         }
     }
 """
-function = "detect_changes"
+function = detect_changes
 ```
 
 ### Step 14: Create Conditional Logic
 
+**CRITICAL:** No quotes on type/on_true/on_false
+
 ```toml
 [node:CheckIfAlertNeeded]
-type = "if"
-label = "Check if changes detected"
-condition = "{{ParseAndCompare.result.has_changes}} == true"
-on_true = "SendAlert"
-on_false = "LogNoChanges"
+type = if
+label = 7. Check if changes detected
+condition = {{ParseAndCompare.result.has_changes}} == true
+on_true = SendAlert
+on_false = LogNoChanges
 ```
 
 ### Step 15: Create Action Nodes
 
+**CRITICAL:** No quotes on type/operation
+
 **Email notification:**
 ```toml
 [node:SendAlert]
-type = "email"
-label = "Send price change alert"
-smtp_host = "{{.Parameter.smtp_host}}"
-smtp_port = "{{.Parameter.smtp_port}}"
-smtp_user = "{{.Parameter.smtp_user}}"
-smtp_password = "{{.Parameter.smtp_password}}"
-from_email = "{{.Parameter.smtp_user}}"
-to_email = "{{.Parameter.alert_email}}"
-subject = "Price Changes Detected"
+type = email
+label = 8. Send price change alert
+smtp_host = {{.Parameter.smtp_host}}
+smtp_port = {{.Parameter.smtp_port}}
+smtp_user = {{.Parameter.smtp_user}}
+smtp_password = {{.Parameter.smtp_password}}
+from_email = {{.Parameter.smtp_user}}
+to_email = {{.Parameter.alert_email}}
+subject = Price Changes Detected
 body = """
 Price changes detected:
 
@@ -341,50 +358,52 @@ Change: {{ change.change_percent }}%
 **Database storage:**
 ```toml
 [node:StorePrices]
-type = "neon"
-label = "Store current prices"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = "INSERT INTO price_history (competitor_id, product_name, price) VALUES (%s, %s, %s)"
-parameters = ["{{competitor_id}}", "{{product_name}}", "{{price}}"]
+type = neon
+label = 9. Store current prices
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO price_history (competitor_id, product_name, price) VALUES (%s, %s, %s)
+parameters = [{{competitor_id}}, {{product_name}}, {{price}}]
 ```
 
 ### Step 16: Create API Endpoints (Access Layer)
 
+**CRITICAL:** No quotes on type/mode/handler. Use hierarchical labels.
+
 ```toml
 [node:DefineGetCurrentPricesRoute]
-type = "aci"
-mode = "server"
-route_path = "/api/prices/current"
+type = aci
+mode = server
+label = API.Prices.1. GET /api/prices/current
+operation = add_route
+route_path = /api/prices/current
 methods = ["GET"]
-handler = "GetCurrentPrices"
+handler = GetCurrentPrices
+description = Get current prices
 
 [node:GetCurrentPrices]
-type = "neon"
-query = """
-SELECT DISTINCT ON (product_name)
-    product_name, price, checked_at
-FROM price_history
-ORDER BY product_name, checked_at DESC
-"""
+type = neon
+label = API.Prices.1.1. Fetch current prices
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT DISTINCT ON (product_name) product_name, price, checked_at FROM price_history ORDER BY product_name, checked_at DESC
 
 [node:DefineGetAnalyticsRoute]
-type = "aci"
-route_path = "/api/prices/analytics"
+type = aci
+mode = server
+label = API.Prices.2. GET /api/prices/analytics
+operation = add_route
+route_path = /api/prices/analytics
 methods = ["GET"]
-handler = "GetAnalytics"
+handler = GetAnalytics
+description = Get price analytics
 
 [node:GetAnalytics]
-type = "neon"
-query = """
-SELECT
-    product_name,
-    MIN(price) as lowest,
-    MAX(price) as highest,
-    AVG(price) as average
-FROM price_history
-GROUP BY product_name
-"""
+type = neon
+label = API.Prices.2.1. Calculate analytics
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT product_name, MIN(price) as lowest, MAX(price) as highest, AVG(price) as average FROM price_history GROUP BY product_name
 ```
 
 ### Step 17: Define Edges
@@ -412,13 +431,38 @@ DefineGetCurrentPricesRoute = GetCurrentPrices
 DefineGetAnalyticsRoute = GetAnalytics
 ```
 
-### Step 18: Deploy and Register
+### Step 18: Add Footer Sections
 
-**Port:** Next available (e.g., 9006)
+**CRITICAL:** Must be in this EXACT order at the end:
 
-**Service type:** "monitor" or "integration"
+```toml
+[env]
 
-**Register:** Full service catalog
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+
+[configuration]
+agent_enabled = true
+agent_name = price-monitor-agent
+agent_version = 1.0.0
+host = 0.0.0.0
+port = [PORT]
+debug = true
+cors_enabled = true
+
+[deployment]
+environment = development
+```
+
+### Step 19: Save (Do NOT Execute)
+
+**Path:** `../components/apps/act-docker/flows/[integration]-system.flow`
+
+**Port:** Next available (use port detection API)
+
+**Do NOT execute** - User deploys manually via Docker when ready
 
 ---
 
@@ -569,16 +613,17 @@ schedule = "* * * * *"  # ❌ Every minute might hit rate limits
 - [ ] Did I identify all external services?
 - [ ] Did I configure API authentication?
 - [ ] Did I add error handling to HTTP requests?
-- [ ] Did I create history/state tables?
-- [ ] Did I create timer or webhook trigger?
-- [ ] Did I create fetch nodes for external APIs?
-- [ ] Did I create data processing nodes?
-- [ ] Did I add conditional logic?
-- [ ] Did I create action nodes (email/webhook)?
-- [ ] Did I create API endpoints for access?
-- [ ] Did I use environment variables for secrets?
-- [ ] Did I include full server config?
-- [ ] Did I register in service catalog?
+- [ ] Did I create history/state tables (no quotes on type)?
+- [ ] Did I create timer or webhook trigger (no quotes)?
+- [ ] Did I create fetch nodes for external APIs (no quotes on type/method)?
+- [ ] Did I create data processing nodes (no quotes on type)?
+- [ ] Did I add conditional logic (no quotes on type/on_true/on_false)?
+- [ ] Did I create action nodes (email/webhook, no quotes on type)?
+- [ ] Did I create API endpoints with hierarchical labels?
+- [ ] Did I use connection_string parameter (not database_url)?
+- [ ] Did I use parameters directly (not {{.env.*}})?
+- [ ] Did I include footer sections in correct order ([env], [settings], [configuration], [deployment])?
+- [ ] Did I NOT include [service_catalog] section?
 - [ ] Did I save as permanent .flow?
 - [ ] Did I NOT execute/deploy (user does this manually)?
 - [ ] Did I respond with file location and deployment instructions?
@@ -597,8 +642,13 @@ schedule = "* * * * *"  # ❌ Every minute might hit rate limits
 - Conditional logic
 - Actions (email, webhooks)
 - History tracking
-- API access layer
+- API access layer (hierarchical labels)
 - Scheduled/event-driven
+- No quotes on type/mode/operation/handler
+- Use connection_string parameter (not database_url)
+- Parameters directly (not {{.env.*}})
+- Footer sections: [env], [settings], [configuration], [deployment]
+- NO [service_catalog] section
 - Save as .flow file (do NOT execute)
 - User deploys when ready
 

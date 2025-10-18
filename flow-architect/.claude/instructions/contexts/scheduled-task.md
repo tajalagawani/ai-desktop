@@ -44,7 +44,7 @@
 
 ---
 
-## Build Process (10 Steps)
+## Build Process (11 Steps)
 
 ### Step 1: Extract Schedule Requirements
 
@@ -94,88 +94,58 @@ curl -s http://localhost:3000/api/ports
 
 ### Step 5: Create Workflow Header
 
+**CRITICAL:** Follow exact TOML format - no quotes, no [server], no [service_catalog]
+
 ```toml
 [workflow]
-name = "[Task] Scheduler"
-description = "[What it does] on schedule"
-start_node = CreateDataTable  # If using database
-
-[settings]
-debug_mode = true
-max_retries = 3
-timeout_seconds = 300
-log_level = "info"
-
-[configuration]
-agent_enabled = true
-agent_name = "[task]-scheduler-agent"
-agent_version = "1.0.0"
-
-[server]
-host = "0.0.0.0"
-port = [PORT]
-cors = {enabled = true, origins = ["*"]}
-environment = "development"
-auto_restart = true
-
-[deployment]
-environment = "production"
-
-[service_catalog]
-register = true
-service_name = "[Task] Scheduler"
-service_type = "scheduler"
-description = "[What it does] every [interval]"
-icon = "[emoji]"
-category = "automation"
+name = [Task] Scheduler
+description = [What it does] on schedule
+start_node = CreateDataTable
 
 [parameters]
-database_url = "{{.env.DATABASE_URL}}"  # If using database
-
-[env]
-DATABASE_URL = "postgresql://connection-string"
+connection_string = postgresql://neondb_owner:password@host:5432/db?sslmode=require
 ```
+
+**That's it for the header!** Footer sections come at the end.
 
 ### Step 6: Create Database Table (If Storing Results)
 
+**CRITICAL:** No quotes on type/label/operation. Use {{.Parameter.connection_string}}
+
 ```toml
 [node:CreateDataTable]
-type = "neon"
-label = "Create [table] table"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = """
-CREATE TABLE IF NOT EXISTS [table_name] (
-    id SERIAL PRIMARY KEY,
-    [data_fields],
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-"""
+type = neon
+label = 1. Create [table] table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS [table_name] (id SERIAL PRIMARY KEY, [data_fields], created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 ```
 
 ### Step 7: Create Timer Node
 
+**CRITICAL:** No quotes on type/mode/handler. Timer uses `handler` parameter, not edges!
+
 ```toml
 [node:ScheduleTask]
-type = "timer"
-label = "Trigger every [interval]"
-schedule = "[CRON_EXPRESSION]"
-mode = "cron"
-timezone = "UTC"
-handler = "[NextNodeName]"
+type = timer
+label = 2. Trigger every [interval]
+schedule = [CRON_EXPRESSION]
+mode = cron
+timezone = UTC
+handler = [NextNodeName]
 ```
 
-**CRITICAL:** Timer node uses `handler` parameter, not edges!
-
 ### Step 8: Create Task Logic Nodes
+
+**CRITICAL:** No quotes on type/method/function
 
 **Example: Data fetching**
 ```toml
 [node:FetchData]
-type = "request"
-label = "Fetch [resource]"
-method = "GET"
-url = "[API_URL]"
+type = request
+label = 3. Fetch [resource]
+method = GET
+url = [API_URL]
 timeout_seconds = 10
 retry_on_failure = true
 ```
@@ -183,27 +153,29 @@ retry_on_failure = true
 **Example: Computation**
 ```toml
 [node:ProcessData]
-type = "py"
-label = "Process data"
+type = py
+label = 4. Process data
 code = """
 def process(**kwargs):
     # Your logic here
     result = compute_something()
     return {"result": result}
 """
-function = "process"
+function = process
 ```
 
 ### Step 9: Store Results (If Applicable)
 
+**CRITICAL:** No quotes on type/operation. Use {{.Parameter.connection_string}}
+
 ```toml
 [node:StoreResult]
-type = "neon"
-label = "Store in database"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = "INSERT INTO [table] ([fields]) VALUES (%s, %s) RETURNING id"
-parameters = ["{{PreviousNode.result.field1}}", "{{PreviousNode.result.field2}}"]
+type = neon
+label = 5. Store in database
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO [table] ([fields]) VALUES (%s, %s) RETURNING id
+parameters = [{{PreviousNode.result.field1}}, {{PreviousNode.result.field2}}]
 ```
 
 ### Step 10: Define Edges
@@ -222,6 +194,31 @@ StoreResult = LogSuccess  # Optional logging
 - Timer has `handler` parameter pointing to first task node
 - Timer edge is `= []` (empty, timer handles routing internally)
 - Task nodes connect sequentially
+
+### Step 11: Add Footer Sections
+
+**CRITICAL:** Must be in this EXACT order at the end:
+
+```toml
+[env]
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+
+[configuration]
+agent_enabled = true
+agent_name = [task]-scheduler-agent
+agent_version = 1.0.0
+host = 0.0.0.0
+port = [PORT]
+debug = true
+cors_enabled = true
+
+[deployment]
+environment = development
+```
 
 ---
 
@@ -280,24 +277,24 @@ CreateTable → Timer (hourly)
 **Code:**
 ```toml
 [node:ScheduleGeneration]
-type = "timer"
-schedule = "0 * * * *"  # Every hour
-handler = "GenerateNumber"
+type = timer
+schedule = 0 * * * *
+handler = GenerateNumber
 
 [node:GenerateNumber]
-type = "py"
+type = py
 code = """
 import random
 def generate(**kwargs):
     number = random.randint(1, 100)
     return {"result": {"value": number}}
 """
-function = "generate"
+function = generate
 
 [node:StoreNumber]
-type = "neon"
-query = "INSERT INTO numbers (value) VALUES (%s)"
-parameters = ["{{GenerateNumber.result.value}}"]
+type = neon
+query = INSERT INTO numbers (value) VALUES (%s)
+parameters = [{{GenerateNumber.result.value}}]
 
 [edges]
 CreateTable = ScheduleGeneration
@@ -321,21 +318,21 @@ CreateTable → Timer (5 min)
 **Code:**
 ```toml
 [node:ScheduleTracking]
-type = "timer"
-schedule = "*/5 * * * *"  # Every 5 minutes
-handler = "FetchLocation"
+type = timer
+schedule = */5 * * * *
+handler = FetchLocation
 
 [node:FetchLocation]
-type = "request"
-url = "http://api.open-notify.org/iss-now.json"
+type = request
+url = http://api.open-notify.org/iss-now.json
 
 [node:ParseData]
-type = "py"
+type = py
 code = """..."""
 
 [node:StoreLocation]
-type = "neon"
-query = "INSERT INTO iss_tracking (lat, lon) VALUES (%s, %s)"
+type = neon
+query = INSERT INTO iss_tracking (lat, lon) VALUES (%s, %s)
 
 [edges]
 CreateTable = ScheduleTracking
@@ -360,18 +357,18 @@ CreateTable → Timer (daily 8am)
 **Code:**
 ```toml
 [node:DailySchedule]
-type = "timer"
-schedule = "0 8 * * *"  # 8am UTC
-handler = "FetchPrice"
+type = timer
+schedule = 0 8 * * *
+handler = FetchPrice
 
 [node:FetchPrice]
-type = "request"
-url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+type = request
+url = https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd
 
 [node:SendEmail]
-type = "email"
-subject = "Daily Bitcoin Price"
-body = "Current price: ${{FetchPrice.result.bitcoin.usd}}"
+type = email
+subject = Daily Bitcoin Price
+body = Current price: ${{FetchPrice.result.bitcoin.usd}}
 
 [edges]
 DailySchedule = []
@@ -405,14 +402,14 @@ ScheduleTask = []  # ✅ Empty edge for timer
 ### ❌ Mistake 2: Invalid Cron Expression
 
 ```toml
-schedule = "every 5 minutes"  # ❌ Not cron format
+schedule = every 5 minutes  # ❌ Not cron format
 ```
 
 **Why wrong:** Must use cron syntax
 
 **Fix:**
 ```toml
-schedule = "*/5 * * * *"  # ✅ Correct cron format
+schedule = */5 * * * *  # ✅ Correct cron format
 ```
 
 ---
@@ -433,15 +430,20 @@ type = "request"
 
 ---
 
-### ❌ Mistake 4: Forgetting Service Registration
+### ❌ Mistake 4: Wrong Connection Parameter Name
 
 ```toml
-# Missing [service_catalog] section  ❌
+[parameters]
+database_url = {{.env.DATABASE_URL}}  # ❌ Wrong parameter name
 ```
 
-**Why wrong:** Scheduled services should be discoverable
+**Why wrong:** Should use connection_string, not database_url
 
-**Fix:** Always include service catalog registration
+**Fix:**
+```toml
+[parameters]
+connection_string = postgresql://connection-string  # ✅ Correct
+```
 
 ---
 
@@ -610,14 +612,16 @@ Generates a random number every hour and stores results.
 
 - [ ] Did I extract the schedule correctly?
 - [ ] Did I convert to cron format?
-- [ ] Did I create timer node with `handler` parameter?
+- [ ] Did I create timer node with `handler` parameter (no quotes)?
 - [ ] Did I set timer edge to `[]`?
-- [ ] Did I create task logic nodes?
+- [ ] Did I create task logic nodes (no quotes on type)?
 - [ ] Did I create database table (if storing)?
 - [ ] Did I create storage node (if applicable)?
 - [ ] Did I include retry logic?
+- [ ] Did I use connection_string parameter (not database_url)?
+- [ ] Did I include footer sections in correct order ([env], [settings], [configuration], [deployment])?
+- [ ] Did I NOT include [service_catalog] section?
 - [ ] Did I assign a port?
-- [ ] Did I register in service catalog?
 - [ ] Did I save as permanent .flow file?
 - [ ] Did I NOT execute the flow (user deploys manually)?
 - [ ] Did I respond with file location and deployment instructions?
@@ -631,11 +635,13 @@ Generates a random number every hour and stores results.
 **Scheduled Task = Timer + Task Logic + Storage + Deployment**
 
 - Convert interval to cron format
-- Timer uses `handler`, not edges
+- Timer uses `handler` (unquoted), not edges
 - Timer edge is `[]`
+- No quotes on type/mode/operation/handler
 - Store results if tracking data
-- Full server config
-- Register in catalog
+- Use connection_string parameter (not database_url)
+- Footer sections: [env], [settings], [configuration], [deployment]
+- NO [service_catalog] section
 - Save as .flow file (do NOT execute)
 - Provide deployment instructions to user
 

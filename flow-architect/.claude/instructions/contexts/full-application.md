@@ -70,7 +70,7 @@
 
 ---
 
-## Build Process (16 Steps)
+## Build Process (17 Steps)
 
 ### Step 1: Read Catalogs
 
@@ -195,71 +195,39 @@ curl -s http://localhost:3000/api/ports
 
 ### Step 6: Create Workflow Header
 
+**CRITICAL:** Follow exact TOML format - no quotes on values, no [server], no [service_catalog]
+
 ```toml
 [workflow]
-name = "[System] Management System"
-description = "Complete [domain] operations"
+name = [System] Management System
+description = Complete [domain] operations
 start_node = Create[FirstEntity]Table
 
-[settings]
-debug_mode = true
-max_retries = 3
-timeout_seconds = 600
-log_level = "info"
-
-[configuration]
-agent_enabled = true
-agent_name = "[system]-management-agent"
-agent_version = "1.0.0"
-
-[server]
-host = "0.0.0.0"
-port = [PORT]
-cors = {enabled = true, origins = ["*"]}
-environment = "development"
-auto_restart = true
-
-[deployment]
-environment = "production"
-
-[service_catalog]
-register = true
-service_name = "[System] Management"
-service_type = "api"
-description = "Complete [domain] operations: [list all features]"
-icon = "[emoji]"
-category = "business"
-endpoints = [
-  # List ALL endpoints (15-40+)
-  {path = "/api/[entity1]", method = "GET", description = "..."},
-  {path = "/api/[entity1]", method = "POST", description = "..."},
-  # ... many more
-]
-
 [parameters]
-database_url = "{{.env.DATABASE_URL}}"
-
-[env]
-DATABASE_URL = "postgresql://connection-string"
+connection_string = postgresql://neondb_owner:password@host:5432/db?sslmode=require
 ```
 
+**That's it for the header!** Footer sections come at the end.
+
 ### Step 7-11: Create All Database Tables
+
+**CRITICAL:** No quotes on type/label/operation. Use {{.Parameter.connection_string}}
 
 **Pattern:**
 ```toml
 [node:Create[Entity1]Table]
-type = "neon"
-label = "Create [entity1] table"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = """
-CREATE TABLE IF NOT EXISTS [entity1] (...);
-CREATE INDEX IF NOT EXISTS idx_[entity1]_[field] ON [entity1]([field]);
-"""
+type = neon
+label = 1. Create [entity1] table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS [entity1] (...); CREATE INDEX IF NOT EXISTS idx_[entity1]_[field] ON [entity1]([field])
 
 [node:Create[Entity2]Table]
-type = "neon"
-...
+type = neon
+label = 2. Create [entity2] table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS [entity2] (...)
 
 # Continue for all 5+ entities
 ```
@@ -276,6 +244,8 @@ CreateTable5 = CreateTable6
 
 ### Step 12-14: Create All API Endpoints
 
+**CRITICAL:** No quotes on type/mode/operation/handler. Use hierarchical labels.
+
 **For each endpoint (15-40+ total):**
 
 1. ACI route definition node
@@ -285,23 +255,40 @@ CreateTable5 = CreateTable6
 ```toml
 # ===== Menu Endpoints =====
 [node:DefineGetMenuRoute]
-type = "aci"
-mode = "server"
-operation = "add_route"
-route_path = "/api/menu"
+type = aci
+mode = server
+label = API.Menu.1. GET /api/menu
+operation = add_route
+route_path = /api/menu
 methods = ["GET"]
-handler = "FetchMenu"
+handler = GetMenuHandler
+description = Get all menu items
 
-[node:FetchMenu]
-type = "neon"
-query = "SELECT * FROM menu_items WHERE available = TRUE"
+[node:GetMenuHandler]
+type = neon
+label = API.Menu.1.1. Fetch menu items
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT * FROM menu_items WHERE available = TRUE
 
 # ===== Orders Endpoints =====
 [node:DefineGetOrdersRoute]
-...
+type = aci
+mode = server
+label = API.Orders.1. GET /api/orders
+operation = add_route
+route_path = /api/orders
+methods = ["GET"]
+handler = GetOrdersHandler
 
 [node:DefineCreateOrderRoute]
-...
+type = aci
+mode = server
+label = API.Orders.2. POST /api/orders
+operation = add_route
+route_path = /api/orders
+methods = ["POST"]
+handler = CreateOrderHandler
 
 # ... Continue for all endpoints
 ```
@@ -327,13 +314,36 @@ DefineRoute2 = Handler2
 # ... (15-40+ handlers)
 ```
 
-### Step 16: Save (Do NOT Execute)
+### Step 16: Add Footer Sections
 
-**Save:** `../components/apps/act-docker/flows/[system]-management.flow`
+**CRITICAL:** Must be in this EXACT order at the end:
+
+```toml
+[env]
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+
+[configuration]
+agent_enabled = true
+agent_name = [system]-management-agent
+agent_version = 1.0.0
+host = 0.0.0.0
+port = [PORT]
+debug = true
+cors_enabled = true
+
+[deployment]
+environment = development
+```
+
+### Step 17: Save (Do NOT Execute)
+
+**Path:** `../components/apps/act-docker/flows/[system]-management.flow`
 
 **Do NOT execute** - User deploys manually via Docker when ready
-
-**Register:** Included in service catalog
 
 ---
 
@@ -497,18 +507,18 @@ Then in UPDATE handler:
 UPDATE orders SET ..., updated_at = CURRENT_TIMESTAMP WHERE id = %s
 ```
 
-### ❌ Mistake 5: Incomplete Service Catalog
+### ❌ Mistake 5: Including Service Catalog Section
 
 ```toml
-endpoints = [
-  {path = "/api/orders", method = "GET"}
-  # ❌ Missing 30 other endpoints
-]
+[service_catalog]
+register = true
+service_name = "Restaurant Management"
+endpoints = [...]
 ```
 
-**Why wrong:** Service catalog doesn't reflect full API
+**Why wrong:** Service catalog should NOT be in flow files
 
-**Fix:** List ALL endpoints
+**Fix:** Remove [service_catalog] section entirely - it's registered automatically
 
 ---
 
@@ -567,15 +577,17 @@ endpoints = [
 3. Foreign keys with CASCADE rules
 4. 15-40+ endpoints defined
 5. Full CRUD on main entities
-6. Each route has handler
+6. Each route has handler (unquoted)
 7. Parameterized queries
 8. DECIMAL for money fields
 9. Timestamps (created_at, updated_at)
-10. Full server configuration
-11. All endpoints in service catalog
-12. Permanent .flow file
-13. Service deploys successfully
-14. Response lists all major features
+10. No quotes on type/mode/operation/handler
+11. Hierarchical labels used (API.Entity.Number. Description)
+12. connection_string parameter used (not database_url)
+13. Footer sections in correct order
+14. NO [service_catalog] section included
+15. Permanent .flow file
+16. Response lists all major features with deployment instructions
 
 ---
 
@@ -588,13 +600,15 @@ endpoints = [
 - [ ] Did I use DECIMAL for money?
 - [ ] Did I include updated_at fields?
 - [ ] Did I create 15+ endpoints?
-- [ ] Did I create all table nodes?
-- [ ] Did I create all route nodes?
-- [ ] Did I create all handler nodes?
+- [ ] Did I create all table nodes (no quotes on type/operation)?
+- [ ] Did I create all route nodes (no quotes on type/mode/operation)?
+- [ ] Did I create all handler nodes (unquoted handler names)?
 - [ ] Do routes connect only to handlers?
 - [ ] Did I use parameterized queries?
-- [ ] Did I include full server config?
-- [ ] Did I list ALL endpoints in catalog?
+- [ ] Did I use hierarchical labels (API.Entity.Number. Description)?
+- [ ] Did I use connection_string parameter (not database_url)?
+- [ ] Did I include footer sections in correct order ([env], [settings], [configuration], [deployment])?
+- [ ] Did I NOT include [service_catalog] section?
 - [ ] Did I save as permanent .flow?
 - [ ] Did I NOT execute/deploy (user does this manually)?
 - [ ] Did I respond with file location and deployment instructions?
@@ -611,10 +625,12 @@ endpoints = [
 - Proper relationships and indexes
 - 15-40+ API endpoints
 - Full CRUD operations
-- Business logic support
-- Production-ready .flow file
-- Complete service catalog
-- Save only (user deploys manually)
+- No quotes on type/mode/operation/handler
+- Hierarchical labels (API.Entity.Number. Description)
+- connection_string parameter (not database_url)
+- Footer sections: [env], [settings], [configuration], [deployment]
+- NO [service_catalog] section
+- Save as .flow file (do NOT execute)
 - Feature-rich response with deployment instructions
 
 **That's it.**

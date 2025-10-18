@@ -178,90 +178,52 @@ curl -s http://localhost:3000/api/ports
 
 ### Step 6: Create Workflow Header
 
+**CRITICAL:** Follow exact TOML format - no quotes, no [server], no [service_catalog]
+
 ```toml
 [workflow]
-name = "[System] API"
-description = "[Description of what it does]"
+name = [System] API
+description = [Description of what it does]
 start_node = Create[FirstEntity]Table
 
-[settings]
-debug_mode = true
-max_retries = 3
-timeout_seconds = 600
-log_level = "info"
-
-[configuration]
-agent_enabled = true
-agent_name = "[system]-api-agent"
-agent_version = "1.0.0"
-
-[server]
-host = "0.0.0.0"
-port = [PORT]
-cors = {enabled = true, origins = ["*"]}
-environment = "development"
-auto_restart = true
-
-[deployment]
-environment = "production"
-
-[service_catalog]
-register = true
-service_name = "[System] API"
-service_type = "api"
-description = "[What it manages]"
-icon = "[emoji]"
-category = "[category]"
-endpoints = [
-  # List all endpoints here
-  {path = "/api/[entity]", method = "GET", description = "..."},
-  {path = "/api/[entity]", method = "POST", description = "..."},
-  # ... more endpoints
-]
-
 [parameters]
-database_url = "{{.env.DATABASE_URL}}"
-
-[env]
-DATABASE_URL = "postgresql://connection-string"
+connection_string = postgresql://neondb_owner:password@host:5432/db?sslmode=require
 ```
 
+**That's it for the header!** Footer sections come at the end.
+
 ### Step 7: Create Database Tables (Sequential)
+
+**CRITICAL:** No quotes on type/label/operation. Use {{.Parameter.connection_string}}
 
 Create one node per table, chain them sequentially:
 
 ```toml
 [node:CreatePostsTable]
-type = "neon"
-label = "Create posts table"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = """
-CREATE TABLE IF NOT EXISTS posts (...);
-CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category_id);
-"""
+type = neon
+label = 1. Create posts table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, content TEXT, category_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category_id)
 
 [node:CreateCommentsTable]
-type = "neon"
-label = "Create comments table"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = """
-CREATE TABLE IF NOT EXISTS comments (...);
-CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
-"""
+type = neon
+label = 2. Create comments table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, post_id INTEGER NOT NULL, author VARCHAR(100), content TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id)
 
 [node:CreateCategoriesTable]
-type = "neon"
-label = "Create categories table"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = """
-CREATE TABLE IF NOT EXISTS categories (...);
-"""
+type = neon
+label = 3. Create categories table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS categories (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL UNIQUE, slug VARCHAR(100) UNIQUE)
 ```
 
 ### Step 8-12: Create Endpoint Pairs
+
+**CRITICAL:** No quotes on type/mode/operation/handler. Use hierarchical labels.
 
 For each endpoint, create:
 1. **ACI node** (route definition)
@@ -271,26 +233,28 @@ For each endpoint, create:
 ```toml
 # Route definition
 [node:Define[Operation][Entity]Route]
-type = "aci"
-mode = "server"
-label = "[METHOD] /api/[entity]"
-operation = "add_route"
-route_path = "/api/[entity]"  # or /api/[entity]/<int:id_from_url>
+type = aci
+mode = server
+label = API.[Entity].1. [METHOD] /api/[entity]
+operation = add_route
+route_path = /api/[entity]
 methods = ["[METHOD]"]
-handler = "[HandlerNodeName]"
-description = "[What it does]"
+handler = [Operation][Entity]Handler
+description = [What it does]
 
 # Handler
 [node:[HandlerNodeName]]
-type = "neon"
-label = "[Operation description]"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = "[SQL]"
-parameters = [...]  # If parameterized query
+type = neon
+label = API.[Entity].1.1. [Operation description]
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = [SQL]
+parameters = [...]
 ```
 
 ### Step 13: Define Edges
+
+**CRITICAL:** Edges come AFTER all nodes, BEFORE footer sections
 
 ```toml
 [edges]
@@ -302,22 +266,39 @@ CreateTable2 = CreateTable3
 CreateTable3 = DefineRoute1
 CreateTable3 = DefineRoute2
 CreateTable3 = DefineRoute3
-# ... etc
 
 # Each route connects to its handler
 DefineRoute1 = Handler1
 DefineRoute2 = Handler2
 DefineRoute3 = Handler3
-# ... etc
 ```
 
-**CRITICAL PATTERN:**
-- Tables are created sequentially (chain)
-- Last table connects to ALL route definitions (fan-out)
-- Each route connects ONLY to its handler
-- DO NOT chain routes together
+### Step 14: Add Footer Sections
 
-### Step 14: Save (Do NOT Execute)
+**CRITICAL:** Must be in this EXACT order at the end:
+
+```toml
+[env]
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+
+[configuration]
+agent_enabled = true
+agent_name = [system]-api-agent
+agent_version = 1.0.0
+host = 0.0.0.0
+port = [PORT]
+debug = true
+cors_enabled = true
+
+[deployment]
+environment = development
+```
+
+### Step 15: Save (Do NOT Execute)
 
 **Path:** `../components/apps/act-docker/flows/[system]-api.flow`
 

@@ -123,93 +123,59 @@ curl -s http://localhost:3000/api/ports
 
 ### Step 5: Create Workflow Header
 
+**CRITICAL:** Follow exact TOML format (no quotes unless in arrays)
+
 ```toml
 [workflow]
-name = "[Resource] API"
-description = "[Description]"
+name = [Resource] API
+description = [Description of what it does]
 start_node = Create[Resource]Table
 
-[settings]
-debug_mode = true
-max_retries = 3
-timeout_seconds = 600
-log_level = "info"
-
-[configuration]
-agent_enabled = true
-agent_name = "[resource]-api-agent"
-agent_version = "1.0.0"
-
-[server]
-host = "0.0.0.0"
-port = [PORT]
-cors = {enabled = true, origins = ["*"]}
-environment = "development"
-auto_restart = true
-
-[deployment]
-environment = "production"
-
-[service_catalog]
-register = true
-service_name = "[Resource] API"
-service_type = "api"
-description = "[What it does]"
-icon = "[emoji]"
-category = "utility"
-endpoints = [
-  {path = "/api/[resource]", method = "GET", description = "Get all [resources]"},
-  {path = "/api/[resource]", method = "POST", description = "Add new [resource]"}
-]
-
 [parameters]
-database_url = "{{.env.DATABASE_URL}}"
-
-[env]
-DATABASE_URL = "postgresql://connection-string"
+connection_string = postgresql://neondb_owner:password@host:5432/db?sslmode=require
 ```
+
+**That's it for the header!** No [server], no [service_catalog], no [env] yet.
 
 ### Step 6: Create Table Creation Node
 
+**CRITICAL:** No quotes on type, label, operation. Connection string uses {{.Parameter.connection_string}}
+
 ```toml
 [node:Create[Resource]Table]
-type = "neon"
-label = "Create [resource] table"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = """
-CREATE TABLE IF NOT EXISTS [resources] (
-    id SERIAL PRIMARY KEY,
-    [field1] [TYPE],
-    [field2] [TYPE],
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-"""
+type = neon
+label = 1. Create [resource] table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS [resources] (id SERIAL PRIMARY KEY, [field1] [TYPE], [field2] [TYPE], created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 ```
 
 ### Step 7: Create GET Endpoint (List All)
 
+**CRITICAL:** type, mode, operation are NOT quoted. Handler is NOT quoted. Use hierarchical label format.
+
 **ACI Node (Route Definition):**
 ```toml
 [node:DefineGet[Resources]Route]
-type = "aci"
-mode = "server"
-label = "GET /api/[resources]"
-operation = "add_route"
-route_path = "/api/[resources]"
+type = aci
+mode = server
+label = API.[Resource].1. GET /api/[resources]
+operation = add_route
+route_path = /api/[resources]
 methods = ["GET"]
-handler = "Fetch[Resources]"
-description = "Get all [resources]"
+handler = Get[Resources]Handler
+description = Get all [resources]
 ```
 
 **Handler Node (Database Query):**
 ```toml
 [node:Fetch[Resources]]
-type = "neon"
-label = "Fetch all [resources]"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = "SELECT * FROM [resources] ORDER BY created_at DESC"
+type = neon
+label = API.[Resource].1.1. Fetch [Resources]
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT * FROM [resources] ORDER BY created_at DESC
+parameters = []
 ```
 
 ### Step 8: Create POST Endpoint (Create New)
@@ -217,24 +183,24 @@ query = "SELECT * FROM [resources] ORDER BY created_at DESC"
 **ACI Node:**
 ```toml
 [node:DefineAdd[Resource]Route]
-type = "aci"
-mode = "server"
-label = "POST /api/[resources]"
-operation = "add_route"
-route_path = "/api/[resources]"
+type = aci
+mode = server
+label = API.[Resource].2. POST /api/[resources]
+operation = add_route
+route_path = /api/[resources]
 methods = ["POST"]
-handler = "Add[Resource]"
-description = "Add new [resource]"
+handler = Add[Resource]Handler
+description = Add new [resource]
 ```
 
 **Handler Node:**
 ```toml
-[node:Add[Resource]]
-type = "neon"
-label = "Insert [resource]"
-connection_string = "{{.Parameter.database_url}}"
-operation = "execute_query"
-query = "INSERT INTO [resources] ([field1], [field2]) VALUES (%s, %s) RETURNING *"
+[node:Insert[Resource]]
+type = neon
+label = API.[Resource].2.1. Insert [Resource]
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO [resources] ([field1], [field2]) VALUES (%s, %s) RETURNING *
 parameters = ["{{request_data.field1}}", "{{request_data.field2}}"]
 ```
 
@@ -270,20 +236,42 @@ parameters = ["{{request_data.id_from_url}}"]
 
 ### Step 10: Define Edges
 
+**CRITICAL:** Edges come AFTER all nodes, BEFORE footer sections
+
 ```toml
 [edges]
 Create[Resource]Table = DefineGet[Resources]Route
 Create[Resource]Table = DefineAdd[Resource]Route
 DefineGet[Resources]Route = Fetch[Resources]
-DefineAdd[Resource]Route = Add[Resource]
+DefineAdd[Resource]Route = Insert[Resource]
 ```
 
-**CRITICAL PATTERN:**
-- Table creation connects to ALL route definitions
-- Each route connects ONLY to its specific handler
-- DO NOT chain routes together
+### Step 11: Add Footer Sections
 
-### Step 11: Save to Permanent Location
+**CRITICAL:** Must be in this EXACT order at the end:
+
+```toml
+[env]
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+
+[configuration]
+agent_enabled = true
+agent_name = [resource]-api-agent
+agent_version = 1.0.0
+host = 0.0.0.0
+port = [PORT]
+debug = true
+cors_enabled = true
+
+[deployment]
+environment = development
+```
+
+### Step 12: Save to Permanent Location
 
 **Path:** `../components/apps/act-docker/flows/[resource]-api.flow`
 
@@ -291,7 +279,7 @@ DefineAdd[Resource]Route = Add[Resource]
 
 **NOT temp/** - This is a persistent service
 
-### Step 12: Save and Respond
+### Step 13: Save and Respond
 
 **Save the .flow file** - Do NOT execute it
 
