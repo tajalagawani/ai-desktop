@@ -27,6 +27,18 @@ services:
       - ./act:/app/act
       - ./flows/github-pr-reviewer.flow:/app/flow
 
+  act-iss-weather-api:
+    <<: *act-base
+    container_name: act-iss-weather-api
+    ports:
+      - "9003:9003"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ACT_PORT=9003
+    volumes:
+      - ./act:/app/act
+      - ./flows/iss-weather-api.flow:/app/flow
+
   act-syria-weather-api:
     <<: *act-base
     container_name: act-syria-weather-api
@@ -39,6 +51,22 @@ services:
       - ./act:/app/act
       - ./flows/syria-weather-api.flow:/app/flow
 
+  act-price-monitor:
+    <<: *act-base
+    container_name: act-price-monitor
+    ports:
+      - "9004:9004"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ACT_PORT=9004
+    volumes:
+      - ./act:/app/act
+      - ./flows/price-monitor-simple.flow:/app/flow
+      - price-monitor-data:/app
+
 networks:
   act-network:
     driver: bridge
+
+volumes:
+  price-monitor-data:

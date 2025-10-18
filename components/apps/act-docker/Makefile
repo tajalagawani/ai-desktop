@@ -17,6 +17,7 @@ help:
 	@echo ""
 # Individual flow commands:
 # make start-github-pr-reviewer, stop-github-pr-reviewer, logs-github-pr-reviewer
+# make start-iss-weather-api, stop-iss-weather-api, logs-iss-weather-api
 # make start-syria-weather-api, stop-syria-weather-api, logs-syria-weather-api
 
 start:
@@ -58,6 +59,18 @@ restart-github-pr-reviewer:
 
 logs-github-pr-reviewer:
 	docker-compose logs -f act-github-pr-reviewer
+
+start-iss-weather-api:
+	docker-compose up -d act-iss-weather-api
+
+stop-iss-weather-api:
+	docker-compose stop act-iss-weather-api
+
+restart-iss-weather-api:
+	docker-compose restart act-iss-weather-api
+
+logs-iss-weather-api:
+	docker-compose logs -f act-iss-weather-api
 
 start-syria-weather-api:
 	docker-compose up -d act-syria-weather-api
