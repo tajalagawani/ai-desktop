@@ -167,12 +167,14 @@ CREATE INDEX idx_comments_post_id ON comments(post_id);
 
 ### Step 5: Find Next Available Port
 
+**CRITICAL:** You MUST call the port detection API to get an available port.
+
+**API Call:**
 ```bash
-grep "^port = " ../components/apps/act-docker/flows/*.flow | sort -t= -k2 -n | tail -1
+curl -s http://localhost:3000/api/ports
 ```
 
-**Output:** `port = 9003`
-**Next port:** 9004
+**Parse the JSON response and use `available_port`** - this prevents port conflicts
 
 ### Step 6: Create Workflow Header
 

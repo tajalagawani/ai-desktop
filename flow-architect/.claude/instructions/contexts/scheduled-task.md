@@ -81,15 +81,16 @@ Timer → [Task Logic] → [Store Result] → [Optional: Notify/Log]
 
 ### Step 4: Find Next Available Port
 
-Even if no API endpoints, scheduled services need server config:
+Even if no API endpoints, scheduled services need server config.
 
+**CRITICAL:** You MUST call the port detection API to get an available port.
+
+**API Call:**
 ```bash
-grep "^port = " ../components/apps/act-docker/flows/*.flow | sort -t= -k2 -n | tail -1
+curl -s http://localhost:3000/api/ports
 ```
 
-**Output example:** `port = 9002`
-**Next port:** 9003
-**Default if no flows exist:** 9001
+**Parse the JSON response and use `available_port`** - this prevents port conflicts
 
 ### Step 5: Create Workflow Header
 

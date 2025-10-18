@@ -103,16 +103,23 @@ CREATE TABLE IF NOT EXISTS quotes (
 
 ### Step 4: Find Next Available Port
 
-**Check existing ports:**
+**CRITICAL:** You MUST call the port detection API to get an available port.
+
+**API Call:**
 ```bash
-grep "^port = " ../components/apps/act-docker/flows/*.flow | sort -t= -k2 -n | tail -1
+curl -s http://localhost:3000/api/ports
 ```
 
-**Output example:** `port = 9002`
+**Parse the JSON response:**
+```json
+{
+  "success": true,
+  "available_port": 9009,
+  "used_ports": [9001, 9002, ...]
+}
+```
 
-**Next port:** 9003
-
-**Default if no flows exist:** 9001
+**Use the `available_port` value** - this scans all flows, service catalog, and docker-compose to avoid conflicts
 
 ### Step 5: Create Workflow Header
 

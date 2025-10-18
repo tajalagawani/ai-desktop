@@ -184,11 +184,14 @@ Total: 11 endpoints
 
 ### Step 5: Find Next Available Port
 
+**CRITICAL:** You MUST call the port detection API to get an available port.
+
+**API Call:**
 ```bash
-grep "^port = " ../components/apps/act-docker/flows/*.flow | sort -t= -k2 -n | tail -1
+curl -s http://localhost:3000/api/ports
 ```
 
-Next available port (e.g., 9005)
+**Parse the JSON response and use `available_port`** - this scans all sources to avoid conflicts
 
 ### Step 6: Create Workflow Header
 
