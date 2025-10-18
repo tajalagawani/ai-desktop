@@ -63,3 +63,7 @@ next-env.d.ts
 # generated workflow files
 components/apps/act-docker/flows/*.flow
 **/temp-*.act
+# ACT temporary execution files
+components/apps/act-docker/temp-executions/
+temp-act-executions/
+components/apps/act-docker/prices.json
