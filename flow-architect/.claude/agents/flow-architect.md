@@ -111,7 +111,7 @@ Read the corresponding context file from `.claude/instructions/contexts/`.
 - **Dynamic Services:** Fetch `http://localhost:3000/api/catalog/flows` for flow services
 - **Infrastructure:** Fetch `http://localhost:3000/api/catalog?type=infrastructure&status=running` for databases, etc.
 - **Connection Strings:** Get actual connections from running services
-- **Static Node Types:** Read `catalogs/node-catalog.json` for available node types
+- **Dynamic Node Types:** Fetch `http://localhost:3000/api/nodes` for available node types (auto-discovered from Python files)
 
 **Step 4: Load Examples (if needed)**
 Read referenced example files from `.claude/instructions/examples/`.
@@ -153,8 +153,8 @@ curl -s http://localhost:3000/api/catalog/flows
 **Node Types:** `.claude/instructions/node-types/`
 **Patterns:** `.claude/instructions/patterns/`
 **Common:** `.claude/instructions/common/`
-**Dynamic Catalog:** `http://localhost:3000/api/catalog`
-**Static Node Types:** `catalogs/node-catalog.json`
+**Dynamic Service Catalog:** `http://localhost:3000/api/catalog`
+**Dynamic Node Catalog:** `http://localhost:3000/api/nodes` (auto-discovered, 129 nodes with 3,364 operations)
 
 ---
 

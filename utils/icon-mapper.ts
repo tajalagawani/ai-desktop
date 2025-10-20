@@ -281,7 +281,6 @@ export const iconCategories = {
 // App-specific icon configurations
 export const appIcons: Record<string, string> = {
   // System apps
-  "app-store": "Store",
   "file-manager": "Folder",
   "settings": "Settings",
   "terminal": "Terminal",

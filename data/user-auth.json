@@ -1,0 +1,20 @@
+{
+  "users": {
+    "default": {
+      "nodes": {
+        "actionnetwork": {
+          "enabled": true,
+          "auth_data": "2af8e001b236ab53d839555a3dd66490:ffbb06d575ce7e51692b900e155a7ea961c38e21cfa96d7e04f48d0822e80cce0f490ee5b2faa73c8df3e863a994e2599c573d6dda4fa64147a4d6fa06f0ee4e",
+          "created_at": "2025-10-20T18:07:32.376Z",
+          "updated_at": "2025-10-20T18:07:32.376Z"
+        },
+        "airtable": {
+          "enabled": true,
+          "auth_data": "a85ad15f1bb66e0180d8a4b560e78d4f:4fe940ed1bd9b5631ad2edd3700e5adb57402e84f621c3d91a33debbf2a065c7",
+          "created_at": "2025-10-20T18:20:13.927Z",
+          "updated_at": "2025-10-20T18:20:13.927Z"
+        }
+      }
+    }
+  }
+}

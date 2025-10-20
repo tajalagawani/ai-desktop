@@ -35,22 +35,6 @@ export interface DesktopFolder {
 
 export const DOCK_APPS: AppConfig[] = [
   {
-    id: "app-store",
-    name: "App Store",
-    icon: "Store",
-    category: "system",
-    isSystem: true,
-    description: "Browse and install applications"
-  },
-  {
-    id: "installed",
-    name: "Installed Apps",
-    icon: "Folder",
-    category: "system",
-    isSystem: true,
-    description: "View all installed applications"
-  },
-  {
     id: "workflows",
     name: "Workflows",
     icon: "Workflow",
@@ -111,56 +95,17 @@ export const DOCK_APPS: AppConfig[] = [
     category: "development",
     description: "AI-powered workflow creation with Flow Architect agent"
   },
-]
-
-export const INSTALLED_APPS: AppConfig[] = [
   {
-    id: "github",
-    name: "GitHub Desktop",
-    icon: "GitBranch",
-    category: "development",
-    version: "3.2.1",
-    description: "Version control and collaboration"
-  },
-  {
-    id: "slack",
-    name: "Slack",
-    icon: "MessageSquare",
-    category: "communication",
-    version: "4.33.90",
-    description: "Team communication platform"
-  },
-  {
-    id: "chatgpt",
-    name: "ChatGPT",
-    icon: "Brain",
-    category: "productivity",
-    version: "1.0.0",
-    description: "AI assistant"
+    id: "security-center",
+    name: "Security Center",
+    icon: "Shield",
+    category: "system",
+    isSystem: true,
+    description: "Manage authentication and security for nodes and services"
   },
 ]
 
 export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
-  "app-store": {
-    defaultWidth: 1200,
-    defaultHeight: 800,
-    minWidth: 800,
-    minHeight: 600,
-    resizable: true,
-    maximizable: true,
-    minimizable: true,
-    closable: true,
-  },
-  "installed": {
-    defaultWidth: 900,
-    defaultHeight: 600,
-    minWidth: 600,
-    minHeight: 400,
-    resizable: true,
-    maximizable: true,
-    minimizable: true,
-    closable: true,
-  },
   "workflows": {
     defaultWidth: 1400,
     defaultHeight: 900,
@@ -234,6 +179,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
   "action-builder": {
     defaultWidth: 1600,
     defaultHeight: 1000,
+    minWidth: 1000,
+    minHeight: 700,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "security-center": {
+    defaultWidth: 1400,
+    defaultHeight: 900,
     minWidth: 1000,
     minHeight: 700,
     resizable: true,

@@ -158,6 +158,89 @@ export class ServiceRegistry {
   }
 
   /**
+   * Fetch popular services from Docker Hub
+   */
+  async fetchPopularServices(): Promise<ServiceMetadata[]> {
+    const popularServices = [
+      // Databases
+      { image: 'mongo', name: 'MongoDB', category: 'database', port: 27017, description: 'NoSQL document database' },
+      { image: 'postgres', name: 'PostgreSQL', category: 'database', port: 5432, description: 'Advanced relational database' },
+      { image: 'mysql', name: 'MySQL', category: 'database', port: 3306, description: 'Popular relational database' },
+      { image: 'redis', name: 'Redis', category: 'database', port: 6379, description: 'In-memory data store' },
+      { image: 'neo4j', name: 'Neo4j', category: 'database', port: 7474, description: 'Graph database' },
+      { image: 'mariadb', name: 'MariaDB', category: 'database', port: 3306, description: 'MySQL fork' },
+      { image: 'cassandra', name: 'Cassandra', category: 'database', port: 9042, description: 'Distributed NoSQL database' },
+      { image: 'couchdb', name: 'CouchDB', category: 'database', port: 5984, description: 'Document database with HTTP API' },
+      { image: 'influxdb', name: 'InfluxDB', category: 'database', port: 8086, description: 'Time series database' },
+      { image: 'elasticsearch', name: 'Elasticsearch', category: 'search', port: 9200, description: 'Search and analytics engine' },
+
+      // Message Queues
+      { image: 'rabbitmq', name: 'RabbitMQ', category: 'queue', port: 5672, description: 'Message broker' },
+      { image: 'kafka', name: 'Apache Kafka', category: 'queue', port: 9092, description: 'Distributed streaming platform' },
+
+      // Web Servers
+      { image: 'nginx', name: 'Nginx', category: 'web-server', port: 80, description: 'High-performance web server' },
+      { image: 'httpd', name: 'Apache HTTP', category: 'web-server', port: 80, description: 'Apache web server' },
+
+      // Caching
+      { image: 'memcached', name: 'Memcached', category: 'database', port: 11211, description: 'Memory caching system' },
+
+      // Tools
+      { image: 'phpmyadmin', name: 'phpMyAdmin', category: 'tool', port: 80, description: 'MySQL web interface' },
+      { image: 'adminer', name: 'Adminer', category: 'tool', port: 8080, description: 'Database management tool' }
+    ]
+
+    const services: ServiceMetadata[] = []
+
+    for (const svc of popularServices) {
+      try {
+        const metadata = await this.fetchFromDockerHub(svc.image)
+
+        services.push({
+          id: svc.image.replace('/', '-'),
+          name: svc.name,
+          type: 'infrastructure',
+          category: svc.category,
+          description: metadata?.description || svc.description,
+          version: 'latest',
+          dockerImage: `${svc.image}:latest`,
+          status: 'available',
+          source: 'docker-hub',
+          ports: [{
+            internal: svc.port,
+            external: svc.port,
+            protocol: 'tcp'
+          }],
+          volumes: [],
+          environment: {}
+        })
+      } catch (error) {
+        // If Docker Hub fetch fails, add with basic info
+        services.push({
+          id: svc.image.replace('/', '-'),
+          name: svc.name,
+          type: 'infrastructure',
+          category: svc.category,
+          description: svc.description,
+          version: 'latest',
+          dockerImage: `${svc.image}:latest`,
+          status: 'available',
+          source: 'docker-hub',
+          ports: [{
+            internal: svc.port,
+            external: svc.port,
+            protocol: 'tcp'
+          }],
+          volumes: [],
+          environment: {}
+        })
+      }
+    }
+
+    return services
+  }
+
+  /**
    * Fetch community-curated service registry from GitHub
    */
   async fetchCommunityRegistry(): Promise<ServiceMetadata[]> {
@@ -165,15 +248,15 @@ export class ServiceRegistry {
       const response = await fetch(this.communityRegistryUrl)
 
       if (!response.ok) {
-        console.warn('Community registry not available')
-        return []
+        // Fallback to popular services if community registry not available
+        return this.fetchPopularServices()
       }
 
       const yamlContent = await response.text()
       const registry = yaml.load(yamlContent) as any
 
       if (!registry?.services) {
-        return []
+        return this.fetchPopularServices()
       }
 
       return registry.services.map((service: any) => ({
@@ -197,8 +280,8 @@ export class ServiceRegistry {
         capabilities: service.capabilities || []
       }))
     } catch (error) {
-      console.warn('Failed to fetch community registry:', error)
-      return []
+      console.warn('Failed to fetch community registry, using popular services:', error)
+      return this.fetchPopularServices()
     }
   }
 

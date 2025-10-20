@@ -20,8 +20,6 @@ import {
   Thermometer,
   Activity as ProcessIcon,
 } from "lucide-react"
-import { MacAppStore } from "@/components/apps/mac-app-store"
-import { InstalledApps } from "@/components/apps/installed-apps"
 import { WorkflowCanvas } from "@/components/apps/workflow-canvas"
 import { SystemMonitor } from "@/components/apps/system-monitor"
 import { ChatInterface } from "@/components/apps/chat-interface"
@@ -34,6 +32,7 @@ import { FlowManager } from "@/components/apps/flow-manager"
 import { ServiceDetails } from "@/components/apps/service-details"
 import { DesktopSettings } from "@/components/apps/desktop-settings"
 import { ActionBuilder } from "@/components/apps/action-builder"
+import { SecurityCenter } from "@/components/apps/security-center"
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
@@ -65,8 +64,6 @@ const getAppComponent = (
   onBackgroundChange?: (bg: string) => void
 ): React.ReactNode => {
   const componentMap: Record<string, React.ReactNode> = {
-    "app-store": <MacAppStore />,
-    "installed": <InstalledApps />,
     "workflows": <WorkflowCanvas />,
     "terminal": <Terminal />,
     "claude-cli": <ClaudeCLI />,
@@ -76,10 +73,8 @@ const getAppComponent = (
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
     "flow-manager": <FlowManager />,
     "action-builder": <ActionBuilder />,
+    "security-center": <SecurityCenter />,
     "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
-    "github": <div>GitHub Desktop</div>,
-    "chatgpt": <div>ChatGPT</div>,
-    "slack": <div>Slack</div>,
   }
   return componentMap[id] || null
 }

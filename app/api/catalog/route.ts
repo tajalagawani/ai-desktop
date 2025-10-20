@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ServiceRegistry, ServiceMetadata } from '@/lib/service-registry'
-import { INSTALLABLE_SERVICES } from '@/data/installable-services'
+import { ServiceMetadata } from '@/lib/service-registry'
 import fs from 'fs/promises'
 import path from 'path'
 import { exec } from 'child_process'
@@ -176,22 +175,10 @@ async function getFlowServices(): Promise<ServiceMetadata[]> {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const type = searchParams.get('type') // infrastructure | flow | external | all
     const status = searchParams.get('status') // running | stopped | available | all
-    const category = searchParams.get('category') // database | web-server | etc
 
-    const registry = new ServiceRegistry()
-
-    // Get all services from different sources with error handling
-    let infrastructureServices: ServiceMetadata[] = []
+    // Only return flow services (infrastructure services use /api/services)
     let flowServices: ServiceMetadata[] = []
-    let vpsStatus: any = null
-
-    try {
-      infrastructureServices = await registry.getUnifiedCatalog()
-    } catch (error) {
-      console.error('Failed to get infrastructure services:', error)
-    }
 
     try {
       flowServices = await getFlowServices()
@@ -199,47 +186,19 @@ export async function GET(request: NextRequest) {
       console.error('Failed to get flow services:', error)
     }
 
-    try {
-      vpsStatus = await registry.getVPSStatus()
-    } catch (error) {
-      console.error('Failed to get VPS status:', error)
-    }
-
-    // Combine all services
-    let allServices = [...infrastructureServices, ...flowServices]
-
-    // Apply filters
-    if (type && type !== 'all') {
-      allServices = allServices.filter(s => s.type === type)
-    }
-
+    // Apply status filter
     if (status && status !== 'all') {
-      allServices = allServices.filter(s => s.status === status)
-    }
-
-    if (category && category !== 'all') {
-      allServices = allServices.filter(s => s.category === category)
-    }
-
-    // Count statistics
-    const stats = {
-      total: allServices.length,
-      infrastructure: allServices.filter(s => s.type === 'infrastructure').length,
-      flows: allServices.filter(s => s.type === 'flow').length,
-      external: allServices.filter(s => s.type === 'external').length,
-      running: allServices.filter(s => s.status === 'running').length,
-      stopped: allServices.filter(s => s.status === 'stopped').length,
-      available: allServices.filter(s => s.status === 'available').length
+      flowServices = flowServices.filter(s => s.status === status)
     }
 
     // Format for Flow Architect agent compatibility
     const catalogFormat = {
-      version: '2.0.0', // New dynamic version
+      version: '2.0.0',
       last_updated: new Date().toISOString(),
-      services: allServices.map(service => ({
+      services: flowServices.map(service => ({
         id: service.id,
         name: service.name,
-        type: service.type === 'infrastructure' ? service.category : 'flow',
+        type: 'flow',
         subtype: service.category,
         status: service.status,
         connection: service.connection ? {
@@ -260,8 +219,13 @@ export async function GET(request: NextRequest) {
         resources: service.resources,
         source: service.source
       })),
-      stats,
-      vps: vpsStatus
+      stats: {
+        total: flowServices.length,
+        flows: flowServices.length,
+        running: flowServices.filter(s => s.status === 'running').length,
+        stopped: flowServices.filter(s => s.status === 'stopped').length,
+        available: flowServices.filter(s => s.status === 'available').length
+      }
     }
 
     return NextResponse.json(catalogFormat)
@@ -275,42 +239,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/catalog/refresh - Force refresh catalog from all sources
+// POST /api/catalog/refresh - Refresh flow services
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { source } = body // docker-hub | github | all
-
-    const registry = new ServiceRegistry()
-
-    if (source === 'cleanup') {
-      // Special cleanup operation for VPS
-      const result = await registry.cleanupAll()
-      return NextResponse.json({
-        success: true,
-        message: 'VPS cleanup completed',
-        ...result
-      })
-    }
-
-    // Trigger refresh based on source
-    const refreshTasks = []
-
-    if (source === 'all' || source === 'docker-hub') {
-      // In production, you might want to refresh Docker Hub metadata
-      // for all installed services
-      refreshTasks.push(registry.getUnifiedCatalog())
-    }
-
-    if (source === 'all' || source === 'github') {
-      refreshTasks.push(registry.fetchCommunityRegistry())
-    }
-
-    await Promise.all(refreshTasks)
-
+    // Just refresh flow services by returning success
+    // The GET endpoint will fetch latest flow services on next request
     return NextResponse.json({
       success: true,
-      message: `Catalog refreshed from ${source}`
+      message: 'Catalog refreshed'
     })
 
   } catch (error: any) {

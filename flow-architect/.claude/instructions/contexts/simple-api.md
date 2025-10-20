@@ -455,9 +455,9 @@ parameters = ["{{request_data.text}}"]  # ✅ Parameterized
 
 1. **Classify:** Simple API (2 endpoints needed)
 2. **Load:** This context (simple-api.md)
-3. **Read Catalogs:**
-   - service-catalog.json → Neon database available
-   - node-catalog.json → neon, aci nodes available
+3. **Check Live Services:**
+   - http://localhost:3000/api/catalog → Running databases
+   - http://localhost:3000/api/nodes → Available node types
 4. **Read Example:** examples/quotes-api.flow
 5. **Design:**
    - Table: quotes (id, text, author, created_at)
@@ -582,8 +582,8 @@ ProcessQuote = SaveProcessedQuote
 
 ## Checklist Before Responding
 
-- [ ] Did I read service-catalog.json?
-- [ ] Did I read node-catalog.json?
+- [ ] Did I check http://localhost:3000/api/catalog for running services?
+- [ ] Did I check http://localhost:3000/api/nodes for available node types?
 - [ ] Did I read the example file?
 - [ ] Did I design the database schema?
 - [ ] Did I create table creation node?

@@ -25,13 +25,33 @@ const nextConfig = {
       // Ignore optional macOS dependencies on Linux VPS
       config.externals = config.externals || []
       config.externals.push({
-        'osx-temperature-sensor': 'commonjs osx-temperature-sensor'
+        'osx-temperature-sensor': 'commonjs osx-temperature-sensor',
+        // Exclude Docker and native dependencies from server bundle
+        'dockerode': 'commonjs dockerode',
+        'ssh2': 'commonjs ssh2',
+        'cpu-features': 'commonjs cpu-features'
       })
+    } else {
+      // Exclude server-only packages from client bundle
+      config.resolve = config.resolve || {}
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        child_process: false,
+        ssh2: false,
+        dockerode: false,
+        'cpu-features': false
+      }
     }
 
     // Ignore warnings for optional dependencies
     config.ignoreWarnings = [
-      { module: /osx-temperature-sensor/ }
+      { module: /osx-temperature-sensor/ },
+      { module: /ssh2/ },
+      { module: /cpu-features/ },
+      { module: /sshcrypto\.node/ }
     ]
 
     return config
