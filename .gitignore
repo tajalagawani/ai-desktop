@@ -67,3 +67,5 @@ components/apps/act-docker/flows/*.flow
 components/apps/act-docker/temp-executions/
 temp-act-executions/
 components/apps/act-docker/prices.json
+# Temporary ACT calculation files
+flow-architect/flows/temp/*.act

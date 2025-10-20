@@ -15,89 +15,17 @@ x-act-base: &act-base
 
 services:
 
-  act-github-pr-reviewer:
+  act-clinic-management:
     <<: *act-base
-    container_name: act-github-pr-reviewer
+    container_name: act-clinic-management
     ports:
-      - "9002:9002"
+      - "9009:9009"
     environment:
       - PYTHONUNBUFFERED=1
-      - ACT_PORT=9002
+      - ACT_PORT=9009
     volumes:
       - ./act:/app/act
-      - ./flows/github-pr-reviewer.flow:/app/flow
-
-  act-iss-weather-api:
-    <<: *act-base
-    container_name: act-iss-weather-api
-    ports:
-      - "9003:9003"
-    environment:
-      - PYTHONUNBUFFERED=1
-      - ACT_PORT=9003
-    volumes:
-      - ./act:/app/act
-      - ./flows/iss-weather-api.flow:/app/flow
-
-  act-price-monitor-simple:
-    <<: *act-base
-    container_name: act-price-monitor-simple
-    ports:
-      - "9007:9007"
-    environment:
-      - PYTHONUNBUFFERED=1
-      - ACT_PORT=9007
-    volumes:
-      - ./act:/app/act
-      - ./flows/price-monitor-simple.flow:/app/flow
-
-  act-price-monitor:
-    <<: *act-base
-    container_name: act-price-monitor
-    ports:
-      - "9004:9004"
-    environment:
-      - PYTHONUNBUFFERED=1
-      - ACT_PORT=9004
-    volumes:
-      - ./act:/app/act
-      - ./flows/price-monitor.flow:/app/flow
-
-  act-syria-weather-api:
-    <<: *act-base
-    container_name: act-syria-weather-api
-    ports:
-      - "9001:9001"
-    environment:
-      - PYTHONUNBUFFERED=1
-      - ACT_PORT=9001
-    volumes:
-      - ./act:/app/act
-      - ./flows/syria-weather-api.flow:/app/flow
-
-  act-todo-api:
-    <<: *act-base
-    container_name: act-todo-api
-    ports:
-      - "9006:9006"
-    environment:
-      - PYTHONUNBUFFERED=1
-      - ACT_PORT=9006
-    volumes:
-      - ./act:/app/act
-      - ./flows/todo-api.flow:/app/flow
-
-  act-vix-filter-api:
-    <<: *act-base
-    container_name: act-vix-filter-api
-    ports:
-      - "9005:9005"
-    environment:
-      - PYTHONUNBUFFERED=1
-      - ACT_PORT=9005
-    volumes:
-      - ./act:/app/act
-      - ./flows/vix-filter-api.flow:/app/flow
+      - ./flows/clinic-management.flow:/app/flow
 
 networks:
   act-network:
