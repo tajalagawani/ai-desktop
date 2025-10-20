@@ -69,3 +69,7 @@ temp-act-executions/
 components/apps/act-docker/prices.json
 # Temporary ACT calculation files
 flow-architect/flows/temp/*.act
+
+# Claude local settings (sandbox configuration)
+.claude/settings.local.json
+flow-architect/.claude/settings.local.json

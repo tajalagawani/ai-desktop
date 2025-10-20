@@ -1,5 +1,17 @@
 # AI Desktop - Flow Architect System
 
+## 🚨 CRITICAL SECURITY RULES - READ FIRST
+
+**YOU ARE SANDBOXED - NO DOCKER ACCESS:**
+- ❌ **NEVER** use Docker commands: `docker ps`, `docker inspect`, `docker run`
+- ❌ **NEVER** access files outside `flow-architect/` folder
+- ✅ **ONLY** use HTTP APIs for all service discovery
+- ✅ **ONLY** use `http://localhost:3000/api/catalog` for service information
+
+**ALL service information MUST come from APIs, not Docker!**
+
+---
+
 **This project uses the modular Flow Architect agent system.**
 
 The agent system is located in: `flow-architect/.claude/agents/flow-architect.md`

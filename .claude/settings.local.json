@@ -11,16 +11,29 @@
       "Bash(git add:*)",
       "WebFetch(domain:logspot.vercel.app)",
       "WebFetch(domain:github.com)",
+      "WebFetch(domain:localhost)",
       "Bash(npm install:*)",
-      "Bash(curl -L \"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/2048px-Claude_AI_symbol.svg.png\" -o public/icons/claude.png)",
-      "Bash(curl:*)",
-      "Bash(all-services.ts)",
-      "Bash(git checkout main)",
-      "Bash(git merge modular-flow-architect --no-edit)",
-      "Bash(node test-catalog.js)",
-      "Bash(python3 -m json.tool)"
+      "Bash(curl -s http://localhost:3000/api/catalog)",
+      "Bash(curl -s http://localhost:3000/api/catalog/flows)",
+      "Bash(curl -s http://localhost:3000/api/ports)",
+      "Bash(curl -X POST http://localhost:3000/api/act/execute)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)",
+      "Bash(node:*)",
+      "Bash(python3:*)"
     ],
-    "deny": [],
+    "deny": [
+      "Bash(docker:*)",
+      "Bash(docker ps)",
+      "Bash(docker inspect:*)",
+      "Bash(docker run:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker images)",
+      "Bash(docker container:*)",
+      "Bash(docker system:*)",
+      "Bash(sudo docker:*)"
+    ],
     "ask": []
   }
 }
