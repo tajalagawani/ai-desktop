@@ -87,9 +87,11 @@ Determine which category above matches the user's request.
 **Step 2: Load Context**
 Read the corresponding context file from `.claude/instructions/contexts/`.
 
-**Step 3: Read Catalogs (if needed)**
-- Read `catalogs/service-catalog.json` for available services
-- Read `catalogs/node-catalog.json` for available node types
+**Step 3: Check Live Services (if needed)**
+- **Dynamic Services:** Fetch `http://localhost:3000/api/catalog/flows` for flow services
+- **Infrastructure:** Fetch `http://localhost:3000/api/catalog?type=infrastructure&status=running` for databases, etc.
+- **Connection Strings:** Get actual connections from running services
+- **Static Node Types:** Read `catalogs/node-catalog.json` for available node types
 
 **Step 4: Load Examples (if needed)**
 Read referenced example files from `.claude/instructions/examples/`.
@@ -100,6 +102,28 @@ Read referenced example files from `.claude/instructions/examples/`.
 
 ---
 
+## Dynamic Service Discovery
+
+**Before building ANY flow, check what's actually running:**
+
+```bash
+# Get all running services with connection info
+curl -s http://localhost:3000/api/catalog?status=running
+
+# Check specific service (e.g., PostgreSQL)
+curl -s http://localhost:3000/api/catalog | jq '.services[] | select(.id == "postgresql")'
+
+# Get available flows
+curl -s http://localhost:3000/api/catalog/flows
+
+# Get flow endpoints for integration
+curl -s http://localhost:3000/api/catalog/flows | jq '.flows[] | select(.status == "running") | .endpoints'
+```
+
+**Use actual connection strings from the API, not hardcoded values!**
+
+---
+
 ## Resource Locations
 
 **Context Files:** `.claude/instructions/contexts/`
@@ -107,7 +131,8 @@ Read referenced example files from `.claude/instructions/examples/`.
 **Node Types:** `.claude/instructions/node-types/`
 **Patterns:** `.claude/instructions/patterns/`
 **Common:** `.claude/instructions/common/`
-**Catalogs:** `catalogs/`
+**Dynamic Catalog:** `http://localhost:3000/api/catalog`
+**Static Node Types:** `catalogs/node-catalog.json`
 
 ---
 
@@ -165,9 +190,10 @@ Before responding to ANY request:
 - [ ] Which of the 10 categories does this match?
 - [ ] Have I loaded the correct context file?
 
-**3. Do I need catalogs?**
-- [ ] Building a flow? → Read node-catalog.json
-- [ ] Using services? → Read service-catalog.json
+**3. Do I need live services?**
+- [ ] Building a flow? → Check `http://localhost:3000/api/catalog?status=running`
+- [ ] Need database? → Get actual connection from API
+- [ ] Using node types? → Read node-catalog.json (static)
 
 **4. Have I read examples?**
 - [ ] Does the context reference example files?

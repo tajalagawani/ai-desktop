@@ -14,7 +14,11 @@
       "Bash(npm install:*)",
       "Bash(curl -L \"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/2048px-Claude_AI_symbol.svg.png\" -o public/icons/claude.png)",
       "Bash(curl:*)",
-      "Bash(all-services.ts)"
+      "Bash(all-services.ts)",
+      "Bash(git checkout main)",
+      "Bash(git merge modular-flow-architect --no-edit)",
+      "Bash(node test-catalog.js)",
+      "Bash(python3 -m json.tool)"
     ],
     "deny": [],
     "ask": []

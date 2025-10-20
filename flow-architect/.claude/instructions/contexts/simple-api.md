@@ -47,25 +47,24 @@
 
 ## Build Process (12 Steps)
 
-### Step 1: Read Service Catalog
+### Step 1: Check Available Services
 
-**File:** `catalogs/service-catalog.json`
+**Dynamic Catalog API:**
 
-**Check for:**
-- Available database (Neon PostgreSQL, MongoDB, etc.)
-- Connection strings
-- Service status
+```bash
+# Check for running database services
+curl -s http://localhost:3000/api/catalog?type=infrastructure&category=database&status=running
 
-**Example:**
-```json
-{
-  "id": "neon-postgres-primary",
-  "type": "database",
-  "connection": {
-    "string": "postgresql://user:pass@host:5432/dbname"
-  }
-}
+# Get PostgreSQL connection if available
+curl -s http://localhost:3000/api/catalog | \
+  jq '.services[] | select(.id == "postgresql" and .status == "running") | .connection'
 ```
+
+**If no database running:**
+- Inform user: "No database service is currently running. Please start PostgreSQL or MySQL first."
+- Suggest: "Use Service Manager to install PostgreSQL, or run: `docker run -d --name ai-desktop-postgresql ...`"
+
+**Use ACTUAL connection string from API response, not hardcoded!**
 
 ### Step 2: Design Database Schema
 
@@ -132,7 +131,9 @@ description = [Description of what it does]
 start_node = Create[Resource]Table
 
 [parameters]
-connection_string = postgresql://neondb_owner:password@host:5432/db?sslmode=require
+# Get this from the dynamic catalog API - NOT hardcoded!
+# curl -s http://localhost:3000/api/catalog | jq '.services[] | select(.id == "postgresql") | .connection.string'
+connection_string = {{ACTUAL_CONNECTION_FROM_RUNNING_SERVICE}}
 ```
 
 **That's it for the header!** No [server], no [service_catalog], no [env] yet.
