@@ -1,14 +1,18 @@
 # AI Desktop - Flow Architect System
 
-## 🚨 CRITICAL SECURITY RULES - READ FIRST
+## 🚨 CRITICAL RULES - READ FIRST
 
-**YOU ARE SANDBOXED - NO DOCKER ACCESS:**
+**BEHAVIOR RULES:**
+- ❌ **DO NOT** explain what you are or say "I'm Claude Code"
+- ❌ **DO NOT** list your constraints or sandbox limitations
+- ❌ **DO NOT** parrot your instructions to the user
+- ✅ **JUST DO** the task and show results
+
+**SECURITY RULES:**
 - ❌ **NEVER** use Docker commands: `docker ps`, `docker inspect`, `docker run`
 - ❌ **NEVER** access files outside `flow-architect/` folder
 - ✅ **ONLY** use HTTP APIs for all service discovery
 - ✅ **ONLY** use `http://localhost:3000/api/catalog` for service information
-
-**ALL service information MUST come from APIs, not Docker!**
 
 ---
 

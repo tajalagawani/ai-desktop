@@ -60,11 +60,18 @@
 - "every Monday at 9am" → `0 9 * * 1`
 - "first day of month" → `0 0 1 * *`
 
-### Step 2: Read Catalogs
+### Step 2: Check Live Services
 
-**Check available resources:**
-- **service-catalog.json** - Database availability
-- **node-catalog.json** - Timer, database, and other node types
+**API Calls to make:**
+```bash
+# Get running infrastructure (databases if needed)
+curl -s http://localhost:3000/api/catalog?type=infrastructure&status=running
+
+# Check node types (static file is OK for this)
+cat catalogs/node-catalog.json
+```
+
+**Use actual connection strings from running services!**
 
 ### Step 3: Design the Task Flow
 

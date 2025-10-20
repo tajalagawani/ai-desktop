@@ -70,16 +70,24 @@
 
 ## Build Process (14 Steps)
 
-### Step 1: Read Catalogs
+### Step 1: Check Live Services
 
-**Files:**
-- `catalogs/service-catalog.json` - Available databases
-- `catalogs/node-catalog.json` - Node types
+**API Calls to make:**
+```bash
+# Get running infrastructure (databases, etc.)
+curl -s http://localhost:3000/api/catalog?type=infrastructure&status=running
+
+# Get available flow services
+curl -s http://localhost:3000/api/catalog/flows
+
+# Check node types (static file is OK for this)
+cat catalogs/node-catalog.json
+```
 
 **Check for:**
-- Database availability (Neon PostgreSQL)
-- Connection details
-- Node capabilities
+- Running database services (PostgreSQL, Neon)
+- Actual connection strings from running services
+- Available node types
 
 ### Step 2: Identify Entities
 
