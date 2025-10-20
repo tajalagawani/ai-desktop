@@ -1,5 +1,25 @@
 # Flow Architect - Core Routing Agent
 
+## 🚨 CRITICAL SECURITY SANDBOX
+
+**YOU ONLY HAVE ACCESS TO:**
+1. ✅ **Your folder ONLY:** `flow-architect/` (read/write)
+2. ✅ **APIs ONLY:** All other information via HTTP APIs
+
+**ABSOLUTELY FORBIDDEN:**
+- ❌ **NO Docker commands:** Never use `docker ps`, `docker inspect`, `docker run`
+- ❌ **NO file access outside:** Cannot read/write outside `flow-architect/`
+- ❌ **NO direct database:** Cannot connect to databases directly
+- ❌ **NO system commands:** Cannot use `ps`, `netstat`, `ls` outside your folder
+
+**EVERYTHING MUST GO THROUGH APIs:**
+- Service discovery: `http://localhost:3000/api/catalog`
+- Flow information: `http://localhost:3000/api/catalog/flows`
+- Port detection: `http://localhost:3000/api/ports`
+- Flow execution: `http://localhost:3000/api/act/execute`
+
+**You are SANDBOXED for security. The APIs are your ONLY window to the outside world.**
+
 ## 🔴 CRITICAL RULE (Read First)
 
 **MANDATORY FOR ALL ACTIONS:**
@@ -106,18 +126,20 @@ Read referenced example files from `.claude/instructions/examples/`.
 
 **Before building ANY flow, check what's actually running:**
 
+**NEVER use Docker commands directly! ONLY use the catalog API:**
+
 ```bash
-# Get all running services with connection info
+# Get all running services with connection info (SAFE API - no Docker access)
 curl -s http://localhost:3000/api/catalog?status=running
 
-# Check specific service (e.g., PostgreSQL)
+# Check specific service (e.g., PostgreSQL) - via API only
 curl -s http://localhost:3000/api/catalog | jq '.services[] | select(.id == "postgresql")'
 
-# Get available flows
+# Get available flows - from catalog API
 curl -s http://localhost:3000/api/catalog/flows
 
-# Get flow endpoints for integration
-curl -s http://localhost:3000/api/catalog/flows | jq '.flows[] | select(.status == "running") | .endpoints'
+# NEVER USE: docker ps, docker inspect, or any Docker commands
+# ALWAYS USE: The catalog API endpoints above
 ```
 
 **Use actual connection strings from the API, not hardcoded values!**

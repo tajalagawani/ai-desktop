@@ -62,7 +62,8 @@ curl -s http://localhost:3000/api/catalog | \
 
 **If no database running:**
 - Inform user: "No database service is currently running. Please start PostgreSQL or MySQL first."
-- Suggest: "Use Service Manager to install PostgreSQL, or run: `docker run -d --name ai-desktop-postgresql ...`"
+- Suggest: "Use the Service Manager UI to install and start PostgreSQL."
+- DO NOT suggest Docker commands - use the UI or API only
 
 **Use ACTUAL connection string from API response, not hardcoded!**
 
@@ -295,8 +296,8 @@ environment = development
 • GET /api/[resource] - List [resources]
 [Additional endpoints if applicable]
 
-**To deploy:** Navigate to the Flow Manager UI to start the service, or use:
-docker compose up -d act-[resource]-api
+**To deploy:** Navigate to the Flow Manager UI to start the service.
+(DO NOT use Docker commands - everything through UI or API)
 
 **Port:** [PORT]
 **Database:** PostgreSQL tables created on first run"
