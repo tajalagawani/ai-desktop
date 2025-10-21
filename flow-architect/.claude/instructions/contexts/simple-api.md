@@ -49,23 +49,35 @@
 
 ### Step 1: Check Available Services
 
-**Dynamic Catalog API:**
+**Use Bash Tools (NOT curl):**
 
 ```bash
 # Check for running database services
-curl -s http://localhost:3000/api/catalog?type=infrastructure&category=database&status=running
+./flow-architect/tools/get-running-services.sh database
 
-# Get PostgreSQL connection if available
-curl -s http://localhost:3000/api/catalog | \
-  jq '.services[] | select(.id == "postgresql" and .status == "running") | .connection'
+# Returns JSON array of running databases with connection info
 ```
 
 **If no database running:**
-- Inform user: "No database service is currently running. Please start PostgreSQL or MySQL first."
-- Suggest: "Use the Service Manager UI to install and start PostgreSQL."
-- DO NOT suggest Docker commands - use the UI or API only
+- Inform user: "No database service is currently running. Please start PostgreSQL via Service Manager."
+- Suggest: "Open Service Manager from the Dock to install and start PostgreSQL."
+- DO NOT suggest Docker commands - use the Service Manager UI only
 
-**Use ACTUAL connection string from API response, not hardcoded!**
+### Step 1.5: Verify Authentication
+
+**CRITICAL - Check database authentication before proceeding:**
+
+```bash
+# Check if PostgreSQL has auth configured
+./flow-architect/tools/check-service-auth.sh postgresql
+```
+
+**If returns `"configured":false`:**
+- STOP - Do not proceed with building the flow
+- Direct user to Service Manager to configure PostgreSQL credentials
+- Wait for user to configure, then re-check
+
+**Only proceed when authentication is verified!**
 
 ### Step 2: Design Database Schema
 
@@ -103,54 +115,96 @@ CREATE TABLE IF NOT EXISTS quotes (
 
 ### Step 4: Find Next Available Port
 
-**CRITICAL:** You MUST call the port detection API to get an available port.
+**CRITICAL:** You MUST call the port detection tool to get an available port.
 
-**API Call:**
+**Use Bash Tool:**
 ```bash
-curl -s http://localhost:3000/api/ports
+./flow-architect/tools/get-available-port.sh
 ```
 
 **Parse the JSON response:**
 ```json
 {
   "success": true,
-  "available_port": 9009,
-  "used_ports": [9001, 9002, ...]
+  "available_port": 9001,
+  "used_ports": [9009, ...],
+  "sources": {"flows": [9009], "service_catalog": [], "docker_compose": [9009]}
 }
 ```
 
-**Use the `available_port` value** - this scans all flows, service catalog, and docker-compose to avoid conflicts
+**Use the `available_port` value** or **use `{{.AvailablePort}}`** in the flow file
+- This scans all flows, service catalog, and docker-compose to avoid conflicts
+- Prefer using `{{.AvailablePort}}` for dynamic allocation
 
 ### Step 5: Create Workflow Header
 
-**CRITICAL:** Follow exact TOML format (no quotes unless in arrays)
+**CRITICAL:** Follow exact TOML format and use environment variables
 
 ```toml
 [workflow]
-name = [Resource] API
-description = [Description of what it does]
+name = "[Resource] API"
+description = "[Description of what it does]"
 start_node = Create[Resource]Table
 
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[server]
+host = "0.0.0.0"
+port = {{.AvailablePort}}
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[service_catalog]
+register = true
+service_name = "[Resource] API"
+service_type = "api"
+description = "[What this API does]"
+icon = "📊"
+category = "data"
+endpoints = [
+  {path = "/api/[resources]", method = "GET", description = "List all [resources]"},
+  {path = "/api/[resources]", method = "POST", description = "Create [resource]"}
+]
+
 [parameters]
-# Get this from the dynamic catalog API - NOT hardcoded!
-# curl -s http://localhost:3000/api/catalog | jq '.services[] | select(.id == "postgresql") | .connection.string'
-connection_string = {{ACTUAL_CONNECTION_FROM_RUNNING_SERVICE}}
+database_url = "{{.env.DATABASE_URL}}"
+
+[env]
+DATABASE_URL = "postgresql://connection-string-here"
 ```
 
-**That's it for the header!** No [server], no [service_catalog], no [env] yet.
+**Key changes:**
+- Use `{{.AvailablePort}}` for dynamic port allocation
+- Database connection via `{{.Parameter.database_url}}`
+- Service catalog registration included
+- NO hardcoded connection strings!
 
 ### Step 6: Create Table Creation Node
 
-**CRITICAL:** No quotes on type, label, operation. Connection string uses {{.Parameter.connection_string}}
+**CRITICAL:** Use correct parameter reference
 
 ```toml
 [node:Create[Resource]Table]
-type = neon
-label = 1. Create [resource] table
-connection_string = {{.Parameter.connection_string}}
-operation = execute_query
-query = CREATE TABLE IF NOT EXISTS [resources] (id SERIAL PRIMARY KEY, [field1] [TYPE], [field2] [TYPE], created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+type = "neon"
+label = "Create [resource] table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS [resources] (
+    id SERIAL PRIMARY KEY,
+    [field1] [TYPE] NOT NULL,
+    [field2] [TYPE],
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+"""
 ```
+
+**Key:** Use `{{.Parameter.database_url}}` not `connection_string`
 
 ### Step 7: Create GET Endpoint (List All)
 
@@ -172,12 +226,11 @@ description = Get all [resources]
 **Handler Node (Database Query):**
 ```toml
 [node:Fetch[Resources]]
-type = neon
-label = API.[Resource].1.1. Fetch [Resources]
-connection_string = {{.Parameter.connection_string}}
-operation = execute_query
-query = SELECT * FROM [resources] ORDER BY created_at DESC
-parameters = []
+type = "neon"
+label = "Fetch all [resources]"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT * FROM [resources] ORDER BY created_at DESC"
 ```
 
 ### Step 8: Create POST Endpoint (Create New)
@@ -198,11 +251,11 @@ description = Add new [resource]
 **Handler Node:**
 ```toml
 [node:Insert[Resource]]
-type = neon
-label = API.[Resource].2.1. Insert [Resource]
-connection_string = {{.Parameter.connection_string}}
-operation = execute_query
-query = INSERT INTO [resources] ([field1], [field2]) VALUES (%s, %s) RETURNING *
+type = "neon"
+label = "Insert new [resource]"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO [resources] ([field1], [field2]) VALUES (%s, %s) RETURNING *"
 parameters = ["{{request_data.field1}}", "{{request_data.field2}}"]
 ```
 
@@ -248,30 +301,20 @@ DefineGet[Resources]Route = Fetch[Resources]
 DefineAdd[Resource]Route = Insert[Resource]
 ```
 
-### Step 11: Add Footer Sections
+### Step 11: Verify Complete Structure
 
-**CRITICAL:** Must be in this EXACT order at the end:
+**Ensure your flow file has all sections in this order:**
 
-```toml
-[env]
+1. `[workflow]` - Name, description, start_node
+2. `[settings]` - Debug, retries, timeouts
+3. `[server]` - Host, port, CORS
+4. `[service_catalog]` - Registration info
+5. `[parameters]` - database_url
+6. `[env]` - DATABASE_URL placeholder
+7. `[node:...]` - All your nodes
+8. `[edges]` - All connections
 
-[settings]
-debug_mode = true
-max_retries = 3
-timeout_seconds = 600
-
-[configuration]
-agent_enabled = true
-agent_name = [resource]-api-agent
-agent_version = 1.0.0
-host = 0.0.0.0
-port = [PORT]
-debug = true
-cors_enabled = true
-
-[deployment]
-environment = development
-```
+**All sections are now in Step 5 header - no separate footer needed!**
 
 ### Step 12: Save to Permanent Location
 
@@ -332,29 +375,6 @@ Read this file to see a complete working example.
 - `operation`: "execute_query"
 - `query`: SQL statement
 - `parameters`: Array of values (for parameterized queries)
-
----
-
-## Port Assignment Strategy
-
-**Auto-increment from 9001:**
-
-1. Check existing flows:
-```bash
-grep "^port = " flows/*.flow | sort -t= -k2 -n | tail -1
-```
-
-2. If output is `port = 9002`, next is 9003
-3. If no output (no flows), use 9001
-
-**Use in both places:**
-```toml
-[server]
-port = 9003
-
-[deployment]
-port = 9003  # Must match!
-```
 
 ---
 
@@ -455,17 +475,19 @@ parameters = ["{{request_data.text}}"]  # ✅ Parameterized
 
 1. **Classify:** Simple API (2 endpoints needed)
 2. **Load:** This context (simple-api.md)
-3. **Check Live Services:**
-   - http://localhost:3000/api/catalog → Running databases
-   - http://localhost:3000/api/nodes → Available node types
-4. **Read Example:** examples/quotes-api.flow
-5. **Design:**
+3. **Check Environment:**
+   - `./flow-architect/tools/get-running-services.sh database` → Check PostgreSQL
+   - `./flow-architect/tools/check-service-auth.sh postgresql` → Verify auth
+   - `./flow-architect/tools/get-available-port.sh` → Get port
+4. **Verify Auth:** If PostgreSQL not configured, direct to Service Manager and STOP
+5. **Read Example:** `examples/quotes-api.flow`
+6. **Design:**
    - Table: quotes (id, text, author, created_at)
    - Endpoints: POST /api/quotes, GET /api/quotes
-   - Port: 9001 (first service)
-6. **Create Flow:** (see example file)
-7. **Deploy:** Execute flow
-8. **Respond:**
+   - Port: Use `{{.AvailablePort}}`
+7. **Create Flow:** (see example file)
+8. **Save:** Save .flow file
+9. **Respond:**
 ```
 "✓ Quotes API active at http://localhost:9001
 
@@ -582,18 +604,26 @@ ProcessQuote = SaveProcessedQuote
 
 ## Checklist Before Responding
 
-- [ ] Did I check http://localhost:3000/api/catalog for running services?
-- [ ] Did I check http://localhost:3000/api/nodes for available node types?
-- [ ] Did I read the example file?
+**Authentication & Environment:**
+- [ ] Did I check running services with `./flow-architect/tools/get-running-services.sh database`?
+- [ ] Did I verify database authentication with `./flow-architect/tools/check-service-auth.sh postgresql`?
+- [ ] Did I get available port with `./flow-architect/tools/get-available-port.sh`?
+- [ ] If auth missing, did I direct user to Service Manager (NOT proceed)?
+
+**Flow Design:**
+- [ ] Did I read the example file (`examples/quotes-api.flow`)?
 - [ ] Did I design the database schema?
 - [ ] Did I create table creation node?
-- [ ] Did I create 2-5 API endpoint pairs (ACI + handler)?
-- [ ] Did I include full server configuration?
-- [ ] Did I assign a port (9001+)?
+- [ ] Did I create 2-5 API endpoint pairs (ACI route + handler)?
+- [ ] Did I use `{{.Parameter.database_url}}` for all database connections?
+- [ ] Did I use `{{.AvailablePort}}` for port allocation?
+- [ ] Did I include full server configuration in header?
 - [ ] Did I register in service catalog?
+
+**File & Deployment:**
 - [ ] Did I save as permanent .flow file?
-- [ ] Did I NOT execute the flow (user deploys manually)?
-- [ ] Does each route connect ONLY to its handler?
+- [ ] Does each route connect ONLY to its handler (no chaining)?
+- [ ] Did I use parameterized queries (NOT string concatenation)?
 - [ ] Did I respond with file location and deployment instructions?
 
 **If any checkbox is unchecked, DO NOT RESPOND YET.**
@@ -602,16 +632,19 @@ ProcessQuote = SaveProcessedQuote
 
 ## Remember
 
-**Simple API = Database + 2-5 Endpoints + Server**
+**Simple API = Auth Check + Database + 2-5 Endpoints + Server**
 
-- Read catalogs
-- Design schema
-- Create table
-- Define routes (ACI nodes)
-- Create handlers (Neon nodes)
-- Full server config
-- Register in catalog
-- Save as .flow file (do NOT execute)
-- Provide deployment instructions
+**Process:**
+1. Check services with bash tools
+2. Verify authentication (CRITICAL!)
+3. If auth missing → Direct to Service Manager, STOP
+4. Design schema
+5. Create table node
+6. Define routes (ACI nodes)
+7. Create handlers (Neon nodes)
+8. Use `{{.AvailablePort}}` and `{{.Parameter.database_url}}`
+9. Register in catalog
+10. Save as .flow file
+11. Provide deployment instructions
 
-**That's it.**
+**Never skip authentication checks. Never use hardcoded values.**

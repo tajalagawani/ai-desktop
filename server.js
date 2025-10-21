@@ -69,6 +69,48 @@ app.prepare().then(() => {
     }
   })
 
+  // Topic to context file mapping
+  const TOPIC_CONTEXT_MAP = {
+    'math': 'simple-calculation.md',
+    'random': 'random-generation.md',
+    'fetch': 'data-fetch-once.md',
+    'scheduled': 'scheduled-task.md',
+    'simple-api': 'simple-api.md',
+    'complex-api': 'complex-api.md',
+    'full-app': 'full-application.md',
+    'multi-service': 'multi-service-integration.md',
+    'transform': 'data-transformation.md',
+    'chat': 'conversation.md'
+  }
+
+  // Function to load topic context
+  function loadTopicContext(topicId) {
+    const fs = require('fs')
+    const contextFile = TOPIC_CONTEXT_MAP[topicId]
+
+    if (!contextFile) {
+      console.log('[Action Builder] ⚠️ Unknown topic ID:', topicId)
+      return null
+    }
+
+    const contextPath = path.join(process.cwd(), 'flow-architect/.claude/instructions/contexts', contextFile)
+
+    if (!fs.existsSync(contextPath)) {
+      console.log('[Action Builder] ⚠️ Context file not found:', contextPath)
+      return null
+    }
+
+    try {
+      const contextContent = fs.readFileSync(contextPath, 'utf8')
+      console.log('[Action Builder] ✅ Loaded context file:', contextFile)
+      console.log('[Action Builder] Context size:', contextContent.length, 'characters')
+      return contextContent
+    } catch (error) {
+      console.error('[Action Builder] ❌ Error reading context file:', error.message)
+      return null
+    }
+  }
+
   // Handle Action Builder WebSocket connections
   function handleActionBuilderConnection(ws, request) {
     console.log('[Action Builder] ========================================')
@@ -87,12 +129,34 @@ app.prepare().then(() => {
         console.log('[Action Builder] ----------------------------------------')
 
         if (data.type === 'start_chat') {
-          const { prompt, sessionId, resume } = data
+          const { prompt, sessionId, resume, topic } = data
 
           console.log('[Action Builder] Starting chat...')
           console.log('[Action Builder]   - Prompt:', prompt)
           console.log('[Action Builder]   - Session ID:', sessionId || 'NEW')
           console.log('[Action Builder]   - Resume:', resume || false)
+          console.log('[Action Builder]   - Topic:', topic || 'NONE')
+
+          // Load topic context if provided
+          let finalPrompt = prompt
+          if (topic && !resume) {
+            console.log('[Action Builder] ========================================')
+            console.log('[Action Builder] TOPIC-BASED SESSION')
+            console.log('[Action Builder] ========================================')
+            const contextContent = loadTopicContext(topic)
+            if (contextContent) {
+              // Inject context before the user's prompt
+              finalPrompt = `${contextContent}\n\n---\n\nUser Request: ${prompt}`
+              console.log('[Action Builder] ✅ Context injected into prompt')
+              console.log('[Action Builder] Final prompt length:', finalPrompt.length, 'characters')
+            } else {
+              console.log('[Action Builder] ⚠️ Could not load context, using original prompt')
+            }
+          } else if (resume) {
+            console.log('[Action Builder] Resuming existing session, no context injection')
+          } else {
+            console.log('[Action Builder] No topic provided, using original prompt')
+          }
 
           // Get working directory - use process.cwd() for Next.js compatibility
           const workingDir = path.join(process.cwd(), 'flow-architect')
@@ -122,8 +186,8 @@ app.prepare().then(() => {
 
           // Note: No --agents flag needed! Claude reads CLAUDE.md from working directory
 
-          // Add prompt last
-          args.push('--', prompt)
+          // Add prompt last (use finalPrompt which may include injected context)
+          args.push('--', finalPrompt)
 
           console.log('[Action Builder] ========================================')
           console.log('[Action Builder] SPAWNING CLAUDE CLI')
@@ -188,11 +252,26 @@ app.prepare().then(() => {
                   try {
                     const parsed = JSON.parse(line)
                     console.log('[Action Builder] Parsed JSON, type:', parsed.type)
+
+                    // Send claude_output to frontend
                     ws.send(JSON.stringify({
                       type: 'claude_output',
                       data: parsed
                     }))
                     console.log('[Action Builder] ✅ Sent to WebSocket')
+
+                    // If this is the system init message with session_id, send session-created
+                    if (parsed.type === 'system' && parsed.subtype === 'init' && parsed.session_id && !sessionId) {
+                      console.log('[Action Builder] ========================================')
+                      console.log('[Action Builder] SESSION CREATED')
+                      console.log('[Action Builder]   - Session ID:', parsed.session_id)
+                      console.log('[Action Builder] ========================================')
+                      ws.send(JSON.stringify({
+                        type: 'session-created',
+                        sessionId: parsed.session_id
+                      }))
+                      console.log('[Action Builder] ✅ Sent session-created message')
+                    }
                   } catch (e) {
                     console.log('[Action Builder] Line is not JSON, skipping:', line.substring(0, 50))
                   }

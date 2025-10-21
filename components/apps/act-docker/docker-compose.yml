@@ -27,6 +27,18 @@ services:
       - ./act:/app/act
       - ./flows/clinic-management.flow:/app/flow
 
+  act-iss-weather-api:
+    <<: *act-base
+    container_name: act-iss-weather-api
+    ports:
+      - "9000:9000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ACT_PORT=9000
+    volumes:
+      - ./act:/app/act
+      - ./flows/iss-weather-api.flow:/app/flow
+
 networks:
   act-network:
     driver: bridge

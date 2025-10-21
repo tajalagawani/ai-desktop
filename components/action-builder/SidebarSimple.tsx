@@ -1,5 +1,4 @@
 import React, { useState, useEffect, memo } from 'react';
-import Link from 'next/link';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,12 +10,18 @@ import { api } from '@/lib/action-builder/api';
 import CatalogViewer from '@/components/action-builder/CatalogViewer';
 import ActionsList from '@/components/action-builder/ActionsList';
 import { useChatStore } from '@/lib/action-builder/stores/chatStore';
+import { TOPICS } from '@/components/action-builder/TopicSelector';
 
 interface Session {
   id: string;
   summary?: string;
   lastActivity: string;
   messageCount?: number;
+  topic?: {
+    id: string;
+    name: string;
+    context: string;
+  };
 }
 
 interface Project {
@@ -187,8 +192,15 @@ function SidebarSimple({
               const sessionDate = new Date(session.lastActivity);
               const diffInMinutes = Math.floor((currentTime.getTime() - sessionDate.getTime()) / (1000 * 60));
               const isActive = diffInMinutes < 10;
-              const sessionName = session.summary || 'New Session';
               const messageCount = session.messageCount || 0;
+
+              // Show topic icon + name if no messages yet, otherwise show summary
+              let sessionName = session.summary || 'New Session';
+              if (session.topic && messageCount === 0) {
+                const topicInfo = TOPICS.find(t => t.id === session.topic?.id);
+                sessionName = topicInfo ? `${topicInfo.icon} ${topicInfo.name}` : session.topic.name;
+              }
+
               const isSelected = selectedSession?.id === session.id;
 
               return (
@@ -200,17 +212,14 @@ function SidebarSimple({
                     </div>
                   )}
 
-                  <Link
-                    href={`/session/${session.id}`}
-                    prefetch={true}
+                  <button
                     className={cn(
                       "w-full text-left rounded-xl px-4 py-3 transition-all duration-200 relative block group",
                       isSelected
                         ? "bg-primary/10 border border-primary/20"
                         : "hover:bg-muted/50 border border-transparent"
                     )}
-                    onClick={(e) => {
-                      e.preventDefault();
+                    onClick={() => {
                       onSessionSelect(session);
                     }}
                   >
@@ -232,7 +241,7 @@ function SidebarSimple({
                         </div>
                       </div>
                     </div>
-                  </Link>
+                  </button>
 
                   {/* Delete button - positioned absolutely, shows on hover */}
                   <div className="absolute top-1/2 right-2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">

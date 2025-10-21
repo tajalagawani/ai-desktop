@@ -62,16 +62,36 @@
 
 ### Step 2: Check Live Services
 
-**API Calls to make:**
+**Use Bash Tools:**
 ```bash
-# Get running infrastructure (databases if needed)
-curl -s http://localhost:3000/api/catalog?type=infrastructure&status=running
+# Get running database services (if task needs storage)
+./flow-architect/tools/get-running-services.sh database
 
-# Check node types (static file is OK for this)
-cat catalogs/node-catalog.json
+# Get all available node types
+./flow-architect/tools/get-node-catalog.sh
 ```
 
-**Use actual connection strings from running services!**
+### Step 2.5: Verify Authentication
+
+**Check authentication based on task requirements:**
+
+**If task stores data in database:**
+```bash
+./flow-architect/tools/check-service-auth.sh postgresql
+```
+
+**If task calls external APIs:**
+```bash
+# Check specific nodes based on requirements
+./flow-architect/tools/check-node-auth.sh <node_type>
+```
+
+**If ANY required service returns `"configured":false`:**
+- STOP - Do not proceed
+- Direct user to Security Center or Service Manager
+- Wait for configuration, then re-check
+
+**Only proceed when authentication is verified!**
 
 ### Step 3: Design the Task Flow
 
@@ -90,14 +110,14 @@ Timer → [Task Logic] → [Store Result] → [Optional: Notify/Log]
 
 Even if no API endpoints, scheduled services need server config.
 
-**CRITICAL:** You MUST call the port detection API to get an available port.
+**CRITICAL:** You MUST call the port detection tool to get an available port.
 
-**API Call:**
+**Use Bash Tool:**
 ```bash
-curl -s http://localhost:3000/api/ports
+./flow-architect/tools/get-available-port.sh
 ```
 
-**Parse the JSON response and use `available_port`** - this prevents port conflicts
+**Use `{{.AvailablePort}}` in flow file for dynamic allocation** - this prevents port conflicts
 
 ### Step 5: Create Workflow Header
 

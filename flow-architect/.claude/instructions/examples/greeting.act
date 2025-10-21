@@ -1,0 +1,12 @@
+# Example: Greeting Response Flow
+
+[workflow]
+start_node = "greet"
+
+[nodes.greet]
+type = "py"
+code = """
+greeting_message = '''Hello! How can I help you today? 👋
+
+If you'd like me to build workflows, create APIs, perform calculations, or handle any other tasks, just let me know what you need!'''
+"""

@@ -1,0 +1,164 @@
+[workflow]
+name = "ISS Location & Weather API"
+description = "API endpoint that retrieves current ISS location and weather conditions at that location"
+start_node = DefineGetISSWeatherRoute
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "iss-weather-api-agent"
+agent_version = "1.0.0"
+
+[server]
+host = "0.0.0.0"
+port = {{.AvailablePort}}
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[deployment]
+environment = "production"
+
+[service_catalog]
+register = true
+service_name = "ISS Location & Weather API"
+service_type = "api"
+description = "Get current ISS location and weather conditions at that location with sources"
+icon = "🛰️"
+category = "data"
+endpoints = [
+  {path = "/api/iss-weather", method = "GET", description = "Get ISS location and weather at that location"}
+]
+
+# ==============================================
+# GET /api/iss-weather - Get ISS Location & Weather
+# ==============================================
+
+[node:DefineGetISSWeatherRoute]
+type = "aci"
+mode = "server"
+label = "API.ISSWeather.1. GET /api/iss-weather"
+operation = "add_route"
+route_path = "/api/iss-weather"
+methods = ["GET"]
+handler = "FetchISSLocation"
+description = "Get current ISS location and weather"
+
+[node:FetchISSLocation]
+type = "httpnode"
+label = "Fetch ISS location"
+operation = "http_request"
+method = "GET"
+url = "http://api.open-notify.org/iss-now.json"
+headers = {"Content-Type": "application/json"}
+
+[node:ExtractISSCoordinates]
+type = "py"
+label = "Extract ISS coordinates"
+code = """
+def process(**kwargs):
+    import json
+
+    # Get ISS location data
+    iss_data = kwargs.get('FetchISSLocation', {})
+
+    # Parse if it's a string
+    if isinstance(iss_data, str):
+        iss_data = json.loads(iss_data)
+
+    # Extract coordinates
+    result = iss_data.get('result', {})
+    if isinstance(result, str):
+        result = json.loads(result)
+
+    iss_position = result.get('iss_position', {})
+    latitude = float(iss_position.get('latitude', 0))
+    longitude = float(iss_position.get('longitude', 0))
+    timestamp = result.get('timestamp', 0)
+
+    return {
+        "result": {
+            "latitude": latitude,
+            "longitude": longitude,
+            "timestamp": timestamp,
+            "iss_source": "http://api.open-notify.org/iss-now.json"
+        }
+    }
+"""
+function = "process"
+
+[node:FetchWeather]
+type = "httpnode"
+label = "Fetch weather at ISS location"
+operation = "http_request"
+method = "GET"
+url = "https://api.open-meteo.com/v1/forecast?latitude={{ExtractISSCoordinates.result.latitude}}&longitude={{ExtractISSCoordinates.result.longitude}}&current_weather=true"
+headers = {"Content-Type": "application/json"}
+
+[node:CombineResults]
+type = "py"
+label = "Combine ISS and weather data"
+code = """
+def process(**kwargs):
+    import json
+
+    # Get ISS coordinates
+    iss_coords = kwargs.get('ExtractISSCoordinates', {}).get('result', {})
+
+    # Get weather data
+    weather_data = kwargs.get('FetchWeather', {})
+
+    # Parse weather if it's a string
+    if isinstance(weather_data, str):
+        weather_data = json.loads(weather_data)
+
+    weather_result = weather_data.get('result', {})
+    if isinstance(weather_result, str):
+        weather_result = json.loads(weather_result)
+
+    current_weather = weather_result.get('current_weather', {})
+
+    # Combine all data
+    combined = {
+        "iss_location": {
+            "latitude": iss_coords.get('latitude'),
+            "longitude": iss_coords.get('longitude'),
+            "timestamp": iss_coords.get('timestamp'),
+            "source": iss_coords.get('iss_source')
+        },
+        "weather_at_location": {
+            "temperature": current_weather.get('temperature'),
+            "temperature_unit": "°C",
+            "windspeed": current_weather.get('windspeed'),
+            "windspeed_unit": "km/h",
+            "wind_direction": current_weather.get('winddirection'),
+            "weathercode": current_weather.get('weathercode'),
+            "time": current_weather.get('time'),
+            "source": "https://api.open-meteo.com"
+        },
+        "sources": {
+            "iss_location": "http://api.open-notify.org/iss-now.json",
+            "weather_data": "https://api.open-meteo.com"
+        }
+    }
+
+    return {
+        "result": combined
+    }
+"""
+function = "process"
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+DefineGetISSWeatherRoute = FetchISSLocation
+FetchISSLocation = ExtractISSCoordinates
+ExtractISSCoordinates = FetchWeather
+FetchWeather = CombineResults

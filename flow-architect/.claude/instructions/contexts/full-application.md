@@ -74,19 +74,32 @@
 
 ### Step 1: Check Live Services
 
-**API Calls to make:**
+**Use Bash Tools:**
 ```bash
-# Get running infrastructure (databases, etc.)
-curl -s http://localhost:3000/api/catalog?type=infrastructure&status=running
+# Get running database services
+./flow-architect/tools/get-running-services.sh database
 
-# Get available flow services
-curl -s http://localhost:3000/api/catalog/flows
+# Get deployed flow services
+./flow-architect/tools/get-deployed-flows.sh
 
-# Check node types (static file is OK for this)
-cat catalogs/node-catalog.json
+# Get all available node types
+./flow-architect/tools/get-node-catalog.sh
 ```
 
-**Use actual connection strings from running services!**
+### Step 1.5: Verify Authentication
+
+**CRITICAL - Check database authentication before proceeding:**
+```bash
+# Check if PostgreSQL has auth configured
+./flow-architect/tools/check-service-auth.sh postgresql
+```
+
+**If returns `"configured":false`:**
+- STOP - Do not proceed with building the flow
+- Direct user to Service Manager to configure PostgreSQL credentials
+- Wait for user to configure, then re-check
+
+**Only proceed when authentication is verified!**
 
 ### Step 2: Identify All Entities
 
@@ -194,14 +207,14 @@ Total: 11 endpoints
 
 ### Step 5: Find Next Available Port
 
-**CRITICAL:** You MUST call the port detection API to get an available port.
+**CRITICAL:** You MUST call the port detection tool to get an available port.
 
-**API Call:**
+**Use Bash Tool:**
 ```bash
-curl -s http://localhost:3000/api/ports
+./flow-architect/tools/get-available-port.sh
 ```
 
-**Parse the JSON response and use `available_port`** - this scans all sources to avoid conflicts
+**Use `{{.AvailablePort}}` in flow file for dynamic allocation** - this scans all sources to avoid conflicts
 
 ### Step 6: Create Workflow Header
 

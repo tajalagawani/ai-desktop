@@ -94,25 +94,54 @@ Timer → Extract (HTTP) → Transform (Python) → Load (Database) → Notify
 
 ### Step 1: Check Live Services
 
-**API Calls to make:**
+**Use Bash Tools:**
 ```bash
-# Get running infrastructure (databases, etc.)
-curl -s http://localhost:3000/api/catalog?type=infrastructure&status=running
+# Get running database services
+./flow-architect/tools/get-running-services.sh database
 
-# Get available flow services
-curl -s http://localhost:3000/api/catalog/flows
+# Get deployed flow services
+./flow-architect/tools/get-deployed-flows.sh
 
-# Check node types (static file is OK for this)
-cat catalogs/node-catalog.json
+# Get all available node types
+./flow-architect/tools/get-node-catalog.sh
+
+# Get nodes requiring authentication (email, SMS, APIs)
+./flow-architect/tools/get-node-catalog.sh true
 ```
 
-**Use actual connection strings from running services!**
+### Step 1.5: Verify Authentication for ALL Required Services
 
-**Check for:**
-- Email service (SMTP)
-- Webhook capabilities
-- HTTP request capabilities
-- Database availability
+**CRITICAL - Multi-service integrations require multiple auth checks:**
+
+**Check database authentication:**
+```bash
+./flow-architect/tools/check-service-auth.sh postgresql
+```
+
+**Check external service authentication (based on user requirements):**
+```bash
+# If using SendGrid for email
+./flow-architect/tools/check-node-auth.sh sendgrid
+
+# If using Twilio for SMS
+./flow-architect/tools/check-node-auth.sh twilio
+
+# If using Slack
+./flow-architect/tools/check-node-auth.sh slack
+
+# If using external APIs (GitHub, OpenAI, etc.)
+./flow-architect/tools/check-node-auth.sh github
+```
+
+**If ANY service returns `"configured":false`:**
+- STOP - Do not proceed with building the flow
+- Direct user to Security Center (for node auth) or Service Manager (for database auth)
+- List ALL services that need configuration
+- Wait for user to configure, then re-check ALL
+
+**Only proceed when ALL required authentications are verified!**
+
+**This is the most critical step for multi-service integrations.**
 
 ### Step 2: Identify All External Services
 

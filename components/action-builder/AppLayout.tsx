@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
 import { useChatStore } from '@/lib/action-builder/stores/chatStore';
 import { useStoreHydration } from '@/lib/action-builder/stores/useStoreHydration';
 import SidebarSimple from '@/components/action-builder/SidebarSimple';
@@ -13,9 +12,6 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   useStoreHydration();
-
-  const router = useRouter();
-  const pathname = usePathname();
 
   const initWebSocket = useChatStore(state => state.initWebSocket);
   const isMobile = useChatStore(state => state.isMobile);
@@ -47,16 +43,29 @@ export default function AppLayout({ children }: AppLayoutProps) {
     }
   }, [projects, setCurrentProject]);
 
-  const handleSessionSelect = (session: any) => {
-    router.push(`/session/${session.id}`);
+  const handleSessionSelect = async (session: any) => {
+    const loadMessages = useChatStore.getState().loadMessages;
+    const currentProject = useChatStore.getState().currentProject;
+
+    // Set as current session
+    setCurrentSession(session);
+
+    // Load messages for this session
+    if (currentProject) {
+      await loadMessages(session.id);
+    }
+
+    // Close mobile sidebar
     if (isMobile) {
       setSidebarOpen(false);
     }
   };
 
   const handleNewSession = () => {
-    setCurrentSession(null);
-    router.push('/');
+    const createNewSession = useChatStore.getState().createNewSession;
+    createNewSession();
+
+    // Close mobile sidebar
     if (isMobile) {
       setSidebarOpen(false);
     }

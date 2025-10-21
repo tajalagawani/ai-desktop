@@ -1,0 +1,10 @@
+# Example: Sandbox Violation Refusal Flow
+
+[workflow]
+start_node = "refuse"
+
+[nodes.refuse]
+type = "py"
+code = """
+refusal_message = '''I cannot modify application code. I can create a testing flow instead. Would that help?'''
+"""

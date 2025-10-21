@@ -114,17 +114,19 @@ export class ChatWebSocket {
     console.log('[WebSocket Client] ----------------------------------------');
   }
 
-  sendUserMessage(content: string, sessionId?: string) {
+  sendUserMessage(content: string, sessionId?: string, topicId?: string) {
     console.log('[WebSocket Client] sendUserMessage called');
     console.log('[WebSocket Client]   - Content:', content.substring(0, 100));
     console.log('[WebSocket Client]   - Session ID:', sessionId || this.sessionId || 'NONE');
+    console.log('[WebSocket Client]   - Topic ID:', topicId || 'NONE');
 
     // Desktop server expects 'start_chat' type
     this.send({
       type: 'start_chat',
       prompt: content,
       sessionId: sessionId || this.sessionId || undefined,
-      resume: !!(sessionId || this.sessionId)
+      resume: !!(sessionId || this.sessionId),
+      topic: topicId // NEW: Include topic ID
     });
   }
 

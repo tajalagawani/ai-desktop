@@ -1,0 +1,15 @@
+# Example: Conversation/Information Response Flow
+
+[workflow]
+start_node = "respond"
+
+[nodes.respond]
+type = "py"
+code = """
+# Template for conversation responses
+# Replace the message with actual response content
+
+response_message = '''Your response here.
+
+This can be multi-line and include explanations, information, or clarifications.'''
+"""

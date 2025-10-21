@@ -6,6 +6,7 @@ import ActionsList from './ActionsList';
 import ClaudeStatus from './ClaudeStatus';
 import FlowStatusView from './FlowStatusView';
 import ExecutionHistoryTab from './ExecutionHistoryTab';
+import TopicSelector, { type Topic } from './TopicSelector';
 import { useChatStore } from '@/lib/action-builder/stores/chatStore';
 import { MessageSquare, Settings, Plus, Menu, Zap, History } from 'lucide-react';
 import { useState } from 'react';
@@ -32,6 +33,49 @@ export default function ChatInterface() {
   const setMainContentTab = useChatStore(state => state.setMainContentTab);
   const loadFlows = useChatStore(state => state.loadFlows);
 
+  // NEW: Topic selector state
+  const selectedTopic = useChatStore(state => state.selectedTopic);
+  const setSelectedTopic = useChatStore(state => state.setSelectedTopic);
+  const sessions = useChatStore(state => state.sessions);
+  const setSessions = useChatStore(state => state.setSessions);
+  const setCurrentSession = useChatStore(state => state.setCurrentSession);
+  const messages = useChatStore(state => state.messages);
+
+  const handleSelectTopic = (topic: Topic) => {
+    console.log('Topic selected:', topic);
+    setSelectedTopic(topic);
+
+    // Create new session immediately with topic info
+    const newSession = {
+      id: crypto.randomUUID(), // Temporary UUID until backend creates real one
+      summary: `${topic.icon} ${topic.name}`,
+      messageCount: 0,
+      created: new Date().toISOString(),
+      updated: new Date().toISOString(),
+      lastActivity: new Date().toISOString(),
+      topic: {
+        id: topic.id,
+        name: topic.name,
+        context: topic.context
+      }
+    };
+
+    // Add to sessions list at the top
+    setSessions([newSession, ...sessions]);
+
+    // Set as current session
+    setCurrentSession(newSession);
+
+    // Auto-focus input after topic selection
+    setTimeout(() => {
+      const input = document.querySelector('textarea');
+      if (input) {
+        input.focus();
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  };
+
   return (
     <div className="h-full flex flex-col bg-background text-foreground">
       {/* Header */}
@@ -54,9 +98,13 @@ export default function ChatInterface() {
             </div>
             <div>
               <h1 className="text-sm font-semibold">
-                {currentSession?.summary || 'New Session'}
+                {currentSession?.topic && (currentSession?.messageCount || 0) === 0
+                  ? `${currentSession.topic.name}`
+                  : currentSession?.summary || 'New Session'}
               </h1>
-              <p className="text-xs text-muted-foreground">Action Builder</p>
+              <p className="text-xs text-muted-foreground">
+                {currentSession?.topic ? 'Topic-based chat' : 'Action Builder'}
+              </p>
             </div>
 
             {/* Tabs - Only show when session exists */}
@@ -168,10 +216,61 @@ export default function ChatInterface() {
               )}
             </>
           ) : (
-            /* No session view */
+            /* No session view - Show topic selector OR welcome message OR message list */
             <>
-              <MessageList />
-              {isDevMode && <ClaudeStatus />}
+              {!currentSession ? (
+                /* Topic selector - no session yet */
+                <div className="flex-1 overflow-y-auto p-6">
+                  <div className="max-w-4xl mx-auto space-y-6">
+                    <div className="text-center">
+                      <h2 className="text-2xl font-semibold mb-2">Choose a Topic</h2>
+                      <p className="text-sm text-muted-foreground">
+                        Select what you want to build or ask about
+                      </p>
+                    </div>
+                    <TopicSelector
+                      onSelectTopic={handleSelectTopic}
+                      onCancel={() => {}}
+                      selectedTopicId={selectedTopic?.id}
+                    />
+                  </div>
+                </div>
+              ) : messages.length === 0 && currentSession.topic ? (
+                /* Welcome message - session exists but no messages yet */
+                <div className="flex-1 overflow-y-auto flex items-center justify-center p-6">
+                  <div className="max-w-2xl text-center space-y-4">
+                    <div className="text-6xl mb-4">{selectedTopic?.icon || '💬'}</div>
+                    <h2 className="text-2xl font-semibold">{currentSession.topic.name}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedTopic?.description || 'Start your conversation'}
+                    </p>
+                    {selectedTopic && (
+                      <div className="p-4 bg-muted/50 rounded-lg">
+                        <p className="text-xs text-muted-foreground mb-2">Example queries:</p>
+                        <p className="text-sm italic">{selectedTopic.example}</p>
+                      </div>
+                    )}
+                    <p className="text-sm text-primary font-medium">
+                      Start typing your message below ↓
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSelectedTopic(null);
+                        setCurrentSession(null);
+                      }}
+                      className="text-xs text-muted-foreground hover:text-foreground underline mt-4"
+                    >
+                      Change topic
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Messages view - session exists and has messages */
+                <>
+                  <MessageList />
+                  {isDevMode && <ClaudeStatus />}
+                </>
+              )}
               <InputArea />
             </>
           )}

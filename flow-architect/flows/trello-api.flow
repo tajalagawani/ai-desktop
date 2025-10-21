@@ -1,0 +1,650 @@
+[workflow]
+name = "Trello-like Task Management API"
+description = "Complete task management system with boards, lists, cards, members, labels, and comments"
+start_node = "CreateBoardsTable"
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[server]
+host = "0.0.0.0"
+port = 9001
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[service_catalog]
+register = true
+service_name = "Trello-like API"
+service_type = "api"
+description = "Full-featured task management API with boards, lists, cards, members, labels, and comments"
+icon = "📋"
+category = "productivity"
+endpoints = [
+  {path = "/api/boards", method = "GET", description = "List all boards"},
+  {path = "/api/boards", method = "POST", description = "Create board"},
+  {path = "/api/boards/<id>", method = "GET", description = "Get board details"},
+  {path = "/api/boards/<id>", method = "PUT", description = "Update board"},
+  {path = "/api/boards/<id>", method = "DELETE", description = "Delete board"},
+  {path = "/api/lists", method = "GET", description = "List all lists"},
+  {path = "/api/lists", method = "POST", description = "Create list"},
+  {path = "/api/lists/<id>", method = "PUT", description = "Update list"},
+  {path = "/api/lists/<id>", method = "DELETE", description = "Delete list"},
+  {path = "/api/cards", method = "GET", description = "List all cards"},
+  {path = "/api/cards", method = "POST", description = "Create card"},
+  {path = "/api/cards/<id>", method = "GET", description = "Get card details"},
+  {path = "/api/cards/<id>", method = "PUT", description = "Update card"},
+  {path = "/api/cards/<id>", method = "DELETE", description = "Delete card"},
+  {path = "/api/members", method = "GET", description = "List all members"},
+  {path = "/api/members", method = "POST", description = "Create member"},
+  {path = "/api/labels", method = "GET", description = "List all labels"},
+  {path = "/api/labels", method = "POST", description = "Create label"},
+  {path = "/api/comments", method = "GET", description = "List comments"},
+  {path = "/api/comments", method = "POST", description = "Create comment"}
+]
+
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+
+[env]
+DATABASE_URL = "postgresql://neondb_owner:npg_CmvEoT4hEhR5@ep-shiny-haze-a5k5wxq5.us-east-2.aws.neon.tech/neondb?sslmode=require"
+
+# ==================== DATABASE TABLES ====================
+
+[node:CreateBoardsTable]
+type = "neon"
+label = "DB.1. Create boards table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS boards (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    background_color VARCHAR(7) DEFAULT '#0079BF',
+    is_closed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_boards_created ON boards(created_at DESC);
+"""
+
+[node:CreateListsTable]
+type = "neon"
+label = "DB.2. Create lists table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS lists (
+    id SERIAL PRIMARY KEY,
+    board_id INTEGER NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    position INTEGER NOT NULL DEFAULT 0,
+    is_archived BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_lists_board ON lists(board_id);
+CREATE INDEX IF NOT EXISTS idx_lists_position ON lists(board_id, position);
+"""
+
+[node:CreateCardsTable]
+type = "neon"
+label = "DB.3. Create cards table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS cards (
+    id SERIAL PRIMARY KEY,
+    list_id INTEGER NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    position INTEGER NOT NULL DEFAULT 0,
+    due_date TIMESTAMP,
+    is_completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_cards_list ON cards(list_id);
+CREATE INDEX IF NOT EXISTS idx_cards_position ON cards(list_id, position);
+CREATE INDEX IF NOT EXISTS idx_cards_due_date ON cards(due_date);
+"""
+
+[node:CreateMembersTable]
+type = "neon"
+label = "DB.4. Create members table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS members (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    avatar_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_members_email ON members(email);
+"""
+
+[node:CreateLabelsTable]
+type = "neon"
+label = "DB.5. Create labels table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS labels (
+    id SERIAL PRIMARY KEY,
+    board_id INTEGER NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    color VARCHAR(7) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_labels_board ON labels(board_id);
+"""
+
+[node:CreateCardLabelsTable]
+type = "neon"
+label = "DB.6. Create card_labels junction table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS card_labels (
+    card_id INTEGER NOT NULL,
+    label_id INTEGER NOT NULL,
+    PRIMARY KEY (card_id, label_id)
+);
+CREATE INDEX IF NOT EXISTS idx_card_labels_card ON card_labels(card_id);
+CREATE INDEX IF NOT EXISTS idx_card_labels_label ON card_labels(label_id);
+"""
+
+[node:CreateCardMembersTable]
+type = "neon"
+label = "DB.7. Create card_members junction table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS card_members (
+    card_id INTEGER NOT NULL,
+    member_id INTEGER NOT NULL,
+    PRIMARY KEY (card_id, member_id)
+);
+CREATE INDEX IF NOT EXISTS idx_card_members_card ON card_members(card_id);
+CREATE INDEX IF NOT EXISTS idx_card_members_member ON card_members(member_id);
+"""
+
+[node:CreateCommentsTable]
+type = "neon"
+label = "DB.8. Create comments table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS comments (
+    id SERIAL PRIMARY KEY,
+    card_id INTEGER NOT NULL,
+    member_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_comments_card ON comments(card_id);
+CREATE INDEX IF NOT EXISTS idx_comments_member ON comments(member_id);
+"""
+
+# ==================== BOARDS ENDPOINTS ====================
+
+[node:DefineGetBoardsRoute]
+type = "aci"
+mode = "server"
+label = "API.Boards.1. GET /api/boards"
+operation = "add_route"
+route_path = "/api/boards"
+methods = ["GET"]
+handler = "GetBoardsHandler"
+description = "List all boards"
+
+[node:GetBoardsHandler]
+type = "neon"
+label = "API.Boards.1.1. Fetch all boards from database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT * FROM boards WHERE is_closed = FALSE ORDER BY created_at DESC"
+
+[node:DefineCreateBoardRoute]
+type = "aci"
+mode = "server"
+label = "API.Boards.2. POST /api/boards"
+operation = "add_route"
+route_path = "/api/boards"
+methods = ["POST"]
+handler = "CreateBoardHandler"
+description = "Create new board"
+
+[node:CreateBoardHandler]
+type = "neon"
+label = "API.Boards.2.1. Insert new board into database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO boards (name, description, background_color) VALUES (%s, %s, %s) RETURNING *"
+parameters = ["{{request_data.name}}", "{{request_data.description}}", "{{request_data.background_color}}"]
+
+[node:DefineGetBoardByIdRoute]
+type = "aci"
+mode = "server"
+label = "API.Boards.3. GET /api/boards/<id>"
+operation = "add_route"
+route_path = "/api/boards/<int:id>"
+methods = ["GET"]
+handler = "GetBoardByIdHandler"
+description = "Get board details with lists and cards"
+
+[node:GetBoardByIdHandler]
+type = "neon"
+label = "API.Boards.3.1. Fetch board with related data"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+SELECT
+    b.*,
+    json_agg(
+        json_build_object(
+            'id', l.id,
+            'name', l.name,
+            'position', l.position
+        ) ORDER BY l.position
+    ) FILTER (WHERE l.id IS NOT NULL) as lists
+FROM boards b
+LEFT JOIN lists l ON l.board_id = b.id AND l.is_archived = FALSE
+WHERE b.id = %s
+GROUP BY b.id
+"""
+parameters = ["{{request_data.id}}"]
+
+[node:DefineUpdateBoardRoute]
+type = "aci"
+mode = "server"
+label = "API.Boards.4. PUT /api/boards/<id>"
+operation = "add_route"
+route_path = "/api/boards/<int:id>"
+methods = ["PUT"]
+handler = "UpdateBoardHandler"
+description = "Update board details"
+
+[node:UpdateBoardHandler]
+type = "neon"
+label = "API.Boards.4.1. Update board in database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE boards SET name = %s, description = %s, background_color = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *"
+parameters = ["{{request_data.name}}", "{{request_data.description}}", "{{request_data.background_color}}", "{{request_data.id}}"]
+
+[node:DefineDeleteBoardRoute]
+type = "aci"
+mode = "server"
+label = "API.Boards.5. DELETE /api/boards/<id>"
+operation = "add_route"
+route_path = "/api/boards/<int:id>"
+methods = ["DELETE"]
+handler = "DeleteBoardHandler"
+description = "Soft delete board (mark as closed)"
+
+[node:DeleteBoardHandler]
+type = "neon"
+label = "API.Boards.5.1. Mark board as closed"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE boards SET is_closed = TRUE, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING id"
+parameters = ["{{request_data.id}}"]
+
+# ==================== LISTS ENDPOINTS ====================
+
+[node:DefineGetListsRoute]
+type = "aci"
+mode = "server"
+label = "API.Lists.1. GET /api/lists"
+operation = "add_route"
+route_path = "/api/lists"
+methods = ["GET"]
+handler = "GetListsHandler"
+description = "List all lists (optionally filtered by board_id)"
+
+[node:GetListsHandler]
+type = "neon"
+label = "API.Lists.1.1. Fetch lists from database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT * FROM lists WHERE is_archived = FALSE ORDER BY position ASC"
+
+[node:DefineCreateListRoute]
+type = "aci"
+mode = "server"
+label = "API.Lists.2. POST /api/lists"
+operation = "add_route"
+route_path = "/api/lists"
+methods = ["POST"]
+handler = "CreateListHandler"
+description = "Create new list in a board"
+
+[node:CreateListHandler]
+type = "neon"
+label = "API.Lists.2.1. Insert new list into database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO lists (board_id, name, position) VALUES (%s, %s, COALESCE(%s, 0)) RETURNING *"
+parameters = ["{{request_data.board_id}}", "{{request_data.name}}", "{{request_data.position}}"]
+
+[node:DefineUpdateListRoute]
+type = "aci"
+mode = "server"
+label = "API.Lists.3. PUT /api/lists/<id>"
+operation = "add_route"
+route_path = "/api/lists/<int:id>"
+methods = ["PUT"]
+handler = "UpdateListHandler"
+description = "Update list (name or position)"
+
+[node:UpdateListHandler]
+type = "neon"
+label = "API.Lists.3.1. Update list in database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE lists SET name = %s, position = COALESCE(%s, position) WHERE id = %s RETURNING *"
+parameters = ["{{request_data.name}}", "{{request_data.position}}", "{{request_data.id}}"]
+
+[node:DefineDeleteListRoute]
+type = "aci"
+mode = "server"
+label = "API.Lists.4. DELETE /api/lists/<id>"
+operation = "add_route"
+route_path = "/api/lists/<int:id>"
+methods = ["DELETE"]
+handler = "DeleteListHandler"
+description = "Archive list"
+
+[node:DeleteListHandler]
+type = "neon"
+label = "API.Lists.4.1. Mark list as archived"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE lists SET is_archived = TRUE WHERE id = %s RETURNING id"
+parameters = ["{{request_data.id}}"]
+
+# ==================== CARDS ENDPOINTS ====================
+
+[node:DefineGetCardsRoute]
+type = "aci"
+mode = "server"
+label = "API.Cards.1. GET /api/cards"
+operation = "add_route"
+route_path = "/api/cards"
+methods = ["GET"]
+handler = "GetCardsHandler"
+description = "List all cards (optionally filtered by list_id)"
+
+[node:GetCardsHandler]
+type = "neon"
+label = "API.Cards.1.1. Fetch cards from database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT * FROM cards ORDER BY position ASC"
+
+[node:DefineCreateCardRoute]
+type = "aci"
+mode = "server"
+label = "API.Cards.2. POST /api/cards"
+operation = "add_route"
+route_path = "/api/cards"
+methods = ["POST"]
+handler = "CreateCardHandler"
+description = "Create new card in a list"
+
+[node:CreateCardHandler]
+type = "neon"
+label = "API.Cards.2.1. Insert new card into database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO cards (list_id, title, description, position, due_date) VALUES (%s, %s, %s, COALESCE(%s, 0), %s) RETURNING *"
+parameters = ["{{request_data.list_id}}", "{{request_data.title}}", "{{request_data.description}}", "{{request_data.position}}", "{{request_data.due_date}}"]
+
+[node:DefineGetCardByIdRoute]
+type = "aci"
+mode = "server"
+label = "API.Cards.3. GET /api/cards/<id>"
+operation = "add_route"
+route_path = "/api/cards/<int:id>"
+methods = ["GET"]
+handler = "GetCardByIdHandler"
+description = "Get card details with labels, members, and comments"
+
+[node:GetCardByIdHandler]
+type = "neon"
+label = "API.Cards.3.1. Fetch card with related data"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+SELECT
+    c.*,
+    json_agg(DISTINCT jsonb_build_object('id', l.id, 'name', l.name, 'color', l.color))
+        FILTER (WHERE l.id IS NOT NULL) as labels,
+    json_agg(DISTINCT jsonb_build_object('id', m.id, 'name', m.name, 'email', m.email))
+        FILTER (WHERE m.id IS NOT NULL) as members
+FROM cards c
+LEFT JOIN card_labels cl ON cl.card_id = c.id
+LEFT JOIN labels l ON l.id = cl.label_id
+LEFT JOIN card_members cm ON cm.card_id = c.id
+LEFT JOIN members m ON m.id = cm.member_id
+WHERE c.id = %s
+GROUP BY c.id
+"""
+parameters = ["{{request_data.id}}"]
+
+[node:DefineUpdateCardRoute]
+type = "aci"
+mode = "server"
+label = "API.Cards.4. PUT /api/cards/<id>"
+operation = "add_route"
+route_path = "/api/cards/<int:id>"
+methods = ["PUT"]
+handler = "UpdateCardHandler"
+description = "Update card details"
+
+[node:UpdateCardHandler]
+type = "neon"
+label = "API.Cards.4.1. Update card in database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "UPDATE cards SET title = COALESCE(%s, title), description = COALESCE(%s, description), list_id = COALESCE(%s, list_id), position = COALESCE(%s, position), due_date = COALESCE(%s, due_date), is_completed = COALESCE(%s, is_completed), updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *"
+parameters = ["{{request_data.title}}", "{{request_data.description}}", "{{request_data.list_id}}", "{{request_data.position}}", "{{request_data.due_date}}", "{{request_data.is_completed}}", "{{request_data.id}}"]
+
+[node:DefineDeleteCardRoute]
+type = "aci"
+mode = "server"
+label = "API.Cards.5. DELETE /api/cards/<id>"
+operation = "add_route"
+route_path = "/api/cards/<int:id>"
+methods = ["DELETE"]
+handler = "DeleteCardHandler"
+description = "Delete card permanently"
+
+[node:DeleteCardHandler]
+type = "neon"
+label = "API.Cards.5.1. Delete card from database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "DELETE FROM cards WHERE id = %s RETURNING id"
+parameters = ["{{request_data.id}}"]
+
+# ==================== MEMBERS ENDPOINTS ====================
+
+[node:DefineGetMembersRoute]
+type = "aci"
+mode = "server"
+label = "API.Members.1. GET /api/members"
+operation = "add_route"
+route_path = "/api/members"
+methods = ["GET"]
+handler = "GetMembersHandler"
+description = "List all members"
+
+[node:GetMembersHandler]
+type = "neon"
+label = "API.Members.1.1. Fetch all members from database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT * FROM members ORDER BY name ASC"
+
+[node:DefineCreateMemberRoute]
+type = "aci"
+mode = "server"
+label = "API.Members.2. POST /api/members"
+operation = "add_route"
+route_path = "/api/members"
+methods = ["POST"]
+handler = "CreateMemberHandler"
+description = "Create new member"
+
+[node:CreateMemberHandler]
+type = "neon"
+label = "API.Members.2.1. Insert new member into database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO members (name, email, avatar_url) VALUES (%s, %s, %s) RETURNING *"
+parameters = ["{{request_data.name}}", "{{request_data.email}}", "{{request_data.avatar_url}}"]
+
+# ==================== LABELS ENDPOINTS ====================
+
+[node:DefineGetLabelsRoute]
+type = "aci"
+mode = "server"
+label = "API.Labels.1. GET /api/labels"
+operation = "add_route"
+route_path = "/api/labels"
+methods = ["GET"]
+handler = "GetLabelsHandler"
+description = "List all labels (optionally filtered by board_id)"
+
+[node:GetLabelsHandler]
+type = "neon"
+label = "API.Labels.1.1. Fetch labels from database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "SELECT * FROM labels ORDER BY name ASC"
+
+[node:DefineCreateLabelRoute]
+type = "aci"
+mode = "server"
+label = "API.Labels.2. POST /api/labels"
+operation = "add_route"
+route_path = "/api/labels"
+methods = ["POST"]
+handler = "CreateLabelHandler"
+description = "Create new label"
+
+[node:CreateLabelHandler]
+type = "neon"
+label = "API.Labels.2.1. Insert new label into database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO labels (board_id, name, color) VALUES (%s, %s, %s) RETURNING *"
+parameters = ["{{request_data.board_id}}", "{{request_data.name}}", "{{request_data.color}}"]
+
+# ==================== COMMENTS ENDPOINTS ====================
+
+[node:DefineGetCommentsRoute]
+type = "aci"
+mode = "server"
+label = "API.Comments.1. GET /api/comments"
+operation = "add_route"
+route_path = "/api/comments"
+methods = ["GET"]
+handler = "GetCommentsHandler"
+description = "List comments (optionally filtered by card_id)"
+
+[node:GetCommentsHandler]
+type = "neon"
+label = "API.Comments.1.1. Fetch comments from database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+SELECT
+    c.*,
+    json_build_object('id', m.id, 'name', m.name, 'email', m.email) as author
+FROM comments c
+LEFT JOIN members m ON m.id = c.member_id
+ORDER BY c.created_at DESC
+"""
+
+[node:DefineCreateCommentRoute]
+type = "aci"
+mode = "server"
+label = "API.Comments.2. POST /api/comments"
+operation = "add_route"
+route_path = "/api/comments"
+methods = ["POST"]
+handler = "CreateCommentHandler"
+description = "Create new comment on a card"
+
+[node:CreateCommentHandler]
+type = "neon"
+label = "API.Comments.2.1. Insert new comment into database"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = "INSERT INTO comments (card_id, member_id, content) VALUES (%s, %s, %s) RETURNING *"
+parameters = ["{{request_data.card_id}}", "{{request_data.member_id}}", "{{request_data.content}}"]
+
+# ==================== EDGES ====================
+
+[edges]
+# Database table creation sequence
+CreateBoardsTable = "CreateListsTable"
+CreateListsTable = "CreateCardsTable"
+CreateCardsTable = "CreateMembersTable"
+CreateMembersTable = "CreateLabelsTable"
+CreateLabelsTable = "CreateCardLabelsTable"
+CreateCardLabelsTable = "CreateCardMembersTable"
+CreateCardMembersTable = "CreateCommentsTable"
+
+# After all tables created, define all routes
+CreateCommentsTable = "DefineGetBoardsRoute"
+CreateCommentsTable = "DefineCreateBoardRoute"
+CreateCommentsTable = "DefineGetBoardByIdRoute"
+CreateCommentsTable = "DefineUpdateBoardRoute"
+CreateCommentsTable = "DefineDeleteBoardRoute"
+CreateCommentsTable = "DefineGetListsRoute"
+CreateCommentsTable = "DefineCreateListRoute"
+CreateCommentsTable = "DefineUpdateListRoute"
+CreateCommentsTable = "DefineDeleteListRoute"
+CreateCommentsTable = "DefineGetCardsRoute"
+CreateCommentsTable = "DefineCreateCardRoute"
+CreateCommentsTable = "DefineGetCardByIdRoute"
+CreateCommentsTable = "DefineUpdateCardRoute"
+CreateCommentsTable = "DefineDeleteCardRoute"
+CreateCommentsTable = "DefineGetMembersRoute"
+CreateCommentsTable = "DefineCreateMemberRoute"
+CreateCommentsTable = "DefineGetLabelsRoute"
+CreateCommentsTable = "DefineCreateLabelRoute"
+CreateCommentsTable = "DefineGetCommentsRoute"
+CreateCommentsTable = "DefineCreateCommentRoute"
+
+# Routes to handlers
+DefineGetBoardsRoute = "GetBoardsHandler"
+DefineCreateBoardRoute = "CreateBoardHandler"
+DefineGetBoardByIdRoute = "GetBoardByIdHandler"
+DefineUpdateBoardRoute = "UpdateBoardHandler"
+DefineDeleteBoardRoute = "DeleteBoardHandler"
+DefineGetListsRoute = "GetListsHandler"
+DefineCreateListRoute = "CreateListHandler"
+DefineUpdateListRoute = "UpdateListHandler"
+DefineDeleteListRoute = "DeleteListHandler"
+DefineGetCardsRoute = "GetCardsHandler"
+DefineCreateCardRoute = "CreateCardHandler"
+DefineGetCardByIdRoute = "GetCardByIdHandler"
+DefineUpdateCardRoute = "UpdateCardHandler"
+DefineDeleteCardRoute = "DeleteCardHandler"
+DefineGetMembersRoute = "GetMembersHandler"
+DefineCreateMemberRoute = "CreateMemberHandler"
+DefineGetLabelsRoute = "GetLabelsHandler"
+DefineCreateLabelRoute = "CreateLabelHandler"
+DefineGetCommentsRoute = "GetCommentsHandler"
+DefineCreateCommentRoute = "CreateCommentHandler"

@@ -20,7 +20,25 @@
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
       "Bash(node:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(chmod +x /Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/get-node-catalog.sh)",
+      "Bash(chmod +x /Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/check-node-auth.sh)",
+      "Bash(chmod +x /Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/get-deployed-flows.sh)",
+      "Bash(chmod +x /Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/get-available-port.sh)",
+      "Bash(/Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/get-running-services.sh)",
+      "Bash(/Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/get-running-services.sh database)",
+      "Bash(/Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/get-node-catalog.sh true)",
+      "Bash(/Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/check-service-auth.sh postgresql)",
+      "Bash(/Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/check-node-auth.sh github)",
+      "Bash(/Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/get-deployed-flows.sh)",
+      "Bash(/Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/get-available-port.sh)",
+      "Bash(for file in /Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/*.sh)",
+      "Bash($file)",
+      "Bash(done)",
+      "Bash(/Users/tajnoah/Downloads/ai-desktop/flow-architect/tools/get-node-catalog.sh)",
+      "Bash(chmod +x /Users/tajnoah/Downloads/ai-desktop/.claude/hooks/validate-file-access.sh)",
+      "Bash(chmod +x /Users/tajnoah/Downloads/ai-desktop/.claude/hooks/require-act-flow.sh)",
+      "Bash(/Users/tajnoah/Downloads/ai-desktop/flow-architect/tests/sandbox-enforcement-tests.sh)"
     ],
     "deny": [
       "Bash(docker:*)",
@@ -35,5 +53,46 @@
       "Bash(sudo docker:*)"
     ],
     "ask": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tajnoah/Downloads/ai-desktop/.claude/hooks/validate-file-access.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tajnoah/Downloads/ai-desktop/.claude/hooks/validate-file-access.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tajnoah/Downloads/ai-desktop/.claude/hooks/validate-file-access.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/tajnoah/Downloads/ai-desktop/.claude/hooks/require-act-flow.sh"
+          }
+        ]
+      }
+    ]
   }
 }

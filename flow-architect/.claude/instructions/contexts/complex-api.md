@@ -72,22 +72,37 @@
 
 ### Step 1: Check Live Services
 
-**API Calls to make:**
+**Use Bash Tools:**
 ```bash
-# Get running infrastructure (databases, etc.)
-curl -s http://localhost:3000/api/catalog?type=infrastructure&status=running
+# Get running database services
+./flow-architect/tools/get-running-services.sh database
 
 # Get available flow services
-curl -s http://localhost:3000/api/catalog/flows
+./flow-architect/tools/get-deployed-flows.sh
 
-# Check node types (static file is OK for this)
-cat catalogs/node-catalog.json
+# Get all available node types
+./flow-architect/tools/get-node-catalog.sh
 ```
 
 **Check for:**
-- Running database services (PostgreSQL, Neon)
-- Actual connection strings from running services
-- Available node types
+- Running database services (PostgreSQL preferred)
+- Actual connection info from running services
+- Available node types (129 total, 64 require auth)
+
+### Step 1.5: Verify Authentication
+
+**CRITICAL - Check database authentication before proceeding:**
+```bash
+# Check if PostgreSQL has auth configured
+./flow-architect/tools/check-service-auth.sh postgresql
+```
+
+**If returns `"configured":false`:**
+- STOP - Do not proceed with building the flow
+- Direct user to Service Manager to configure PostgreSQL credentials
+- Wait for user to configure, then re-check
+
+**Only proceed when authentication is verified!**
 
 ### Step 2: Identify Entities
 
@@ -175,51 +190,112 @@ CREATE INDEX idx_comments_post_id ON comments(post_id);
 
 ### Step 5: Find Next Available Port
 
-**CRITICAL:** You MUST call the port detection API to get an available port.
+**CRITICAL:** You MUST call the port detection tool to get an available port.
 
-**API Call:**
+**Use Bash Tool:**
 ```bash
-curl -s http://localhost:3000/api/ports
+./flow-architect/tools/get-available-port.sh
 ```
 
-**Parse the JSON response and use `available_port`** - this prevents port conflicts
+**Parse the JSON response:**
+```json
+{
+  "success": true,
+  "available_port": 9001,
+  "used_ports": [9009, ...]
+}
+```
+
+**Use `{{.AvailablePort}}` in flow file for dynamic allocation** - this prevents port conflicts
 
 ### Step 6: Create Workflow Header
 
-**CRITICAL:** Follow exact TOML format - no quotes, no [server], no [service_catalog]
+**CRITICAL:** Include all sections upfront with proper environment variables
 
 ```toml
 [workflow]
-name = [System] API
-description = [Description of what it does]
+name = "[System] API"
+description = "[Description of what it does]"
 start_node = Create[FirstEntity]Table
 
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[server]
+host = "0.0.0.0"
+port = {{.AvailablePort}}
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+[service_catalog]
+register = true
+service_name = "[System] API"
+service_type = "api"
+description = "[What this API does]"
+icon = "📦"
+category = "data"
+endpoints = [
+  {path = "/api/[entity1]", method = "GET", description = "List [entity1]"},
+  {path = "/api/[entity1]", method = "POST", description = "Create [entity1]"},
+  {path = "/api/[entity2]", method = "GET", description = "List [entity2]"},
+  {path = "/api/[entity2]", method = "POST", description = "Create [entity2]"}
+]
+
 [parameters]
-connection_string = postgresql://neondb_owner:password@host:5432/db?sslmode=require
+database_url = "{{.env.DATABASE_URL}}"
+
+[env]
+DATABASE_URL = "postgresql://connection-string-here"
 ```
 
-**That's it for the header!** Footer sections come at the end.
+**Key changes:**
+- Use `{{.AvailablePort}}` for dynamic port
+- Database via `{{.Parameter.database_url}}`
+- All sections included upfront
+- NO hardcoded connection strings!
 
 ### Step 7: Create Database Tables (Sequential)
 
-**CRITICAL:** No quotes on type/label/operation. Use {{.Parameter.connection_string}}
+**CRITICAL:** Use `{{.Parameter.database_url}}` and proper TOML syntax
 
 Create one node per table, chain them sequentially:
 
 ```toml
 [node:CreatePostsTable]
-type = neon
-label = 1. Create posts table
-connection_string = {{.Parameter.connection_string}}
-operation = execute_query
-query = CREATE TABLE IF NOT EXISTS posts (id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, content TEXT, category_id INTEGER, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category_id)
+type = "neon"
+label = "Create posts table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS posts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT,
+    category_id INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_posts_category ON posts(category_id);
+"""
 
 [node:CreateCommentsTable]
-type = neon
-label = 2. Create comments table
-connection_string = {{.Parameter.connection_string}}
-operation = execute_query
-query = CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, post_id INTEGER NOT NULL, author VARCHAR(100), content TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id)
+type = "neon"
+label = "Create comments table"
+connection_string = "{{.Parameter.database_url}}"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS comments (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER NOT NULL,
+    author VARCHAR(100),
+    content TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id);
+"""
 
 [node:CreateCategoriesTable]
 type = neon

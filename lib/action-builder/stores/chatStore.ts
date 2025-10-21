@@ -142,6 +142,7 @@ interface ChatStore {
   actions: Action[];
   currentSession: Session | null;
   streamingMessageId: string | null;
+  selectedTopic: { id: string; name: string; context: string } | null;
 
   // === Projects ===
   projects: Project[];
@@ -218,6 +219,7 @@ interface ChatStore {
   setSessions: (sessions: Session[]) => void;
   setActions: (actions: Action[]) => void;
   setCurrentSession: (session: Session | null) => void;
+  setSelectedTopic: (topic: { id: string; name: string; context: string } | null) => void;
 
   // === Actions - Projects ===
   setProjects: (projects: Project[]) => void;
@@ -305,6 +307,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   actions: [],
   currentSession: null,
   streamingMessageId: null,
+  selectedTopic: null,
 
   // === Initial State - Projects ===
   projects: [],
@@ -387,6 +390,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   setSessions: (sessions) => set({ sessions }),
   setActions: (actions) => set({ actions }),
   setCurrentSession: (session) => set({ currentSession: session }),
+  setSelectedTopic: (topic) => set({ selectedTopic: topic }),
 
   // === Setters - Projects ===
   setProjects: (projects) => set({ projects }),
@@ -780,34 +784,42 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
           case 'session-created':
             if (message.sessionId) {
+              const existingSessions = get().sessions;
+              const currentSession = get().currentSession;
+
+              // Check if current session is temporary (has topic but no messages)
+              const isTemporary = currentSession?.topic && (currentSession?.messageCount || 0) === 0;
+              const hasTopic = isTemporary ? currentSession.topic : null;
+
               const newSession = {
                 id: message.sessionId,
-                summary: 'New Session',
+                summary: hasTopic ? `${hasTopic.name}` : 'New Session',
                 messageCount: 0,
                 lastActivity: new Date().toISOString(),
                 created: new Date().toISOString(),
                 updated: new Date().toISOString(),
+                topic: hasTopic || undefined // Preserve topic info if it exists
               };
 
-              // Check if session already exists in list
-              const existingSessions = get().sessions;
-              const sessionExists = existingSessions.some(s => s.id === message.sessionId);
+              // Remove temporary session if it exists
+              const filteredSessions = isTemporary && currentSession
+                ? existingSessions.filter(s => s.id !== currentSession.id)
+                : existingSessions;
+
+              const sessionExists = filteredSessions.some(s => s.id === message.sessionId);
 
               // Set as current session and add to list if not exists
               if (!sessionExists) {
                 set({
                   currentSession: newSession,
-                  sessions: [newSession, ...existingSessions]
+                  sessions: [newSession, ...filteredSessions]
                 });
               } else {
                 // Just set as current
                 set({ currentSession: newSession });
               }
 
-              // Navigate to new session
-              if (typeof window !== 'undefined') {
-                window.history.pushState({}, '', `/session/${message.sessionId}`);
-              }
+              // Note: No URL navigation - keep user on main route
             }
             break;
 
@@ -1177,7 +1189,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   sendMessage: (content: string) => {
     const ws = getWebSocketClient();
-    const { currentSession } = get();
+    const { currentSession, selectedTopic } = get();
 
     // Add user message to UI immediately
     const userMessage: Message = {
@@ -1199,14 +1211,24 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       }
     });
 
-    // Send to backend
-    ws.sendUserMessage(content, currentSession?.id);
+    // Check if this is a temporary session (has topic but no messages yet)
+    const isTemporarySession = currentSession?.topic && (currentSession?.messageCount || 0) === 0;
+
+    // For temporary sessions, send topic but NOT session ID (let backend create new session)
+    // For existing sessions, send session ID but NOT topic (resume existing session)
+    const sessionId = isTemporarySession ? undefined : currentSession?.id;
+    const topicId = isTemporarySession ? currentSession.topic.id : undefined;
+
+    ws.sendUserMessage(content, sessionId, topicId);
   },
 
   createNewSession: () => {
-    // Simply clear the current session - don't create immediately
-    // Session will be created when user sends first message
-    set({ messages: [], currentSession: null });
+    // Clear current session - topics will be shown inline
+    set({
+      messages: [],
+      currentSession: null,
+      selectedTopic: null
+    });
   },
 
   deleteSession: async (sessionId: string) => {

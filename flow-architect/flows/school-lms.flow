@@ -1,0 +1,818 @@
+[workflow]
+name = School Learning Management System
+description = Complete school LMS with students, teachers, courses, assignments, grades, attendance, and enrollments
+start_node = CreateStudentsTable
+
+[parameters]
+connection_string = postgresql://neondb_owner:password@host:5432/db?sslmode=require
+
+# ==============================================
+# Database Setup - All Tables
+# ==============================================
+
+[node:CreateStudentsTable]
+type = neon
+label = 1. Create students table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS students (id SERIAL PRIMARY KEY, first_name VARCHAR(100) NOT NULL, last_name VARCHAR(100) NOT NULL, email VARCHAR(255) UNIQUE NOT NULL, student_id VARCHAR(50) UNIQUE NOT NULL, date_of_birth DATE, grade_level VARCHAR(20), phone VARCHAR(20), address TEXT, guardian_name VARCHAR(200), guardian_phone VARCHAR(20), guardian_email VARCHAR(255), enrollment_date DATE DEFAULT CURRENT_DATE, status VARCHAR(20) DEFAULT 'active', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_students_email ON students(email); CREATE INDEX IF NOT EXISTS idx_students_student_id ON students(student_id); CREATE INDEX IF NOT EXISTS idx_students_status ON students(status)
+
+[node:CreateTeachersTable]
+type = neon
+label = 2. Create teachers table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS teachers (id SERIAL PRIMARY KEY, first_name VARCHAR(100) NOT NULL, last_name VARCHAR(100) NOT NULL, email VARCHAR(255) UNIQUE NOT NULL, employee_id VARCHAR(50) UNIQUE NOT NULL, phone VARCHAR(20), address TEXT, specialization VARCHAR(100), hire_date DATE DEFAULT CURRENT_DATE, status VARCHAR(20) DEFAULT 'active', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_teachers_email ON teachers(email); CREATE INDEX IF NOT EXISTS idx_teachers_employee_id ON teachers(employee_id)
+
+[node:CreateCoursesTable]
+type = neon
+label = 3. Create courses table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS courses (id SERIAL PRIMARY KEY, course_code VARCHAR(20) UNIQUE NOT NULL, course_name VARCHAR(255) NOT NULL, description TEXT, teacher_id INTEGER REFERENCES teachers(id), credits INTEGER DEFAULT 3, max_students INTEGER DEFAULT 30, semester VARCHAR(20), academic_year VARCHAR(20), schedule VARCHAR(200), room VARCHAR(50), status VARCHAR(20) DEFAULT 'active', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_courses_teacher ON courses(teacher_id); CREATE INDEX IF NOT EXISTS idx_courses_code ON courses(course_code); CREATE INDEX IF NOT EXISTS idx_courses_semester ON courses(semester)
+
+[node:CreateEnrollmentsTable]
+type = neon
+label = 4. Create enrollments table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS enrollments (id SERIAL PRIMARY KEY, student_id INTEGER REFERENCES students(id) ON DELETE CASCADE, course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE, enrollment_date DATE DEFAULT CURRENT_DATE, status VARCHAR(20) DEFAULT 'enrolled', final_grade DECIMAL(5,2), letter_grade VARCHAR(2), credits_earned INTEGER DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(student_id, course_id)); CREATE INDEX IF NOT EXISTS idx_enrollments_student ON enrollments(student_id); CREATE INDEX IF NOT EXISTS idx_enrollments_course ON enrollments(course_id); CREATE INDEX IF NOT EXISTS idx_enrollments_status ON enrollments(status)
+
+[node:CreateAssignmentsTable]
+type = neon
+label = 5. Create assignments table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS assignments (id SERIAL PRIMARY KEY, course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE, title VARCHAR(255) NOT NULL, description TEXT, assignment_type VARCHAR(50), max_points DECIMAL(10,2) NOT NULL, due_date TIMESTAMP, posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, status VARCHAR(20) DEFAULT 'active', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_assignments_course ON assignments(course_id); CREATE INDEX IF NOT EXISTS idx_assignments_due_date ON assignments(due_date)
+
+[node:CreateSubmissionsTable]
+type = neon
+label = 6. Create submissions table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS submissions (id SERIAL PRIMARY KEY, assignment_id INTEGER REFERENCES assignments(id) ON DELETE CASCADE, student_id INTEGER REFERENCES students(id) ON DELETE CASCADE, submission_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, content TEXT, file_url VARCHAR(500), points_earned DECIMAL(10,2), feedback TEXT, graded_by INTEGER REFERENCES teachers(id), graded_at TIMESTAMP, status VARCHAR(20) DEFAULT 'submitted', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_submissions_assignment ON submissions(assignment_id); CREATE INDEX IF NOT EXISTS idx_submissions_student ON submissions(student_id); CREATE INDEX IF NOT EXISTS idx_submissions_status ON submissions(status)
+
+[node:CreateAttendanceTable]
+type = neon
+label = 7. Create attendance table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS attendance (id SERIAL PRIMARY KEY, student_id INTEGER REFERENCES students(id) ON DELETE CASCADE, course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE, attendance_date DATE NOT NULL, status VARCHAR(20) NOT NULL, notes TEXT, recorded_by INTEGER REFERENCES teachers(id), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, UNIQUE(student_id, course_id, attendance_date)); CREATE INDEX IF NOT EXISTS idx_attendance_student ON attendance(student_id); CREATE INDEX IF NOT EXISTS idx_attendance_course ON attendance(course_id); CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(attendance_date)
+
+[node:CreateGradesTable]
+type = neon
+label = 8. Create grades table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS grades (id SERIAL PRIMARY KEY, enrollment_id INTEGER REFERENCES enrollments(id) ON DELETE CASCADE, assignment_id INTEGER REFERENCES assignments(id) ON DELETE CASCADE, student_id INTEGER REFERENCES students(id) ON DELETE CASCADE, points_earned DECIMAL(10,2), max_points DECIMAL(10,2), percentage DECIMAL(5,2), letter_grade VARCHAR(2), graded_by INTEGER REFERENCES teachers(id), graded_at TIMESTAMP, comments TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_grades_enrollment ON grades(enrollment_id); CREATE INDEX IF NOT EXISTS idx_grades_student ON grades(student_id); CREATE INDEX IF NOT EXISTS idx_grades_assignment ON grades(assignment_id)
+
+[node:CreateAnnouncementsTable]
+type = neon
+label = 9. Create announcements table
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = CREATE TABLE IF NOT EXISTS announcements (id SERIAL PRIMARY KEY, course_id INTEGER REFERENCES courses(id) ON DELETE CASCADE, teacher_id INTEGER REFERENCES teachers(id), title VARCHAR(255) NOT NULL, content TEXT NOT NULL, priority VARCHAR(20) DEFAULT 'normal', posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, expires_date TIMESTAMP, status VARCHAR(20) DEFAULT 'active', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP); CREATE INDEX IF NOT EXISTS idx_announcements_course ON announcements(course_id); CREATE INDEX IF NOT EXISTS idx_announcements_posted ON announcements(posted_date DESC)
+
+# ==============================================
+# Students Endpoints
+# ==============================================
+
+[node:DefineGetStudentsRoute]
+type = aci
+mode = server
+label = API.Students.1. GET /api/students
+operation = add_route
+route_path = /api/students
+methods = ["GET"]
+handler = GetStudentsHandler
+description = Get all students
+
+[node:GetStudentsHandler]
+type = neon
+label = API.Students.1.1. Fetch all students
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, first_name, last_name, email, student_id, grade_level, phone, status, enrollment_date FROM students ORDER BY last_name, first_name
+
+[node:DefineGetStudentByIdRoute]
+type = aci
+mode = server
+label = API.Students.2. GET /api/students/<id>
+operation = add_route
+route_path = /api/students/<int:id_from_url>
+methods = ["GET"]
+handler = GetStudentByIdHandler
+description = Get student by ID
+
+[node:GetStudentByIdHandler]
+type = neon
+label = API.Students.2.1. Fetch student by ID
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT * FROM students WHERE id = %s
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateStudentRoute]
+type = aci
+mode = server
+label = API.Students.3. POST /api/students
+operation = add_route
+route_path = /api/students
+methods = ["POST"]
+handler = CreateStudentHandler
+description = Create new student
+
+[node:CreateStudentHandler]
+type = neon
+label = API.Students.3.1. Insert student record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO students (first_name, last_name, email, student_id, date_of_birth, grade_level, phone, address, guardian_name, guardian_phone, guardian_email) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *
+parameters = ["{{request_data.first_name}}", "{{request_data.last_name}}", "{{request_data.email}}", "{{request_data.student_id}}", "{{request_data.date_of_birth}}", "{{request_data.grade_level}}", "{{request_data.phone}}", "{{request_data.address}}", "{{request_data.guardian_name}}", "{{request_data.guardian_phone}}", "{{request_data.guardian_email}}"]
+
+[node:DefineUpdateStudentRoute]
+type = aci
+mode = server
+label = API.Students.4. PUT /api/students/<id>
+operation = add_route
+route_path = /api/students/<int:id_from_url>
+methods = ["PUT"]
+handler = UpdateStudentHandler
+description = Update student information
+
+[node:UpdateStudentHandler]
+type = neon
+label = API.Students.4.1. Update student record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE students SET first_name = %s, last_name = %s, email = %s, phone = %s, address = %s, status = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *
+parameters = ["{{request_data.first_name}}", "{{request_data.last_name}}", "{{request_data.email}}", "{{request_data.phone}}", "{{request_data.address}}", "{{request_data.status}}", "{{request_data.id_from_url}}"]
+
+[node:DefineDeleteStudentRoute]
+type = aci
+mode = server
+label = API.Students.5. DELETE /api/students/<id>
+operation = add_route
+route_path = /api/students/<int:id_from_url>
+methods = ["DELETE"]
+handler = DeleteStudentHandler
+description = Delete student
+
+[node:DeleteStudentHandler]
+type = neon
+label = API.Students.5.1. Delete student record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = DELETE FROM students WHERE id = %s RETURNING id
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# Teachers Endpoints
+# ==============================================
+
+[node:DefineGetTeachersRoute]
+type = aci
+mode = server
+label = API.Teachers.1. GET /api/teachers
+operation = add_route
+route_path = /api/teachers
+methods = ["GET"]
+handler = GetTeachersHandler
+description = Get all teachers
+
+[node:GetTeachersHandler]
+type = neon
+label = API.Teachers.1.1. Fetch all teachers
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT id, first_name, last_name, email, employee_id, specialization, phone, status FROM teachers ORDER BY last_name, first_name
+
+[node:DefineGetTeacherByIdRoute]
+type = aci
+mode = server
+label = API.Teachers.2. GET /api/teachers/<id>
+operation = add_route
+route_path = /api/teachers/<int:id_from_url>
+methods = ["GET"]
+handler = GetTeacherByIdHandler
+description = Get teacher by ID
+
+[node:GetTeacherByIdHandler]
+type = neon
+label = API.Teachers.2.1. Fetch teacher by ID
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT * FROM teachers WHERE id = %s
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateTeacherRoute]
+type = aci
+mode = server
+label = API.Teachers.3. POST /api/teachers
+operation = add_route
+route_path = /api/teachers
+methods = ["POST"]
+handler = CreateTeacherHandler
+description = Create new teacher
+
+[node:CreateTeacherHandler]
+type = neon
+label = API.Teachers.3.1. Insert teacher record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO teachers (first_name, last_name, email, employee_id, phone, address, specialization) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING *
+parameters = ["{{request_data.first_name}}", "{{request_data.last_name}}", "{{request_data.email}}", "{{request_data.employee_id}}", "{{request_data.phone}}", "{{request_data.address}}", "{{request_data.specialization}}"]
+
+[node:DefineUpdateTeacherRoute]
+type = aci
+mode = server
+label = API.Teachers.4. PUT /api/teachers/<id>
+operation = add_route
+route_path = /api/teachers/<int:id_from_url>
+methods = ["PUT"]
+handler = UpdateTeacherHandler
+description = Update teacher information
+
+[node:UpdateTeacherHandler]
+type = neon
+label = API.Teachers.4.1. Update teacher record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE teachers SET first_name = %s, last_name = %s, email = %s, phone = %s, specialization = %s, status = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *
+parameters = ["{{request_data.first_name}}", "{{request_data.last_name}}", "{{request_data.email}}", "{{request_data.phone}}", "{{request_data.specialization}}", "{{request_data.status}}", "{{request_data.id_from_url}}"]
+
+[node:DefineDeleteTeacherRoute]
+type = aci
+mode = server
+label = API.Teachers.5. DELETE /api/teachers/<id>
+operation = add_route
+route_path = /api/teachers/<int:id_from_url>
+methods = ["DELETE"]
+handler = DeleteTeacherHandler
+description = Delete teacher
+
+[node:DeleteTeacherHandler]
+type = neon
+label = API.Teachers.5.1. Delete teacher record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = DELETE FROM teachers WHERE id = %s RETURNING id
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# Courses Endpoints
+# ==============================================
+
+[node:DefineGetCoursesRoute]
+type = aci
+mode = server
+label = API.Courses.1. GET /api/courses
+operation = add_route
+route_path = /api/courses
+methods = ["GET"]
+handler = GetCoursesHandler
+description = Get all courses
+
+[node:GetCoursesHandler]
+type = neon
+label = API.Courses.1.1. Fetch all courses
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT c.id, c.course_code, c.course_name, c.description, c.credits, c.semester, c.schedule, c.room, c.status, t.first_name as teacher_first_name, t.last_name as teacher_last_name FROM courses c LEFT JOIN teachers t ON c.teacher_id = t.id ORDER BY c.course_code
+
+[node:DefineGetCourseByIdRoute]
+type = aci
+mode = server
+label = API.Courses.2. GET /api/courses/<id>
+operation = add_route
+route_path = /api/courses/<int:id_from_url>
+methods = ["GET"]
+handler = GetCourseByIdHandler
+description = Get course by ID
+
+[node:GetCourseByIdHandler]
+type = neon
+label = API.Courses.2.1. Fetch course by ID
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT * FROM courses WHERE id = %s
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateCourseRoute]
+type = aci
+mode = server
+label = API.Courses.3. POST /api/courses
+operation = add_route
+route_path = /api/courses
+methods = ["POST"]
+handler = CreateCourseHandler
+description = Create new course
+
+[node:CreateCourseHandler]
+type = neon
+label = API.Courses.3.1. Insert course record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO courses (course_code, course_name, description, teacher_id, credits, max_students, semester, academic_year, schedule, room) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *
+parameters = ["{{request_data.course_code}}", "{{request_data.course_name}}", "{{request_data.description}}", "{{request_data.teacher_id}}", "{{request_data.credits}}", "{{request_data.max_students}}", "{{request_data.semester}}", "{{request_data.academic_year}}", "{{request_data.schedule}}", "{{request_data.room}}"]
+
+[node:DefineUpdateCourseRoute]
+type = aci
+mode = server
+label = API.Courses.4. PUT /api/courses/<id>
+operation = add_route
+route_path = /api/courses/<int:id_from_url>
+methods = ["PUT"]
+handler = UpdateCourseHandler
+description = Update course information
+
+[node:UpdateCourseHandler]
+type = neon
+label = API.Courses.4.1. Update course record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE courses SET course_name = %s, description = %s, teacher_id = %s, schedule = %s, room = %s, status = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *
+parameters = ["{{request_data.course_name}}", "{{request_data.description}}", "{{request_data.teacher_id}}", "{{request_data.schedule}}", "{{request_data.room}}", "{{request_data.status}}", "{{request_data.id_from_url}}"]
+
+[node:DefineDeleteCourseRoute]
+type = aci
+mode = server
+label = API.Courses.5. DELETE /api/courses/<id>
+operation = add_route
+route_path = /api/courses/<int:id_from_url>
+methods = ["DELETE"]
+handler = DeleteCourseHandler
+description = Delete course
+
+[node:DeleteCourseHandler]
+type = neon
+label = API.Courses.5.1. Delete course record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = DELETE FROM courses WHERE id = %s RETURNING id
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# Enrollments Endpoints
+# ==============================================
+
+[node:DefineGetEnrollmentsRoute]
+type = aci
+mode = server
+label = API.Enrollments.1. GET /api/enrollments
+operation = add_route
+route_path = /api/enrollments
+methods = ["GET"]
+handler = GetEnrollmentsHandler
+description = Get all enrollments
+
+[node:GetEnrollmentsHandler]
+type = neon
+label = API.Enrollments.1.1. Fetch all enrollments
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT e.id, e.student_id, e.course_id, e.enrollment_date, e.status, e.final_grade, e.letter_grade, s.first_name as student_first_name, s.last_name as student_last_name, c.course_code, c.course_name FROM enrollments e JOIN students s ON e.student_id = s.id JOIN courses c ON e.course_id = c.id ORDER BY e.enrollment_date DESC
+
+[node:DefineGetEnrollmentsByStudentRoute]
+type = aci
+mode = server
+label = API.Enrollments.2. GET /api/enrollments/student/<id>
+operation = add_route
+route_path = /api/enrollments/student/<int:id_from_url>
+methods = ["GET"]
+handler = GetEnrollmentsByStudentHandler
+description = Get enrollments by student
+
+[node:GetEnrollmentsByStudentHandler]
+type = neon
+label = API.Enrollments.2.1. Fetch enrollments by student
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT e.*, c.course_code, c.course_name, c.credits FROM enrollments e JOIN courses c ON e.course_id = c.id WHERE e.student_id = %s ORDER BY e.enrollment_date DESC
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineGetEnrollmentsByCourseRoute]
+type = aci
+mode = server
+label = API.Enrollments.3. GET /api/enrollments/course/<id>
+operation = add_route
+route_path = /api/enrollments/course/<int:id_from_url>
+methods = ["GET"]
+handler = GetEnrollmentsByCourseHandler
+description = Get enrollments by course
+
+[node:GetEnrollmentsByCourseHandler]
+type = neon
+label = API.Enrollments.3.1. Fetch enrollments by course
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT e.*, s.first_name, s.last_name, s.email FROM enrollments e JOIN students s ON e.student_id = s.id WHERE e.course_id = %s ORDER BY s.last_name, s.first_name
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateEnrollmentRoute]
+type = aci
+mode = server
+label = API.Enrollments.4. POST /api/enrollments
+operation = add_route
+route_path = /api/enrollments
+methods = ["POST"]
+handler = CreateEnrollmentHandler
+description = Enroll student in course
+
+[node:CreateEnrollmentHandler]
+type = neon
+label = API.Enrollments.4.1. Insert enrollment record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO enrollments (student_id, course_id) VALUES (%s, %s) RETURNING *
+parameters = ["{{request_data.student_id}}", "{{request_data.course_id}}"]
+
+[node:DefineUpdateEnrollmentRoute]
+type = aci
+mode = server
+label = API.Enrollments.5. PUT /api/enrollments/<id>
+operation = add_route
+route_path = /api/enrollments/<int:id_from_url>
+methods = ["PUT"]
+handler = UpdateEnrollmentHandler
+description = Update enrollment status and grade
+
+[node:UpdateEnrollmentHandler]
+type = neon
+label = API.Enrollments.5.1. Update enrollment record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE enrollments SET status = %s, final_grade = %s, letter_grade = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *
+parameters = ["{{request_data.status}}", "{{request_data.final_grade}}", "{{request_data.letter_grade}}", "{{request_data.id_from_url}}"]
+
+# ==============================================
+# Assignments Endpoints
+# ==============================================
+
+[node:DefineGetAssignmentsRoute]
+type = aci
+mode = server
+label = API.Assignments.1. GET /api/assignments
+operation = add_route
+route_path = /api/assignments
+methods = ["GET"]
+handler = GetAssignmentsHandler
+description = Get all assignments
+
+[node:GetAssignmentsHandler]
+type = neon
+label = API.Assignments.1.1. Fetch all assignments
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT a.id, a.course_id, a.title, a.assignment_type, a.max_points, a.due_date, a.status, c.course_code, c.course_name FROM assignments a JOIN courses c ON a.course_id = c.id ORDER BY a.due_date DESC
+
+[node:DefineGetAssignmentsByCourseRoute]
+type = aci
+mode = server
+label = API.Assignments.2. GET /api/assignments/course/<id>
+operation = add_route
+route_path = /api/assignments/course/<int:id_from_url>
+methods = ["GET"]
+handler = GetAssignmentsByCourseHandler
+description = Get assignments by course
+
+[node:GetAssignmentsByCourseHandler]
+type = neon
+label = API.Assignments.2.1. Fetch assignments by course
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT * FROM assignments WHERE course_id = %s ORDER BY due_date ASC
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateAssignmentRoute]
+type = aci
+mode = server
+label = API.Assignments.3. POST /api/assignments
+operation = add_route
+route_path = /api/assignments
+methods = ["POST"]
+handler = CreateAssignmentHandler
+description = Create new assignment
+
+[node:CreateAssignmentHandler]
+type = neon
+label = API.Assignments.3.1. Insert assignment record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO assignments (course_id, title, description, assignment_type, max_points, due_date) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *
+parameters = ["{{request_data.course_id}}", "{{request_data.title}}", "{{request_data.description}}", "{{request_data.assignment_type}}", "{{request_data.max_points}}", "{{request_data.due_date}}"]
+
+[node:DefineUpdateAssignmentRoute]
+type = aci
+mode = server
+label = API.Assignments.4. PUT /api/assignments/<id>
+operation = add_route
+route_path = /api/assignments/<int:id_from_url>
+methods = ["PUT"]
+handler = UpdateAssignmentHandler
+description = Update assignment
+
+[node:UpdateAssignmentHandler]
+type = neon
+label = API.Assignments.4.1. Update assignment record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE assignments SET title = %s, description = %s, due_date = %s, status = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *
+parameters = ["{{request_data.title}}", "{{request_data.description}}", "{{request_data.due_date}}", "{{request_data.status}}", "{{request_data.id_from_url}}"]
+
+# ==============================================
+# Submissions Endpoints
+# ==============================================
+
+[node:DefineGetSubmissionsRoute]
+type = aci
+mode = server
+label = API.Submissions.1. GET /api/submissions/assignment/<id>
+operation = add_route
+route_path = /api/submissions/assignment/<int:id_from_url>
+methods = ["GET"]
+handler = GetSubmissionsHandler
+description = Get submissions for assignment
+
+[node:GetSubmissionsHandler]
+type = neon
+label = API.Submissions.1.1. Fetch submissions by assignment
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT s.id, s.assignment_id, s.student_id, s.submission_date, s.points_earned, s.status, st.first_name, st.last_name FROM submissions s JOIN students st ON s.student_id = st.id WHERE s.assignment_id = %s ORDER BY s.submission_date DESC
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateSubmissionRoute]
+type = aci
+mode = server
+label = API.Submissions.2. POST /api/submissions
+operation = add_route
+route_path = /api/submissions
+methods = ["POST"]
+handler = CreateSubmissionHandler
+description = Submit assignment
+
+[node:CreateSubmissionHandler]
+type = neon
+label = API.Submissions.2.1. Insert submission record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO submissions (assignment_id, student_id, content, file_url) VALUES (%s, %s, %s, %s) RETURNING *
+parameters = ["{{request_data.assignment_id}}", "{{request_data.student_id}}", "{{request_data.content}}", "{{request_data.file_url}}"]
+
+[node:DefineGradeSubmissionRoute]
+type = aci
+mode = server
+label = API.Submissions.3. PUT /api/submissions/<id>/grade
+operation = add_route
+route_path = /api/submissions/<int:id_from_url>/grade
+methods = ["PUT"]
+handler = GradeSubmissionHandler
+description = Grade submission
+
+[node:GradeSubmissionHandler]
+type = neon
+label = API.Submissions.3.1. Update submission grade
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = UPDATE submissions SET points_earned = %s, feedback = %s, graded_by = %s, graded_at = CURRENT_TIMESTAMP, status = 'graded', updated_at = CURRENT_TIMESTAMP WHERE id = %s RETURNING *
+parameters = ["{{request_data.points_earned}}", "{{request_data.feedback}}", "{{request_data.graded_by}}", "{{request_data.id_from_url}}"]
+
+# ==============================================
+# Attendance Endpoints
+# ==============================================
+
+[node:DefineGetAttendanceRoute]
+type = aci
+mode = server
+label = API.Attendance.1. GET /api/attendance/course/<id>
+operation = add_route
+route_path = /api/attendance/course/<int:id_from_url>
+methods = ["GET"]
+handler = GetAttendanceHandler
+description = Get attendance by course
+
+[node:GetAttendanceHandler]
+type = neon
+label = API.Attendance.1.1. Fetch attendance by course
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT a.id, a.student_id, a.course_id, a.attendance_date, a.status, s.first_name, s.last_name FROM attendance a JOIN students s ON a.student_id = s.id WHERE a.course_id = %s ORDER BY a.attendance_date DESC, s.last_name
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineGetAttendanceByStudentRoute]
+type = aci
+mode = server
+label = API.Attendance.2. GET /api/attendance/student/<id>
+operation = add_route
+route_path = /api/attendance/student/<int:id_from_url>
+methods = ["GET"]
+handler = GetAttendanceByStudentHandler
+description = Get attendance by student
+
+[node:GetAttendanceByStudentHandler]
+type = neon
+label = API.Attendance.2.1. Fetch attendance by student
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT a.*, c.course_code, c.course_name FROM attendance a JOIN courses c ON a.course_id = c.id WHERE a.student_id = %s ORDER BY a.attendance_date DESC
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineRecordAttendanceRoute]
+type = aci
+mode = server
+label = API.Attendance.3. POST /api/attendance
+operation = add_route
+route_path = /api/attendance
+methods = ["POST"]
+handler = RecordAttendanceHandler
+description = Record attendance
+
+[node:RecordAttendanceHandler]
+type = neon
+label = API.Attendance.3.1. Insert attendance record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO attendance (student_id, course_id, attendance_date, status, notes, recorded_by) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (student_id, course_id, attendance_date) DO UPDATE SET status = EXCLUDED.status, notes = EXCLUDED.notes RETURNING *
+parameters = ["{{request_data.student_id}}", "{{request_data.course_id}}", "{{request_data.attendance_date}}", "{{request_data.status}}", "{{request_data.notes}}", "{{request_data.recorded_by}}"]
+
+# ==============================================
+# Grades Endpoints
+# ==============================================
+
+[node:DefineGetGradesByStudentRoute]
+type = aci
+mode = server
+label = API.Grades.1. GET /api/grades/student/<id>
+operation = add_route
+route_path = /api/grades/student/<int:id_from_url>
+methods = ["GET"]
+handler = GetGradesByStudentHandler
+description = Get grades by student
+
+[node:GetGradesByStudentHandler]
+type = neon
+label = API.Grades.1.1. Fetch grades by student
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT g.*, a.title as assignment_title, c.course_name FROM grades g JOIN assignments a ON g.assignment_id = a.id JOIN courses c ON a.course_id = c.id WHERE g.student_id = %s ORDER BY g.graded_at DESC
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineGetGradesByCourseRoute]
+type = aci
+mode = server
+label = API.Grades.2. GET /api/grades/course/<id>
+operation = add_route
+route_path = /api/grades/course/<int:id_from_url>
+methods = ["GET"]
+handler = GetGradesByCourseHandler
+description = Get grades by course
+
+[node:GetGradesByCourseHandler]
+type = neon
+label = API.Grades.2.1. Fetch grades by course
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT g.*, s.first_name, s.last_name, a.title as assignment_title FROM grades g JOIN students s ON g.student_id = s.id JOIN assignments a ON g.assignment_id = a.id JOIN courses c ON a.course_id = c.id WHERE c.id = %s ORDER BY s.last_name, s.first_name
+parameters = ["{{request_data.id_from_url}}"]
+
+# ==============================================
+# Announcements Endpoints
+# ==============================================
+
+[node:DefineGetAnnouncementsRoute]
+type = aci
+mode = server
+label = API.Announcements.1. GET /api/announcements/course/<id>
+operation = add_route
+route_path = /api/announcements/course/<int:id_from_url>
+methods = ["GET"]
+handler = GetAnnouncementsHandler
+description = Get announcements by course
+
+[node:GetAnnouncementsHandler]
+type = neon
+label = API.Announcements.1.1. Fetch announcements by course
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = SELECT a.*, t.first_name as teacher_first_name, t.last_name as teacher_last_name FROM announcements a JOIN teachers t ON a.teacher_id = t.id WHERE a.course_id = %s AND a.status = 'active' ORDER BY a.posted_date DESC
+parameters = ["{{request_data.id_from_url}}"]
+
+[node:DefineCreateAnnouncementRoute]
+type = aci
+mode = server
+label = API.Announcements.2. POST /api/announcements
+operation = add_route
+route_path = /api/announcements
+methods = ["POST"]
+handler = CreateAnnouncementHandler
+description = Create announcement
+
+[node:CreateAnnouncementHandler]
+type = neon
+label = API.Announcements.2.1. Insert announcement record
+connection_string = {{.Parameter.connection_string}}
+operation = execute_query
+query = INSERT INTO announcements (course_id, teacher_id, title, content, priority, expires_date) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *
+parameters = ["{{request_data.course_id}}", "{{request_data.teacher_id}}", "{{request_data.title}}", "{{request_data.content}}", "{{request_data.priority}}", "{{request_data.expires_date}}"]
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+CreateStudentsTable = CreateTeachersTable
+CreateTeachersTable = CreateCoursesTable
+CreateCoursesTable = CreateEnrollmentsTable
+CreateEnrollmentsTable = CreateAssignmentsTable
+CreateAssignmentsTable = CreateSubmissionsTable
+CreateSubmissionsTable = CreateAttendanceTable
+CreateAttendanceTable = CreateGradesTable
+CreateGradesTable = CreateAnnouncementsTable
+CreateAnnouncementsTable = DefineGetStudentsRoute
+CreateAnnouncementsTable = DefineGetStudentByIdRoute
+CreateAnnouncementsTable = DefineCreateStudentRoute
+CreateAnnouncementsTable = DefineUpdateStudentRoute
+CreateAnnouncementsTable = DefineDeleteStudentRoute
+CreateAnnouncementsTable = DefineGetTeachersRoute
+CreateAnnouncementsTable = DefineGetTeacherByIdRoute
+CreateAnnouncementsTable = DefineCreateTeacherRoute
+CreateAnnouncementsTable = DefineUpdateTeacherRoute
+CreateAnnouncementsTable = DefineDeleteTeacherRoute
+CreateAnnouncementsTable = DefineGetCoursesRoute
+CreateAnnouncementsTable = DefineGetCourseByIdRoute
+CreateAnnouncementsTable = DefineCreateCourseRoute
+CreateAnnouncementsTable = DefineUpdateCourseRoute
+CreateAnnouncementsTable = DefineDeleteCourseRoute
+CreateAnnouncementsTable = DefineGetEnrollmentsRoute
+CreateAnnouncementsTable = DefineGetEnrollmentsByStudentRoute
+CreateAnnouncementsTable = DefineGetEnrollmentsByCourseRoute
+CreateAnnouncementsTable = DefineCreateEnrollmentRoute
+CreateAnnouncementsTable = DefineUpdateEnrollmentRoute
+CreateAnnouncementsTable = DefineGetAssignmentsRoute
+CreateAnnouncementsTable = DefineGetAssignmentsByCourseRoute
+CreateAnnouncementsTable = DefineCreateAssignmentRoute
+CreateAnnouncementsTable = DefineUpdateAssignmentRoute
+CreateAnnouncementsTable = DefineGetSubmissionsRoute
+CreateAnnouncementsTable = DefineCreateSubmissionRoute
+CreateAnnouncementsTable = DefineGradeSubmissionRoute
+CreateAnnouncementsTable = DefineGetAttendanceRoute
+CreateAnnouncementsTable = DefineGetAttendanceByStudentRoute
+CreateAnnouncementsTable = DefineRecordAttendanceRoute
+CreateAnnouncementsTable = DefineGetGradesByStudentRoute
+CreateAnnouncementsTable = DefineGetGradesByCourseRoute
+CreateAnnouncementsTable = DefineGetAnnouncementsRoute
+CreateAnnouncementsTable = DefineCreateAnnouncementRoute
+DefineGetStudentsRoute = GetStudentsHandler
+DefineGetStudentByIdRoute = GetStudentByIdHandler
+DefineCreateStudentRoute = CreateStudentHandler
+DefineUpdateStudentRoute = UpdateStudentHandler
+DefineDeleteStudentRoute = DeleteStudentHandler
+DefineGetTeachersRoute = GetTeachersHandler
+DefineGetTeacherByIdRoute = GetTeacherByIdHandler
+DefineCreateTeacherRoute = CreateTeacherHandler
+DefineUpdateTeacherRoute = UpdateTeacherHandler
+DefineDeleteTeacherRoute = DeleteTeacherHandler
+DefineGetCoursesRoute = GetCoursesHandler
+DefineGetCourseByIdRoute = GetCourseByIdHandler
+DefineCreateCourseRoute = CreateCourseHandler
+DefineUpdateCourseRoute = UpdateCourseHandler
+DefineDeleteCourseRoute = DeleteCourseHandler
+DefineGetEnrollmentsRoute = GetEnrollmentsHandler
+DefineGetEnrollmentsByStudentRoute = GetEnrollmentsByStudentHandler
+DefineGetEnrollmentsByCourseRoute = GetEnrollmentsByCourseHandler
+DefineCreateEnrollmentRoute = CreateEnrollmentHandler
+DefineUpdateEnrollmentRoute = UpdateEnrollmentHandler
+DefineGetAssignmentsRoute = GetAssignmentsHandler
+DefineGetAssignmentsByCourseRoute = GetAssignmentsByCourseHandler
+DefineCreateAssignmentRoute = CreateAssignmentHandler
+DefineUpdateAssignmentRoute = UpdateAssignmentHandler
+DefineGetSubmissionsRoute = GetSubmissionsHandler
+DefineCreateSubmissionRoute = CreateSubmissionHandler
+DefineGradeSubmissionRoute = GradeSubmissionHandler
+DefineGetAttendanceRoute = GetAttendanceHandler
+DefineGetAttendanceByStudentRoute = GetAttendanceByStudentHandler
+DefineRecordAttendanceRoute = RecordAttendanceHandler
+DefineGetGradesByStudentRoute = GetGradesByStudentHandler
+DefineGetGradesByCourseRoute = GetGradesByCourseHandler
+DefineGetAnnouncementsRoute = GetAnnouncementsHandler
+DefineCreateAnnouncementRoute = CreateAnnouncementHandler
+
+[env]
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+
+[configuration]
+agent_enabled = true
+agent_name = school-lms-agent
+agent_version = 1.0.0
+host = 0.0.0.0
+port = {{.AvailablePort}}
+debug = true
+cors_enabled = true
+
+[deployment]
+environment = development

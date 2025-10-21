@@ -30,6 +30,11 @@ export interface Session {
   created?: string;
   updated?: string;
   lastActivity: string;
+  topic?: {
+    id: string;
+    name: string;
+    context: string;
+  };
 }
 
 export interface Action {
@@ -60,6 +65,9 @@ export interface WebSocketMessage {
   data?: any;
   sessionId?: string;
   error?: string;
+  topic?: string;
+  prompt?: string;
+  resume?: boolean;
 }
 
 export interface ChatState {

@@ -17,6 +17,7 @@ help:
 	@echo ""
 # Individual flow commands:
 # make start-clinic-management, stop-clinic-management, logs-clinic-management
+# make start-iss-weather-api, stop-iss-weather-api, logs-iss-weather-api
 
 start:
 	@echo "🚀 Starting all flows..."
@@ -57,3 +58,15 @@ restart-clinic-management:
 
 logs-clinic-management:
 	docker-compose logs -f act-clinic-management
+
+start-iss-weather-api:
+	docker-compose up -d act-iss-weather-api
+
+stop-iss-weather-api:
+	docker-compose stop act-iss-weather-api
+
+restart-iss-weather-api:
+	docker-compose restart act-iss-weather-api
+
+logs-iss-weather-api:
+	docker-compose logs -f act-iss-weather-api
