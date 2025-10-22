@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "flow-architect-signature": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "/Users/tajnoah/Downloads/ai-desktop/signature-system/mcp/index.js"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

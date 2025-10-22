@@ -1,12 +1,11 @@
 /**
  * Add Node to Signature Tool
- * Authenticates a node and adds it to the signature file
+ * Authenticates a node and adds to signature file
  */
 
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { SignatureManager } from '../../lib/signature-manager.js';
-import { EnvManager } from '../../lib/env-manager.js';
+import { executePythonCode } from '../../lib/python-executor.js';
 import { ErrorHandler } from '../../lib/error-handler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,154 +13,116 @@ const __dirname = path.dirname(__filename);
 
 export async function addNodeToSignature(args) {
   try {
-    // Validate required parameters
     ErrorHandler.validateParams(args, ['node_type', 'auth']);
 
     const {
       node_type,
       auth,
       defaults = {},
-      operations = null,
-      metadata = null,
       signature_path = 'signatures/user.act.sig'
     } = args;
 
-    // Load signature
-    const sigPath = path.resolve(__dirname, '../../../', signature_path);
-    const sigManager = new SignatureManager(sigPath);
-
-    try {
-      await sigManager.load();
-    } catch (error) {
-      if (error.message.includes('not found')) {
-        // Initialize empty signature if doesn't exist
-        await initializeSignature(sigPath);
-        await sigManager.load();
-      } else {
-        throw error;
-      }
-    }
-
-    // Validate authentication with external API
-    console.error(`Validating ${node_type} authentication...`);
-    try {
-      const validationResult = await sigManager.validateAuth(node_type, auth);
-      console.error(`✓ ${node_type} authentication validated`);
-    } catch (error) {
+    // Validate auth data
+    if (typeof auth !== 'object' || Object.keys(auth).length === 0) {
       throw Object.assign(
-        new Error(`Authentication validation failed: ${error.message}`),
-        { code: 'AUTH_VALIDATION_FAILED' }
+        new Error('auth must be a non-empty object'),
+        { code: 'INVALID_AUTH_DATA' }
       );
     }
 
-    // Save auth to .env
-    const envManager = new EnvManager('.env');
-    const envKeys = await envManager.setNodeAuth(node_type, auth);
-    console.error(`✓ Saved credentials to .env: ${envKeys.join(', ')}`);
+    // Resolve signature path
+    const sigPath = path.resolve(__dirname, '../../../', signature_path);
 
-    // Load operations from catalog if not provided
-    let nodeOperations = operations;
-    let nodeMetadata = metadata;
+    // Escape strings for Python
+    const authJson = JSON.stringify(auth).replace(/'/g, "\\\\'");
+    const defaultsJson = JSON.stringify(defaults).replace(/'/g, "\\\\'");
 
-    if (!nodeOperations || !nodeMetadata) {
-      const catalogData = await loadNodeFromCatalog(node_type);
-      nodeOperations = nodeOperations || catalogData.operations;
-      nodeMetadata = nodeMetadata || catalogData.metadata;
+    // Python code to add node
+    const pythonCode = `
+import json
+import os
+from act.mcp_utils import SignatureManager, get_node_info
+
+signature_path = '${sigPath}'
+node_type = '${node_type}'
+auth_data = json.loads('${authJson}')
+defaults_data = json.loads('${defaultsJson}')
+
+try:
+    # Get node info from catalog to validate
+    node_info = get_node_info(node_type)
+
+    if not node_info:
+        print(json.dumps({
+            "success": False,
+            "error": f"Node '{node_type}' not found in catalog"
+        }))
+        exit(0)
+
+    # Load or create signature
+    sig = SignatureManager(signature_path)
+
+    if os.path.exists(signature_path):
+        sig.load()
+    else:
+        # Initialize new signature
+        sig.signature = {
+            "signature": {
+                "version": "1.0.0",
+                "created_at": "${new Date().toISOString()}"
+            },
+            "metadata": {
+                "authenticated_nodes": 0
+            }
+        }
+        sig._loaded = True
+
+    # Extract operations from node info
+    operations = {}
+    for op in node_info.get('operations', []):
+        operations[op['name']] = {
+            "description": f"{op['displayName']} operation",
+            "category": op.get('category', 'other')
+        }
+
+    # Add node to signature
+    metadata = {
+        "display_name": node_info.get('displayName', node_type),
+        "description": node_info.get('description', ''),
+        "added_at": "${new Date().toISOString()}"
     }
 
-    // Add node to signature
-    await sigManager.addNode(
-      node_type,
-      auth,
-      defaults,
-      nodeOperations,
-      nodeMetadata
-    );
+    sig.add_node(node_type, auth_data, defaults_data, operations, metadata)
+    sig.save()
 
-    console.error(`✓ Added ${node_type} to signature`);
+    result = {
+        "success": True,
+        "node_type": node_type,
+        "authenticated": True,
+        "operations_count": len(operations),
+        "message": f"Node '{node_type}' authenticated successfully"
+    }
 
-    return ErrorHandler.success({
-      node_type,
-      authenticated: true,
-      operations_available: Object.keys(nodeOperations).length,
-      defaults_configured: Object.keys(defaults).length,
-      env_keys: envKeys,
-      message: `Successfully authenticated ${node_type}`
-    });
+    print(json.dumps(result))
+
+except Exception as e:
+    import traceback
+    print(json.dumps({
+        "success": False,
+        "error": str(e),
+        "traceback": traceback.format_exc()
+    }))
+`;
+
+    const result = await executePythonCode(pythonCode);
+
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to add node to signature');
+    }
+
+    return ErrorHandler.success(result);
 
   } catch (error) {
     return ErrorHandler.handle(error);
   }
-}
-
-/**
- * Initialize an empty signature file
- */
-async function initializeSignature(signaturePath) {
-  const fs = await import('fs/promises');
-  const initialSignature = `[signature]
-version = "1.0.0"
-user_id = "default-user"
-created_at = "${new Date().toISOString()}"
-updated_at = "${new Date().toISOString()}"
-
-[metadata]
-authenticated_nodes = 0
-unauthenticated_nodes = 0
-`;
-
-  // Ensure directory exists
-  const dir = path.dirname(signaturePath);
-  await fs.mkdir(dir, { recursive: true });
-
-  await fs.writeFile(signaturePath, initialSignature, 'utf-8');
-  console.error(`✓ Initialized new signature file: ${signaturePath}`);
-}
-
-/**
- * Load node information from catalog
- */
-async function loadNodeFromCatalog(nodeType) {
-  // Try to load from local catalog file
-  const catalogPath = path.resolve(__dirname, '../../../cache/node-catalog.json');
-
-  try {
-    const fs = await import('fs/promises');
-    const catalogContent = await fs.readFile(catalogPath, 'utf-8');
-    const catalog = JSON.parse(catalogContent);
-
-    const node = catalog.nodes.find(n => n.type === nodeType);
-    if (node) {
-      return {
-        operations: node.operations || {},
-        metadata: {
-          display_name: node.display_name || nodeType,
-          category: node.category || 'unknown',
-          description: node.description || '',
-          vendor: node.vendor || 'unknown',
-          version: node.version || '1.0.0'
-        }
-      };
-    }
-  } catch (error) {
-    console.error(`Warning: Could not load catalog: ${error.message}`);
-  }
-
-  // Return minimal default if catalog not available
-  return {
-    operations: {
-      default: {
-        description: 'Default operation',
-        parameters: [],
-        required_params: []
-      }
-    },
-    metadata: {
-      display_name: nodeType,
-      category: 'unknown',
-      description: 'Node type',
-      vendor: 'unknown',
-      version: '1.0.0'
-    }
-  };
 }

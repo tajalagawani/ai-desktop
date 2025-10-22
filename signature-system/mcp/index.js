@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 /**
  * Flow Architect MCP Server
  * Provides Claude with tools to manage signatures and execute nodes
@@ -9,10 +8,28 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
-// Import tools
+// Import execution tools
 import { executeNodeOperation } from './tools/execution/execute-node-operation.js';
+
+// Import signature tools
 import { getSignatureInfo } from './tools/signature/get-signature-info.js';
 import { addNodeToSignature } from './tools/signature/add-node.js';
+import { removeNodeFromSignature } from './tools/signature/remove-node.js';
+import { updateNodeDefaults } from './tools/signature/update-node-defaults.js';
+import { validateSignature } from './tools/signature/validate-signature.js';
+
+// Import catalog tools
+import { listAvailableNodes } from './tools/catalog/list-available-nodes.js';
+import { getNodeInfo } from './tools/catalog/get-node-info.js';
+import { listNodeOperations } from './tools/catalog/list-node-operations.js';
+import { searchOperationsTool } from './tools/catalog/search-operations.js';
+import { getOperationDetailsTool } from './tools/catalog/get-operation-details.js';
+
+// Import validation tools
+import { validateParams } from './tools/validation/validate-params.js';
+
+// Import utility tools
+import { getSystemStatus } from './tools/utility/get-system-status.js';
 
 // Create MCP server
 const server = new Server(
@@ -29,83 +46,170 @@ const server = new Server(
 
 // Tool definitions
 const tools = [
+  // EXECUTION TOOLS
   {
     name: 'execute_node_operation',
     description: 'Execute a single node operation using signature authentication. Instantly executes pre-authenticated operations without approval prompts.',
     inputSchema: {
       type: 'object',
       properties: {
-        node_type: {
-          type: 'string',
-          description: 'Node type (e.g., "github", "openai", "postgresql")'
-        },
-        operation: {
-          type: 'string',
-          description: 'Operation name (e.g., "list_issues", "create_completion")'
-        },
-        params: {
-          type: 'object',
-          description: 'Runtime parameters for the operation',
-          default: {}
-        },
-        override_defaults: {
-          type: 'boolean',
-          description: 'If true, do not merge with node defaults',
-          default: false
-        },
-        signature_path: {
-          type: 'string',
-          description: 'Path to signature file',
-          default: 'signatures/user.act.sig'
-        }
+        node_type: { type: 'string', description: 'Node type (e.g., "github", "openai")' },
+        operation: { type: 'string', description: 'Operation name (e.g., "list_issues")' },
+        params: { type: 'object', description: 'Runtime parameters', default: {} },
+        override_defaults: { type: 'boolean', description: 'Skip defaults merge', default: false },
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
       },
       required: ['node_type', 'operation']
     }
   },
+
+  // SIGNATURE TOOLS
   {
     name: 'get_signature_info',
-    description: 'Get information about authenticated nodes from the signature file. Shows which nodes are authenticated and available operations.',
+    description: 'Get information about authenticated nodes. Shows which nodes are authenticated and their available operations.',
     inputSchema: {
       type: 'object',
       properties: {
-        node_type: {
-          type: 'string',
-          description: 'Specific node type to get info for (optional). If not provided, returns info for all authenticated nodes.'
-        },
-        signature_path: {
-          type: 'string',
-          description: 'Path to signature file',
-          default: 'signatures/user.act.sig'
-        }
+        node_type: { type: 'string', description: 'Specific node type (optional)' },
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
       }
     }
   },
   {
     name: 'add_node_to_signature',
-    description: 'Authenticate a node and add it to the signature file. This validates credentials and stores them securely in .env file.',
+    description: 'Authenticate a node and add to signature. Validates credentials and stores them securely.',
     inputSchema: {
       type: 'object',
       properties: {
-        node_type: {
-          type: 'string',
-          description: 'Node type to authenticate (e.g., "github", "openai")'
-        },
-        auth: {
-          type: 'object',
-          description: 'Authentication credentials (e.g., {access_token: "xxx"} for GitHub)'
-        },
-        defaults: {
-          type: 'object',
-          description: 'Default parameters for this node (e.g., {owner: "user", repo: "repo"})',
-          default: {}
-        },
-        signature_path: {
-          type: 'string',
-          description: 'Path to signature file',
-          default: 'signatures/user.act.sig'
-        }
+        node_type: { type: 'string', description: 'Node type (e.g., "github")' },
+        auth: { type: 'object', description: 'Auth credentials (e.g., {access_token: "xxx"})' },
+        defaults: { type: 'object', description: 'Default parameters', default: {} },
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
       },
       required: ['node_type', 'auth']
+    }
+  },
+  {
+    name: 'remove_node_from_signature',
+    description: 'Remove node authentication from signature file.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        node_type: { type: 'string', description: 'Node type to remove' },
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
+      },
+      required: ['node_type']
+    }
+  },
+  {
+    name: 'update_node_defaults',
+    description: 'Update default parameters for an authenticated node.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        node_type: { type: 'string', description: 'Node type' },
+        defaults: { type: 'object', description: 'New default parameters' },
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
+      },
+      required: ['node_type', 'defaults']
+    }
+  },
+  {
+    name: 'validate_signature',
+    description: 'Validate signature file format and content.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
+      }
+    }
+  },
+
+  // CATALOG TOOLS
+  {
+    name: 'list_available_nodes',
+    description: 'List all available nodes from catalog. Filter by category or authentication status.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        category: { type: 'string', description: 'Filter by category (optional)' },
+        authenticated_only: { type: 'boolean', description: 'Show only authenticated', default: false },
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
+      }
+    }
+  },
+  {
+    name: 'get_node_info',
+    description: 'Get detailed information about a specific node type.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        node_type: { type: 'string', description: 'Node type' },
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
+      },
+      required: ['node_type']
+    }
+  },
+  {
+    name: 'list_node_operations',
+    description: 'List all operations available for a specific node with their parameters and descriptions.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        node_type: { type: 'string', description: 'Node type (e.g., "github")' }
+      },
+      required: ['node_type']
+    }
+  },
+  {
+    name: 'search_operations',
+    description: 'Search for operations across all nodes by keyword.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        query: { type: 'string', description: 'Search query (e.g., "list", "create", "repository")' }
+      },
+      required: ['query']
+    }
+  },
+  {
+    name: 'get_operation_details',
+    description: 'Get detailed information about a specific operation including parameters, examples, and usage.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        node_type: { type: 'string', description: 'Node type (e.g., "github")' },
+        operation: { type: 'string', description: 'Operation name (e.g., "list_repositories")' }
+      },
+      required: ['node_type', 'operation']
+    }
+  },
+
+  // VALIDATION TOOLS
+  {
+    name: 'validate_params',
+    description: 'Validate parameters before execution. Checks required params and merges with defaults.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        node_type: { type: 'string', description: 'Node type' },
+        operation: { type: 'string', description: 'Operation name' },
+        params: { type: 'object', description: 'Parameters to validate' },
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
+      },
+      required: ['node_type', 'operation', 'params']
+    }
+  },
+
+  // UTILITY TOOLS
+  {
+    name: 'get_system_status',
+    description: 'Get MCP server status and health information.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        signature_path: { type: 'string', default: 'signatures/user.act.sig' }
+      }
     }
   }
 ];
@@ -121,14 +225,41 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   try {
     switch (name) {
+      // Execution
       case 'execute_node_operation':
         return await executeNodeOperation(args);
 
+      // Signature
       case 'get_signature_info':
         return await getSignatureInfo(args);
-
       case 'add_node_to_signature':
         return await addNodeToSignature(args);
+      case 'remove_node_from_signature':
+        return await removeNodeFromSignature(args);
+      case 'update_node_defaults':
+        return await updateNodeDefaults(args);
+      case 'validate_signature':
+        return await validateSignature(args);
+
+      // Catalog
+      case 'list_available_nodes':
+        return await listAvailableNodes(args);
+      case 'get_node_info':
+        return await getNodeInfo(args);
+      case 'list_node_operations':
+        return await listNodeOperations(args);
+      case 'search_operations':
+        return await searchOperationsTool(args);
+      case 'get_operation_details':
+        return await getOperationDetailsTool(args);
+
+      // Validation
+      case 'validate_params':
+        return await validateParams(args);
+
+      // Utility
+      case 'get_system_status':
+        return await getSystemStatus(args);
 
       default:
         throw new Error(`Unknown tool: ${name}`);
@@ -153,7 +284,13 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('Flow Architect MCP Server running');
-  console.error('Tools available: execute_node_operation, get_signature_info, add_node_to_signature');
+  console.error('Version: 1.0.0');
+  console.error('Tools: 13 available');
+  console.error('  - Execution: execute_node_operation');
+  console.error('  - Signature: get_signature_info, add_node_to_signature, remove_node_from_signature, update_node_defaults, validate_signature');
+  console.error('  - Catalog: list_available_nodes, get_node_info, list_node_operations, search_operations, get_operation_details');
+  console.error('  - Validation: validate_params');
+  console.error('  - Utility: get_system_status');
 }
 
 main().catch((error) => {

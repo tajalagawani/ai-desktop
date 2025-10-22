@@ -17,59 +17,42 @@ signature-system/
 │   └── __init__.py
 │
 ├── mcp/                             # MCP Server (Node.js)
-│   ├── index.js                     # Main entry point
+│   ├── index.js                     # Main entry point (10 tools)
 │   ├── package.json                 # Dependencies
+│   ├── .gitignore                   # Ignore node_modules
 │   │
 │   ├── lib/                         # Internal libraries
-│   │   ├── signature-manager.js     # SignatureManager class
-│   │   ├── toml-parser.js           # TOML utilities
-│   │   ├── api-client.js            # HTTP client
-│   │   ├── error-handler.js         # Error handling
-│   │   └── env-manager.js           # .env management
+│   │   ├── signature-manager.js     # SignatureManager class ✅
+│   │   ├── error-handler.js         # Error handling ✅
+│   │   └── env-manager.js           # .env management ✅
 │   │
 │   ├── tools/                       # MCP tool implementations
 │   │   ├── execution/
-│   │   │   ├── execute-node-operation.js
-│   │   │   └── execute-flow.js
+│   │   │   └── execute-node-operation.js  ✅
 │   │   ├── signature/
-│   │   │   ├── get-signature-info.js
-│   │   │   ├── add-node.js
-│   │   │   ├── remove-node.js
-│   │   │   ├── update-node-defaults.js
-│   │   │   └── validate-signature.js
+│   │   │   ├── get-signature-info.js      ✅
+│   │   │   ├── add-node.js                ✅
+│   │   │   ├── remove-node.js             ✅
+│   │   │   ├── update-node-defaults.js    ✅
+│   │   │   └── validate-signature.js      ✅
 │   │   ├── catalog/
-│   │   │   ├── list-available-nodes.js
-│   │   │   ├── get-node-info.js
-│   │   │   └── search-nodes.js
+│   │   │   ├── list-available-nodes.js    ✅
+│   │   │   └── get-node-info.js           ✅
 │   │   ├── validation/
-│   │   │   ├── validate-flow.js
-│   │   │   └── validate-params.js
-│   │   ├── management/
-│   │   │   ├── list-flows.js
-│   │   │   └── save-flow.js
+│   │   │   └── validate-params.js         ✅
 │   │   └── utility/
-│   │       └── get-system-status.js
+│   │       └── get-system-status.js       ✅
 │   │
 │   ├── signatures/                  # Signature files
-│   │   ├── user.act.sig             # User's authenticated nodes
-│   │   └── templates/               # Templates for each node
+│   │   └── user.act.sig.example     # Example signature ✅
 │   │
 │   └── cache/                       # Cached data
-│       └── node-catalog.json
+│       └── node-catalog.json        (TBD - loaded from ACT library)
 │
-├── api/                             # API routes (Next.js)
-│   └── node-execute.ts              # POST /api/node/execute
-│
-├── ui/                              # UI components
-│   ├── settings-nodes.tsx           # Settings → Nodes page
-│   └── auth-dialog.tsx              # Authentication dialog
-│
-├── types/                           # TypeScript types
-│   └── signature.types.ts
-│
-└── examples/                        # Example signatures & workflows
-    ├── example-signature.toml
-    └── example-workflow.act
+├── api/                             # API routes (Not needed - MCP uses stdio!)
+├── ui/                              # UI components (Pending)
+├── types/                           # TypeScript types (Pending)
+└── examples/                        # Examples (Pending)
 ```
 
 ## 🔑 Key Concepts
@@ -89,13 +72,15 @@ access_token = "{{.env.GITHUB_TOKEN}}"
 list_issues = {description = "List issues", requires_auth = true}
 ```
 
-### **15 MCP Tools**
-- **Execution (2)**: execute_node_operation, execute_flow
-- **Signature (5)**: get/add/remove/update/validate signature
-- **Catalog (3)**: list/info/search nodes
-- **Validation (2)**: validate_flow, validate_params
-- **Management (2)**: list/save flows
+### **10 MCP Tools (Implemented)**
+- **Execution (1)**: execute_node_operation
+- **Signature (5)**: get_signature_info, add_node_to_signature, remove_node_from_signature, update_node_defaults, validate_signature
+- **Catalog (2)**: list_available_nodes, get_node_info
+- **Validation (1)**: validate_params
 - **Utility (1)**: get_system_status
+
+**Remaining 5 tools (optional)**:
+- execute_flow, search_nodes, validate_flow, list_flows, save_flow
 
 ### **Two Execution Modes**
 1. **Simple Operations**: Use signature directly via `execute_node_operation()`
@@ -167,7 +152,9 @@ See the complete documentation files:
 
 ## 🎯 Implementation Status
 
-Track progress: See root todo list for all 50 implementation tasks.
+**Current**: Core Complete ✅ (10/15 tools implemented)
+
+See `IMPLEMENTATION_STATUS.md` for detailed progress.
 
 ## 🔐 Security
 
