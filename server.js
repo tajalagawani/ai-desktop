@@ -76,6 +76,7 @@ app.prepare().then(() => {
     console.log('[Action Builder] ========================================')
 
     let claudeProcess = null
+    let claudeSessionId = null
 
     // Handle messages from client
     ws.on('message', (message) => {
@@ -89,10 +90,25 @@ app.prepare().then(() => {
         if (data.type === 'start_chat') {
           const { prompt, sessionId, resume } = data
 
-          console.log('[Action Builder] Starting chat...')
+          console.log('[Action Builder] Start chat request...')
           console.log('[Action Builder]   - Prompt:', prompt)
           console.log('[Action Builder]   - Session ID:', sessionId || 'NEW')
           console.log('[Action Builder]   - Resume:', resume || false)
+
+          // If Claude process already exists, send message to its stdin
+          if (claudeProcess && claudeProcess.stdin && !claudeProcess.stdin.destroyed) {
+            console.log('[Action Builder] ✅ Using existing Claude process, sending message to stdin')
+            const stdinMessage = JSON.stringify({
+              type: 'user_message',
+              content: prompt
+            }) + '\n'
+            claudeProcess.stdin.write(stdinMessage)
+            console.log('[Action Builder] Message sent to Claude stdin')
+            return
+          }
+
+          // Otherwise, spawn new Claude process with streaming I/O
+          console.log('[Action Builder] Spawning new Claude process with streaming I/O...')
 
           // Get working directory - use process.cwd() for Next.js compatibility
           const workingDir = path.join(process.cwd(), 'flow-architect')
@@ -100,14 +116,57 @@ app.prepare().then(() => {
           // Build Claude CLI command
           const args = []
 
-          // Add resume flag first if resuming
-          if (sessionId && resume) {
-            args.push('--resume', sessionId)
-            console.log('[Action Builder] Adding session resume flag')
-          }
+          // Add streaming I/O format (enables interactive communication)
+          args.push('--input-format', 'stream-json')
+          args.push('--output-format', 'stream-json')
+          args.push('--verbose')
 
-          // Add output format and verbose
-          args.push('--output-format', 'stream-json', '--verbose')
+          // Add MCP config if available
+          try {
+            const fs = require('fs')
+            const os = require('os')
+
+            // Priority 1: Check for project-local .mcp.json
+            const projectMcpConfigPath = path.join(process.cwd(), '.mcp.json')
+            console.log('[Action Builder] Checking for MCP config:', projectMcpConfigPath)
+
+            let mcpConfigPath = null
+
+            if (fs.existsSync(projectMcpConfigPath)) {
+              try {
+                const projectMcpConfig = JSON.parse(fs.readFileSync(projectMcpConfigPath, 'utf8'))
+                if (projectMcpConfig.mcpServers && Object.keys(projectMcpConfig.mcpServers).length > 0) {
+                  console.log(`[Action Builder] ✅ Found ${Object.keys(projectMcpConfig.mcpServers).length} MCP servers in .mcp.json`)
+                  mcpConfigPath = projectMcpConfigPath
+                }
+              } catch (e) {
+                console.log('[Action Builder] Failed to parse .mcp.json:', e.message)
+              }
+            }
+
+            // Priority 2: Check ~/.claude.json
+            if (!mcpConfigPath) {
+              const claudeConfigPath = path.join(os.homedir(), '.claude.json')
+              if (fs.existsSync(claudeConfigPath)) {
+                try {
+                  const claudeConfig = JSON.parse(fs.readFileSync(claudeConfigPath, 'utf8'))
+                  if (claudeConfig.mcpServers && Object.keys(claudeConfig.mcpServers).length > 0) {
+                    console.log(`[Action Builder] ✅ Found MCP servers in ~/.claude.json`)
+                    mcpConfigPath = claudeConfigPath
+                  }
+                } catch (e) {
+                  console.log('[Action Builder] Failed to parse ~/.claude.json:', e.message)
+                }
+              }
+            }
+
+            if (mcpConfigPath) {
+              args.push('--mcp-config', mcpConfigPath)
+              console.log('[Action Builder] Added MCP config:', mcpConfigPath)
+            }
+          } catch (error) {
+            console.log('[Action Builder] MCP config check failed:', error.message)
+          }
 
           // Add model
           args.push('--model', 'sonnet')
@@ -121,9 +180,7 @@ app.prepare().then(() => {
           console.log('[Action Builder] Granted access to directory:', workingDir)
 
           // Note: No --agents flag needed! Claude reads CLAUDE.md from working directory
-
-          // Add prompt last
-          args.push('--', prompt)
+          // Note: NO prompt in args! We send it via stdin after spawning
 
           console.log('[Action Builder] ========================================')
           console.log('[Action Builder] SPAWNING CLAUDE CLI')
@@ -170,8 +227,16 @@ app.prepare().then(() => {
 
           console.log('[Action Builder] ✅ Claude process spawned, PID:', claudeProcess.pid)
 
-          // Close stdin since we're not sending any input
-          claudeProcess.stdin.end()
+          // Send initial message to stdin
+          console.log('[Action Builder] Sending initial message to Claude stdin...')
+          const initialMessage = JSON.stringify({
+            type: 'user_message',
+            content: prompt
+          }) + '\n'
+          claudeProcess.stdin.write(initialMessage)
+          console.log('[Action Builder] ✅ Initial message sent')
+
+          // Keep stdin open for follow-up messages (don't close it!)
 
           // Stream stdout to WebSocket
           claudeProcess.stdout.on('data', (data) => {
@@ -188,9 +253,24 @@ app.prepare().then(() => {
                   try {
                     const parsed = JSON.parse(line)
                     console.log('[Action Builder] Parsed JSON, type:', parsed.type)
+
+                    // Capture session ID from system init message
+                    if (parsed.type === 'system' && parsed.subtype === 'init' && parsed.session_id) {
+                      claudeSessionId = parsed.session_id
+                      console.log('[Action Builder] ✅ Captured session ID:', claudeSessionId)
+
+                      // Send session-created message to client for sidebar
+                      ws.send(JSON.stringify({
+                        type: 'session-created',
+                        sessionId: claudeSessionId
+                      }))
+                      console.log('[Action Builder] ✅ Sent session-created message to client')
+                    }
+
                     ws.send(JSON.stringify({
                       type: 'claude_output',
-                      data: parsed
+                      data: parsed,
+                      sessionId: claudeSessionId // Include session ID in every message
                     }))
                     console.log('[Action Builder] ✅ Sent to WebSocket')
                   } catch (e) {
@@ -217,13 +297,13 @@ app.prepare().then(() => {
             console.log('[Action Builder] ========================================')
             console.log('[Action Builder] Claude process exited with code:', code)
 
-            // List files in act-docker flows directory (where flows are actually saved)
-            const actDockerFlowsDir = path.join(process.cwd(), 'components/apps/act-docker/flows')
+            // List files in ACT flows directory (where flows are actually saved)
+            const actDockerFlowsDir = '/Users/tajnoah/act/flows'
             try {
               const fs = require('fs')
               if (fs.existsSync(actDockerFlowsDir)) {
                 const files = fs.readdirSync(actDockerFlowsDir).filter(f => f.endsWith('.flow'))
-                console.log('[Action Builder] Deployed flows in act-docker:', files.length)
+                console.log('[Action Builder] Deployed flows in ACT:', files.length)
                 files.forEach(file => {
                   const filePath = path.join(actDockerFlowsDir, file)
                   const stats = fs.statSync(filePath)

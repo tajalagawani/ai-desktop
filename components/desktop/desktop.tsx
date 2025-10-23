@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -20,8 +20,6 @@ import {
   Thermometer,
   Activity as ProcessIcon,
 } from "lucide-react"
-import { MacAppStore } from "@/components/apps/mac-app-store"
-import { InstalledApps } from "@/components/apps/installed-apps"
 import { WorkflowCanvas } from "@/components/apps/workflow-canvas"
 import { SystemMonitor } from "@/components/apps/system-monitor"
 import { ChatInterface } from "@/components/apps/chat-interface"
@@ -34,6 +32,8 @@ import { FlowManager } from "@/components/apps/flow-manager"
 import { ServiceDetails } from "@/components/apps/service-details"
 import { DesktopSettings } from "@/components/apps/desktop-settings"
 import { ActionBuilder } from "@/components/apps/action-builder"
+import { SecurityCenter } from "@/components/apps/security-center"
+ 
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "@/components/desktop/system-control-menu"
@@ -65,8 +65,6 @@ const getAppComponent = (
   onBackgroundChange?: (bg: string) => void
 ): React.ReactNode => {
   const componentMap: Record<string, React.ReactNode> = {
-    "app-store": <MacAppStore />,
-    "installed": <InstalledApps />,
     "workflows": <WorkflowCanvas />,
     "terminal": <Terminal />,
     "claude-cli": <ClaudeCLI />,
@@ -76,10 +74,8 @@ const getAppComponent = (
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
     "flow-manager": <FlowManager />,
     "action-builder": <ActionBuilder />,
+    "security-center": <SecurityCenter />,
     "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
-    "github": <div>GitHub Desktop</div>,
-    "chatgpt": <div>ChatGPT</div>,
-    "slack": <div>Slack</div>,
   }
   return componentMap[id] || null
 }
@@ -210,7 +206,7 @@ export function Desktop() {
   }, [isAuthenticated])
 
   // Handle window operations
-  const handleOpenWindow = (id: string, title: string) => {
+  const handleOpenWindow = useCallback((id: string, title: string) => {
     const component = getAppComponent(id, openWindow, toggleMaximizeWindow, setActiveWindow, currentBackground, handleBackgroundChange)
     openWindow(id, title, component)
 
@@ -218,7 +214,34 @@ export function Desktop() {
     if (id === "changelog") {
       setTimeout(() => toggleMaximizeWindow(id), 100)
     }
-  }
+  }, [openWindow, toggleMaximizeWindow, setActiveWindow, currentBackground, handleBackgroundChange])
+
+  // Listen for open-security-center event from NodeAuthRequest component
+  useEffect(() => {
+    const handleOpenSecurityCenter = (event: CustomEvent) => {
+      const { nodeType } = event.detail || {};
+
+      // Check if Security Center is already open
+      const existingWindow = windows.find(w => w.id === 'security-center');
+      if (existingWindow) {
+        // Already open, just bring to front
+        setActiveWindow('security-center');
+      } else {
+        // Open new window
+        handleOpenWindow('security-center', 'Security Center');
+        // Bring to front after opening
+        setTimeout(() => {
+          setActiveWindow('security-center');
+        }, 100);
+      }
+      // TODO: Pass nodeType to SecurityCenter to pre-select the node
+    };
+
+    window.addEventListener('open-security-center', handleOpenSecurityCenter as EventListener);
+    return () => {
+      window.removeEventListener('open-security-center', handleOpenSecurityCenter as EventListener);
+    };
+  }, [handleOpenWindow, windows, setActiveWindow])
 
   const handleTaskbarAction = (windowId: string, action: string) => {
     const actions: Record<string, () => void> = {
