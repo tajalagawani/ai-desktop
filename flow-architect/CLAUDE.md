@@ -41,6 +41,32 @@ After get_signature_info():
 
 ---
 
+## 🚨 WORKFLOW FILE CREATION - CRITICAL ORDER!
+
+**WHEN CREATING WORKFLOWS (.flow or .act files):**
+
+1. ✅ **ALWAYS** create the workflow file FIRST using Write tool
+2. ✅ **ALWAYS** show `request_parameters()` form LAST (after file exists)
+3. ✅ **ALWAYS** add separate TODOs:
+   - "Create workflow file" (complete this first)
+   - "Show auth/parameter form" (do this after file is written)
+
+**BLOCKING RULES:**
+- ❌ **NEVER** call `request_parameters()` before Write tool
+- ❌ **NEVER** show auth forms in the middle of workflow creation
+- ❌ **NEVER** stop for authentication before completing the workflow file
+
+**Example TODO sequence:**
+```
+- ✅ Check signature
+- ✅ Inspect node operations
+- 🔄 Create workflow file (Write tool)
+- ⏸️  Show auth form (request_parameters) ← ONLY AFTER FILE EXISTS
+- ⏸️  Execute workflow
+```
+
+---
+
 ## 🚨 BASH CURL/WGET IS BLOCKED - USE MCP ONLY!
 
 **CRITICAL SECURITY RULE:**

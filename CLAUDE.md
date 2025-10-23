@@ -16,6 +16,13 @@
 - ✅ **ONLY** use MCP tools for API calls via `execute_node_operation`
 - ✅ **ONLY** use `python` node with `request` operation for external APIs
 
+**WORKFLOW CREATION RULES:**
+- ❌ **NEVER** call `request_parameters()` before creating the workflow file
+- ❌ **NEVER** show auth forms in the middle of workflow creation
+- ✅ **ALWAYS** create the complete workflow file FIRST using Write tool
+- ✅ **ALWAYS** show auth/parameter forms LAST after file is written
+- ✅ **ALWAYS** separate TODOs: "Create workflow file" → "Show auth form"
+
 ---
 
 **This project uses the modular Flow Architect agent system.**

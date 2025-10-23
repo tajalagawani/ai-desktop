@@ -12,21 +12,30 @@
 
 3. **Update TODO list** based on signature:
    - Add todos for: inspect nodes → create workflow → execute
+   - **IMPORTANT**: For workflows needing auth, add TWO separate TODOs:
+     - "Create workflow file" (do this FIRST)
+     - "Show auth form" (do this AFTER file exists)
 
 4. **Work through each TODO**, marking complete as you go
 
-**Example:**
+**Example for workflow with auth:**
 ```
-User: "weather at ISS location"
+User: "create GitHub PR reviewer"
 
 TODOs:
 ☐ Check signature
-☐ Inspect py node operations
-☐ Create ISS weather workflow
+☐ Inspect github node operations
+☐ Create workflow file (.flow) ← WRITE FILE FIRST!
+☐ Show auth form ← FORM COMES AFTER FILE!
+☐ Wait for user to submit form
 ☐ Execute workflow
 
 After each step → Mark ✅ → Move to next
 ```
+
+**CRITICAL ORDERING RULE:**
+- ❌ NEVER show `request_parameters()` form before creating workflow file
+- ✅ ALWAYS create file FIRST, show form LAST
 
 **NEVER guess nodes! Let signature guide your TODOs!**
 
@@ -416,8 +425,17 @@ request_parameters({
 // (Form submission handler will call add_node_to_signature for each node, then execute)
 ```
 
-**🔴 CRITICAL RULES:**
-- ❌ **NEVER stop and ask for auth in the middle**
+**🔴 CRITICAL RULES - WORKFLOW CREATION ORDER:**
+- ✅ **ALWAYS** create the workflow file FIRST (Step 2: Write tool)
+- ✅ **ALWAYS** show the form LAST (Step 3: request_parameters)
+- ❌ **NEVER** call request_parameters() BEFORE Write tool
+- ❌ **NEVER** stop and ask for auth in the middle of workflow creation
+- ✅ **ALWAYS** add separate TODOs:
+  - "Create workflow file" (mark complete after Write)
+  - "Show auth/parameter form" (mark complete after request_parameters)
+  - "Execute workflow" (after user submits form)
+
+**THE WORKFLOW FILE MUST EXIST BEFORE SHOWING THE FORM!**
 - ❌ **NEVER say "I need credentials before continuing"**
 - ✅ **ALWAYS create the workflow file FIRST**
 - ✅ **ALWAYS show ONE form at the END with ALL requirements**
