@@ -65,7 +65,7 @@
 **API Calls to make:**
 ```bash
 # Get running infrastructure (databases if needed)
-curl -s http://localhost:3000/api/catalog?type=infrastructure&status=running
+Use MCP tool: list_available_nodes() or get_node_info()?type=infrastructure&status=running
 
 # Check node types (static file is OK for this)
 cat catalogs/node-catalog.json
@@ -94,7 +94,7 @@ Even if no API endpoints, scheduled services need server config.
 
 **API Call:**
 ```bash
-curl -s http://localhost:3000/api/ports
+Use MCP tool: get_signature_info() to check available ports
 ```
 
 **Parse the JSON response and use `available_port`** - this prevents port conflicts

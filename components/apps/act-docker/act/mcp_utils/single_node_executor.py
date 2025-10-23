@@ -83,14 +83,52 @@ class SingleNodeExecutor:
             Execution result
         """
         try:
-            # Dynamically import the node class
-            # Convert node_type to proper module name (e.g., "github" -> "GithubNode")
-            node_class_name = f"{node_type.capitalize()}Node"
-            module_name = f"act.nodes.{node_class_name}"
+            # Import the module first, then find the correct class dynamically
+            # This handles cases where file name != class name (e.g., OpenaiNode.py contains OpenAINode)
+            import inspect
 
-            # Import module
-            node_module = importlib.import_module(module_name)
-            NodeClass = getattr(node_module, node_class_name)
+            # Try common file name patterns
+            possible_module_names = []
+
+            # Pattern 1: Exact capitalization (e.g., "github" -> "GithubNode")
+            possible_module_names.append(f"act.nodes.{node_type.capitalize()}Node")
+
+            # Pattern 2: Special cases with internal caps (e.g., "github" -> "GitHubNode")
+            special_cases = {
+                'github': 'GitHub',
+                'gitlab': 'GitLab',
+                'clickup': 'ClickUp',
+                'hubspot': 'HubSpot',
+                'linkedin': 'LinkedIn',
+                'openai': 'OpenAI',
+                'youtube': 'YouTube',
+            }
+            if node_type.lower() in special_cases:
+                possible_module_names.insert(0, f"act.nodes.{special_cases[node_type.lower()]}Node")
+
+            # Try to import module
+            node_module = None
+            module_name = None
+            for mod_name in possible_module_names:
+                try:
+                    node_module = importlib.import_module(mod_name)
+                    module_name = mod_name
+                    break
+                except (ImportError, ModuleNotFoundError):
+                    continue
+
+            if not node_module:
+                raise ImportError(f"Could not find module for node type '{node_type}'. Tried: {possible_module_names}")
+
+            # Find the Node class in the module (the one that ends with 'Node' and is a class)
+            NodeClass = None
+            for name, obj in inspect.getmembers(node_module, inspect.isclass):
+                if name.endswith('Node') and obj.__module__ == node_module.__name__:
+                    NodeClass = obj
+                    break
+
+            if not NodeClass:
+                raise ValueError(f"No Node class found in module '{module_name}'")
 
             # Create node instance
             node_instance = NodeClass()
@@ -102,11 +140,27 @@ class SingleNodeExecutor:
 
             # Execute operation
             if hasattr(node_instance, operation):
+                # Direct operation method exists
                 operation_method = getattr(node_instance, operation)
-                result = operation_method(**params)
+                result = operation_method()
+            elif hasattr(node_instance, 'execute'):
+                # Use execute method with node_data format
+                node_data = {
+                    "params": {
+                        "operation": operation,
+                        **params
+                    }
+                }
+                # Check if execute is async
+                import asyncio
+                import inspect
+                execute_method = getattr(node_instance, 'execute')
+                if inspect.iscoroutinefunction(execute_method):
+                    result = asyncio.run(execute_method(node_data))
+                else:
+                    result = execute_method(node_data)
             else:
-                # Try execute with operation parameter
-                result = node_instance.execute(operation=operation, **params)
+                raise ValueError(f"Operation '{operation}' not found on node '{node_type}'")
 
             return {
                 "status": "success",

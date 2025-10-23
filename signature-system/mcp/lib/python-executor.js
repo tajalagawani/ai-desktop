@@ -12,10 +12,22 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// HARDCODED PATHS - Direct paths for reliability
-const ACT_PATH = '/Users/tajnoah/Downloads/ai-desktop/components/apps/act-docker/act';
-const ACT_PARENT = '/Users/tajnoah/Downloads/ai-desktop/components/apps/act-docker'; // For PYTHONPATH
-const PYTHON_PATH = '/opt/homebrew/bin/python3';
+// Resolve paths relative to this file - works from any context
+const ACT_PARENT = path.resolve(__dirname, '../../../components/apps/act-docker');
+const ACT_PATH = path.join(ACT_PARENT, 'act');
+
+// Try to find Python 3
+let PYTHON_PATH = 'python3'; // Default to system python3
+try {
+  PYTHON_PATH = execSync('which python3', { encoding: 'utf-8' }).trim();
+} catch (e) {
+  // Fallback to common locations
+  if (fs.existsSync('/opt/homebrew/bin/python3')) {
+    PYTHON_PATH = '/opt/homebrew/bin/python3';
+  } else if (fs.existsSync('/usr/local/bin/python3')) {
+    PYTHON_PATH = '/usr/local/bin/python3';
+  }
+}
 
 console.error(`[MCP] ACT Path: ${ACT_PATH}`);
 console.error(`[MCP] PYTHONPATH: ${ACT_PARENT}`);
@@ -39,7 +51,7 @@ export async function executePython(script, args = [], options = {}) {
 
     const python = spawn(PYTHON_PATH, pythonArgs, {
       cwd: ACT_PARENT,
-      shell: true,
+      shell: false,  // Disable shell to avoid JSON argument parsing issues
       env: {
         PYTHONPATH: ACT_PARENT,
         PATH: '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin',
@@ -60,8 +72,23 @@ export async function executePython(script, args = [], options = {}) {
     });
 
     python.on('close', (code) => {
-      if (code !== 0) {
-        reject(new Error(`Python execution failed (exit ${code}): ${stderr}`));
+      // Filter out warnings from stderr - only real errors should fail
+      const errorLines = stderr.split('\n').filter(line => {
+        const trimmed = line.trim();
+        return trimmed !== '' &&
+          !line.includes('Warning:') &&
+          !line.includes('WARNING') &&
+          !line.includes('RuntimeWarning') &&
+          !line.includes('[PYTHON]') &&
+          !line.includes('Unclosed') &&
+          !line.includes('asyncio - ERROR - Unclosed') &&
+          !line.includes('client_session:') &&
+          !line.includes('connector:') &&
+          !line.includes('connections:');
+      });
+
+      if (code !== 0 && errorLines.length > 0) {
+        reject(new Error(`Python execution failed (exit ${code}): ${errorLines.join('\n')}`));
         return;
       }
 
@@ -185,12 +212,22 @@ export async function getOperationDetails(nodeType, operation) {
 
 /**
  * Execute Python code directly (for signature management)
+ * Writes code to a temp file and executes it to avoid shell escaping issues
  */
 export async function executePythonCode(code) {
   return new Promise((resolve, reject) => {
-    const python = spawn(PYTHON_PATH, ['-c', code], {
+    // Write Python code to a temporary file
+    const tempFile = path.join(ACT_PARENT, `.temp_mcp_${Date.now()}.py`);
+
+    try {
+      fs.writeFileSync(tempFile, code, 'utf-8');
+    } catch (error) {
+      reject(new Error(`Failed to write temp Python file: ${error.message}`));
+      return;
+    }
+
+    const python = spawn(PYTHON_PATH, [tempFile], {
       cwd: ACT_PARENT,
-      shell: true,
       env: {
         PYTHONPATH: ACT_PARENT,
         PATH: '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin',
@@ -210,8 +247,22 @@ export async function executePythonCode(code) {
     });
 
     python.on('close', (code) => {
-      if (code !== 0) {
-        reject(new Error(`Python code execution failed: ${stderr}`));
+      // Clean up temp file
+      try {
+        fs.unlinkSync(tempFile);
+      } catch (e) {
+        console.error(`Warning: Failed to delete temp file ${tempFile}:`, e.message);
+      }
+
+      // Filter out warnings from stderr - only real errors should fail
+      const errorLines = stderr.split('\n').filter(line =>
+        line.trim() !== '' &&
+        !line.includes('Warning:') &&
+        !line.includes('[PYTHON]')
+      );
+
+      if (code !== 0 && errorLines.length > 0) {
+        reject(new Error(`Python code execution failed: ${errorLines.join('\n')}`));
         return;
       }
 
@@ -230,6 +281,12 @@ export async function executePythonCode(code) {
     });
 
     python.on('error', (error) => {
+      // Clean up temp file on error
+      try {
+        fs.unlinkSync(tempFile);
+      } catch (e) {
+        // Ignore cleanup errors
+      }
       reject(new Error(`Failed to spawn Python: ${error.message}`));
     });
   });

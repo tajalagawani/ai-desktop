@@ -109,6 +109,53 @@ app.prepare().then(() => {
           // Add output format and verbose
           args.push('--output-format', 'stream-json', '--verbose')
 
+          // Add MCP config if available
+          try {
+            const fs = require('fs')
+            const os = require('os')
+
+            // Priority 1: Check for project-local .mcp.json
+            const projectMcpConfigPath = path.join(process.cwd(), '.mcp.json')
+            console.log('[Action Builder] Checking for MCP config:', projectMcpConfigPath)
+
+            let mcpConfigPath = null
+
+            if (fs.existsSync(projectMcpConfigPath)) {
+              try {
+                const projectMcpConfig = JSON.parse(fs.readFileSync(projectMcpConfigPath, 'utf8'))
+                if (projectMcpConfig.mcpServers && Object.keys(projectMcpConfig.mcpServers).length > 0) {
+                  console.log(`[Action Builder] ✅ Found ${Object.keys(projectMcpConfig.mcpServers).length} MCP servers in .mcp.json`)
+                  mcpConfigPath = projectMcpConfigPath
+                }
+              } catch (e) {
+                console.log('[Action Builder] Failed to parse .mcp.json:', e.message)
+              }
+            }
+
+            // Priority 2: Check ~/.claude.json
+            if (!mcpConfigPath) {
+              const claudeConfigPath = path.join(os.homedir(), '.claude.json')
+              if (fs.existsSync(claudeConfigPath)) {
+                try {
+                  const claudeConfig = JSON.parse(fs.readFileSync(claudeConfigPath, 'utf8'))
+                  if (claudeConfig.mcpServers && Object.keys(claudeConfig.mcpServers).length > 0) {
+                    console.log(`[Action Builder] ✅ Found MCP servers in ~/.claude.json`)
+                    mcpConfigPath = claudeConfigPath
+                  }
+                } catch (e) {
+                  console.log('[Action Builder] Failed to parse ~/.claude.json:', e.message)
+                }
+              }
+            }
+
+            if (mcpConfigPath) {
+              args.push('--mcp-config', mcpConfigPath)
+              console.log('[Action Builder] Added MCP config:', mcpConfigPath)
+            }
+          } catch (error) {
+            console.log('[Action Builder] MCP config check failed:', error.message)
+          }
+
           // Add model
           args.push('--model', 'sonnet')
 

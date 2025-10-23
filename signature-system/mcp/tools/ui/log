@@ -1,0 +1,3311 @@
+use-websocket.js:42 WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr' failed: 
+eval @ use-websocket.js:42
+commitHookEffectListMount @ react-dom.development.js:21102
+commitHookPassiveMountEffects @ react-dom.development.js:23154
+commitPassiveMountOnFiber @ react-dom.development.js:23259
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23256
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23370
+recursivelyTraversePassiveMountEffects @ react-dom.development.js:23237
+commitPassiveMountOnFiber @ react-dom.development.js:23267
+commitPassiveMountEffects @ react-dom.development.js:23225
+flushPassiveEffectsImpl @ react-dom.development.js:26497
+flushPassiveEffects @ react-dom.development.js:26438
+eval @ react-dom.development.js:26172
+workLoop @ scheduler.development.js:256
+flushWork @ scheduler.development.js:225
+performWorkUntilDeadline @ scheduler.development.js:534
+(anonymous) @ setImmediate.js:40
+p @ setImmediate.js:69
+s @ setImmediate.js:109
+script.debug.js:1 [Vercel Web Analytics] Debug mode is enabled by default in development. No requests will be sent to the server.
+script.debug.js:1 [Vercel Web Analytics] Running queued event pageview {route: '/', path: '/'}
+script.debug.js:1 [Vercel Web Analytics] Running queued event pageview {route: '/', path: '/'}
+script.debug.js:1 [Vercel Web Analytics] [pageview] http://localhost:3000/ {o: 'http://localhost:3000/', sv: '0.1.3', sdkn: '@vercel/analytics/next', sdkv: '1.5.0', ts: 1761178274550, …}
+script.debug.js:1 [Vercel Web Analytics] [pageview] http://localhost:3000/ {o: 'http://localhost:3000/', sv: '0.1.3', sdkn: '@vercel/analytics/next', sdkv: '1.5.0', ts: 1761178274550, …}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 0, visible: 0, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 0, visible: 0, filtered: 0}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 0, isDevMode: false, firstMessage: undefined, lastMessage: undefined}
+action-builder.tsx:18 [Action Builder] ========================================
+action-builder.tsx:19 [Action Builder] Component mounted
+action-builder.tsx:20 [Action Builder] Initializing WebSocket connection...
+action-builder.tsx:21 [Action Builder] ========================================
+action-builder.tsx:25 [Action Builder] Calling initWebSocket()...
+chatStore.ts:637 [ChatStore] ========================================
+chatStore.ts:638 [ChatStore] initWebSocket called
+chatStore.ts:639 [ChatStore] ========================================
+chatStore.ts:642 [ChatStore] Getting WebSocket client...
+websocket.ts:176 [WebSocket Client] Connecting to: ws://localhost:3000/api/action-builder/ws
+chatStore.ts:644 [ChatStore] WebSocket client obtained
+chatStore.ts:876 [ChatStore] Setting up connection change handler...
+chatStore.ts:889 [ChatStore] Calling ws.connect()...
+websocket.ts:19 [WebSocket Client] ========================================
+websocket.ts:20 [WebSocket Client] Connecting to: ws://localhost:3000/api/action-builder/ws
+websocket.ts:21 [WebSocket Client] ========================================
+action-builder.tsx:42 [Action Builder] Sessions updated: 0
+action-builder.tsx:47 [Action Builder] Connection status: ❌ Disconnected
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 0, isDevMode: false, firstMessage: undefined, lastMessage: undefined}
+action-builder.tsx:18 [Action Builder] ========================================
+action-builder.tsx:19 [Action Builder] Component mounted
+action-builder.tsx:20 [Action Builder] Initializing WebSocket connection...
+action-builder.tsx:21 [Action Builder] ========================================
+action-builder.tsx:25 [Action Builder] Calling initWebSocket()...
+chatStore.ts:637 [ChatStore] ========================================
+chatStore.ts:638 [ChatStore] initWebSocket called
+chatStore.ts:639 [ChatStore] ========================================
+chatStore.ts:642 [ChatStore] Getting WebSocket client...
+chatStore.ts:644 [ChatStore] WebSocket client obtained
+chatStore.ts:876 [ChatStore] Setting up connection change handler...
+chatStore.ts:889 [ChatStore] Calling ws.connect()...
+websocket.ts:19 [WebSocket Client] ========================================
+websocket.ts:20 [WebSocket Client] Connecting to: ws://localhost:3000/api/action-builder/ws
+websocket.ts:21 [WebSocket Client] ========================================
+action-builder.tsx:42 [Action Builder] Sessions updated: 0
+action-builder.tsx:47 [Action Builder] Connection status: ❌ Disconnected
+websocket.ts:27 [WebSocket Client] ========================================
+websocket.ts:28 [WebSocket Client] ✅ WebSocket connected successfully!
+websocket.ts:29 [WebSocket Client] ReadyState: 0
+websocket.ts:30 [WebSocket Client] ========================================
+chatStore.ts:878 [ChatStore] Connection state changed: true
+chatStore.ts:884 [ChatStore] First connection successful, clearing initial loading
+chatStore.ts:878 [ChatStore] Connection state changed: true
+action-builder.tsx:47 [Action Builder] Connection status: ✅ Connected
+chatStore.ts:891 [ChatStore] ✅ WebSocket connected successfully!
+action-builder.tsx:27 [Action Builder] ✅ WebSocket initialized
+action-builder.tsx:29 [Action Builder] Loading projects...
+chatStore.ts:900 [ChatStore] ========================================
+chatStore.ts:901 [ChatStore] Loading flow-architect project...
+chatStore.ts:902 [ChatStore] ========================================
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"connected","message":"Action Builder WebSocket connected"}
+websocket.ts:41 [WebSocket Client] Parsed message type: connected
+chatStore.ts:648 📨 WebSocket message received: connected {type: 'connected', message: 'Action Builder WebSocket connected'}
+chatStore.ts:652 ✅ WebSocket connected message received
+chatStore.ts:648 📨 WebSocket message received: connected {type: 'connected', message: 'Action Builder WebSocket connected'}
+chatStore.ts:652 ✅ WebSocket connected message received
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+websocket.ts:27 [WebSocket Client] ========================================
+websocket.ts:28 [WebSocket Client] ✅ WebSocket connected successfully!
+websocket.ts:29 [WebSocket Client] ReadyState: 1
+websocket.ts:30 [WebSocket Client] ========================================
+chatStore.ts:878 [ChatStore] Connection state changed: true
+chatStore.ts:878 [ChatStore] Connection state changed: true
+chatStore.ts:891 [ChatStore] ✅ WebSocket connected successfully!
+action-builder.tsx:27 [Action Builder] ✅ WebSocket initialized
+action-builder.tsx:29 [Action Builder] Loading projects...
+chatStore.ts:900 [ChatStore] ========================================
+chatStore.ts:901 [ChatStore] Loading flow-architect project...
+chatStore.ts:902 [ChatStore] ========================================
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"connected","message":"Action Builder WebSocket connected"}
+websocket.ts:41 [WebSocket Client] Parsed message type: connected
+chatStore.ts:648 📨 WebSocket message received: connected {type: 'connected', message: 'Action Builder WebSocket connected'}
+chatStore.ts:652 ✅ WebSocket connected message received
+chatStore.ts:648 📨 WebSocket message received: connected {type: 'connected', message: 'Action Builder WebSocket connected'}
+chatStore.ts:652 ✅ WebSocket connected message received
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+chatStore.ts:908 [ChatStore] Projects loaded: 1 projects
+chatStore.ts:913 [ChatStore] Flow Architect project loaded with 50 sessions
+action-builder.tsx:42 [Action Builder] Sessions updated: 50
+action-builder.tsx:31 [Action Builder] ✅ Projects loaded
+chatStore.ts:908 [ChatStore] Projects loaded: 1 projects
+chatStore.ts:913 [ChatStore] Flow Architect project loaded with 50 sessions
+action-builder.tsx:42 [Action Builder] Sessions updated: 50
+action-builder.tsx:31 [Action Builder] ✅ Projects loaded
+websocket.ts:118 [WebSocket Client] sendUserMessage called
+websocket.ts:119 [WebSocket Client]   - Content: review all github new prs suing open ai and salck
+websocket.ts:120 [WebSocket Client]   - Session ID: NONE
+websocket.ts:102 [WebSocket Client] ----------------------------------------
+websocket.ts:103 [WebSocket Client] Sending message type: start_chat
+websocket.ts:104 [WebSocket Client] ReadyState: 1
+websocket.ts:108 [WebSocket Client] Message: {"type":"start_chat","prompt":"review all github new prs suing open ai and salck","resume":false}
+websocket.ts:110 [WebSocket Client] ✅ Message sent
+websocket.ts:114 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 1, visible: 1, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 1, visible: 1, filtered: 0}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 1, isDevMode: false, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"system","subtype":"init","cwd":"/Users/tajnoah/Downloads/ai-desktop/flow-architect","session_id":"155479e1-c42b-4d3a-873b-d94ff86d6f57","tools":["Task","Bash","
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "system",
+  "subtype": "init",
+  "cwd": "/Users/tajnoah/Downloads/ai-desktop/flow-architect",
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "tools": [
+    "Task",
+    "Bash",
+    "Glob",
+    "Grep",
+    "ExitPlanMode",
+    "Read",
+    "Edit",
+    "Write",
+    "NotebookEdit",
+    "WebFetch",
+    "TodoWrite",
+    "WebSearch",
+    "BashOutput",
+    "KillShell",
+    "Skill",
+    "SlashCommand",
+    "mcp__flow-architect-signature__execute_node_operation",
+    "mcp__flow-architect-signature__get_signature_info",
+    "mcp__flow-architect-signature__add_node_to_signature",
+    "mcp__flow-architect-signature__remove_node_from_signature",
+    "mcp__flow-architect-signature__update_node_defaults",
+    "mcp__flow-architect-signature__validate_signature",
+    "mcp__flow-architect-signature__list_available_nodes",
+    "mcp__flow-architect-signature__get_node_info",
+    "mcp__flow-architect-signature__list_node_operations",
+    "mcp__flow-architect-signature__search_operations",
+    "mcp__flow-architect-signature__get_operation_details",
+    "mcp__flow-architect-signature__validate_params",
+    "mcp__flow-architect-signature__get_system_status",
+    "mcp__flow-architect-signature__request_node_auth",
+    "mcp__flow-architect-signature__request_parameters"
+  ],
+  "mcp_servers": [
+    {
+      "name": "flow-architect-signature",
+      "status": "connected"
+    }
+  ],
+  "model": "claude-sonnet-4-5-20250929",
+  "permissionMode": "bypassPermissions",
+  "slash_commands": [
+    "compact",
+    "context",
+    "cost",
+    "init",
+    "output-style:new",
+    "pr-comments",
+    "release-notes",
+    "todos",
+    "review",
+    "security-review"
+  ],
+  "apiKeySource": "none",
+  "claude_code_version": "2.0.24",
+  "output_style": "default",
+  "agents": [
+    "general-purpose",
+    "statusline-setup",
+    "output-style-setup",
+    "Explore",
+    "flow-architect"
+  ],
+  "skills": [],
+  "uuid": "a9aa52dc-c823-4677-a890-80bf27e5ec3a"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'system', subtype: 'init', cwd: '/Users/tajnoah/Downloads/ai-desktop/flow-architect', session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', tools: Array(31), …}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: false
+chatStore.ts:666 🔍 [DEBUG] data.message.role: undefined
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: undefined
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "system",
+  "subtype": "init",
+  "cwd": "/Users/tajnoah/Downloads/ai-desktop/flow-architect",
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "tools": [
+    "Task",
+    "Bash",
+    "Glob",
+    "Grep",
+    "ExitPlanMode",
+    "Read",
+    "Edit",
+    "Write",
+    "NotebookEdit",
+    "WebFetch",
+    "TodoWrite",
+    "WebSearch",
+    "BashOutput",
+    "KillShell",
+    "Skill",
+    "SlashCommand",
+    "mcp__flow-architect-signature__execute_node_operation",
+    "mcp__flow-architect-signature__get_signature_info",
+    "mcp__flow-architect-signature__add_node_to_signature",
+    "mcp__flow-architect-signature__remove_node_from_signature",
+    "mcp__flow-architect-signature__update_node_defaults",
+    "mcp__flow-architect-signature__validate_signature",
+    "mcp__flow-architect-signature__list_available_nodes",
+    "mcp__flow-architect-signature__get_node_info",
+    "mcp__flow-architect-signature__list_node_operations",
+    "mcp__flow-architect-signature__search_operations",
+    "mcp__flow-architect-signature__get_operation_details",
+    "mcp__flow-architect-signature__validate_params",
+    "mcp__flow-architect-signature__get_system_status",
+    "mcp__flow-architect-signature__request_node_auth",
+    "mcp__flow-architect-signature__request_parameters"
+  ],
+  "mcp_servers": [
+    {
+      "name": "flow-architect-signature",
+      "status": "connected"
+    }
+  ],
+  "model": "claude-sonnet-4-5-20250929",
+  "permissionMode": "bypassPermissions",
+  "slash_commands": [
+    "compact",
+    "context",
+    "cost",
+    "init",
+    "output-style:new",
+    "pr-comments",
+    "release-notes",
+    "todos",
+    "review",
+    "security-review"
+  ],
+  "apiKeySource": "none",
+  "claude_code_version": "2.0.24",
+  "output_style": "default",
+  "agents": [
+    "general-purpose",
+    "statusline-setup",
+    "output-style-setup",
+    "Explore",
+    "flow-architect"
+  ],
+  "skills": [],
+  "uuid": "a9aa52dc-c823-4677-a890-80bf27e5ec3a"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'system', subtype: 'init', cwd: '/Users/tajnoah/Downloads/ai-desktop/flow-architect', session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', tools: Array(31), …}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: false
+chatStore.ts:666 🔍 [DEBUG] data.message.role: undefined
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: undefined
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 1, visible: 1, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 1, visible: 1, filtered: 0}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 1, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"assistant","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_014wJtPvyPKvAu436T2cZtkh","type":"message","role":"assistant","content":[{"type":"text","te
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_014wJtPvyPKvAu436T2cZtkh",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "I'll help you set up a system to review all new GitHub PRs using OpenAI and Slack. Let me check what's currently authenticated and then set this up."
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 3,
+      "cache_creation_input_tokens": 6029,
+      "cache_read_input_tokens": 14431,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 6029,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "075c194e-c298-46ba-827d-304b8afaef1a"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '075c194e-c298-46ba-827d-304b8afaef1a'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:677 ✍️ Text content: I'll help you set up a system to review all new GitHub PRs using OpenAI and Slack. Let me check what
+chatStore.ts:717 ➕ Adding new assistant message: 075c194e-c298-46ba-827d-304b8afaef1a
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_014wJtPvyPKvAu436T2cZtkh",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "I'll help you set up a system to review all new GitHub PRs using OpenAI and Slack. Let me check what's currently authenticated and then set this up."
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 3,
+      "cache_creation_input_tokens": 6029,
+      "cache_read_input_tokens": 14431,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 6029,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "075c194e-c298-46ba-827d-304b8afaef1a"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '075c194e-c298-46ba-827d-304b8afaef1a'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:677 ✍️ Text content: I'll help you set up a system to review all new GitHub PRs using OpenAI and Slack. Let me check what
+chatStore.ts:710 📝 Updating streaming message
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 2, visible: 2, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 2, visible: 2, filtered: 0}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 2, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 2, visible: 2, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 2, visible: 2, filtered: 0}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 2, isDevMode: false, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"assistant","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_014wJtPvyPKvAu436T2cZtkh","type":"message","role":"assistant","content":[{"type":"tool_use"
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_014wJtPvyPKvAu436T2cZtkh",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "toolu_01Qd29ptYEKVohpcKbFgZLQk",
+        "name": "mcp__flow-architect-signature__get_signature_info",
+        "input": {}
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 3,
+      "cache_creation_input_tokens": 6029,
+      "cache_read_input_tokens": 14431,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 6029,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "2ecf6bf0-79d5-4076-b0ff-c5e62fa23463"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '2ecf6bf0-79d5-4076-b0ff-c5e62fa23463'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:684 🔧 Tool use: mcp__flow-architect-signature__get_signature_info
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_014wJtPvyPKvAu436T2cZtkh",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "toolu_01Qd29ptYEKVohpcKbFgZLQk",
+        "name": "mcp__flow-architect-signature__get_signature_info",
+        "input": {}
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 3,
+      "cache_creation_input_tokens": 6029,
+      "cache_read_input_tokens": 14431,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 6029,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "2ecf6bf0-79d5-4076-b0ff-c5e62fa23463"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '2ecf6bf0-79d5-4076-b0ff-c5e62fa23463'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:684 🔧 Tool use: mcp__flow-architect-signature__get_signature_info
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 4, visible: 2, filtered: 2}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 4, visible: 2, filtered: 2}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 4, isDevMode: false, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"user","message":{"role":"user","content":[{"tool_use_id":"toolu_01Qd29ptYEKVohpcKbFgZLQk","type":"tool_result","content":[{"type":"text","text":"{\n  \"status\"
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "user",
+  "message": {
+    "role": "user",
+    "content": [
+      {
+        "tool_use_id": "toolu_01Qd29ptYEKVohpcKbFgZLQk",
+        "type": "tool_result",
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"status\": \"success\",\n  \"success\": true,\n  \"exists\": true,\n  \"authenticated_nodes\": [\n    \"github\",\n    \"openai\"\n  ],\n  \"total\": 2,\n  \"timestamp\": \"2025-10-23T00:11:34.492Z\"\n}"
+          }
+        ]
+      }
+    ]
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "9c143898-b77f-45f6-bf60-0b85a33fd671"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'user', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '9c143898-b77f-45f6-bf60-0b85a33fd671'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: user
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:737 📋 Tool result
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "user",
+  "message": {
+    "role": "user",
+    "content": [
+      {
+        "tool_use_id": "toolu_01Qd29ptYEKVohpcKbFgZLQk",
+        "type": "tool_result",
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"status\": \"success\",\n  \"success\": true,\n  \"exists\": true,\n  \"authenticated_nodes\": [\n    \"github\",\n    \"openai\"\n  ],\n  \"total\": 2,\n  \"timestamp\": \"2025-10-23T00:11:34.492Z\"\n}"
+          }
+        ]
+      }
+    ]
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "9c143898-b77f-45f6-bf60-0b85a33fd671"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'user', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '9c143898-b77f-45f6-bf60-0b85a33fd671'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: user
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:737 📋 Tool result
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 4, visible: 2, filtered: 2}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 4, visible: 2, filtered: 2}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 4, isDevMode: false, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"assistant","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01J7wuRnAKvjJ9mi9U2nphbP","type":"message","role":"assistant","content":[{"type":"text","te
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01J7wuRnAKvjJ9mi9U2nphbP",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Good! You already have GitHub and OpenAI authenticated. However, I need to authenticate Slack. Let me show you an authentication button for Slack:"
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 5,
+      "cache_creation_input_tokens": 169,
+      "cache_read_input_tokens": 20460,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 169,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "71265624-0a9b-4a1a-bb0c-3e7b63f25d05"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '71265624-0a9b-4a1a-bb0c-3e7b63f25d05'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:677 ✍️ Text content: Good! You already have GitHub and OpenAI authenticated. However, I need to authenticate Slack. Let m
+chatStore.ts:717 ➕ Adding new assistant message: 71265624-0a9b-4a1a-bb0c-3e7b63f25d05
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01J7wuRnAKvjJ9mi9U2nphbP",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Good! You already have GitHub and OpenAI authenticated. However, I need to authenticate Slack. Let me show you an authentication button for Slack:"
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 5,
+      "cache_creation_input_tokens": 169,
+      "cache_read_input_tokens": 20460,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 169,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "71265624-0a9b-4a1a-bb0c-3e7b63f25d05"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '71265624-0a9b-4a1a-bb0c-3e7b63f25d05'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:677 ✍️ Text content: Good! You already have GitHub and OpenAI authenticated. However, I need to authenticate Slack. Let m
+chatStore.ts:710 📝 Updating streaming message
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 5, visible: 3, filtered: 2}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 5, visible: 3, filtered: 2}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 5, isDevMode: false, firstMessage: {…}, lastMessage: {…}}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 5, visible: 5, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 5, visible: 5, filtered: 0}
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 5, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"assistant","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01J7wuRnAKvjJ9mi9U2nphbP","type":"message","role":"assistant","content":[{"type":"tool_use"
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01J7wuRnAKvjJ9mi9U2nphbP",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "toolu_01RDcEYTfHTS6PgkETM1zjpH",
+        "name": "mcp__flow-architect-signature__request_node_auth",
+        "input": {
+          "node_type": "slack",
+          "node_name": "Slack",
+          "reason": "To send PR review notifications to your Slack workspace",
+          "required_auth": [
+            "bot_token"
+          ]
+        }
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 5,
+      "cache_creation_input_tokens": 169,
+      "cache_read_input_tokens": 20460,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 169,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "7ff8a336-e755-4f54-b128-13da3e230c52"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '7ff8a336-e755-4f54-b128-13da3e230c52'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:684 🔧 Tool use: mcp__flow-architect-signature__request_node_auth
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01J7wuRnAKvjJ9mi9U2nphbP",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "toolu_01RDcEYTfHTS6PgkETM1zjpH",
+        "name": "mcp__flow-architect-signature__request_node_auth",
+        "input": {
+          "node_type": "slack",
+          "node_name": "Slack",
+          "reason": "To send PR review notifications to your Slack workspace",
+          "required_auth": [
+            "bot_token"
+          ]
+        }
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 5,
+      "cache_creation_input_tokens": 169,
+      "cache_read_input_tokens": 20460,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 169,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "7ff8a336-e755-4f54-b128-13da3e230c52"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '7ff8a336-e755-4f54-b128-13da3e230c52'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:684 🔧 Tool use: mcp__flow-architect-signature__request_node_auth
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 7, visible: 7, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 7, visible: 7, filtered: 0}
+ToolDisplay.tsx:60 ToolDisplay - toolName: mcp__flow-architect-signature__request_node_auth result: {}
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:60 ToolDisplay - toolName: mcp__flow-architect-signature__request_node_auth result: {}
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:60 ToolDisplay - toolName: mcp__flow-architect-signature__request_node_auth result: {}
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:60 ToolDisplay - toolName: mcp__flow-architect-signature__request_node_auth result: {}
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 7, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"user","message":{"role":"user","content":[{"tool_use_id":"toolu_01RDcEYTfHTS6PgkETM1zjpH","type":"tool_result","content":[{"type":"text","text":"{\n  \"success\
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "user",
+  "message": {
+    "role": "user",
+    "content": [
+      {
+        "tool_use_id": "toolu_01RDcEYTfHTS6PgkETM1zjpH",
+        "type": "tool_result",
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"success\": true,\n  \"ui_component\": \"NodeAuthRequest\",\n  \"data\": {\n    \"nodeType\": \"slack\",\n    \"nodeName\": \"Slack\",\n    \"requiredAuth\": [\n      \"bot_token\"\n    ],\n    \"reason\": \"To send PR review notifications to your Slack workspace\"\n  },\n  \"message\": \"Interactive authentication button shown for Slack. User will click to authenticate via Security Center.\"\n}"
+          }
+        ]
+      }
+    ]
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "5e9e81c8-1f35-4532-8ad5-d91a03175c49"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'user', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '5e9e81c8-1f35-4532-8ad5-d91a03175c49'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: user
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:737 📋 Tool result
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "user",
+  "message": {
+    "role": "user",
+    "content": [
+      {
+        "tool_use_id": "toolu_01RDcEYTfHTS6PgkETM1zjpH",
+        "type": "tool_result",
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"success\": true,\n  \"ui_component\": \"NodeAuthRequest\",\n  \"data\": {\n    \"nodeType\": \"slack\",\n    \"nodeName\": \"Slack\",\n    \"requiredAuth\": [\n      \"bot_token\"\n    ],\n    \"reason\": \"To send PR review notifications to your Slack workspace\"\n  },\n  \"message\": \"Interactive authentication button shown for Slack. User will click to authenticate via Security Center.\"\n}"
+          }
+        ]
+      }
+    ]
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "5e9e81c8-1f35-4532-8ad5-d91a03175c49"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'user', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '5e9e81c8-1f35-4532-8ad5-d91a03175c49'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: user
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:737 📋 Tool result
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 7, visible: 7, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 7, visible: 7, filtered: 0}
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at updateFunctionComponent (react-dom.development.js:16290:20)
+    at beginWork$1 (react-dom.development.js:18472:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+updateFunctionComponent @ react-dom.development.js:16290
+beginWork$1 @ react-dom.development.js:18472
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at updateFunctionComponent (react-dom.development.js:16290:20)
+    at beginWork$1 (react-dom.development.js:18472:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+updateFunctionComponent @ react-dom.development.js:16290
+beginWork$1 @ react-dom.development.js:18472
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at updateFunctionComponent (react-dom.development.js:16290:20)
+    at beginWork$1 (react-dom.development.js:18472:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+updateFunctionComponent @ react-dom.development.js:16290
+beginWork$1 @ react-dom.development.js:18472
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at updateFunctionComponent (react-dom.development.js:16290:20)
+    at beginWork$1 (react-dom.development.js:18472:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+updateFunctionComponent @ react-dom.development.js:16290
+beginWork$1 @ react-dom.development.js:18472
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 7, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 7, visible: 3, filtered: 4}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 7, visible: 3, filtered: 4}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 7, isDevMode: false, firstMessage: {…}, lastMessage: {…}}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 7, visible: 7, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 7, visible: 7, filtered: 0}
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at mountIndeterminateComponent (react-dom.development.js:16869:13)
+    at beginWork$1 (react-dom.development.js:18458:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+mountIndeterminateComponent @ react-dom.development.js:16869
+beginWork$1 @ react-dom.development.js:18458
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 7, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"assistant","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01HysGiVoHDYbAAbB9fVY4gh","type":"message","role":"assistant","content":[{"type":"text","te
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01HysGiVoHDYbAAbB9fVY4gh",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Now I need some information from you to set up the PR reviewer. Let me collect the necessary parameters:"
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 4,
+      "cache_creation_input_tokens": 287,
+      "cache_read_input_tokens": 20629,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 287,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 4,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "ba5c1400-14d0-4a8f-a797-0e279806d06e"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: 'ba5c1400-14d0-4a8f-a797-0e279806d06e'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:677 ✍️ Text content: Now I need some information from you to set up the PR reviewer. Let me collect the necessary paramet
+chatStore.ts:717 ➕ Adding new assistant message: ba5c1400-14d0-4a8f-a797-0e279806d06e
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01HysGiVoHDYbAAbB9fVY4gh",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Now I need some information from you to set up the PR reviewer. Let me collect the necessary parameters:"
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 4,
+      "cache_creation_input_tokens": 287,
+      "cache_read_input_tokens": 20629,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 287,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 4,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "ba5c1400-14d0-4a8f-a797-0e279806d06e"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: 'ba5c1400-14d0-4a8f-a797-0e279806d06e'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:677 ✍️ Text content: Now I need some information from you to set up the PR reviewer. Let me collect the necessary paramet
+chatStore.ts:710 📝 Updating streaming message
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 8, visible: 8, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 8, visible: 8, filtered: 0}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 8, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+desktop.tsx:223 Opening Security Center for node: slack
+security-center.tsx:89 [Security Center 2:11:43 AM] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+security-center.tsx:89 [Security Center 2:11:43 AM] 🚀 Security Center initialized
+security-center.tsx:89 [Security Center 2:11:43 AM] → Starting initial data load...
+security-center.tsx:89 [Security Center 2:11:43 AM] → Loading authenticated nodes from signature...
+security-center.tsx:89 [Security Center 2:11:43 AM] → Fetching /api/signature
+security-center.tsx:89 [Security Center 2:11:43 AM] → Loading node catalog from database...
+security-center.tsx:89 [Security Center 2:11:43 AM] → Fetching /api/nodes/auth-required
+security-center.tsx:89 [Security Center 2:11:43 AM] → Loading signature file content...
+security-center.tsx:89 [Security Center 2:11:43 AM] → Setting up auto-refresh (every 30 seconds)
+security-center.tsx:89 [Security Center 2:11:43 AM] 🛑 Security Center unmounting, clearing interval
+security-center.tsx:89 [Security Center 2:11:43 AM] ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+security-center.tsx:89 [Security Center 2:11:43 AM] 🚀 Security Center initialized
+security-center.tsx:89 [Security Center 2:11:43 AM] → Starting initial data load...
+security-center.tsx:89 [Security Center 2:11:43 AM] → Loading authenticated nodes from signature...
+security-center.tsx:89 [Security Center 2:11:43 AM] → Fetching /api/signature
+security-center.tsx:89 [Security Center 2:11:43 AM] → Loading node catalog from database...
+security-center.tsx:89 [Security Center 2:11:43 AM] → Fetching /api/nodes/auth-required
+security-center.tsx:89 [Security Center 2:11:43 AM] → Loading signature file content...
+security-center.tsx:89 [Security Center 2:11:43 AM] → Setting up auto-refresh (every 30 seconds)
+security-center.tsx:89 [Security Center 2:11:44 AM] ✓ Loaded signature file (3375 characters)
+security-center.tsx:89 [Security Center 2:11:44 AM] ← Response: 200 OK
+security-center.tsx:89 [Security Center 2:11:44 AM] ← Catalog data: {"nodes":[{"id":"actionnetwork","displayName":"Actionnetwork","description":"RECOVERED - ActionNetwo...
+security-center.tsx:89 [Security Center 2:11:44 AM] ✓ Loaded 64 nodes from catalog
+security-center.tsx:89 [Security Center 2:11:44 AM] ← Response: 200 OK
+security-center.tsx:89 [Security Center 2:11:44 AM] ← Catalog data: {"nodes":[{"id":"actionnetwork","displayName":"Actionnetwork","description":"RECOVERED - ActionNetwo...
+security-center.tsx:89 [Security Center 2:11:44 AM] ✓ Loaded 64 nodes from catalog
+security-center.tsx:89 [Security Center 2:11:44 AM] ✓ Loaded signature file (3375 characters)
+security-center.tsx:89 [Security Center 2:11:45 AM] ← Response: 200 OK
+security-center.tsx:89 [Security Center 2:11:45 AM] ← Data received: {"status":"success","success":true,"exists":true,"authenticated_nodes":["github","openai"],"total":2...
+security-center.tsx:89 [Security Center 2:11:45 AM] ✓ Found 2 authenticated node IDs
+security-center.tsx:89 [Security Center 2:11:45 AM] → Node IDs: github, openai
+security-center.tsx:89 [Security Center 2:11:45 AM] ✓ Loaded 2 authenticated nodes
+security-center.tsx:89 [Security Center 2:11:46 AM] ← Response: 200 OK
+security-center.tsx:89 [Security Center 2:11:46 AM] ← Data received: {"status":"success","success":true,"exists":true,"authenticated_nodes":["github","openai"],"total":2...
+security-center.tsx:89 [Security Center 2:11:46 AM] ✓ Found 2 authenticated node IDs
+security-center.tsx:89 [Security Center 2:11:46 AM] → Node IDs: github, openai
+security-center.tsx:89 [Security Center 2:11:46 AM] ✓ Loaded 2 authenticated nodes
+desktop.tsx:223 Opening Security Center for node: slack
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"assistant","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01HysGiVoHDYbAAbB9fVY4gh","type":"message","role":"assistant","content":[{"type":"tool_use"
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01HysGiVoHDYbAAbB9fVY4gh",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "toolu_019aVMN1jHfaPKT7kff7RtTA",
+        "name": "mcp__flow-architect-signature__request_parameters",
+        "input": {
+          "title": "GitHub PR Reviewer Configuration",
+          "description": "I need some information to set up your automated PR reviewer",
+          "fields": [
+            {
+              "name": "owner",
+              "type": "text",
+              "label": "GitHub Repository Owner",
+              "description": "The organization or username that owns the repository",
+              "required": true,
+              "placeholder": "e.g., anthropics"
+            },
+            {
+              "name": "repo",
+              "type": "text",
+              "label": "GitHub Repository Name",
+              "description": "The name of the repository to monitor",
+              "required": true,
+              "placeholder": "e.g., my-project"
+            },
+            {
+              "name": "slack_channel",
+              "type": "text",
+              "label": "Slack Channel ID",
+              "description": "The Slack channel where reviews should be posted",
+              "required": true,
+              "placeholder": "e.g., C01234ABCDE or #engineering"
+            },
+            {
+              "name": "check_interval",
+              "type": "number",
+              "label": "Check Interval (minutes)",
+              "description": "How often to check for new PRs",
+              "required": false,
+              "defaultValue": "15",
+              "placeholder": "15"
+            }
+          ],
+          "submit_label": "Create PR Reviewer"
+        }
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 4,
+      "cache_creation_input_tokens": 287,
+      "cache_read_input_tokens": 20629,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 287,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 444,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "28cd09e5-b9f9-466d-b2cc-411494a9304d"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '28cd09e5-b9f9-466d-b2cc-411494a9304d'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:684 🔧 Tool use: mcp__flow-architect-signature__request_parameters
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01HysGiVoHDYbAAbB9fVY4gh",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "tool_use",
+        "id": "toolu_019aVMN1jHfaPKT7kff7RtTA",
+        "name": "mcp__flow-architect-signature__request_parameters",
+        "input": {
+          "title": "GitHub PR Reviewer Configuration",
+          "description": "I need some information to set up your automated PR reviewer",
+          "fields": [
+            {
+              "name": "owner",
+              "type": "text",
+              "label": "GitHub Repository Owner",
+              "description": "The organization or username that owns the repository",
+              "required": true,
+              "placeholder": "e.g., anthropics"
+            },
+            {
+              "name": "repo",
+              "type": "text",
+              "label": "GitHub Repository Name",
+              "description": "The name of the repository to monitor",
+              "required": true,
+              "placeholder": "e.g., my-project"
+            },
+            {
+              "name": "slack_channel",
+              "type": "text",
+              "label": "Slack Channel ID",
+              "description": "The Slack channel where reviews should be posted",
+              "required": true,
+              "placeholder": "e.g., C01234ABCDE or #engineering"
+            },
+            {
+              "name": "check_interval",
+              "type": "number",
+              "label": "Check Interval (minutes)",
+              "description": "How often to check for new PRs",
+              "required": false,
+              "defaultValue": "15",
+              "placeholder": "15"
+            }
+          ],
+          "submit_label": "Create PR Reviewer"
+        }
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 4,
+      "cache_creation_input_tokens": 287,
+      "cache_read_input_tokens": 20629,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 287,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 444,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "28cd09e5-b9f9-466d-b2cc-411494a9304d"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '28cd09e5-b9f9-466d-b2cc-411494a9304d'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:684 🔧 Tool use: mcp__flow-architect-signature__request_parameters
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 10, visible: 10, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 10, visible: 10, filtered: 0}
+ToolDisplay.tsx:60 ToolDisplay - toolName: mcp__flow-architect-signature__request_parameters result: {}
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:60 ToolDisplay - toolName: mcp__flow-architect-signature__request_parameters result: {}
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:60 ToolDisplay - toolName: mcp__flow-architect-signature__request_parameters result: {}
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:60 ToolDisplay - toolName: mcp__flow-architect-signature__request_parameters result: {}
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 10, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"user","message":{"role":"user","content":[{"tool_use_id":"toolu_019aVMN1jHfaPKT7kff7RtTA","type":"tool_result","content":[{"type":"text","text":"{\n  \"success\
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "user",
+  "message": {
+    "role": "user",
+    "content": [
+      {
+        "tool_use_id": "toolu_019aVMN1jHfaPKT7kff7RtTA",
+        "type": "tool_result",
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"success\": true,\n  \"ui_component\": \"ParameterCollectionForm\",\n  \"data\": {\n    \"title\": \"GitHub PR Reviewer Configuration\",\n    \"description\": \"I need some information to set up your automated PR reviewer\",\n    \"fields\": [\n      {\n        \"name\": \"owner\",\n        \"type\": \"text\",\n        \"label\": \"GitHub Repository Owner\",\n        \"description\": \"The organization or username that owns the repository\",\n        \"required\": true,\n        \"placeholder\": \"e.g., anthropics\"\n      },\n      {\n        \"name\": \"repo\",\n        \"type\": \"text\",\n        \"label\": \"GitHub Repository Name\",\n        \"description\": \"The name of the repository to monitor\",\n        \"required\": true,\n        \"placeholder\": \"e.g., my-project\"\n      },\n      {\n        \"name\": \"slack_channel\",\n        \"type\": \"text\",\n        \"label\": \"Slack Channel ID\",\n        \"description\": \"The Slack channel where reviews should be posted\",\n        \"required\": true,\n        \"placeholder\": \"e.g., C01234ABCDE or #engineering\"\n      },\n      {\n        \"name\": \"check_interval\",\n        \"type\": \"number\",\n        \"label\": \"Check Interval (minutes)\",\n        \"description\": \"How often to check for new PRs\",\n        \"required\": false,\n        \"defaultValue\": \"15\",\n        \"placeholder\": \"15\"\n      }\n    ],\n    \"submitLabel\": \"Create PR Reviewer\"\n  },\n  \"message\": \"Interactive form shown with 4 field(s). User will fill and submit.\"\n}"
+          }
+        ]
+      }
+    ]
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "57fb9a6d-d812-442f-aa48-6e5942ec410d"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'user', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '57fb9a6d-d812-442f-aa48-6e5942ec410d'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: user
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:737 📋 Tool result
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "user",
+  "message": {
+    "role": "user",
+    "content": [
+      {
+        "tool_use_id": "toolu_019aVMN1jHfaPKT7kff7RtTA",
+        "type": "tool_result",
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"success\": true,\n  \"ui_component\": \"ParameterCollectionForm\",\n  \"data\": {\n    \"title\": \"GitHub PR Reviewer Configuration\",\n    \"description\": \"I need some information to set up your automated PR reviewer\",\n    \"fields\": [\n      {\n        \"name\": \"owner\",\n        \"type\": \"text\",\n        \"label\": \"GitHub Repository Owner\",\n        \"description\": \"The organization or username that owns the repository\",\n        \"required\": true,\n        \"placeholder\": \"e.g., anthropics\"\n      },\n      {\n        \"name\": \"repo\",\n        \"type\": \"text\",\n        \"label\": \"GitHub Repository Name\",\n        \"description\": \"The name of the repository to monitor\",\n        \"required\": true,\n        \"placeholder\": \"e.g., my-project\"\n      },\n      {\n        \"name\": \"slack_channel\",\n        \"type\": \"text\",\n        \"label\": \"Slack Channel ID\",\n        \"description\": \"The Slack channel where reviews should be posted\",\n        \"required\": true,\n        \"placeholder\": \"e.g., C01234ABCDE or #engineering\"\n      },\n      {\n        \"name\": \"check_interval\",\n        \"type\": \"number\",\n        \"label\": \"Check Interval (minutes)\",\n        \"description\": \"How often to check for new PRs\",\n        \"required\": false,\n        \"defaultValue\": \"15\",\n        \"placeholder\": \"15\"\n      }\n    ],\n    \"submitLabel\": \"Create PR Reviewer\"\n  },\n  \"message\": \"Interactive form shown with 4 field(s). User will fill and submit.\"\n}"
+          }
+        ]
+      }
+    ]
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "57fb9a6d-d812-442f-aa48-6e5942ec410d"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'user', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '57fb9a6d-d812-442f-aa48-6e5942ec410d'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: user
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:737 📋 Tool result
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 10, visible: 10, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 10, visible: 10, filtered: 0}
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at updateFunctionComponent (react-dom.development.js:16290:20)
+    at beginWork$1 (react-dom.development.js:18472:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+updateFunctionComponent @ react-dom.development.js:16290
+beginWork$1 @ react-dom.development.js:18472
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at updateFunctionComponent (react-dom.development.js:16290:20)
+    at beginWork$1 (react-dom.development.js:18472:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+updateFunctionComponent @ react-dom.development.js:16290
+beginWork$1 @ react-dom.development.js:18472
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooks (react-dom.development.js:11121:18)
+    at updateFunctionComponent (react-dom.development.js:16290:20)
+    at beginWork$1 (react-dom.development.js:18472:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:608
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooks @ react-dom.development.js:11121
+updateFunctionComponent @ react-dom.development.js:16290
+beginWork$1 @ react-dom.development.js:18472
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+ToolDisplay.tsx:71 ToolDisplay - parse error: SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at ToolDisplay (ToolDisplay.tsx:57:40)
+    at renderWithHooksAgain (react-dom.development.js:11272:16)
+    at renderWithHooks (react-dom.development.js:11135:18)
+    at updateFunctionComponent (react-dom.development.js:16290:20)
+    at beginWork$1 (react-dom.development.js:18472:16)
+    at beginWork (react-dom.development.js:26927:14)
+    at performUnitOfWork (react-dom.development.js:25748:12)
+    at workLoopSync (react-dom.development.js:25464:5)
+    at renderRootSync (react-dom.development.js:25419:7)
+    at performSyncWorkOnRoot (react-dom.development.js:24887:20)
+    at flushSyncWorkAcrossRoots_impl (react-dom.development.js:7758:13)
+    at flushSyncWorkOnAllRoots (react-dom.development.js:7718:3)
+    at processRootScheduleInMicrotask (react-dom.development.js:7863:3)
+    at eval (react-dom.development.js:8034:7) Error Component Stack
+    at ToolDisplay (ToolDisplay.tsx:39:39)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageBubble (MessageList.tsx:211:53)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MessageList (MessageList.tsx:14:32)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ChatInterface (ChatInterface.tsx:15:49)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at ActionBuilder (action-builder.tsx:9:37)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at MotionDOMComponent (index.mjs:62:65)
+    at Window (window.tsx:24:3)
+    at div (<anonymous>)
+    at span (<anonymous>)
+    at eval (index.mjs:36:13)
+    at eval (index.mjs:100:13)
+    at ContextMenuTrigger (context-menu.tsx:16:6)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Provider (index.mjs:34:15)
+    at Popper (index.mjs:54:13)
+    at Menu (index.mjs:130:13)
+    at Provider (index.mjs:34:15)
+    at ContextMenu (index.mjs:64:13)
+    at ContextMenu (context-menu.tsx:10:6)
+    at DesktopContextMenu (desktop-context-menu.tsx:34:38)
+    at Desktop (desktop.tsx:112:57)
+    at HomePage [Server] (<anonymous>)
+    at InnerLayoutRouter (layout-router.js:243:11)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at LoadingBoundary (layout-router.js:349:11)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at InnerScrollAndFocusHandler (layout-router.js:153:9)
+    at ScrollAndFocusHandler (layout-router.js:228:11)
+    at RenderFromTemplateContext (render-from-template-context.js:16:44)
+    at OuterLayoutRouter (layout-router.js:370:11)
+    at Suspense (<anonymous>)
+    at body (<anonymous>)
+    at html (<anonymous>)
+    at RootLayout [Server] (<anonymous>)
+    at RedirectErrorBoundary (redirect-boundary.js:74:9)
+    at RedirectBoundary (redirect-boundary.js:82:11)
+    at NotFoundErrorBoundary (not-found-boundary.js:76:9)
+    at NotFoundBoundary (not-found-boundary.js:84:11)
+    at DevRootNotFoundBoundary (dev-root-not-found-boundary.js:33:11)
+    at ReactDevOverlay (ReactDevOverlay.js:87:9)
+    at HotReload (hot-reloader-client.js:321:11)
+    at Router (app-router.js:207:11)
+    at ErrorBoundaryHandler (error-boundary.js:113:9)
+    at ErrorBoundary (error-boundary.js:160:11)
+    at AppRouter (app-router.js:585:13)
+    at ServerRoot (app-index.js:112:27)
+    at Root (app-index.js:117:11)
+overrideMethod @ hook.js:600
+window.console.error @ app-index.js:33
+console.error @ hydration-error-info.js:63
+ToolDisplay @ ToolDisplay.tsx:71
+renderWithHooksAgain @ react-dom.development.js:11272
+renderWithHooks @ react-dom.development.js:11135
+updateFunctionComponent @ react-dom.development.js:16290
+beginWork$1 @ react-dom.development.js:18472
+beginWork @ react-dom.development.js:26927
+performUnitOfWork @ react-dom.development.js:25748
+workLoopSync @ react-dom.development.js:25464
+renderRootSync @ react-dom.development.js:25419
+performSyncWorkOnRoot @ react-dom.development.js:24887
+flushSyncWorkAcrossRoots_impl @ react-dom.development.js:7758
+flushSyncWorkOnAllRoots @ react-dom.development.js:7718
+processRootScheduleInMicrotask @ react-dom.development.js:7863
+eval @ react-dom.development.js:8034
+ToolDisplay.tsx:76 ToolDisplay - checking ui_component: undefined data: undefined
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 10, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"assistant","message":{"model":"claude-sonnet-4-5-20250929","id":"msg_01CNXEhzYvVg5sAS3nhgK6Q3","type":"message","role":"assistant","content":[{"type":"text","te
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01CNXEhzYvVg5sAS3nhgK6Q3",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Perfect! I've set up the interactive forms for you. Here's what will happen next:\n\n## GitHub PR Review System Setup\n\n**What this system will do:**\n1. **Monitor** your GitHub repository for new pull requests\n2. **Analyze** each PR using OpenAI to review code quality, potential issues, and suggestions\n3. **Send** detailed review summaries to your Slack channel\n4. **Run automatically** at your specified interval\n\n**Next Steps:**\n\n1. ✅ **Authenticate Slack** - Click the authentication button above to connect your Slack workspace\n2. ✅ **Fill in the form** - Provide your repository details and Slack channel\n3. ✅ **Submit** - I'll create a workflow file that runs automatically\n\n**What you'll get:**\n- Automated code reviews using GPT-4\n- Slack notifications with:\n  - PR title, author, and link\n  - AI-generated code review\n  - Potential bugs or improvements\n  - Best practice suggestions\n- Continuous monitoring on a schedule\n\nOnce you authenticate Slack and fill in the form, I'll create a complete `.flow` file that orchestrates GitHub, OpenAI, and Slack together!"
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 3,
+      "cache_creation_input_tokens": 779,
+      "cache_read_input_tokens": 20916,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 779,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "7e39786c-c9d1-4c2d-a51d-3f50fd77eb1b"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '7e39786c-c9d1-4c2d-a51d-3f50fd77eb1b'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:677 ✍️ Text content: Perfect! I've set up the interactive forms for you. Here's what will happen next:
+
+## GitHub PR Revi
+chatStore.ts:717 ➕ Adding new assistant message: 7e39786c-c9d1-4c2d-a51d-3f50fd77eb1b
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "assistant",
+  "message": {
+    "model": "claude-sonnet-4-5-20250929",
+    "id": "msg_01CNXEhzYvVg5sAS3nhgK6Q3",
+    "type": "message",
+    "role": "assistant",
+    "content": [
+      {
+        "type": "text",
+        "text": "Perfect! I've set up the interactive forms for you. Here's what will happen next:\n\n## GitHub PR Review System Setup\n\n**What this system will do:**\n1. **Monitor** your GitHub repository for new pull requests\n2. **Analyze** each PR using OpenAI to review code quality, potential issues, and suggestions\n3. **Send** detailed review summaries to your Slack channel\n4. **Run automatically** at your specified interval\n\n**Next Steps:**\n\n1. ✅ **Authenticate Slack** - Click the authentication button above to connect your Slack workspace\n2. ✅ **Fill in the form** - Provide your repository details and Slack channel\n3. ✅ **Submit** - I'll create a workflow file that runs automatically\n\n**What you'll get:**\n- Automated code reviews using GPT-4\n- Slack notifications with:\n  - PR title, author, and link\n  - AI-generated code review\n  - Potential bugs or improvements\n  - Best practice suggestions\n- Continuous monitoring on a schedule\n\nOnce you authenticate Slack and fill in the form, I'll create a complete `.flow` file that orchestrates GitHub, OpenAI, and Slack together!"
+      }
+    ],
+    "stop_reason": null,
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 3,
+      "cache_creation_input_tokens": 779,
+      "cache_read_input_tokens": 20916,
+      "cache_creation": {
+        "ephemeral_5m_input_tokens": 779,
+        "ephemeral_1h_input_tokens": 0
+      },
+      "output_tokens": 1,
+      "service_tier": "standard"
+    }
+  },
+  "parent_tool_use_id": null,
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "uuid": "7e39786c-c9d1-4c2d-a51d-3f50fd77eb1b"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'assistant', message: {…}, parent_tool_use_id: null, session_id: '155479e1-c42b-4d3a-873b-d94ff86d6f57', uuid: '7e39786c-c9d1-4c2d-a51d-3f50fd77eb1b'}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: true
+chatStore.ts:666 🔍 [DEBUG] data.message.role: assistant
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: array
+chatStore.ts:677 ✍️ Text content: Perfect! I've set up the interactive forms for you. Here's what will happen next:
+
+## GitHub PR Revi
+chatStore.ts:710 📝 Updating streaming message
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 11, visible: 11, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 11, visible: 11, filtered: 0}
+MessageList.tsx:23 💬 MessageList render: {messagesCount: 11, isDevMode: true, firstMessage: {…}, lastMessage: {…}}
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"claude_output","data":{"type":"result","subtype":"success","is_error":false,"duration_ms":26504,"duration_api_ms":27844,"num_turns":10,"result":"Perfect! I've set up the interactive forms for
+websocket.ts:41 [WebSocket Client] Parsed message type: claude_output
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 26504,
+  "duration_api_ms": 27844,
+  "num_turns": 10,
+  "result": "Perfect! I've set up the interactive forms for you. Here's what will happen next:\n\n## GitHub PR Review System Setup\n\n**What this system will do:**\n1. **Monitor** your GitHub repository for new pull requests\n2. **Analyze** each PR using OpenAI to review code quality, potential issues, and suggestions\n3. **Send** detailed review summaries to your Slack channel\n4. **Run automatically** at your specified interval\n\n**Next Steps:**\n\n1. ✅ **Authenticate Slack** - Click the authentication button above to connect your Slack workspace\n2. ✅ **Fill in the form** - Provide your repository details and Slack channel\n3. ✅ **Submit** - I'll create a workflow file that runs automatically\n\n**What you'll get:**\n- Automated code reviews using GPT-4\n- Slack notifications with:\n  - PR title, author, and link\n  - AI-generated code review\n  - Potential bugs or improvements\n  - Best practice suggestions\n- Continuous monitoring on a schedule\n\nOnce you authenticate Slack and fill in the form, I'll create a complete `.flow` file that orchestrates GitHub, OpenAI, and Slack together!",
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "total_cost_usd": 0.0696918,
+  "usage": {
+    "input_tokens": 15,
+    "cache_creation_input_tokens": 7264,
+    "cache_read_input_tokens": 76436,
+    "output_tokens": 968,
+    "server_tool_use": {
+      "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 7264
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 3911,
+      "outputTokens": 209,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.004956,
+      "contextWindow": 200000
+    },
+    "claude-sonnet-4-5-20250929": {
+      "inputTokens": 15,
+      "outputTokens": 968,
+      "cacheReadInputTokens": 76436,
+      "cacheCreationInputTokens": 7264,
+      "webSearchRequests": 0,
+      "costUSD": 0.06473580000000001,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "b1687430-1cba-4387-b7b1-4afdb3e4512c"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'result', subtype: 'success', is_error: false, duration_ms: 26504, duration_api_ms: 27844, …}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: false
+chatStore.ts:666 🔍 [DEBUG] data.message.role: undefined
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: undefined
+chatStore.ts:648 📨 WebSocket message received: claude_output {type: 'claude_output', data: {…}}
+chatStore.ts:659 🔍 [DEBUG] Message type: claude_output
+chatStore.ts:660 🔍 [DEBUG] Data exists: true
+chatStore.ts:661 🔍 [DEBUG] Full data: {
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 26504,
+  "duration_api_ms": 27844,
+  "num_turns": 10,
+  "result": "Perfect! I've set up the interactive forms for you. Here's what will happen next:\n\n## GitHub PR Review System Setup\n\n**What this system will do:**\n1. **Monitor** your GitHub repository for new pull requests\n2. **Analyze** each PR using OpenAI to review code quality, potential issues, and suggestions\n3. **Send** detailed review summaries to your Slack channel\n4. **Run automatically** at your specified interval\n\n**Next Steps:**\n\n1. ✅ **Authenticate Slack** - Click the authentication button above to connect your Slack workspace\n2. ✅ **Fill in the form** - Provide your repository details and Slack channel\n3. ✅ **Submit** - I'll create a workflow file that runs automatically\n\n**What you'll get:**\n- Automated code reviews using GPT-4\n- Slack notifications with:\n  - PR title, author, and link\n  - AI-generated code review\n  - Potential bugs or improvements\n  - Best practice suggestions\n- Continuous monitoring on a schedule\n\nOnce you authenticate Slack and fill in the form, I'll create a complete `.flow` file that orchestrates GitHub, OpenAI, and Slack together!",
+  "session_id": "155479e1-c42b-4d3a-873b-d94ff86d6f57",
+  "total_cost_usd": 0.0696918,
+  "usage": {
+    "input_tokens": 15,
+    "cache_creation_input_tokens": 7264,
+    "cache_read_input_tokens": 76436,
+    "output_tokens": 968,
+    "server_tool_use": {
+      "web_search_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 7264
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 3911,
+      "outputTokens": 209,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.004956,
+      "contextWindow": 200000
+    },
+    "claude-sonnet-4-5-20250929": {
+      "inputTokens": 15,
+      "outputTokens": 968,
+      "cacheReadInputTokens": 76436,
+      "cacheCreationInputTokens": 7264,
+      "webSearchRequests": 0,
+      "costUSD": 0.06473580000000001,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "b1687430-1cba-4387-b7b1-4afdb3e4512c"
+}
+chatStore.ts:664 💬 Claude response data: {type: 'result', subtype: 'success', is_error: false, duration_ms: 26504, duration_api_ms: 27844, …}
+chatStore.ts:665 🔍 [DEBUG] data.message exists: false
+chatStore.ts:666 🔍 [DEBUG] data.message.role: undefined
+chatStore.ts:667 🔍 [DEBUG] data.message.content type: undefined
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+websocket.ts:37 [WebSocket Client] ----------------------------------------
+websocket.ts:38 [WebSocket Client] Message received: {"type":"complete","data":{"exitCode":0}}
+websocket.ts:41 [WebSocket Client] Parsed message type: complete
+chatStore.ts:648 📨 WebSocket message received: complete {type: 'complete', data: {…}}
+chatStore.ts:834 ✅ Session completed
+chatStore.ts:648 📨 WebSocket message received: complete {type: 'complete', data: {…}}
+chatStore.ts:834 ✅ Session completed
+websocket.ts:46 [WebSocket Client] ----------------------------------------
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 11, visible: 11, filtered: 0}
+MessageList.tsx:101 👁️ Visible messages after filter: {total: 11, visible: 11, filtered: 0}

@@ -53,10 +53,10 @@
 
 ```bash
 # Check for running database services
-curl -s http://localhost:3000/api/catalog?type=infrastructure&category=database&status=running
+Use MCP tool: list_available_nodes() or get_node_info()?type=infrastructure&category=database&status=running
 
 # Get PostgreSQL connection if available
-curl -s http://localhost:3000/api/catalog | \
+Use MCP tool: list_available_nodes() or get_node_info() | \
   jq '.services[] | select(.id == "postgresql" and .status == "running") | .connection'
 ```
 
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS quotes (
 
 **API Call:**
 ```bash
-curl -s http://localhost:3000/api/ports
+Use MCP tool: get_signature_info() to check available ports
 ```
 
 **Parse the JSON response:**
@@ -133,7 +133,7 @@ start_node = Create[Resource]Table
 
 [parameters]
 # Get this from the dynamic catalog API - NOT hardcoded!
-# curl -s http://localhost:3000/api/catalog | jq '.services[] | select(.id == "postgresql") | .connection.string'
+# Use MCP tool: list_available_nodes() or get_node_info() | jq '.services[] | select(.id == "postgresql") | .connection.string'
 connection_string = {{ACTUAL_CONNECTION_FROM_RUNNING_SERVICE}}
 ```
 

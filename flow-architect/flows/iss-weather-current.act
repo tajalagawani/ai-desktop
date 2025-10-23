@@ -1,0 +1,18 @@
+import requests
+import json
+
+# Get ISS current location
+iss_response = requests.get('http://api.open-notify.org/iss-now.json')
+iss_data = iss_response.json()
+
+lat = float(iss_data['iss_position']['latitude'])
+lon = float(iss_data['iss_position']['longitude'])
+
+# Get weather at ISS location
+weather_response = requests.get(f'https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true')
+weather_data = weather_response.json()
+
+print(f"🛰️ ISS Location: {lat:.2f}°, {lon:.2f}°")
+print(f"🌡️ Temperature: {weather_data['current_weather']['temperature']}°C")
+print(f"💨 Wind Speed: {weather_data['current_weather']['windspeed']} km/h")
+print(f"☁️ Weather Code: {weather_data['current_weather']['weathercode']}")

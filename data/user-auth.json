@@ -4,9 +4,9 @@
       "nodes": {
         "actionnetwork": {
           "enabled": true,
-          "auth_data": "2af8e001b236ab53d839555a3dd66490:ffbb06d575ce7e51692b900e155a7ea961c38e21cfa96d7e04f48d0822e80cce0f490ee5b2faa73c8df3e863a994e2599c573d6dda4fa64147a4d6fa06f0ee4e",
+          "auth_data": "37cdc89495d2c758a935a55b8a021e42:a99e37e7b35f3a0c741de4dd0372b5067c6a3565b5e592911b3e7aa3b9736c495c36432b327ca5f7719f9e51fe8c65a30314ae958ebf97f75c1a257c224e5b40",
           "created_at": "2025-10-20T18:07:32.376Z",
-          "updated_at": "2025-10-20T18:07:32.376Z"
+          "updated_at": "2025-10-22T18:23:05.199Z"
         },
         "airtable": {
           "enabled": true,

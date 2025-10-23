@@ -1,0 +1,13 @@
+[workflow]
+name = "Test Joke Generator"
+description = "Test flow to verify execution result flattening"
+start_node = "JokeNode"
+
+[node:JokeNode]
+type = "openai"
+label = "Generate Joke"
+operation = "chat_completion"
+model = "gpt-4o-mini"
+messages = [
+    {role = "user", content = "Tell me a very short programming joke"}
+]

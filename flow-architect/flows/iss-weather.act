@@ -1,0 +1,43 @@
+name: ISS Weather
+description: Get current weather at ISS location
+
+nodes:
+  - id: get_iss
+    type: py
+    operation: execute
+    params:
+      code: |
+        import urllib.request
+        import json
+
+        response = urllib.request.urlopen('http://api.open-notify.org/iss-now.json')
+        data = json.loads(response.read())
+
+        output = {
+            'latitude': float(data['iss_position']['latitude']),
+            'longitude': float(data['iss_position']['longitude'])
+        }
+
+  - id: get_weather
+    type: py
+    operation: execute
+    params:
+      code: |
+        import urllib.request
+        import json
+
+        lat = {{get_iss.latitude}}
+        lon = {{get_iss.longitude}}
+
+        url = f'https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true'
+        response = urllib.request.urlopen(url)
+        data = json.loads(response.read())
+
+        weather = data['current_weather']
+        output = {
+            'iss_latitude': lat,
+            'iss_longitude': lon,
+            'temperature_celsius': weather['temperature'],
+            'windspeed_kmh': weather['windspeed'],
+            'weather_code': weather['weathercode']
+        }

@@ -1,0 +1,295 @@
+[workflow]
+name = "GitHub PR Reviewer with AI"
+description = "Review all new GitHub PRs using OpenAI and send summaries to Slack"
+start_node = FetchOpenPRs
+
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+[configuration]
+agent_enabled = true
+agent_name = "github-pr-reviewer"
+agent_version = "1.0.0"
+
+[parameters]
+github_token = "{{.env.GITHUB_ACCESS_TOKEN}}"
+github_owner = "{{.env.GITHUB_OWNER}}"
+github_repo = "{{.env.GITHUB_REPO}}"
+openai_api_key = "{{.env.OPENAI_API_KEY}}"
+slack_webhook_url = "{{.env.SLACK_WEBHOOK_URL}}"
+
+[env]
+GITHUB_ACCESS_TOKEN = "your-github-token-here"
+GITHUB_OWNER = "your-github-username"
+GITHUB_REPO = "your-repo-name"
+OPENAI_API_KEY = "your-openai-api-key-here"
+SLACK_WEBHOOK_URL = "your-slack-webhook-url-here"
+
+# ==============================================
+# Step 1: Fetch Open Pull Requests from GitHub
+# ==============================================
+
+[node:FetchOpenPRs]
+type = "github"
+label = "Fetch all open pull requests"
+operation = "list_pull_requests"
+auth = {access_token = "{{.Parameter.github_token}}"}
+params = {
+    owner = "{{.Parameter.github_owner}}",
+    repo = "{{.Parameter.github_repo}}",
+    state = "open"
+}
+
+# ==============================================
+# Step 2: Extract PR Details
+# ==============================================
+
+[node:ExtractPRDetails]
+type = "py"
+label = "Extract PR information"
+code = """
+def extract(**kwargs):
+    prs = kwargs.get('FetchOpenPRs', {}).get('result', [])
+
+    if not prs:
+        return {'result': {'prs': [], 'count': 0}}
+
+    pr_details = []
+    for pr in prs:
+        pr_details.append({
+            'number': pr.get('number'),
+            'title': pr.get('title'),
+            'author': pr.get('user', {}).get('login', 'Unknown'),
+            'created_at': pr.get('created_at'),
+            'updated_at': pr.get('updated_at'),
+            'url': pr.get('html_url'),
+            'body': pr.get('body', ''),
+            'head_ref': pr.get('head', {}).get('ref', ''),
+            'base_ref': pr.get('base', {}).get('ref', ''),
+            'state': pr.get('state', 'open')
+        })
+
+    return {'result': {'prs': pr_details, 'count': len(pr_details)}}
+"""
+function = "extract"
+
+# ==============================================
+# Step 3: Fetch PR Diff/Changes for Each PR
+# ==============================================
+
+[node:FetchPRDiff]
+type = "github"
+label = "Fetch PR diff/files"
+operation = "list_pull_request_files"
+auth = {access_token = "{{.Parameter.github_token}}"}
+params = {
+    owner = "{{.Parameter.github_owner}}",
+    repo = "{{.Parameter.github_repo}}",
+    pull_number = "{{ExtractPRDetails.result.prs[0].number}}"
+}
+
+# ==============================================
+# Step 4: Format Diff for AI Review
+# ==============================================
+
+[node:FormatDiffForReview]
+type = "py"
+label = "Format diff for AI analysis"
+code = """
+def format_diff(**kwargs):
+    pr_files = kwargs.get('FetchPRDiff', {}).get('result', [])
+    pr_info = kwargs.get('ExtractPRDetails', {}).get('result', {}).get('prs', [{}])[0]
+
+    if not pr_files:
+        return {'result': {'formatted_diff': 'No changes found', 'files_changed': 0}}
+
+    diff_summary = []
+    diff_summary.append(f"Pull Request #{pr_info.get('number')}: {pr_info.get('title')}")
+    diff_summary.append(f"Author: {pr_info.get('author')}")
+    diff_summary.append(f"Branch: {pr_info.get('head_ref')} -> {pr_info.get('base_ref')}")
+    diff_summary.append(f"Description: {pr_info.get('body', 'No description provided')[:500]}")
+    diff_summary.append(f"\\n--- Files Changed ({len(pr_files)}) ---\\n")
+
+    for file in pr_files[:10]:  # Limit to first 10 files to avoid token limits
+        filename = file.get('filename', 'unknown')
+        status = file.get('status', 'modified')
+        additions = file.get('additions', 0)
+        deletions = file.get('deletions', 0)
+        patch = file.get('patch', '')[:2000]  # Limit patch size
+
+        diff_summary.append(f"\\nFile: {filename}")
+        diff_summary.append(f"Status: {status}")
+        diff_summary.append(f"Changes: +{additions} -{deletions}")
+        diff_summary.append(f"Diff:\\n{patch}")
+        diff_summary.append("\\n---\\n")
+
+    formatted = "\\n".join(diff_summary)
+
+    return {'result': {
+        'formatted_diff': formatted,
+        'files_changed': len(pr_files),
+        'pr_number': pr_info.get('number'),
+        'pr_title': pr_info.get('title'),
+        'pr_url': pr_info.get('url')
+    }}
+"""
+function = "format_diff"
+
+# ==============================================
+# Step 5: Send to OpenAI for Review
+# ==============================================
+
+[node:ReviewWithOpenAI]
+type = "openai"
+label = "Analyze PR with OpenAI"
+operation = "create_chat_completion"
+auth = {api_key = "{{.Parameter.openai_api_key}}"}
+params = {
+    model = "gpt-4o",
+    messages = [
+        {
+            role = "system",
+            content = "You are an expert code reviewer. Review the following pull request and provide:\n1. Summary of changes\n2. Potential issues or bugs\n3. Security concerns\n4. Code quality suggestions\n5. Overall recommendation (approve/request changes/comment)\n\nBe concise but thorough."
+        },
+        {
+            role = "user",
+            content = "{{FormatDiffForReview.result.formatted_diff}}"
+        }
+    ],
+    temperature = 0.3,
+    max_tokens = 1500
+}
+
+# ==============================================
+# Step 6: Extract AI Review
+# ==============================================
+
+[node:ExtractAIReview]
+type = "py"
+label = "Extract review from OpenAI response"
+code = """
+def extract_review(**kwargs):
+    openai_response = kwargs.get('ReviewWithOpenAI', {}).get('result', {})
+    pr_info = kwargs.get('FormatDiffForReview', {}).get('result', {})
+
+    review_text = ""
+    if 'choices' in openai_response and len(openai_response['choices']) > 0:
+        review_text = openai_response['choices'][0].get('message', {}).get('content', 'No review generated')
+    else:
+        review_text = "Error: Could not extract review from OpenAI response"
+
+    return {'result': {
+        'review': review_text,
+        'pr_number': pr_info.get('pr_number'),
+        'pr_title': pr_info.get('pr_title'),
+        'pr_url': pr_info.get('pr_url'),
+        'files_changed': pr_info.get('files_changed', 0)
+    }}
+"""
+function = "extract_review"
+
+# ==============================================
+# Step 7: Format Slack Message
+# ==============================================
+
+[node:FormatSlackMessage]
+type = "py"
+label = "Format review for Slack"
+code = """
+def format_slack(**kwargs):
+    review_data = kwargs.get('ExtractAIReview', {}).get('result', {})
+
+    slack_message = {
+        "text": f"🤖 AI PR Review - #{review_data.get('pr_number')}: {review_data.get('pr_title')}",
+        "blocks": [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": f"🤖 AI PR Review #{review_data.get('pr_number')}"
+                }
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*PR Title:*\\n{review_data.get('pr_title')}"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*Files Changed:*\\n{review_data.get('files_changed')}"
+                    }
+                ]
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"*AI Review:*\\n{review_data.get('review')[:2000]}"
+                }
+            },
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "View PR on GitHub"
+                        },
+                        "url": review_data.get('pr_url'),
+                        "action_id": "view_pr"
+                    }
+                ]
+            }
+        ]
+    }
+
+    return {'result': slack_message}
+"""
+function = "format_slack"
+
+# ==============================================
+# Step 8: Send to Slack
+# ==============================================
+
+[node:SendToSlack]
+type = "request"
+label = "Post review to Slack"
+method = "POST"
+url = "{{.Parameter.slack_webhook_url}}"
+headers = {
+    "Content-Type" = "application/json"
+}
+body = "{{FormatSlackMessage.result}}"
+timeout_seconds = 30
+retry_on_failure = true
+max_retries = 3
+
+# ==============================================
+# Step 9: Log Success
+# ==============================================
+
+[node:LogSuccess]
+type = "log_message"
+label = "Log successful review"
+level = "info"
+message = "Successfully reviewed PR #{{ExtractAIReview.result.pr_number}} and posted to Slack"
+
+# ==============================================
+# Edges - Flow Connections
+# ==============================================
+
+[edges]
+FetchOpenPRs = ExtractPRDetails
+ExtractPRDetails = FetchPRDiff
+FetchPRDiff = FormatDiffForReview
+FormatDiffForReview = ReviewWithOpenAI
+ReviewWithOpenAI = ExtractAIReview
+ExtractAIReview = FormatSlackMessage
+FormatSlackMessage = SendToSlack
+SendToSlack = LogSuccess

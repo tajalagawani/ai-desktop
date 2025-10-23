@@ -89,7 +89,7 @@ function = "calculate"
 ### Step 4: Execute via API
 
 ```bash
-curl -X POST http://localhost:3000/api/act/execute \
+curl -X MCP execute_node_operation \
   -H "Content-Type: application/json" \
   -d '{
     "flowContent": "[TOML content as string]",
@@ -207,7 +207,7 @@ type = "neon"
 ✅ **Requirements Met When:**
 
 1. ACT flow was created
-2. Flow was executed through `/api/act/execute`
+2. Flow was executed through `MCP execute_node_operation`
 3. Correct result was extracted from response
 4. User sees just the answer (no technical details)
 5. No server was created
@@ -281,7 +281,7 @@ function = "calculate"
 
 5. **Execute:**
 ```bash
-curl -X POST http://localhost:3000/api/act/execute \
+curl -X MCP execute_node_operation \
   -H "Content-Type: application/json" \
   -d '{"flowContent": "...", "flowName": "calc-1729267890.act"}'
 ```
@@ -311,7 +311,7 @@ curl -X POST http://localhost:3000/api/act/execute \
 ## Checklist Before Responding
 
 - [ ] Did I create the ACT flow?
-- [ ] Did I execute via `/api/act/execute`?
+- [ ] Did I execute via `MCP execute_node_operation`?
 - [ ] Did I parse the actual result?
 - [ ] Is my response just the number?
 - [ ] Did I avoid creating a server?

@@ -132,7 +132,7 @@ FetchData = ParseData
 ### Step 5: Execute via API
 
 ```bash
-curl -X POST http://localhost:3000/api/act/execute \
+curl -X MCP execute_node_operation \
   -H "Content-Type: application/json" \
   -d '{
     "flowContent": "[TOML content]",
@@ -573,7 +573,7 @@ function = "parse"
 FetchLocation = ParseLocation
 ```
 
-5. **Execute:** POST to `/api/act/execute`
+5. **Execute:** POST to `MCP execute_node_operation`
 6. **Parse Response:** Extract lat/lon
 7. **Respond:**
 ```
@@ -612,7 +612,7 @@ Longitude: -12.45°"
 - [ ] Did I add timeout and retry logic?
 - [ ] Did I parse the response data?
 - [ ] Did I save to temp location?
-- [ ] Did I execute via `/api/act/execute`?
+- [ ] Did I execute via `MCP execute_node_operation`?
 - [ ] Did I extract the actual result?
 - [ ] Did I format the response nicely?
 - [ ] Did I avoid creating server?

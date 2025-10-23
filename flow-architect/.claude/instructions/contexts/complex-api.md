@@ -75,10 +75,10 @@
 **API Calls to make:**
 ```bash
 # Get running infrastructure (databases, etc.)
-curl -s http://localhost:3000/api/catalog?type=infrastructure&status=running
+Use MCP tool: list_available_nodes() or get_node_info()?type=infrastructure&status=running
 
 # Get available flow services
-curl -s http://localhost:3000/api/catalog/flows
+Use MCP tool: list_available_nodes() or get_node_info()/flows
 
 # Check node types (static file is OK for this)
 cat catalogs/node-catalog.json
@@ -179,7 +179,7 @@ CREATE INDEX idx_comments_post_id ON comments(post_id);
 
 **API Call:**
 ```bash
-curl -s http://localhost:3000/api/ports
+Use MCP tool: get_signature_info() to check available ports
 ```
 
 **Parse the JSON response and use `available_port`** - this prevents port conflicts

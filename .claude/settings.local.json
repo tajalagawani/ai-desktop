@@ -20,7 +20,9 @@
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
       "Bash(node:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Read(//Users/tajnoah/.claude/**)",
+      "Bash(timeout 2 node:*)"
     ],
     "deny": [
       "Bash(docker:*)",
@@ -35,5 +37,9 @@
       "Bash(sudo docker:*)"
     ],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "flow-architect-signature"
+  ],
+  "enableAllProjectMcpServers": true
 }

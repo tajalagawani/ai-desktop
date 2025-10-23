@@ -2,6 +2,69 @@
 
 **READ THIS FIRST:** You are the modular Flow Architect AI Operating System agent.
 
+🚨🚨🚨 **MANDATORY TODO WORKFLOW** 🚨🚨🚨
+
+**FOR EVERY USER QUERY:**
+
+1. **Create TODO list** with TodoWrite:
+   ```
+   - Check signature (get_signature_info)
+   - [Based on signature results, add more todos]
+   ```
+
+2. **Execute first TODO**: Call `get_signature_info()`
+
+3. **Based on signature, update TODO list** with one of:
+   - If nodes authenticated → Add todo: "Inspect node operations" → "Create workflow" → "Execute"
+   - If nodes not authenticated → Add todo: "Authenticate node X" → "Inspect operations" → "Create workflow"
+   - If nodes missing → Add todo: "Check catalog for node" → "Authenticate" → "Inspect" → "Create workflow"
+
+4. **Work through TODOs one by one**, marking complete as you go
+
+**Example TODO flow:**
+```
+User: "get ISS weather"
+
+Initial TODOs:
+- Check signature
+- [TBD based on signature]
+
+After get_signature_info():
+- ✅ Check signature
+- Inspect py node operations (list_node_operations)
+- Get operation details (get_operation_details)
+- Create ISS weather workflow
+- Execute workflow
+```
+
+**NEVER guess! Always inspect nodes first!**
+
+---
+
+## 🚨 BASH CURL/WGET IS BLOCKED - USE MCP ONLY!
+
+**CRITICAL SECURITY RULE:**
+- ❌ **NEVER** use `curl` via Bash - IT IS BLOCKED
+- ❌ **NEVER** use `wget` via Bash - IT IS BLOCKED
+- ❌ **NEVER** use `http` via Bash - IT IS BLOCKED
+- ❌ **NEVER** make ANY HTTP requests via Bash commands
+
+**✅ FOR ALL API CALLS:**
+1. Use MCP tool `execute_node_operation`
+2. Use `python` node with `request` operation
+3. Example:
+   ```javascript
+   execute_node_operation({
+     node_type: "python",
+     operation: "request",
+     params: { url: "http://api.example.com", method: "GET" }
+   })
+   ```
+
+**IF YOU USE CURL/WGET, THE REQUEST WILL FAIL!**
+
+---
+
 ## 🔴 CRITICAL - Your Instructions Are Modular
 
 **DO NOT use the instructions in this file for actual execution.**
@@ -31,9 +94,9 @@ This is a **modular, context-aware routing system** where you:
 
 - **Route queries** to one of 10 specialized contexts
 - **Load only what you need** (not everything at once)
-- **Read catalogs dynamically** from `catalogs/`
+- **Check signature FIRST** via MCP `get_signature_info()`
+- **Execute operations** via MCP `execute_node_operation()`
 - **Reference examples** from `.claude/instructions/examples/`
-- **Execute ACT flows** via `/api/act/execute`
 
 ---
 
@@ -41,10 +104,10 @@ This is a **modular, context-aware routing system** where you:
 
 The core routing agent (`.claude/agents/flow-architect.md`) contains:
 
-- 🔴 **Critical Rule**: Always execute via ACT (never calculate yourself)
+- 🔴 **Critical Rule**: ALWAYS check signature FIRST, use MCP tools ONLY (never calculate yourself)
 - 🧭 **Query Router**: 10 category classification system
-- 📋 **5-Step Process**: Classify → Load Context → Catalogs → Examples → Execute
-- ✅ **Pre-Response Checklist**: Ensure correct routing and execution
+- 📋 **5-Step Process**: Classify → Load Context → Check Signature → Execute via MCP → Respond
+- ✅ **Pre-Response Checklist**: Ensure signature checked, MCP tools used, no API calls
 
 ---
 

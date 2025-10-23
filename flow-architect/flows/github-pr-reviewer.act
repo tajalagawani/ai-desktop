@@ -1,0 +1,223 @@
+name: "GitHub PR Reviewer"
+description: "Reviews all open GitHub PRs with OpenAI and posts to Slack"
+version: "1.0.0"
+
+signature: "signatures/user.act.sig"
+
+nodes:
+  # Step 1: Fetch all open pull requests
+  - id: fetch_prs
+    type: github
+    operation: list_pull_requests
+    params:
+      owner: "{{ owner }}"
+      repo: "{{ repo }}"
+      state: "open"
+    output: prs_list
+
+  # Step 2: Process PR list and prepare for review
+  - id: process_prs
+    type: py
+    code: |
+      import json
+
+      # Parse the PR list
+      prs_data = """{{ prs_list }}"""
+      prs = json.loads(prs_data) if prs_data else []
+
+      # Handle different response formats
+      if isinstance(prs, dict):
+          if "data" in prs:
+              prs = prs["data"]
+          elif "result" in prs:
+              prs = prs["result"]
+
+      if not isinstance(prs, list):
+          prs = []
+
+      # Extract key information from each PR
+      pr_summaries = []
+      for pr in prs:
+          pr_info = {
+              "number": pr.get("number"),
+              "title": pr.get("title", "No title"),
+              "author": pr.get("user", {}).get("login", "Unknown"),
+              "body": pr.get("body", "No description provided"),
+              "url": pr.get("html_url", ""),
+              "created_at": pr.get("created_at", ""),
+              "state": pr.get("state", "open")
+          }
+          pr_summaries.append(pr_info)
+
+      result = {
+          "prs": pr_summaries,
+          "count": len(pr_summaries),
+          "repo": "{{ repo }}"
+      }
+
+      print(json.dumps(result))
+    output: processed_prs
+
+  # Step 3: Create review prompt for the first PR (can be extended to loop through all)
+  - id: create_review_prompt
+    type: py
+    code: |
+      import json
+
+      data = json.loads("""{{ processed_prs }}""")
+      prs = data.get("prs", [])
+
+      if not prs:
+          result = {"has_prs": False, "message": "No open PRs found"}
+          print(json.dumps(result))
+      else:
+          pr = prs[0]  # Review first PR (can be modified to loop)
+
+          review_prompt = f"""Review this GitHub Pull Request:
+
+**PR #{pr['number']}: {pr['title']}**
+**Author:** {pr['author']}
+**Repository:** {data['repo']}
+
+**Description:**
+{pr['body']}
+
+Please provide:
+1. **Summary** - Brief overview of changes (2-3 sentences)
+2. **Key Changes** - Main modifications identified
+3. **Potential Issues** - Bugs, security concerns, or code quality issues
+4. **Recommendations** - Suggestions for improvement
+5. **Verdict** - Approve / Request Changes / Comment
+
+Keep the review concise, actionable, and professional."""
+
+          result = {
+              "has_prs": True,
+              "pr": pr,
+              "prompt": review_prompt,
+              "total_prs": len(prs)
+          }
+          print(json.dumps(result))
+    output: review_data
+
+  # Step 4: Send to OpenAI for review
+  - id: ai_review
+    type: openai
+    operation: chat_completion
+    params:
+      model: "gpt-4"
+      messages:
+        - role: "system"
+          content: "You are a senior software engineer conducting thorough, constructive code reviews. Focus on code quality, security, and best practices."
+        - role: "user"
+          content: "{{ review_data | jsonPath('prompt') }}"
+      temperature: 0.3
+      max_tokens: 1000
+    output: ai_response
+
+  # Step 5: Extract and format the review
+  - id: format_review
+    type: py
+    code: |
+      import json
+
+      ai_data = json.loads("""{{ ai_response }}""")
+      review_info = json.loads("""{{ review_data }}""")
+
+      # Extract AI review text
+      review_text = "No review generated"
+      if isinstance(ai_data, dict):
+          if "choices" in ai_data and ai_data["choices"]:
+              review_text = ai_data["choices"][0].get("message", {}).get("content", review_text)
+          elif "result" in ai_data:
+              choices = ai_data["result"].get("choices", [])
+              if choices:
+                  review_text = choices[0].get("message", {}).get("content", review_text)
+
+      pr = review_info.get("pr", {})
+
+      result = {
+          "pr_number": pr.get("number"),
+          "pr_title": pr.get("title"),
+          "pr_author": pr.get("author"),
+          "pr_url": pr.get("url"),
+          "review": review_text,
+          "total_prs": review_info.get("total_prs", 0),
+          "repo": "{{ repo }}"
+      }
+
+      print(json.dumps(result))
+    output: formatted_review
+
+  # Step 6: Post to Slack
+  - id: post_slack
+    type: slack
+    operation: post_message
+    params:
+      channel: "{{ slack_channel }}"
+      text: "New PR Review for {{ repo }}"
+      blocks:
+        - type: "header"
+          text:
+            type: "plain_text"
+            text: "🔍 AI Code Review Complete"
+        - type: "section"
+          text:
+            type: "mrkdwn"
+            text: "*PR #{{ formatted_review | jsonPath('pr_number') }}: {{ formatted_review | jsonPath('pr_title') }}*\n*Author:* {{ formatted_review | jsonPath('pr_author') }}\n*Repository:* {{ formatted_review | jsonPath('repo') }}"
+        - type: "divider"
+        - type: "section"
+          text:
+            type: "mrkdwn"
+            text: "{{ formatted_review | jsonPath('review') }}"
+        - type: "section"
+          text:
+            type: "mrkdwn"
+            text: "<{{ formatted_review | jsonPath('pr_url') }}|📎 View PR on GitHub>"
+        - type: "context"
+          elements:
+            - type: "mrkdwn"
+              text: "📊 Total open PRs: {{ formatted_review | jsonPath('total_prs') }} | ⚡ Reviewed by OpenAI GPT-4"
+    output: slack_result
+
+  # Step 7: Final summary
+  - id: summary
+    type: py
+    code: |
+      import json
+
+      review = json.loads("""{{ formatted_review }}""")
+      slack = json.loads("""{{ slack_result }}""")
+
+      slack_success = False
+      if isinstance(slack, dict):
+          slack_success = slack.get("ok", False) or slack.get("result", {}).get("ok", False)
+
+      result = {
+          "status": "success",
+          "message": f"Reviewed PR #{review['pr_number']} and posted to Slack",
+          "pr_number": review["pr_number"],
+          "pr_title": review["pr_title"],
+          "pr_url": review["pr_url"],
+          "total_prs_found": review["total_prs"],
+          "slack_posted": slack_success
+      }
+
+      print(json.dumps(result))
+    output: final_result
+
+inputs:
+  - name: owner
+    description: "GitHub repository owner (username or organization)"
+    required: true
+  - name: repo
+    description: "GitHub repository name"
+    required: true
+  - name: slack_channel
+    description: "Slack channel ID or name (e.g., #pr-reviews, C1234567890)"
+    required: true
+    default: "#pr-reviews"
+
+outputs:
+  - name: result
+    value: "{{ final_result }}"

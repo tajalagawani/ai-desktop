@@ -180,7 +180,7 @@ ProcessData = StoreResults
 
 **For one-time transformation:**
 - Save as temp .act file
-- Execute via `/api/act/execute`
+- Execute via `MCP execute_node_operation`
 - Return processed result
 
 **For repeated transformation:**

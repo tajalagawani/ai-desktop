@@ -8,7 +8,7 @@ import FlowStatusView from './FlowStatusView';
 import ExecutionHistoryTab from './ExecutionHistoryTab';
 import { useChatStore } from '@/lib/action-builder/stores/chatStore';
 import { MessageSquare, Settings, Plus, Menu, Zap, History } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 export default function ChatInterface() {
@@ -25,12 +25,29 @@ export default function ChatInterface() {
   const isDarkMode = useChatStore(state => state.isDarkMode);
   const isLoading = useChatStore(state => state.isLoading);
   const isConnected = useChatStore(state => state.isConnected);
+  const sendMessage = useChatStore(state => state.sendMessage);
 
   // NEW: Flow-related state
   const selectedFlow = useChatStore(state => state.selectedFlow);
   const mainContentTab = useChatStore(state => state.mainContentTab);
   const setMainContentTab = useChatStore(state => state.setMainContentTab);
   const loadFlows = useChatStore(state => state.loadFlows);
+
+  // Listen for node-authenticated event (kept for future use)
+  useEffect(() => {
+    const handleNodeAuthenticated = (event: CustomEvent) => {
+      const { nodeType, nodeName } = event.detail || {};
+      if (nodeType && nodeName) {
+        // Just log - inline auth approach doesn't need auto-resume
+        console.log(`✅ ${nodeName} authenticated via Security Center`);
+      }
+    };
+
+    window.addEventListener('node-authenticated', handleNodeAuthenticated as EventListener);
+    return () => {
+      window.removeEventListener('node-authenticated', handleNodeAuthenticated as EventListener);
+    };
+  }, []);
 
   return (
     <div className="h-full flex flex-col bg-background text-foreground">

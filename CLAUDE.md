@@ -11,8 +11,10 @@
 **SECURITY RULES:**
 - ❌ **NEVER** use Docker commands: `docker ps`, `docker inspect`, `docker run`
 - ❌ **NEVER** access files outside `flow-architect/` folder
-- ✅ **ONLY** use HTTP APIs for all service discovery
-- ✅ **ONLY** use `http://localhost:3000/api/catalog` for service information
+- ❌ **NEVER** use Bash for API calls: `curl`, `wget`, `http`, `fetch`
+- ❌ **NEVER** make direct HTTP requests via Bash
+- ✅ **ONLY** use MCP tools for API calls via `execute_node_operation`
+- ✅ **ONLY** use `python` node with `request` operation for external APIs
 
 ---
 
