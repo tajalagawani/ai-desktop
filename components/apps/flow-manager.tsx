@@ -367,9 +367,9 @@ export const FlowManager = React.memo(function FlowManager(_props: FlowManagerPr
 
   if (loading) {
     return (
-      <div className="h-full bg-background">
+      <div className="h-full bg-muted">
         <div className="grid h-full grid-cols-[320px_1fr]">
-          <div className="border-r p-6 flex flex-col">
+          <div className="border-r border-transparent dark:border-white/20 p-6 flex flex-col bg-muted">
             <Skeleton className="h-8 w-48 mb-6" />
             <div className="space-y-4">
               <Skeleton className="h-4 w-full" />
@@ -421,10 +421,10 @@ export const FlowManager = React.memo(function FlowManager(_props: FlowManagerPr
   }
 
   return (
-    <div className="h-full bg-background">
+    <div className="h-full bg-muted">
       <div className="grid h-full grid-cols-[320px_1fr]">
         {/* Left Panel */}
-        <div className="relative overflow-hidden border-r bg-background p-6 h-full flex flex-col">
+        <div className="relative overflow-hidden border-r border-transparent dark:border-white/20 bg-muted p-6 h-full flex flex-col">
           <div className="mb-6">
             <h2 className="text-lg font-normal mb-2">Flow Manager</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -467,7 +467,7 @@ export const FlowManager = React.memo(function FlowManager(_props: FlowManagerPr
         </div>
 
         {/* Right Panel */}
-        <div className="bg-background p-8 h-full overflow-hidden flex flex-col">
+        <div className="bg-muted p-8 h-full overflow-hidden flex flex-col">
           {selectedFlow ? (
             <div className="flex flex-col flex-1 min-h-0">
               <Button

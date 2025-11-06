@@ -2,7 +2,7 @@
   "mcpServers": {
     "flow-architect": {
       "command": "node",
-      "args": ["../act/mcp/index.js"],
+      "args": ["../../act/mcp/index.js"],
       "env": {},
       "disabled": false
     }

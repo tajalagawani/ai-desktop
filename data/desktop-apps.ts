@@ -103,6 +103,14 @@ export const DOCK_APPS: AppConfig[] = [
     isSystem: true,
     description: "Manage authentication and security for nodes and services"
   },
+  {
+    id: "system-widgets",
+    name: "System Widgets",
+    icon: "LayoutGrid",
+    category: "utilities",
+    isSystem: true,
+    description: "View system metrics and widgets in a resizable window"
+  },
 ]
 
 export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
@@ -191,6 +199,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     defaultHeight: 900,
     minWidth: 1000,
     minHeight: 700,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "system-widgets": {
+    defaultWidth: 1200,
+    defaultHeight: 800,
+    minWidth: 800,
+    minHeight: 600,
     resizable: true,
     maximizable: true,
     minimizable: true,

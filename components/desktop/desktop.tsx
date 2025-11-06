@@ -33,6 +33,7 @@ import { ServiceDetails } from "@/components/apps/service-details"
 import { DesktopSettings } from "@/components/apps/desktop-settings"
 import { ActionBuilder } from "@/components/apps/action-builder"
 import { SecurityCenter } from "@/components/apps/security-center"
+import { WidgetWindow } from "@/components/apps/widget-window"
  
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
@@ -75,6 +76,7 @@ const getAppComponent = (
     "flow-manager": <FlowManager />,
     "action-builder": <ActionBuilder />,
     "security-center": <SecurityCenter />,
+    "system-widgets": <WidgetWindow />,
     "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
   }
   return componentMap[id] || null

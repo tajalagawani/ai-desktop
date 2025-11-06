@@ -14,9 +14,13 @@
       "Bash(npm install:*)",
       "Bash(curl -L \"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/2048px-Claude_AI_symbol.svg.png\" -o public/icons/claude.png)",
       "Bash(curl:*)",
-      "Bash(all-services.ts)"
+      "Bash(all-services.ts)",
+      "Bash(sshpass -p 'rX10hh@1qyUU''''hznG3&D' ssh -o StrictHostKeyChecking=no root@92.112.181.127 'cd /var/www/ai-desktop && npm run build 2>&1')"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "disabledMcpjsonServers": [
+    "flow-architect"
+  ]
 }

@@ -6,8 +6,8 @@ import path from 'path'
 
 const execAsync = promisify(exec)
 
-const FLOWS_DIR = path.join(process.cwd(), '../act/flows')
-const ACT_DOCKER_DIR = path.join(process.cwd(), '../act')
+const FLOWS_DIR = path.join(process.cwd(), '../../act/flows')
+const ACT_DOCKER_DIR = path.join(process.cwd(), '../../act')
 
 interface FlowConfig {
   name: string

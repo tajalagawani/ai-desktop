@@ -1,0 +1,322 @@
+[workflow]
+name = "Todo API"
+description = "Complete task management with CRUD operations"
+start_node = CreateTodosTable
+
+# Global settings
+[settings]
+debug_mode = true
+max_retries = 3
+timeout_seconds = 600
+log_level = "info"
+
+# Agent configuration (required for persistent services)
+[configuration]
+agent_enabled = true
+agent_name = "todo-api-agent"
+agent_version = "1.0.0"
+
+# Server configuration (required for APIs)
+[server]
+host = "0.0.0.0"
+port = 9001
+cors = {enabled = true, origins = ["*"]}
+environment = "development"
+auto_restart = true
+
+# Deployment info
+[deployment]
+environment = "production"
+
+# Service catalog registration
+[service_catalog]
+register = true
+service_name = "Todo API"
+service_type = "api"
+description = "Complete task management with CRUD operations"
+icon = "✅"
+category = "productivity"
+endpoints = [
+  {path = "/api/todos", method = "GET", description = "List all todos"},
+  {path = "/api/todos", method = "POST", description = "Create new todo"},
+  {path = "/api/todos/:id", method = "GET", description = "Get specific todo"},
+  {path = "/api/todos/:id", method = "PUT", description = "Update todo"},
+  {path = "/api/todos/:id", method = "DELETE", description = "Delete todo"},
+  {path = "/api/todos/status/:status", method = "GET", description = "Filter by status"}
+]
+
+# Parameters
+[parameters]
+database_url = "{{.env.DATABASE_URL}}"
+
+# Environment variables (will be provided at runtime)
+[env]
+DATABASE_URL = ""
+
+# Node definitions
+[node:CreateTodosTable]
+type = "neon"
+label = "Create todos table"
+operation = "execute_query"
+query = """
+CREATE TABLE IF NOT EXISTS todos (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed')),
+    priority VARCHAR(20) DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_todos_status ON todos(status);
+CREATE INDEX IF NOT EXISTS idx_todos_priority ON todos(priority);
+"""
+
+# GET /api/todos - List all todos
+[node:DefineListTodosRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/todos endpoint"
+operation = "add_route"
+route_path = "/api/todos"
+methods = ["GET"]
+handler = "ListTodos"
+description = "List all todos"
+
+[node:ListTodos]
+type = "neon"
+label = "Fetch all todos from database"
+operation = "execute_query"
+query = "SELECT * FROM todos ORDER BY created_at DESC"
+
+# POST /api/todos - Create new todo
+[node:DefineCreateTodoRoute]
+type = "aci"
+mode = "server"
+label = "POST /api/todos endpoint"
+operation = "add_route"
+route_path = "/api/todos"
+methods = ["POST"]
+handler = "ValidateCreateTodo"
+description = "Create new todo"
+
+[node:ValidateCreateTodo]
+type = "py"
+label = "Validate create todo data"
+code = """
+def validate(**kwargs):
+    request_data = kwargs.get('request_data', {})
+
+    # Validate required fields
+    if not request_data.get('title'):
+        return {
+            "error": True,
+            "message": "Title is required",
+            "status_code": 400
+        }
+
+    # Validate priority if provided
+    priority = request_data.get('priority', 'medium')
+    if priority not in ['low', 'medium', 'high']:
+        return {
+            "error": True,
+            "message": "Priority must be low, medium, or high",
+            "status_code": 400
+        }
+
+    return {
+        "valid": True,
+        "title": request_data['title'],
+        "description": request_data.get('description', ''),
+        "priority": priority
+    }
+"""
+function = "validate"
+
+[node:CreateTodo]
+type = "neon"
+label = "Insert new todo"
+operation = "execute_query"
+query = "INSERT INTO todos (title, description, priority) VALUES ($1, $2, $3) RETURNING *"
+parameters = ["{{ValidateCreateTodo.result.title}}", "{{ValidateCreateTodo.result.description}}", "{{ValidateCreateTodo.result.priority}}"]
+
+# GET /api/todos/:id - Get specific todo
+[node:DefineGetTodoRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/todos/:id endpoint"
+operation = "add_route"
+route_path = "/api/todos/:id"
+methods = ["GET"]
+handler = "GetTodo"
+description = "Get specific todo"
+
+[node:GetTodo]
+type = "neon"
+label = "Fetch todo by ID"
+operation = "execute_query"
+query = "SELECT * FROM todos WHERE id = $1"
+parameters = ["{{request_data.params.id}}"]
+
+# PUT /api/todos/:id - Update todo
+[node:DefineUpdateTodoRoute]
+type = "aci"
+mode = "server"
+label = "PUT /api/todos/:id endpoint"
+operation = "add_route"
+route_path = "/api/todos/:id"
+methods = ["PUT"]
+handler = "ValidateUpdateTodo"
+description = "Update todo"
+
+[node:ValidateUpdateTodo]
+type = "py"
+label = "Validate update todo data"
+code = """
+def validate(**kwargs):
+    request_data = kwargs.get('request_data', {})
+
+    # Build dynamic update query
+    updates = []
+    params = []
+    param_count = 1
+
+    if 'title' in request_data:
+        updates.append(f"title = ${param_count}")
+        params.append(request_data['title'])
+        param_count += 1
+
+    if 'description' in request_data:
+        updates.append(f"description = ${param_count}")
+        params.append(request_data['description'])
+        param_count += 1
+
+    if 'status' in request_data:
+        if request_data['status'] not in ['pending', 'completed']:
+            return {
+                "error": True,
+                "message": "Status must be pending or completed",
+                "status_code": 400
+            }
+        updates.append(f"status = ${param_count}")
+        params.append(request_data['status'])
+        param_count += 1
+
+    if 'priority' in request_data:
+        if request_data['priority'] not in ['low', 'medium', 'high']:
+            return {
+                "error": True,
+                "message": "Priority must be low, medium, or high",
+                "status_code": 400
+            }
+        updates.append(f"priority = ${param_count}")
+        params.append(request_data['priority'])
+        param_count += 1
+
+    if not updates:
+        return {
+            "error": True,
+            "message": "No fields to update",
+            "status_code": 400
+        }
+
+    # Add updated_at
+    updates.append(f"updated_at = CURRENT_TIMESTAMP")
+
+    # Add ID parameter
+    params.append(request_data['params']['id'])
+
+    query = f"UPDATE todos SET {', '.join(updates)} WHERE id = ${param_count} RETURNING *"
+
+    return {
+        "valid": True,
+        "query": query,
+        "params": params
+    }
+"""
+function = "validate"
+
+[node:UpdateTodo]
+type = "neon"
+label = "Update todo in database"
+operation = "execute_query"
+query = "{{ValidateUpdateTodo.result.query}}"
+parameters = "{{ValidateUpdateTodo.result.params}}"
+
+# DELETE /api/todos/:id - Delete todo
+[node:DefineDeleteTodoRoute]
+type = "aci"
+mode = "server"
+label = "DELETE /api/todos/:id endpoint"
+operation = "add_route"
+route_path = "/api/todos/:id"
+methods = ["DELETE"]
+handler = "DeleteTodo"
+description = "Delete todo"
+
+[node:DeleteTodo]
+type = "neon"
+label = "Delete todo from database"
+operation = "execute_query"
+query = "DELETE FROM todos WHERE id = $1 RETURNING *"
+parameters = ["{{request_data.params.id}}"]
+
+# GET /api/todos/status/:status - Filter by status
+[node:DefineFilterByStatusRoute]
+type = "aci"
+mode = "server"
+label = "GET /api/todos/status/:status endpoint"
+operation = "add_route"
+route_path = "/api/todos/status/:status"
+methods = ["GET"]
+handler = "ValidateStatusFilter"
+description = "Filter todos by status"
+
+[node:ValidateStatusFilter]
+type = "py"
+label = "Validate status parameter"
+code = """
+def validate(**kwargs):
+    request_data = kwargs.get('request_data', {})
+    status = request_data.get('params', {}).get('status', '')
+
+    if status not in ['pending', 'completed']:
+        return {
+            "error": True,
+            "message": "Status must be pending or completed",
+            "status_code": 400
+        }
+
+    return {
+        "valid": True,
+        "status": status
+    }
+"""
+function = "validate"
+
+[node:FilterByStatus]
+type = "neon"
+label = "Filter todos by status"
+operation = "execute_query"
+query = "SELECT * FROM todos WHERE status = $1 ORDER BY created_at DESC"
+parameters = ["{{ValidateStatusFilter.result.status}}"]
+
+# Execution flow
+[edges]
+CreateTodosTable = DefineListTodosRoute
+CreateTodosTable = DefineCreateTodoRoute
+CreateTodosTable = DefineGetTodoRoute
+CreateTodosTable = DefineUpdateTodoRoute
+CreateTodosTable = DefineDeleteTodoRoute
+CreateTodosTable = DefineFilterByStatusRoute
+
+DefineListTodosRoute = ListTodos
+DefineCreateTodoRoute = ValidateCreateTodo
+ValidateCreateTodo = CreateTodo
+DefineGetTodoRoute = GetTodo
+DefineUpdateTodoRoute = ValidateUpdateTodo
+ValidateUpdateTodo = UpdateTodo
+DefineDeleteTodoRoute = DeleteTodo
+DefineFilterByStatusRoute = ValidateStatusFilter
+ValidateStatusFilter = FilterByStatus

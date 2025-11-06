@@ -1,37 +1,34 @@
 [workflow]
-name = "Get ISS Location"
-description = "Fetch current ISS coordinates"
+name = "ISS Location Tracker"
+description = "Get current ISS position"
 start_node = FetchISSLocation
 
 [node:FetchISSLocation]
+type = "request"
+label = "Fetch ISS coordinates"
+method = "GET"
+url = "http://api.open-notify.org/iss-now.json"
+timeout_seconds = 10
+
+[node:ParseLocation]
 type = "py"
-label = "Get ISS position"
+label = "Parse coordinates"
 code = """
-import requests
-from datetime import datetime
-
-def get_iss():
-    try:
-        response = requests.get('http://api.open-notify.org/iss-now.json', timeout=10)
-        data = response.json()
-
-        if data.get('message') == 'success':
-            pos = data['iss_position']
-            lat = float(pos['latitude'])
-            lon = float(pos['longitude'])
-            timestamp = data['timestamp']
-
-            dt = datetime.fromtimestamp(timestamp)
-
-            return {
-                'latitude': round(lat, 2),
-                'longitude': round(lon, 2),
-                'timestamp': str(dt),
-                'success': True
-            }
-        else:
-            return {'success': False, 'error': 'API returned failure'}
-    except Exception as e:
-        return {'success': False, 'error': str(e)}
+def parse(**kwargs):
+    iss_data = kwargs.get('FetchISSLocation', {}).get('result', {})
+    position = iss_data.get('iss_position', {})
+    timestamp = iss_data.get('timestamp', 0)
+    
+    lat = float(position.get('latitude', 0))
+    lon = float(position.get('longitude', 0))
+    
+    return {
+        "latitude": lat,
+        "longitude": lon,
+        "timestamp": timestamp
+    }
 """
-function = "get_iss"
+function = "parse"
+
+[edges]
+FetchISSLocation = ParseLocation
