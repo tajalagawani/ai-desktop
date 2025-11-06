@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
     await fs.writeFile(filePath, flowContent, 'utf-8')
 
     try {
-      // Execute using Docker ACT container
-      const actDockerDir = path.join(process.cwd(), 'components/apps/act-docker')
+      // Execute using external ACT repo
+      const actDockerDir = path.join(process.cwd(), '../act')
 
       console.log('[ACT Execute] Executing flow...')
       console.log('[ACT Execute] ACT Docker dir:', actDockerDir)
@@ -198,7 +198,7 @@ except Exception as e:
 
         try {
           // Move flow file to flows directory if needed
-          const flowsDir = path.join(process.cwd(), 'components/apps/act-docker/flows')
+          const flowsDir = path.join(process.cwd(), '../act/flows')
           await fs.mkdir(flowsDir, { recursive: true })
 
           // Extract flow name (remove extension)

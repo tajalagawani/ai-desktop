@@ -1,0 +1,96 @@
+{
+  "description": "Sandboxed settings for Flow Architect agent - RESTRICTED ACCESS",
+  "hooks": {
+    "beforeToolUse": {
+      "Read": "../../.claude/hooks/validate-file-access.sh",
+      "Write": "../../.claude/hooks/validate-file-access.sh",
+      "Edit": "../../.claude/hooks/validate-file-access.sh",
+      "Glob": "../../.claude/hooks/validate-file-access.sh",
+      "Grep": "../../.claude/hooks/validate-file-access.sh"
+    },
+    "beforeUserPrompt": "../../.claude/hooks/require-act-flow.sh"
+  },
+  "permissions": {
+    "allow": [
+      "Read(flow-architect/**)",
+      "Write(flow-architect/**)",
+      "Edit(flow-architect/**)",
+      "Grep(flow-architect/**)",
+      "Glob(flow-architect/**)",
+
+      "Bash(curl*localhost:3000*)",
+      "Bash(curl*127.0.0.1:3000*)",
+      "Bash(cat*flow-architect*)",
+      "Bash(echo*)",
+      "Bash(printf*)",
+      "Bash(python*flow-architect*)",
+      "Bash(python3*flow-architect*)",
+      "Bash(node*flow-architect*)",
+      "Bash(mkdir*flow-architect*)",
+      "Bash(ls*flow-architect*)",
+      "Bash(cd*flow-architect*)",
+      "Bash(pwd*)",
+      "Bash(which*)",
+      "Bash(test*)",
+      "Bash(*|*)",
+      "Bash(*&&*)",
+
+      "Bash(./flow-architect/tools/get-node-catalog.sh*)",
+      "Bash(./flow-architect/tools/get-running-services.sh*)",
+      "Bash(./flow-architect/tools/check-service-auth.sh*)",
+      "Bash(./flow-architect/tools/check-node-auth.sh*)",
+      "Bash(./flow-architect/tools/get-deployed-flows.sh*)",
+      "Bash(./flow-architect/tools/get-available-port.sh*)",
+      "Bash(./flow-architect/tools/validate-flow.sh*)",
+
+      "Bash(*)",
+      "WebFetch(domain:localhost)"
+    ],
+    "deny": [
+      "Bash(docker*)",
+      "Bash(docker ps*)",
+      "Bash(docker inspect*)",
+      "Bash(docker run*)",
+      "Bash(docker compose*)",
+      "Bash(docker exec*)",
+      "Bash(sudo*)",
+      "Bash(rm -rf*)",
+      "Bash(find /*)",
+      "Bash(ls /*)",
+      "Bash(cat /*)",
+      "Read(../**)",
+      "Write(../**)",
+      "Edit(../**)",
+      "Read(/etc/**)",
+      "Read(/Users/**)",
+      "Read(/home/**)",
+      "Read(/var/**)",
+      "Read(~/**)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(secrets/**)",
+      "Bash(ps*)",
+      "Bash(netstat*)",
+      "Bash(lsof*)",
+      "Bash(kill*)",
+      "Bash(pkill*)",
+      "WebFetch(domain:*)",
+      "WebSearch"
+    ],
+    "ask": [],
+    "autoApprove": true
+  },
+  "env": {
+    "FLOW_ARCHITECT_SANDBOX": "true",
+    "API_BASE_URL": "http://localhost:3000",
+    "ALLOWED_PATH": "/Users/tajnoah/Downloads/ai-desktop/flow-architect"
+  },
+  "security": {
+    "sandbox": true,
+    "restrictToFolder": "flow-architect",
+    "apiOnly": true,
+    "noSystemCommands": true,
+    "noDockerAccess": true,
+    "noFileSystemNavigation": true
+  }
+}

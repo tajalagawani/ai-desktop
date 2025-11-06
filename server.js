@@ -95,12 +95,21 @@ app.prepare().then(() => {
           console.log('[Action Builder]   - Session ID:', sessionId || 'NEW')
           console.log('[Action Builder]   - Resume:', resume || false)
 
+          // If client provides sessionId (from previous session), use it
+          if (sessionId && !claudeSessionId) {
+            claudeSessionId = sessionId
+            console.log('[Action Builder] ✅ Using client-provided session ID:', claudeSessionId)
+          }
+
           // If Claude process already exists, send message to its stdin
           if (claudeProcess && claudeProcess.stdin && !claudeProcess.stdin.destroyed) {
             console.log('[Action Builder] ✅ Using existing Claude process, sending message to stdin')
             const stdinMessage = JSON.stringify({
-              type: 'user_message',
-              content: prompt
+              type: 'user',
+              message: {
+                role: 'user',
+                content: prompt
+              }
             }) + '\n'
             claudeProcess.stdin.write(stdinMessage)
             console.log('[Action Builder] Message sent to Claude stdin')
@@ -115,6 +124,12 @@ app.prepare().then(() => {
 
           // Build Claude CLI command
           const args = []
+
+          // Add resume flag if we have a session ID
+          if (claudeSessionId) {
+            args.push('--resume', claudeSessionId)
+            console.log('[Action Builder] Resuming session:', claudeSessionId)
+          }
 
           // Add streaming I/O format (enables interactive communication)
           args.push('--input-format', 'stream-json')
@@ -230,8 +245,11 @@ app.prepare().then(() => {
           // Send initial message to stdin
           console.log('[Action Builder] Sending initial message to Claude stdin...')
           const initialMessage = JSON.stringify({
-            type: 'user_message',
-            content: prompt
+            type: 'user',
+            message: {
+              role: 'user',
+              content: prompt
+            }
           }) + '\n'
           claudeProcess.stdin.write(initialMessage)
           console.log('[Action Builder] ✅ Initial message sent')
@@ -273,6 +291,15 @@ app.prepare().then(() => {
                       sessionId: claudeSessionId // Include session ID in every message
                     }))
                     console.log('[Action Builder] ✅ Sent to WebSocket')
+
+                    // Kill process when Claude completes (sends result message)
+                    if (parsed.type === 'result') {
+                      console.log('[Action Builder] Claude completed, killing process for next message')
+                      if (claudeProcess) {
+                        claudeProcess.kill()
+                        claudeProcess = null
+                      }
+                    }
                   } catch (e) {
                     console.log('[Action Builder] Line is not JSON, skipping:', line.substring(0, 50))
                   }

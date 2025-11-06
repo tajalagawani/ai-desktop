@@ -1,0 +1,31 @@
+[workflow]
+name = "ISS Location"
+description = "Get current ISS location"
+start_node = FetchISSLocation
+
+[node:FetchISSLocation]
+type = "py"
+label = "Fetch ISS coordinates"
+code = """
+import urllib.request
+import json
+
+def fetch_iss():
+    url = "http://api.open-notify.org/iss-now.json"
+    with urllib.request.urlopen(url) as response:
+        data = json.loads(response.read().decode())
+
+    position = data['iss_position']
+    latitude = float(position['latitude'])
+    longitude = float(position['longitude'])
+    timestamp = data['timestamp']
+
+    return {
+        "result": {
+            "latitude": latitude,
+            "longitude": longitude,
+            "timestamp": timestamp
+        }
+    }
+"""
+function = "fetch_iss"
