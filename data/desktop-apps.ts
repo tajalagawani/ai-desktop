@@ -89,21 +89,6 @@ export const DOCK_APPS: AppConfig[] = [
     description: "Manage ACT workflow automation flows"
   },
   {
-    id: "action-builder",
-    name: "Action Builder",
-    icon: "Workflow",
-    category: "development",
-    description: "AI-powered workflow creation with Flow Architect agent"
-  },
-  {
-    id: "security-center",
-    name: "Security Center",
-    icon: "Shield",
-    category: "system",
-    isSystem: true,
-    description: "Manage authentication and security for nodes and services"
-  },
-  {
     id: "system-widgets",
     name: "System Widgets",
     icon: "LayoutGrid",
@@ -177,26 +162,6 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
   "flow-manager": {
     defaultWidth: 1600,
     defaultHeight: 1000,
-    minWidth: 1000,
-    minHeight: 700,
-    resizable: true,
-    maximizable: true,
-    minimizable: true,
-    closable: true,
-  },
-  "action-builder": {
-    defaultWidth: 1600,
-    defaultHeight: 1000,
-    minWidth: 1000,
-    minHeight: 700,
-    resizable: true,
-    maximizable: true,
-    minimizable: true,
-    closable: true,
-  },
-  "security-center": {
-    defaultWidth: 1400,
-    defaultHeight: 900,
     minWidth: 1000,
     minHeight: 700,
     resizable: true,

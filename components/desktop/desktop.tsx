@@ -31,8 +31,6 @@ import { ServiceManager } from "@/components/apps/service-manager"
 import { FlowManager } from "@/components/apps/flow-manager"
 import { ServiceDetails } from "@/components/apps/service-details"
 import { DesktopSettings } from "@/components/apps/desktop-settings"
-import { ActionBuilder } from "@/components/apps/action-builder"
-import { SecurityCenter } from "@/components/apps/security-center"
 import { WidgetWindow } from "@/components/apps/widget-window"
  
 import { BackgroundBeams } from "@/components/ui/background-beams"
@@ -74,8 +72,6 @@ const getAppComponent = (
     "file-manager": <FileManager />,
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
     "flow-manager": <FlowManager />,
-    "action-builder": <ActionBuilder />,
-    "security-center": <SecurityCenter />,
     "system-widgets": <WidgetWindow />,
     "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
   }
