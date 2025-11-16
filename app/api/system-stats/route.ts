@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getSystemStats } from '@/lib/system-stats'
+import { getSystemStats } from '@/lib/services/system-stats.service'
 
 export const dynamic = 'force-dynamic'
 
