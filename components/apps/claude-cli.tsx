@@ -43,6 +43,16 @@ export function ClaudeCLI() {
       ws.onopen = () => {
         console.log('[Claude CLI] WebSocket connected')
         setIsConnected(true)
+
+        // Auto-run claude command when connected
+        setTimeout(() => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'input',
+              data: 'claude\n'
+            }))
+          }
+        }, 500)
       }
 
       ws.onmessage = (event) => {

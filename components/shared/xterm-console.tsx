@@ -148,16 +148,6 @@ export const XTermConsole = forwardRef<XTermConsoleHandle, XTermConsoleProps>(
 
           await new Promise(resolve => setTimeout(resolve, 10))
 
-          // Remove xterm default padding
-          const xtermElement = terminalRef.current.querySelector('.xterm')
-          if (xtermElement) {
-            ;(xtermElement as HTMLElement).style.padding = '0'
-          }
-          const xtermScreen = terminalRef.current.querySelector('.xterm-screen')
-          if (xtermScreen) {
-            ;(xtermScreen as HTMLElement).style.padding = '0'
-          }
-
           fitAddon.fit()
 
           xtermRef.current = term

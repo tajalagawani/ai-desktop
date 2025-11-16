@@ -231,20 +231,17 @@
   -webkit-transform: translateZ(0);
 }
 
-/* XTerm Console - Remove all padding */
-.xterm-container .xterm {
-  padding: 0 !important;
-  height: 100% !important;
+/* XTerm Console - Make it fill container */
+.xterm-container {
+  position: relative !important;
 }
 
-.xterm-container .xterm-viewport {
-  padding: 0 !important;
-}
-
-.xterm-container .xterm-screen {
-  padding: 0 !important;
-}
-
-.xterm-container .xterm-rows {
-  padding: 0 !important;
+.xterm-container > .xterm {
+  position: absolute !important;
+  top: 8px !important;
+  left: 8px !important;
+  right: 8px !important;
+  bottom: 8px !important;
+  height: auto !important;
+  width: auto !important;
 }
