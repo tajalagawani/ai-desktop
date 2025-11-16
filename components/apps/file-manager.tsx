@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronRight, ChevronsUpDown, Menu, RefreshCw, Plus, Trash2, FolderPlus } from "lucide-react"
+import { ChevronRight, ChevronsUpDown, Menu, RefreshCw, Plus, Trash2, FolderPlus, Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -56,12 +56,13 @@ export function FileManager() {
   const [newFolderMode, setNewFolderMode] = React.useState(false)
   const [newFolderName, setNewFolderName] = React.useState('')
   const [error, setError] = React.useState<string | null>(null)
+  const [showHidden, setShowHidden] = React.useState(false)
 
-  const loadFiles = React.useCallback(async (path: string) => {
+  const loadFiles = React.useCallback(async (path: string, hidden: boolean) => {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`/api/files?path=${encodeURIComponent(path)}`)
+      const response = await fetch(`/api/files?path=${encodeURIComponent(path)}&showHidden=${hidden}`)
       const data = await response.json()
 
       if (!response.ok) {
@@ -79,8 +80,8 @@ export function FileManager() {
   }, [])
 
   React.useEffect(() => {
-    loadFiles(currentPath)
-  }, [currentPath, loadFiles])
+    loadFiles(currentPath, showHidden)
+  }, [currentPath, showHidden, loadFiles])
 
   const handleOpenFolder = (folder: FileItem) => {
     if (folder.type === 'folder') {
@@ -116,7 +117,7 @@ export function FileManager() {
       setNewFolderName('')
       setNewFolderMode(false)
       setError(null)
-      await loadFiles(currentPath)
+      await loadFiles(currentPath, showHidden)
     } catch (error: any) {
       console.error('Failed to create folder:', error)
       setError(error.message || 'Failed to create folder')
@@ -141,7 +142,7 @@ export function FileManager() {
         }
 
         setError(null)
-        await loadFiles(currentPath)
+        await loadFiles(currentPath, showHidden)
         if (selectedFile?.id === item.id) {
           setSelectedFile(null)
         }
@@ -180,8 +181,11 @@ export function FileManager() {
           <Header
             onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
             breadcrumbs={breadcrumbs}
-            onRefresh={() => loadFiles(currentPath)}
+            onBreadcrumbClick={handleBreadcrumbClick}
+            onRefresh={() => loadFiles(currentPath, showHidden)}
             onNewFolder={() => setNewFolderMode(true)}
+            showHidden={showHidden}
+            onToggleHidden={() => setShowHidden(!showHidden)}
           />
 
           {/* New Folder Input */}
@@ -273,7 +277,9 @@ function Sidebar({ isOpen, onNavigate }: any) {
 }
 
 // Header Component
-function Header({ onToggleSidebar, breadcrumbs, onRefresh, onNewFolder }: any) {
+function Header({ onToggleSidebar, breadcrumbs, onBreadcrumbClick, onRefresh, onNewFolder, showHidden, onToggleHidden }: any) {
+  const EyeIcon = getIcon(showHidden ? "Eye" : "EyeOff")
+
   return (
     <header className="flex h-14 items-center gap-4 border-b px-4">
       <Button
@@ -294,7 +300,15 @@ function Header({ onToggleSidebar, breadcrumbs, onRefresh, onNewFolder }: any) {
                 {index === breadcrumbs.length - 1 ? (
                   <BreadcrumbPage>{item.label}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink href="#" onClick={() => onRefresh()}>{item.label}</BreadcrumbLink>
+                  <BreadcrumbLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      onBreadcrumbClick(item.path)
+                    }}
+                  >
+                    {item.label}
+                  </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
             </React.Fragment>
@@ -305,8 +319,18 @@ function Header({ onToggleSidebar, breadcrumbs, onRefresh, onNewFolder }: any) {
         <Button
           variant="ghost"
           size="sm"
+          onClick={onToggleHidden}
+          className="h-8 w-8 p-0"
+          title={showHidden ? "Hide hidden files" : "Show hidden files"}
+        >
+          <EyeIcon className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onRefresh}
           className="h-8 w-8 p-0"
+          title="Refresh"
         >
           <RefreshCw className="h-4 w-4" />
         </Button>
@@ -315,6 +339,7 @@ function Header({ onToggleSidebar, breadcrumbs, onRefresh, onNewFolder }: any) {
           size="sm"
           onClick={onNewFolder}
           className="h-8 w-8 p-0"
+          title="New folder"
         >
           <FolderPlus className="h-4 w-4" />
         </Button>

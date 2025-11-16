@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs/promises'
 import path from 'path'
 
-const SAFE_ROOT = process.env.FILE_MANAGER_ROOT || '/tmp'
+const SAFE_ROOT = process.env.FILE_MANAGER_ROOT || '/var/www'
+const SHOW_HIDDEN_DEFAULT = process.env.SHOW_HIDDEN_FILES === 'true'
 
 function validatePath(filePath: string): string {
   if (filePath === '/' || filePath === '') {
@@ -27,6 +28,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const dirPath = searchParams.get('path') || '/'
+    const showHidden = searchParams.get('showHidden') === 'true' || SHOW_HIDDEN_DEFAULT
 
     const safePath = validatePath(dirPath)
 
@@ -44,8 +46,16 @@ export async function GET(request: NextRequest) {
     const items = await Promise.all(
       entries.map(async (entry) => {
         try {
+          // Filter hidden files (starting with .) unless showHidden is true
+          if (!showHidden && entry.name.startsWith('.')) {
+            return null
+          }
+
           const fullPath = path.join(safePath, entry.name)
           const itemStats = await fs.stat(fullPath)
+
+          // Create relative path from SAFE_ROOT
+          const relativePath = fullPath.replace(SAFE_ROOT, '')
 
           return {
             id: fullPath,
@@ -53,7 +63,7 @@ export async function GET(request: NextRequest) {
             type: entry.isDirectory() ? 'folder' : 'file',
             size: itemStats.size,
             modified: itemStats.mtime.toISOString(),
-            path: fullPath.replace(SAFE_ROOT, '') || '/'
+            path: relativePath || '/'
           }
         } catch {
           return null
@@ -67,7 +77,11 @@ export async function GET(request: NextRequest) {
       return a!.name.localeCompare(b!.name)
     })
 
-    return NextResponse.json({ items: sorted })
+    return NextResponse.json({
+      items: sorted,
+      currentPath: dirPath,
+      showHidden
+    })
   } catch (error: any) {
     console.error('Error listing files:', error)
     return NextResponse.json(

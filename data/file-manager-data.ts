@@ -35,31 +35,25 @@ export interface ProjectItem {
   description?: string
 }
 
-// Quick Access Items
+// Quick Access Items - VPS Directories
 export const QUICK_ACCESS_ITEMS: QuickAccessItem[] = [
   {
-    id: "tmp",
-    name: "Temp",
-    icon: "FolderOpen",
+    id: "root",
+    name: "Root",
+    icon: "Home",
     path: "/",
   },
   {
-    id: "home",
-    name: "Home",
-    icon: "Home",
-    path: "/home",
+    id: "ai-desktop",
+    name: "AI Desktop",
+    icon: "FolderOpen",
+    path: "/ai-desktop",
   },
   {
-    id: "var",
-    name: "System (/var)",
-    icon: "Server",
-    path: "/var",
-  },
-  {
-    id: "etc",
-    name: "Config (/etc)",
-    icon: "Settings",
-    path: "/etc",
+    id: "logs",
+    name: "Logs",
+    icon: "FileText",
+    path: "/logs",
   },
 ]
 
@@ -112,41 +106,11 @@ export const FOLDER_STRUCTURE: FolderStructure[] = [
   },
 ]
 
-// Projects Section
-export const PROJECT_ITEMS: ProjectItem[] = [
-  {
-    id: "design",
-    name: "Design Engineering",
-    icon: "Palette",
-    description: "UI/UX design projects",
-  },
-  {
-    id: "sales",
-    name: "Sales & Marketing",
-    icon: "TrendingUp",
-    description: "Marketing campaigns and sales data",
-  },
-  {
-    id: "travel",
-    name: "Travel",
-    icon: "MapPin",
-    description: "Travel plans and bookings",
-  },
-]
+// Projects Section - REMOVED (was fake data)
+export const PROJECT_ITEMS: ProjectItem[] = []
 
-// Secondary Navigation
-export const SECONDARY_NAV_ITEMS = [
-  {
-    id: "support",
-    name: "Support",
-    icon: "HelpCircle",
-  },
-  {
-    id: "feedback",
-    name: "Feedback",
-    icon: "MessageSquare",
-  },
-]
+// Secondary Navigation - REMOVED (was fake data)
+export const SECONDARY_NAV_ITEMS: any[] = []
 
 // File Type to Icon Mapping
 export const FILE_TYPE_ICONS: Record<string, { icon: string; color: string }> = {
@@ -239,12 +203,12 @@ export const FILE_GRID_ITEMS: FileItem[] = [
 
 // User Profile
 export const USER_PROFILE = {
-  name: "shadcn",
-  email: "m@example.com",
-  avatar: "/avatars/shadcn.jpg",
-  initials: "SC",
-  company: "Acme Inc",
-  plan: "Enterprise",
+  name: "VPS User",
+  email: "admin@server",
+  avatar: "",
+  initials: "VPS",
+  company: "File Manager",
+  plan: "VPS",
 }
 
 // Breadcrumb Navigation
