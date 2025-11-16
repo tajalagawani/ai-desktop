@@ -8,9 +8,6 @@ const nextConfig = {
     unoptimized: true,
   },
 
-  // Output standalone for VPS deployment
-  output: 'standalone',
-
   // Disable powered by header for security
   poweredByHeader: false,
 
