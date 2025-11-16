@@ -57,7 +57,7 @@ import {
   type InstalledApp,
   type ViewMode,
 } from "@/data/installed-apps-data"
-import { useInstalledApps, useAppUpdates } from "@/hooks/use-installed-apps"
+import { useInstalledApps } from "@/hooks/use-installed-apps"
 import { getIcon, getIconProps } from "@/utils/icon-mapper"
 
 export function InstalledApps() {
@@ -74,7 +74,6 @@ export function InstalledApps() {
     setSortBy,
     uninstallApp,
     uninstallMultiple,
-    updateApp,
     togglePinApp,
     toggleAutoStart,
     launchApp,
@@ -83,8 +82,6 @@ export function InstalledApps() {
     clearSelection,
   } = useInstalledApps(INSTALLED_APPS_DATA)
 
-  const { appsWithUpdates, checkForUpdates, isCheckingUpdates } = useAppUpdates(apps)
-
   return (
     <div className="h-full bg-background flex flex-col">
       {/* Header */}
@@ -92,9 +89,6 @@ export function InstalledApps() {
         statistics={statistics}
         viewMode={viewMode}
         setViewMode={setViewMode}
-        onCheckUpdates={checkForUpdates}
-        isCheckingUpdates={isCheckingUpdates}
-        updatesCount={appsWithUpdates.length}
       />
 
       {/* Filters and Search Bar */}
@@ -161,9 +155,6 @@ export function InstalledApps() {
       case "stop":
         stopApp(app.id)
         break
-      case "update":
-        updateApp(app.id)
-        break
       case "uninstall":
         uninstallApp(app.id)
         break
@@ -178,7 +169,7 @@ export function InstalledApps() {
 }
 
 // Header Component
-function Header({ statistics, viewMode, setViewMode, onCheckUpdates, isCheckingUpdates, updatesCount }: any) {
+function Header({ statistics, viewMode, setViewMode }: any) {
   return (
     <div className="border-b border-border">
       <div className="px-6 py-4">
@@ -190,14 +181,6 @@ function Header({ statistics, viewMode, setViewMode, onCheckUpdates, isCheckingU
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={onCheckUpdates}
-              disabled={isCheckingUpdates}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              {isCheckingUpdates ? "Checking..." : `Updates (${updatesCount})`}
-            </Button>
             <div className="flex items-center gap-1 border rounded-lg p-1">
               {Object.values(VIEW_MODES).map((mode) => {
                 const Icon = getIcon(mode.icon)
@@ -302,14 +285,7 @@ function FilterBar({ filters, setFilter, resetFilters, sort, setSortBy, totalApp
               >
                 Auto Start
               </DropdownMenuCheckboxItem>
-              
-              <DropdownMenuCheckboxItem
-                checked={filters.showUpdatesAvailable}
-                onCheckedChange={(checked) => setFilter("showUpdatesAvailable", checked)}
-              >
-                Updates Available
-              </DropdownMenuCheckboxItem>
-              
+
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={resetFilters}>
                 <XCircle className="h-4 w-4 mr-2" />
@@ -485,14 +461,6 @@ function AppCard({ app, isSelected, onAction, onSelect }: any) {
           <span>{app.size}</span>
         </div>
 
-        {/* Update Available Badge */}
-        {app.updateAvailable && (
-          <Badge variant="secondary" className="mb-3 text-xs">
-            <Download className="h-3 w-3 mr-1" />
-            Update to v{app.newVersion}
-          </Badge>
-        )}
-
         {/* Actions */}
         <div className="flex gap-1 w-full">
           <Button
@@ -521,15 +489,6 @@ function AppCard({ app, isSelected, onAction, onSelect }: any) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {app.updateAvailable && (
-                <>
-                  <DropdownMenuItem onClick={() => onAction(app, "update")}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Update
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
               <DropdownMenuItem onClick={() => onAction(app, "pin")}>
                 <Pin className="h-4 w-4 mr-2" />
                 {app.pinned ? "Unpin" : "Pin"}
@@ -592,17 +551,6 @@ function AppListItem({ app, isSelected, onAction, onSelect }: any) {
             <h3 className="font-normal">{app.displayName}</h3>
             {app.pinned && <Pin className="h-3 w-3 text-primary" />}
             <Badge variant="outline" className="text-xs">v{app.version}</Badge>
-            {app.status === "updating" && (
-              <Badge variant="secondary" className="text-xs">
-                <Download className="h-3 w-3 mr-1 animate-pulse" />
-                Updating...
-              </Badge>
-            )}
-            {app.updateAvailable && !app.status.includes("updating") && (
-              <Badge variant="secondary" className="text-xs">
-                Update available
-              </Badge>
-            )}
           </div>
           <p className="text-sm text-muted-foreground mb-1">{app.developer}</p>
           <p className="text-xs text-muted-foreground line-clamp-1">{app.description}</p>
@@ -637,17 +585,7 @@ function AppListItem({ app, isSelected, onAction, onSelect }: any) {
               </>
             )}
           </Button>
-          
-          {app.updateAvailable && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onAction(app, "update")}
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-          )}
-          
+
           <Button
             size="sm"
             variant="ghost"

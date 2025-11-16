@@ -13,7 +13,6 @@ export interface AppFilters {
   status: AppStatus | "all"
   showPinned: boolean
   showAutoStart: boolean
-  showUpdatesAvailable: boolean
   showSystemApps: boolean
 }
 
@@ -31,7 +30,6 @@ export const useInstalledApps = (initialApps: InstalledApp[]) => {
     status: "all",
     showPinned: false,
     showAutoStart: false,
-    showUpdatesAvailable: false,
     showSystemApps: true,
   })
   const [sort, setSort] = useState<AppSort>({
@@ -72,9 +70,6 @@ export const useInstalledApps = (initialApps: InstalledApp[]) => {
     }
     if (filters.showAutoStart) {
       result = result.filter(app => app.autoStart)
-    }
-    if (filters.showUpdatesAvailable) {
-      result = result.filter(app => app.updateAvailable)
     }
     if (!filters.showSystemApps) {
       result = result.filter(app => !app.isSystem)
@@ -132,27 +127,6 @@ export const useInstalledApps = (initialApps: InstalledApp[]) => {
   const uninstallMultiple = useCallback((appIds: string[]) => {
     setApps(prev => prev.filter(app => !appIds.includes(app.id)))
     setSelectedApps([])
-  }, [])
-
-  const updateApp = useCallback((appId: string) => {
-    setApps(prev =>
-      prev.map(app =>
-        app.id === appId
-          ? { ...app, status: "updating" as AppStatus, updateAvailable: false }
-          : app
-      )
-    )
-    
-    // Simulate update completion
-    setTimeout(() => {
-      setApps(prev =>
-        prev.map(app =>
-          app.id === appId
-            ? { ...app, status: "inactive" as AppStatus, version: app.newVersion || app.version }
-            : app
-        )
-      )
-    }, 3000)
   }, [])
 
   const togglePinApp = useCallback((appId: string) => {
@@ -218,7 +192,6 @@ export const useInstalledApps = (initialApps: InstalledApp[]) => {
       status: "all",
       showPinned: false,
       showAutoStart: false,
-      showUpdatesAvailable: false,
       showSystemApps: true,
     })
   }, [])
@@ -247,7 +220,6 @@ export const useInstalledApps = (initialApps: InstalledApp[]) => {
     setSortBy,
     uninstallApp,
     uninstallMultiple,
-    updateApp,
     togglePinApp,
     toggleAutoStart,
     launchApp,
@@ -310,42 +282,4 @@ export const useAppSearch = (apps: InstalledApp[], query: string) => {
   }, [apps, query])
 
   return { results, isSearching }
-}
-
-// Hook for app updates
-export const useAppUpdates = (apps: InstalledApp[]) => {
-  const [isCheckingUpdates, setIsCheckingUpdates] = useState(false)
-  const [lastChecked, setLastChecked] = useState<Date | null>(null)
-  
-  const appsWithUpdates = useMemo(() => {
-    return apps.filter(app => app.updateAvailable)
-  }, [apps])
-
-  const checkForUpdates = useCallback(async () => {
-    setIsCheckingUpdates(true)
-    
-    // Simulate update check
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    setLastChecked(new Date())
-    setIsCheckingUpdates(false)
-  }, [])
-
-  const updateAll = useCallback(async (updateApps: (appIds: string[]) => void) => {
-    const appIds = appsWithUpdates.map(app => app.id)
-    
-    // Update each app
-    for (const appId of appIds) {
-      updateApps([appId])
-      await new Promise(resolve => setTimeout(resolve, 500))
-    }
-  }, [appsWithUpdates])
-
-  return {
-    appsWithUpdates,
-    isCheckingUpdates,
-    lastChecked,
-    checkForUpdates,
-    updateAll,
-  }
 }
