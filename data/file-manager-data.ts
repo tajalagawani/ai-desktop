@@ -35,7 +35,7 @@ export interface ProjectItem {
   description?: string
 }
 
-// Quick Access Items - VPS Directories
+// Quick Access Items - VPS Directories (relative to FILE_MANAGER_ROOT = /var/www)
 export const QUICK_ACCESS_ITEMS: QuickAccessItem[] = [
   {
     id: "root",
@@ -48,12 +48,6 @@ export const QUICK_ACCESS_ITEMS: QuickAccessItem[] = [
     name: "AI Desktop",
     icon: "FolderOpen",
     path: "/ai-desktop",
-  },
-  {
-    id: "logs",
-    name: "Logs",
-    icon: "FileText",
-    path: "/logs",
   },
 ]
 
