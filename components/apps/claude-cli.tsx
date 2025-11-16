@@ -250,10 +250,11 @@ export function ClaudeCLI() {
       )}
       <div
         ref={terminalRef}
-        className="flex-1 w-full p-2"
+        className="flex-1 w-full"
         style={{
           display: isLoading ? 'none' : 'block',
           height: '100%',
+          width: '100%',
           overflow: 'hidden'
         }}
       />

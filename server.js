@@ -29,22 +29,29 @@ app.prepare().then(() => {
   // Create WebSocket server
   const wss = new WebSocketServer({ noServer: true })
 
-  // Handle WebSocket upgrade
-  server.on('upgrade', (request, socket, head) => {
-    const { pathname } = parse(request.url, true)
-    console.log('[WebSocket] Upgrade request received for:', pathname)
+  // CRITICAL: Override the upgrade event handler COMPLETELY
+  // We need to handle it before Next.js's internal router sees it
+  const originalEmit = server.emit.bind(server)
+  server.emit = function(event, ...args) {
+    if (event === 'upgrade') {
+      const [request, socket, head] = args
+      const { pathname } = parse(request.url, true)
 
-    if (pathname === '/api/terminal/ws' || pathname === '/api/services/logs/ws') {
-      console.log('[WebSocket] ✅ Valid WebSocket path, handling upgrade...')
-      wss.handleUpgrade(request, socket, head, (ws) => {
-        console.log('[WebSocket] Connection established for:', pathname)
-        wss.emit('connection', ws, request, pathname)
-      })
-    } else {
-      // Let Next.js handle other WebSocket requests (like HMR in dev mode)
-      console.log('[WebSocket] Passing to Next.js handler:', pathname)
+      if (pathname === '/api/terminal/ws' || pathname === '/api/services/logs/ws') {
+        console.log('[WebSocket] Intercepted upgrade for:', pathname)
+
+        wss.handleUpgrade(request, socket, head, (ws) => {
+          wss.emit('connection', ws, request, pathname)
+        })
+
+        // Don't call Next.js's upgrade handler
+        return true
+      }
     }
-  })
+
+    // For all other events, call original emit
+    return originalEmit(event, ...args)
+  }
 
   // Handle WebSocket connections
   wss.on('connection', (ws, request, pathname) => {
