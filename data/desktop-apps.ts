@@ -35,13 +35,6 @@ export interface DesktopFolder {
 
 export const DOCK_APPS: AppConfig[] = [
   {
-    id: "workflows",
-    name: "Workflows",
-    icon: "Workflow",
-    category: "productivity",
-    description: "Create and manage automation workflows"
-  },
-  {
     id: "terminal",
     name: "Terminal",
     icon: "TerminalIcon",
@@ -81,14 +74,6 @@ export const DOCK_APPS: AppConfig[] = [
     description: "Install and manage VPS services"
   },
   {
-    id: "flow-manager",
-    name: "Flow Manager",
-    icon: "Zap",
-    category: "system",
-    isSystem: true,
-    description: "Manage ACT workflow automation flows"
-  },
-  {
     id: "system-widgets",
     name: "System Widgets",
     icon: "LayoutGrid",
@@ -99,16 +84,6 @@ export const DOCK_APPS: AppConfig[] = [
 ]
 
 export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
-  "workflows": {
-    defaultWidth: 1400,
-    defaultHeight: 900,
-    minWidth: 800,
-    minHeight: 600,
-    resizable: true,
-    maximizable: true,
-    minimizable: true,
-    closable: true,
-  },
   "terminal": {
     defaultWidth: 800,
     defaultHeight: 500,
@@ -150,16 +125,6 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     closable: true,
   },
   "service-manager": {
-    defaultWidth: 1600,
-    defaultHeight: 1000,
-    minWidth: 1000,
-    minHeight: 700,
-    resizable: true,
-    maximizable: true,
-    minimizable: true,
-    closable: true,
-  },
-  "flow-manager": {
     defaultWidth: 1600,
     defaultHeight: 1000,
     minWidth: 1000,

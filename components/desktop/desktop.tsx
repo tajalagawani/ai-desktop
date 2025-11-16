@@ -20,7 +20,6 @@ import {
   Thermometer,
   Activity as ProcessIcon,
 } from "lucide-react"
-import { WorkflowCanvas } from "@/components/apps/workflow-canvas"
 import { SystemMonitor } from "@/components/apps/system-monitor"
 import { ChatInterface } from "@/components/apps/chat-interface"
 import { Terminal } from "@/components/apps/terminal"
@@ -28,7 +27,6 @@ import { ClaudeCLI } from "@/components/apps/claude-cli"
 import { Changelog } from "@/components/apps/changelog"
 import { FileManager } from "@/components/apps/file-manager"
 import { ServiceManager } from "@/components/apps/service-manager"
-import { FlowManager } from "@/components/apps/flow-manager"
 import { ServiceDetails } from "@/components/apps/service-details"
 import { DesktopSettings } from "@/components/apps/desktop-settings"
 import { WidgetWindow } from "@/components/apps/widget-window"
@@ -64,14 +62,12 @@ const getAppComponent = (
   onBackgroundChange?: (bg: string) => void
 ): React.ReactNode => {
   const componentMap: Record<string, React.ReactNode> = {
-    "workflows": <WorkflowCanvas />,
     "terminal": <Terminal />,
     "claude-cli": <ClaudeCLI />,
     "changelog": <Changelog />,
     "monitor": <SystemMonitor />,
     "file-manager": <FileManager />,
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
-    "flow-manager": <FlowManager />,
     "system-widgets": <WidgetWindow />,
     "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
   }

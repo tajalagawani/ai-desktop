@@ -150,7 +150,6 @@ export const getAppComponent = async (appId: string) => {
   const componentMap: Record<string, () => Promise<any>> = {
     "app-store": () => import("@/components/apps/mac-app-store"),
     "installed": () => import("@/components/apps/installed-apps"),
-    "workflows": () => import("@/components/apps/workflow-canvas"),
     "terminal": () => import("@/components/apps/terminal"),
     "monitor": () => import("@/components/apps/system-monitor"),
     "file-manager": () => import("@/components/apps/file-manager"),
