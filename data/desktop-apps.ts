@@ -81,6 +81,13 @@ export const DOCK_APPS: AppConfig[] = [
     isSystem: true,
     description: "View system metrics and widgets in a resizable window"
   },
+  {
+    id: "github-desktop",
+    name: "GitHub Desktop",
+    icon: "GitBranch",
+    category: "development",
+    description: "Manage your Git repositories with a beautiful interface"
+  },
 ]
 
 export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
@@ -138,6 +145,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     defaultWidth: 1200,
     defaultHeight: 800,
     minWidth: 800,
+    minHeight: 600,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "github-desktop": {
+    defaultWidth: 1400,
+    defaultHeight: 900,
+    minWidth: 1000,
     minHeight: 600,
     resizable: true,
     maximizable: true,

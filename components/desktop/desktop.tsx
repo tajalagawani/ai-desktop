@@ -30,6 +30,7 @@ import { ServiceManager } from "@/components/apps/service-manager"
 import { ServiceDetails } from "@/components/apps/service-details"
 import { DesktopSettings } from "@/components/apps/desktop-settings"
 import { WidgetWindow } from "@/components/apps/widget-window"
+import { GitHubApp } from "@/components/apps/github"
  
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
@@ -70,6 +71,7 @@ const getAppComponent = (
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
     "system-widgets": <WidgetWindow />,
     "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
+    "github-desktop": <GitHubApp />,
   }
   return componentMap[id] || null
 }
