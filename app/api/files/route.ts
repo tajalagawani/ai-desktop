@@ -58,10 +58,9 @@ export async function GET(request: NextRequest) {
           const fullPath = path.join(safePath, entry.name)
           const itemStats = await fs.stat(fullPath)
 
-          // Create path for display
+          // Create path for display - always relative to SAFE_ROOT
           let displayPath = fullPath
-          // If current path is under SAFE_ROOT, make it relative to SAFE_ROOT
-          if (fullPath.startsWith(SAFE_ROOT) && dirPath !== '/') {
+          if (fullPath.startsWith(SAFE_ROOT)) {
             displayPath = fullPath.replace(SAFE_ROOT, '')
             if (!displayPath.startsWith('/')) {
               displayPath = '/' + displayPath
