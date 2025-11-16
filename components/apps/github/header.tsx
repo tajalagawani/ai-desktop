@@ -32,12 +32,52 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
   const [cloneOpen, setCloneOpen] = useState(false)
   const [currentBranch, setCurrentBranch] = useState("main")
 
-  // Load saved repositories
+  // Load saved repositories and validate they still exist
   useEffect(() => {
-    const saved = localStorage.getItem("git-repositories")
-    if (saved) {
-      setRepositories(JSON.parse(saved))
+    const loadAndValidateRepos = async () => {
+      const saved = localStorage.getItem("git-repositories")
+      if (saved) {
+        const repos = JSON.parse(saved)
+
+        // Validate each repository still exists
+        const validRepos = []
+        for (const repo of repos) {
+          try {
+            const response = await fetch("/api/git", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                repoPath: repo,
+                command: "git rev-parse --git-dir",
+              }),
+            })
+
+            const result = await response.json()
+            if (result.success) {
+              validRepos.push(repo)
+            }
+          } catch (error) {
+            // Repository doesn't exist or is not a git repo
+            console.log(`Repository ${repo} no longer exists`)
+          }
+        }
+
+        // Update repositories list if some were removed
+        if (validRepos.length !== repos.length) {
+          localStorage.setItem("git-repositories", JSON.stringify(validRepos))
+          toast.success(`Removed ${repos.length - validRepos.length} deleted repository(ies) from list`)
+
+          // If current repo was deleted, clear selection
+          if (currentRepo && !validRepos.includes(currentRepo)) {
+            onRepoChange(null)
+          }
+        }
+
+        setRepositories(validRepos)
+      }
     }
+
+    loadAndValidateRepos()
   }, [])
 
   // Get current branch when repo changes
@@ -80,8 +120,51 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
   }
 
   const handleCloneComplete = (repoPath: string) => {
-    setRepositories([...repositories, repoPath])
+    const updatedRepos = [...repositories, repoPath]
+    setRepositories(updatedRepos)
+    localStorage.setItem("git-repositories", JSON.stringify(updatedRepos))
     onRepoChange(repoPath)
+  }
+
+  const handleRefreshRepos = async () => {
+    const saved = localStorage.getItem("git-repositories")
+    if (!saved) return
+
+    const repos = JSON.parse(saved)
+    const validRepos = []
+
+    for (const repo of repos) {
+      try {
+        const response = await fetch("/api/git", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            repoPath: repo,
+            command: "git rev-parse --git-dir",
+          }),
+        })
+
+        const result = await response.json()
+        if (result.success) {
+          validRepos.push(repo)
+        }
+      } catch (error) {
+        console.log(`Repository ${repo} no longer exists`)
+      }
+    }
+
+    if (validRepos.length !== repos.length) {
+      localStorage.setItem("git-repositories", JSON.stringify(validRepos))
+      toast.success(`Removed ${repos.length - validRepos.length} deleted repository(ies)`)
+
+      if (currentRepo && !validRepos.includes(currentRepo)) {
+        onRepoChange(null)
+      }
+    } else {
+      toast.success("Repository list is up to date")
+    }
+
+    setRepositories(validRepos)
   }
 
   const handleGitOperation = async (operation: "fetch" | "pull" | "push") => {
@@ -194,6 +277,11 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
                 }}>
                   <FolderPlus className="h-4 w-4 mr-2" />
                   Add Existing Repository
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleRefreshRepos}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh Repository List
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
