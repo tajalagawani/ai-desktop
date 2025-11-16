@@ -12,14 +12,15 @@ function validatePath(filePath: string): string {
 
   const normalizedPath = path.normalize(filePath)
 
-  // If path starts with /, treat it as absolute system path
-  if (normalizedPath.startsWith('/')) {
-    return normalizedPath
-  }
+  // Treat paths as relative to SAFE_ROOT by default
+  // Strip leading slash and join with SAFE_ROOT
+  const relativePath = normalizedPath.startsWith('/')
+    ? normalizedPath.slice(1)
+    : normalizedPath
 
-  // Otherwise, treat as relative to SAFE_ROOT
-  const absolutePath = path.join(SAFE_ROOT, normalizedPath)
+  const absolutePath = path.join(SAFE_ROOT, relativePath)
 
+  // Allow access to paths under SAFE_ROOT
   if (!absolutePath.startsWith(SAFE_ROOT)) {
     throw new Error('Access denied: Path is outside allowed directory')
   }
