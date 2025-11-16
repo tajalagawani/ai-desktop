@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDown, Plus, GitBranch, Download, Upload, RefreshCw, Settings, FolderPlus, FolderGit2 } from "lucide-react"
+import { ChevronDown, Plus, GitBranch, Download, Upload, RefreshCw, Settings, FolderPlus, FolderGit2, Trash2 } from "lucide-react"
 import { GitSettingsDialog } from "./settings-dialog"
 import { CloneDialog } from "./clone-dialog"
 
@@ -107,6 +107,43 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
       toast.error(`${operation} failed: ${error.message}`)
     }
   }
+
+  const handleDeleteRepo = async () => {
+    if (!currentRepo) return
+
+    const repoName = currentRepo.split('/').pop() || currentRepo
+    if (!confirm(`Are you sure you want to delete repository "${repoName}"? This will permanently delete all files in this repository.`)) {
+      return
+    }
+
+    try {
+      // Delete the repository directory using the files API
+      const response = await fetch("/api/files", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "delete",
+          path: currentRepo,
+        }),
+      })
+
+      const result = await response.json()
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to delete repository")
+      }
+
+      // Remove from saved repositories list
+      const updatedRepos = repositories.filter(repo => repo !== currentRepo)
+      setRepositories(updatedRepos)
+      localStorage.setItem("git-repositories", JSON.stringify(updatedRepos))
+
+      // Clear current repo selection
+      onRepoChange(null)
+      toast.success(`Repository "${repoName}" deleted successfully!`)
+    } catch (error: any) {
+      toast.error(`Failed to delete repository: ${error.message}`)
+    }
+  }
   return (
     <>
       <div className="border-b border-border bg-muted/30">
@@ -160,6 +197,18 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Delete Repository Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!currentRepo}
+              onClick={handleDeleteRepo}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </Button>
           </div>
 
           {/* Right - Actions */}
