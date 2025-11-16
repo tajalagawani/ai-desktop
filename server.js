@@ -37,18 +37,17 @@ app.prepare().then(() => {
     if (pathname === '/api/terminal/ws' || pathname === '/api/services/logs/ws') {
       console.log('[WebSocket] ✅ Valid WebSocket path, handling upgrade...')
       wss.handleUpgrade(request, socket, head, (ws) => {
+        console.log('[WebSocket] Connection established for:', pathname)
         wss.emit('connection', ws, request, pathname)
       })
     } else {
-      console.log('[WebSocket] ❌ Invalid WebSocket path, destroying socket:', pathname)
-      socket.destroy()
+      // Let Next.js handle other WebSocket requests (like HMR in dev mode)
+      console.log('[WebSocket] Passing to Next.js handler:', pathname)
     }
   })
 
   // Handle WebSocket connections
   wss.on('connection', (ws, request, pathname) => {
-    console.log('[WebSocket] Connection established for:', pathname)
-
     if (pathname === '/api/services/logs/ws') {
       console.log('[WebSocket] Routing to logs handler')
       handleLogsConnection(ws, request)
