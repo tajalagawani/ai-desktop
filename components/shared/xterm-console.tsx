@@ -16,6 +16,7 @@ interface XTermConsoleProps {
   cursorColor?: string
   fontFamily?: string
   fontSize?: number
+  padding?: string
   theme?: {
     background?: string
     foreground?: string
@@ -51,6 +52,7 @@ export const XTermConsole = forwardRef<XTermConsoleHandle, XTermConsoleProps>(
       cursorColor = '#ffffff',
       fontFamily = 'Menlo, Monaco, "Courier New", monospace',
       fontSize = 13,
+      padding = '0',
       theme
     },
     ref
@@ -146,6 +148,16 @@ export const XTermConsole = forwardRef<XTermConsoleHandle, XTermConsoleProps>(
 
           await new Promise(resolve => setTimeout(resolve, 10))
 
+          // Remove xterm default padding
+          const xtermElement = terminalRef.current.querySelector('.xterm')
+          if (xtermElement) {
+            ;(xtermElement as HTMLElement).style.padding = '0'
+          }
+          const xtermScreen = terminalRef.current.querySelector('.xterm-screen')
+          if (xtermScreen) {
+            ;(xtermScreen as HTMLElement).style.padding = '0'
+          }
+
           fitAddon.fit()
 
           xtermRef.current = term
@@ -204,10 +216,12 @@ export const XTermConsole = forwardRef<XTermConsoleHandle, XTermConsoleProps>(
     return (
       <div
         ref={terminalRef}
-        className="h-full w-full"
+        className="h-full w-full xterm-container"
         style={{
           display: isLoading ? 'none' : 'block',
           backgroundColor,
+          padding: 0,
+          margin: 0,
         }}
       />
     )
