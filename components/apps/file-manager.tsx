@@ -196,6 +196,7 @@ export function FileManager() {
             onNewFolder={() => setNewFolderMode(true)}
             showHidden={showHidden}
             onToggleHidden={() => setShowHidden(!showHidden)}
+            currentPath={currentPath}
             selectedFile={selectedFile}
           />
 
@@ -298,8 +299,20 @@ function Sidebar({ isOpen, onNavigate }: any) {
 }
 
 // Header Component
-function Header({ onToggleSidebar, breadcrumbs, onBreadcrumbClick, onRefresh, onNewFolder, showHidden, onToggleHidden }: any) {
+function Header({ onToggleSidebar, breadcrumbs, onBreadcrumbClick, onRefresh, onNewFolder, showHidden, onToggleHidden, currentPath }: any) {
   const EyeIcon = getIcon(showHidden ? "Eye" : "EyeOff")
+  const [pathInput, setPathInput] = React.useState(currentPath)
+  const [showPathInput, setShowPathInput] = React.useState(false)
+
+  React.useEffect(() => {
+    setPathInput(currentPath)
+  }, [currentPath])
+
+  const handlePathSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    onBreadcrumbClick(pathInput)
+    setShowPathInput(false)
+  }
 
   return (
     <header className="flex h-14 items-center gap-4 border-b px-4">
@@ -312,30 +325,49 @@ function Header({ onToggleSidebar, breadcrumbs, onBreadcrumbClick, onRefresh, on
         <Menu className="h-4 w-4" />
       </Button>
       <Separator orientation="vertical" className="h-6" />
-      <Breadcrumb>
-        <BreadcrumbList>
-          {breadcrumbs.map((item: any, index: number) => (
-            <React.Fragment key={item.path}>
-              {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
-              <BreadcrumbItem className={index === 0 ? "hidden md:block" : ""}>
-                {index === breadcrumbs.length - 1 ? (
-                  <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      onBreadcrumbClick(item.path)
-                    }}
-                  >
-                    {item.label}
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-            </React.Fragment>
-          ))}
-        </BreadcrumbList>
-      </Breadcrumb>
+
+      {showPathInput ? (
+        <form onSubmit={handlePathSubmit} className="flex-1 flex items-center gap-2">
+          <Input
+            value={pathInput}
+            onChange={(e) => setPathInput(e.target.value)}
+            onBlur={() => {
+              if (pathInput === currentPath) setShowPathInput(false)
+            }}
+            className="h-8"
+            placeholder="/path/to/directory"
+            autoFocus
+          />
+          <Button type="submit" size="sm" variant="ghost">Go</Button>
+        </form>
+      ) : (
+        <Breadcrumb onClick={() => setShowPathInput(true)} className="cursor-pointer">
+          <BreadcrumbList>
+            {breadcrumbs.map((item: any, index: number) => (
+              <React.Fragment key={item.path}>
+                {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}
+                <BreadcrumbItem className={index === 0 ? "hidden md:block" : ""}>
+                  {index === breadcrumbs.length - 1 ? (
+                    <BreadcrumbPage>{item.label}</BreadcrumbPage>
+                  ) : (
+                    <BreadcrumbLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        onBreadcrumbClick(item.path)
+                      }}
+                    >
+                      {item.label}
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              </React.Fragment>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
+      )}
+
       <div className="ml-auto flex items-center gap-2">
         <Button
           variant="ghost"
