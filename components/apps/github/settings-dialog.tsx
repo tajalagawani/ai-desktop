@@ -29,6 +29,7 @@ export function GitSettingsDialog({ open, onOpenChange }: GitSettingsDialogProps
   const [sshPrivateKey, setSshPrivateKey] = useState("")
   const [sshPublicKey, setSshPublicKey] = useState("")
   const [saving, setSaving] = useState(false)
+  const [testing, setTesting] = useState(false)
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null)
 
   // Load settings from localStorage on mount
@@ -45,6 +46,36 @@ export function GitSettingsDialog({ open, onOpenChange }: GitSettingsDialogProps
       }
     }
   }, [open])
+
+  const handleTestToken = async () => {
+    if (!githubToken) {
+      setMessage({ type: "error", text: "Please enter a GitHub token first" })
+      return
+    }
+
+    setTesting(true)
+    setMessage(null)
+
+    try {
+      const response = await fetch("https://api.github.com/user", {
+        headers: {
+          Authorization: `token ${githubToken}`,
+          Accept: "application/vnd.github.v3+json",
+        },
+      })
+
+      if (response.ok) {
+        const user = await response.json()
+        setMessage({ type: "success", text: `Token is valid! Authenticated as ${user.login}` })
+      } else {
+        setMessage({ type: "error", text: "Token is invalid or expired" })
+      }
+    } catch (error: any) {
+      setMessage({ type: "error", text: error.message || "Failed to verify token" })
+    } finally {
+      setTesting(false)
+    }
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -77,10 +108,10 @@ export function GitSettingsDialog({ open, onOpenChange }: GitSettingsDialogProps
         }
       }
 
-      setMessage({ type: "success", text: "Settings saved successfully!" })
+      setMessage({ type: "success", text: "Settings saved successfully! You can now use your token for Git operations." })
       setTimeout(() => {
-        onOpenChange(false)
-      }, 1500)
+        setMessage(null)
+      }, 3000)
     } catch (error: any) {
       setMessage({ type: "error", text: error.message || "Failed to save settings" })
     } finally {
@@ -165,15 +196,26 @@ export function GitSettingsDialog({ open, onOpenChange }: GitSettingsDialogProps
 
             <div className="space-y-2">
               <Label htmlFor="github-token">GitHub Personal Access Token</Label>
-              <Input
-                id="github-token"
-                type="password"
-                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                value={githubToken}
-                onChange={(e) => setGithubToken(e.target.value)}
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="github-token"
+                  type="password"
+                  placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                  value={githubToken}
+                  onChange={(e) => setGithubToken(e.target.value)}
+                  className={githubToken ? "border-green-500" : ""}
+                />
+                <Button
+                  variant="outline"
+                  onClick={handleTestToken}
+                  disabled={!githubToken || testing}
+                >
+                  {testing ? "Testing..." : "Test"}
+                </Button>
+              </div>
               <p className="text-xs text-muted-foreground">
                 Used for push/pull operations with HTTPS
+                {githubToken && <span className="text-green-600 ml-2">✓ Token entered</span>}
               </p>
             </div>
           </TabsContent>

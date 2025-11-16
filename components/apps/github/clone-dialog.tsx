@@ -53,7 +53,14 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
               `https://${parsed.githubToken}@`
             )
             command = `git clone ${urlWithToken} ${fullPath}`
+            console.log('Using GitHub token for authentication')
+          } else {
+            setError("GitHub token not found in settings. Please add your token in Settings.")
+            return
           }
+        } else {
+          setError("GitHub token not found in settings. Please add your token in Settings.")
+          return
         }
       }
 
