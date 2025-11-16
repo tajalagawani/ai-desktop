@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -98,12 +99,12 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
 
       const result = await response.json()
       if (result.success) {
-        alert(`${operation.charAt(0).toUpperCase() + operation.slice(1)} completed successfully!`)
+        toast.success(`${operation.charAt(0).toUpperCase() + operation.slice(1)} completed successfully!`)
       } else {
-        alert(`${operation} failed: ${result.error}`)
+        toast.error(`${operation} failed: ${result.error}`)
       }
     } catch (error: any) {
-      alert(`${operation} failed: ${error.message}`)
+      toast.error(`${operation} failed: ${error.message}`)
     }
   }
   return (

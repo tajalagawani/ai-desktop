@@ -1,3 +1,4 @@
+import { toast } from "sonner"
 "use client"
 
 import { useState, useEffect } from "react"
@@ -58,7 +59,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
 
   const handleCreateBranch = async () => {
     if (!newBranchName.trim()) {
-      alert("Please enter a branch name")
+      toast.error("Please enter a branch name")
       return
     }
 
@@ -78,10 +79,10 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
         setNewBranchName("")
         loadBranches()
       } else {
-        alert(`Failed to create branch: ${result.error}`)
+        toast.error(`Failed to create branch: ${result.error}`)
       }
     } catch (error: any) {
-      alert(`Failed to create branch: ${error.message}`)
+      toast.error(`Failed to create branch: ${error.message}`)
     } finally {
       setCreating(false)
     }
@@ -102,16 +103,16 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
       if (result.success) {
         loadBranches()
       } else {
-        alert(`Failed to checkout branch: ${result.error}`)
+        toast.error(`Failed to checkout branch: ${result.error}`)
       }
     } catch (error: any) {
-      alert(`Failed to checkout branch: ${error.message}`)
+      toast.error(`Failed to checkout branch: ${error.message}`)
     }
   }
 
   const handleDeleteBranch = async (branchName: string, isCurrent: boolean) => {
     if (isCurrent) {
-      alert("Cannot delete the current branch")
+      toast.error("Cannot delete the current branch")
       return
     }
 
@@ -151,7 +152,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
         }
       }
     } catch (error: any) {
-      alert(`Failed to delete branch: ${error.message}`)
+      toast.error(`Failed to delete branch: ${error.message}`)
     }
   }
 

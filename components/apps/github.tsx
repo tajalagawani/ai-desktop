@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Toaster } from "sonner"
 import { GitHubHeader } from "./github/header"
 import { GitHubSidebar } from "./github/sidebar"
 import { GitHubMainContent } from "./github/main-content"
@@ -15,6 +16,7 @@ export function GitHubApp() {
 
   return (
     <div className="h-full w-full bg-background flex flex-col">
+      <Toaster position="top-center" richColors />
       {/* Header - Repository Selector & Actions */}
       <GitHubHeader
         currentRepo={currentRepo}

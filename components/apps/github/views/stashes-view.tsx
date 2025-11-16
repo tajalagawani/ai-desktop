@@ -1,3 +1,4 @@
+import { toast } from "sonner"
 "use client"
 
 import { useState, useEffect } from "react"
@@ -83,10 +84,10 @@ export function StashesView({ currentRepo }: StashesViewProps) {
         setStashMessage("")
         loadStashes()
       } else {
-        alert(`Failed to create stash: ${result.error}`)
+        toast.error(`Failed to create stash: ${result.error}`)
       }
     } catch (error: any) {
-      alert(`Failed to create stash: ${error.message}`)
+      toast.error(`Failed to create stash: ${error.message}`)
     } finally {
       setStashing(false)
     }
@@ -105,12 +106,12 @@ export function StashesView({ currentRepo }: StashesViewProps) {
 
       const result = await response.json()
       if (result.success) {
-        alert("Stash applied successfully!")
+        toast.success("Stash applied successfully!")
       } else {
-        alert(`Failed to apply stash: ${result.error}`)
+        toast.error(`Failed to apply stash: ${result.error}`)
       }
     } catch (error: any) {
-      alert(`Failed to apply stash: ${error.message}`)
+      toast.error(`Failed to apply stash: ${error.message}`)
     }
   }
 
@@ -128,12 +129,12 @@ export function StashesView({ currentRepo }: StashesViewProps) {
       const result = await response.json()
       if (result.success) {
         loadStashes()
-        alert("Stash popped successfully!")
+        toast.success("Stash popped successfully!")
       } else {
-        alert(`Failed to pop stash: ${result.error}`)
+        toast.error(`Failed to pop stash: ${result.error}`)
       }
     } catch (error: any) {
-      alert(`Failed to pop stash: ${error.message}`)
+      toast.error(`Failed to pop stash: ${error.message}`)
     }
   }
 
@@ -156,10 +157,10 @@ export function StashesView({ currentRepo }: StashesViewProps) {
       if (result.success) {
         loadStashes()
       } else {
-        alert(`Failed to drop stash: ${result.error}`)
+        toast.error(`Failed to drop stash: ${result.error}`)
       }
     } catch (error: any) {
-      alert(`Failed to drop stash: ${error.message}`)
+      toast.error(`Failed to drop stash: ${error.message}`)
     }
   }
 

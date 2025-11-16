@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { toast } from "sonner"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -120,7 +121,7 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
 
   const handleCommit = async () => {
     if (!commitMessage.trim()) {
-      alert("Please enter a commit message")
+      toast.error("Please enter a commit message")
       return
     }
 
@@ -139,12 +140,12 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
       if (result.success) {
         setCommitMessage("")
         loadChanges()
-        alert("Commit successful!")
+        toast.success("Commit successful!")
       } else {
-        alert(`Commit failed: ${result.error}`)
+        toast.error(`Commit failed: ${result.error}`)
       }
     } catch (error: any) {
-      alert(`Commit failed: ${error.message}`)
+      toast.error(`Commit failed: ${error.message}`)
     } finally {
       setCommitting(false)
     }
