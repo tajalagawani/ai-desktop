@@ -356,7 +356,7 @@ export function CodeEditorApp() {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 text-green-500 rounded-md text-sm">
             <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
-            Running
+            Running on port 8080
           </div>
           <span className="text-sm text-muted-foreground">
             {folder}
@@ -367,39 +367,78 @@ export function CodeEditorApp() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={refreshServer}
-            title="Refresh"
-          >
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.open(serverUrl, '_blank')}
-            title="Open in new window"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
             onClick={stopServer}
             className="text-destructive"
             title="Stop server"
           >
-            <Square className="h-4 w-4" />
+            <Square className="h-4 w-4 mr-2" />
+            Stop Server
           </Button>
         </div>
       </div>
 
-      {/* VS Code iframe */}
-      <iframe
-        id="code-editor-iframe"
-        src={serverUrl}
-        className="flex-1 w-full border-0"
-        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads"
-        title="VS Code Editor"
-      />
+      {/* VS Code iframe - with fallback */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-muted/20">
+        <div className="max-w-md text-center space-y-6">
+          <div className="mx-auto w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-4">
+            <Terminal className="h-10 w-10 text-blue-500" />
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold">VS Code is Running!</h2>
+            <p className="text-muted-foreground">
+              Open VS Code in a new browser tab to start coding
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <Button
+              onClick={() => window.open(serverUrl, '_blank', 'width=1600,height=1000')}
+              size="lg"
+              className="w-full"
+            >
+              <ExternalLink className="mr-2 h-5 w-5" />
+              Open VS Code
+            </Button>
+
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={() => {
+                  navigator.clipboard.writeText(serverUrl || '')
+                  toast.success("URL copied to clipboard!")
+                }}
+              >
+                Copy URL
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={refreshServer}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+            </div>
+          </div>
+
+          <div className="pt-6 border-t">
+            <div className="bg-muted p-3 rounded-lg font-mono text-sm">
+              {serverUrl}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Access VS Code from any browser using this URL
+            </p>
+          </div>
+
+          <div className="text-xs text-muted-foreground">
+            <p>💡 Tip: Bookmark the URL for quick access</p>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

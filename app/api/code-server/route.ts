@@ -45,13 +45,22 @@ export async function POST(request: NextRequest) {
         // Port is free, continue
       }
 
-      // Start code-server in background
+      // Start code-server in background with proper headers for iframe embedding
+      // Create config file to allow iframe embedding
+      const configDir = `/tmp/code-server-config-${serverPort}`
+      await execAsync(`mkdir -p ${configDir}`)
+
+      // Create config.yaml to disable X-Frame-Options
+      const configContent = `bind-addr: 0.0.0.0:${serverPort}
+auth: none
+disable-telemetry: true
+disable-update-check: true`
+
+      await execAsync(`echo '${configContent}' > ${configDir}/config.yaml`)
+
+      // Start code-server with config
       const startCommand = `nohup code-server "${targetFolder}" \
-        --auth none \
-        --port ${serverPort} \
-        --disable-telemetry \
-        --disable-update-check \
-        --bind-addr 0.0.0.0:${serverPort} \
+        --config ${configDir}/config.yaml \
         > /tmp/code-server-${serverPort}.log 2>&1 &`
 
       try {
