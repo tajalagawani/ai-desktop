@@ -55,7 +55,11 @@ print_success "Code updated"
 
 # Step 3: Install dependencies
 print_info "Installing dependencies..."
-npm ci --production=false
+if [ -f "package-lock.json" ]; then
+    npm ci --production=false
+else
+    npm install
+fi
 print_success "Dependencies installed"
 
 # Step 4: Build the application
