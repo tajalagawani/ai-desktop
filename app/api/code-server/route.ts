@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     const { action, folder, port } = await request.json()
 
     if (action === 'start') {
-      const serverPort = port || 8080
+      const serverPort = port || 8888  // Changed from 8080 to avoid conflicts
       const targetFolder = folder || '/var/www'
 
       // Check if code-server is installed
@@ -94,7 +94,7 @@ disable-update-check: true`
     }
 
     if (action === 'stop') {
-      const serverPort = port || 8080
+      const serverPort = port || 8888
 
       try {
         // Find process on port and kill it
@@ -124,7 +124,7 @@ disable-update-check: true`
     }
 
     if (action === 'status') {
-      const serverPort = port || 8080
+      const serverPort = port || 8888
 
       try {
         const { stdout } = await execAsync(`lsof -ti:${serverPort} || echo ""`)

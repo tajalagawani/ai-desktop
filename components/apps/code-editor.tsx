@@ -53,7 +53,7 @@ export function CodeEditorApp() {
         body: JSON.stringify({
           action: "start",
           folder: folder,
-          port: 8080
+          port: 8888
         })
       })
 
@@ -62,7 +62,7 @@ export function CodeEditorApp() {
       if (data.success) {
         // Use current hostname instead of hardcoded localhost
         const hostname = window.location.hostname
-        const serverUrl = `http://${hostname}:${data.port || 8080}`
+        const serverUrl = `http://${hostname}:${data.port || 8888}`
         setServerUrl(serverUrl)
         setServerRunning(true)
         toast.success("VS Code started successfully!")
@@ -356,7 +356,7 @@ export function CodeEditorApp() {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 text-green-500 rounded-md text-sm">
             <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
-            Running on port 8080
+            Running on port 8888
           </div>
           <span className="text-sm text-muted-foreground">
             {folder}
