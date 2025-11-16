@@ -19,6 +19,8 @@ export function CodeEditorApp() {
   const [folder, setFolder] = useState("/var/www")
   const [showInstallDialog, setShowInstallDialog] = useState(false)
   const [serverRunning, setServerRunning] = useState(false)
+  const [installing, setInstalling] = useState(false)
+  const [installMethod, setInstallMethod] = useState<'script' | 'homebrew' | 'npm'>('script')
 
   useEffect(() => {
     checkServerStatus()
@@ -111,6 +113,34 @@ export function CodeEditorApp() {
     }
   }
 
+  const handleInstall = async (method: 'script' | 'homebrew' | 'npm') => {
+    setInstalling(true)
+    setInstallMethod(method)
+
+    try {
+      const response = await fetch("/api/code-server/install", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ method })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast.success("code-server installed successfully!")
+        setShowInstallDialog(false)
+        // Try to start server automatically
+        setTimeout(() => startServer(), 1000)
+      } else {
+        toast.error(data.error || "Installation failed")
+      }
+    } catch (error: any) {
+      toast.error(`Installation failed: ${error.message}`)
+    } finally {
+      setInstalling(false)
+    }
+  }
+
   if (!serverUrl) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-background">
@@ -188,27 +218,104 @@ export function CodeEditorApp() {
 
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <h3 className="font-semibold">Installation Instructions:</h3>
+                <h3 className="font-semibold">Choose Installation Method:</h3>
 
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium mb-2">Option 1: Install Script (Recommended)</p>
-                    <div className="bg-muted p-3 rounded-lg font-mono text-sm">
-                      curl -fsSL https://code-server.dev/install.sh | sh
+                <div className="space-y-3">
+                  {/* Option 1: Install Script */}
+                  <div className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium mb-1">Install Script (Recommended)</p>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          Official installer - works on all Linux systems
+                        </p>
+                        <div className="bg-muted p-2 rounded font-mono text-xs">
+                          curl -fsSL https://code-server.dev/install.sh | sh
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => handleInstall('script')}
+                        disabled={installing}
+                        size="sm"
+                      >
+                        {installing && installMethod === 'script' ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Installing...
+                          </>
+                        ) : (
+                          <>
+                            <Play className="mr-2 h-4 w-4" />
+                            Install
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </div>
 
-                  <div>
-                    <p className="text-sm font-medium mb-2">Option 2: Homebrew (macOS)</p>
-                    <div className="bg-muted p-3 rounded-lg font-mono text-sm">
-                      brew install code-server
+                  {/* Option 2: Homebrew */}
+                  <div className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium mb-1">Homebrew (macOS)</p>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          For macOS users with Homebrew installed
+                        </p>
+                        <div className="bg-muted p-2 rounded font-mono text-xs">
+                          brew install code-server
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => handleInstall('homebrew')}
+                        disabled={installing}
+                        size="sm"
+                        variant="outline"
+                      >
+                        {installing && installMethod === 'homebrew' ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Installing...
+                          </>
+                        ) : (
+                          <>
+                            <Play className="mr-2 h-4 w-4" />
+                            Install
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </div>
 
-                  <div>
-                    <p className="text-sm font-medium mb-2">Option 3: npm (Global)</p>
-                    <div className="bg-muted p-3 rounded-lg font-mono text-sm">
-                      npm install -g code-server
+                  {/* Option 3: npm */}
+                  <div className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium mb-1">npm (Global)</p>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          Install via npm package manager
+                        </p>
+                        <div className="bg-muted p-2 rounded font-mono text-xs">
+                          npm install -g code-server
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => handleInstall('npm')}
+                        disabled={installing}
+                        size="sm"
+                        variant="outline"
+                      >
+                        {installing && installMethod === 'npm' ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Installing...
+                          </>
+                        ) : (
+                          <>
+                            <Play className="mr-2 h-4 w-4" />
+                            Install
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -216,7 +323,8 @@ export function CodeEditorApp() {
 
               <div className="pt-4 border-t">
                 <p className="text-sm text-muted-foreground">
-                  After installation, restart this app and click "Start VS Code" again.
+                  Click "Install" to run the installation automatically in the background.
+                  The app will start VS Code once installation completes.
                 </p>
               </div>
 
@@ -230,8 +338,8 @@ export function CodeEditorApp() {
                   View documentation
                   <ExternalLink className="h-3 w-3" />
                 </a>
-                <Button onClick={() => setShowInstallDialog(false)}>
-                  Got it
+                <Button onClick={() => setShowInstallDialog(false)} variant="outline">
+                  Cancel
                 </Button>
               </div>
             </div>
