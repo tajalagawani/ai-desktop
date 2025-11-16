@@ -11,11 +11,14 @@ function validatePath(filePath: string): string {
   }
 
   const normalizedPath = path.normalize(filePath)
-  const relativePath = normalizedPath.startsWith('/')
-    ? normalizedPath.slice(1)
-    : normalizedPath
 
-  const absolutePath = path.join(SAFE_ROOT, relativePath)
+  // If path starts with /, treat it as absolute system path
+  if (normalizedPath.startsWith('/')) {
+    return normalizedPath
+  }
+
+  // Otherwise, treat as relative to SAFE_ROOT
+  const absolutePath = path.join(SAFE_ROOT, normalizedPath)
 
   if (!absolutePath.startsWith(SAFE_ROOT)) {
     throw new Error('Access denied: Path is outside allowed directory')
@@ -54,11 +57,14 @@ export async function GET(request: NextRequest) {
           const fullPath = path.join(safePath, entry.name)
           const itemStats = await fs.stat(fullPath)
 
-          // Create relative path from SAFE_ROOT for display
-          let relativePath = fullPath.replace(SAFE_ROOT, '')
-          // Ensure path starts with /
-          if (!relativePath.startsWith('/')) {
-            relativePath = '/' + relativePath
+          // Create path for display
+          let displayPath = fullPath
+          // If current path is under SAFE_ROOT, make it relative to SAFE_ROOT
+          if (fullPath.startsWith(SAFE_ROOT) && dirPath !== '/') {
+            displayPath = fullPath.replace(SAFE_ROOT, '')
+            if (!displayPath.startsWith('/')) {
+              displayPath = '/' + displayPath
+            }
           }
 
           return {
@@ -67,7 +73,7 @@ export async function GET(request: NextRequest) {
             type: entry.isDirectory() ? 'folder' : 'file',
             size: itemStats.size,
             modified: itemStats.mtime.toISOString(),
-            path: relativePath
+            path: displayPath
           }
         } catch {
           return null
