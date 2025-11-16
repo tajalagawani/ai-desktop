@@ -6,7 +6,14 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
-import { FileEdit, FilePlus, FileX, Loader2 } from "lucide-react"
+import { FileEdit, FilePlus, FileX, Loader2, RotateCcw, History } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface ChangesViewProps {
   currentRepo: string
@@ -24,6 +31,7 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
   const [loading, setLoading] = useState(true)
   const [commitMessage, setCommitMessage] = useState("")
   const [committing, setCommitting] = useState(false)
+  const [amendMode, setAmendMode] = useState(false)
 
   useEffect(() => {
     loadChanges()
@@ -127,20 +135,25 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
 
     setCommitting(true)
     try {
+      const command = amendMode
+        ? `git commit --amend -m "${commitMessage.replace(/"/g, '\\"')}"`
+        : `git commit -m "${commitMessage.replace(/"/g, '\\"')}"`
+
       const response = await fetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           repoPath: currentRepo,
-          command: `git commit -m "${commitMessage.replace(/"/g, '\\"')}"`,
+          command,
         }),
       })
 
       const result = await response.json()
       if (result.success) {
         setCommitMessage("")
+        setAmendMode(false)
         loadChanges()
-        toast.success("Commit successful!")
+        toast.success(amendMode ? "Commit amended successfully!" : "Commit successful!")
       } else {
         toast.error(`Commit failed: ${result.error}`)
       }
@@ -148,6 +161,87 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
       toast.error(`Commit failed: ${error.message}`)
     } finally {
       setCommitting(false)
+    }
+  }
+
+  const handleDiscardChanges = async (file: GitFile) => {
+    if (!confirm(`Are you sure you want to discard changes in "${file.path}"? This cannot be undone.`)) {
+      return
+    }
+
+    try {
+      const command = file.status === 'untracked'
+        ? `rm "${file.path}"`
+        : `git restore "${file.path}"`
+
+      const response = await fetch("/api/git", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          repoPath: currentRepo,
+          command,
+        }),
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        loadChanges()
+        toast.success("Changes discarded")
+      } else {
+        toast.error(`Failed to discard changes: ${result.error}`)
+      }
+    } catch (error: any) {
+      toast.error(`Failed to discard changes: ${error.message}`)
+    }
+  }
+
+  const handleDiscardAll = async () => {
+    if (!confirm("Are you sure you want to discard ALL changes? This cannot be undone.")) {
+      return
+    }
+
+    try {
+      const response = await fetch("/api/git", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          repoPath: currentRepo,
+          command: "git restore .",
+        }),
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        loadChanges()
+        toast.success("All changes discarded")
+      } else {
+        toast.error(`Failed to discard changes: ${result.error}`)
+      }
+    } catch (error: any) {
+      toast.error(`Failed to discard changes: ${error.message}`)
+    }
+  }
+
+  const handleAmendLastCommit = async () => {
+    try {
+      // Get last commit message
+      const response = await fetch("/api/git", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          repoPath: currentRepo,
+          command: "git log -1 --pretty=%B",
+        }),
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        setCommitMessage(result.output.trim())
+        setAmendMode(true)
+        toast.success("Ready to amend last commit")
+      }
+    } catch (error: any) {
+      toast.error(`Failed to load commit message: ${error.message}`)
     }
   }
 
@@ -211,25 +305,43 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-semibold">Changes ({unstagedFiles.length})</h3>
-                <Button variant="ghost" size="sm" onClick={stageAll}>
-                  Stage All
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" onClick={handleDiscardAll} className="text-destructive">
+                    <RotateCcw className="h-4 w-4 mr-1" />
+                    Discard All
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={stageAll}>
+                    Stage All
+                  </Button>
+                </div>
               </div>
               <div className="space-y-1">
                 {unstagedFiles.map((file) => (
                   <div
                     key={file.path}
                     className="flex items-center gap-2 p-2 rounded hover:bg-muted/50 cursor-pointer group"
-                    onClick={() => onFileSelect?.(file.path)}
                   >
                     <Checkbox
                       checked={file.staged}
                       onCheckedChange={() => toggleStageFile(file)}
                       onClick={(e) => e.stopPropagation()}
                     />
-                    {getFileIcon(file.status)}
-                    <span className="text-sm flex-1">{file.path}</span>
-                    <span className="text-xs text-muted-foreground capitalize">{file.status}</span>
+                    <div className="flex-1 flex items-center gap-2" onClick={() => onFileSelect?.(file.path)}>
+                      {getFileIcon(file.status)}
+                      <span className="text-sm flex-1">{file.path}</span>
+                      <span className="text-xs text-muted-foreground capitalize">{file.status}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDiscardChanges(file)
+                      }}
+                      className="opacity-0 group-hover:opacity-100 text-destructive"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -246,6 +358,20 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
 
       {/* Commit Panel */}
       <div className="border-t border-border p-4 space-y-3">
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-sm font-medium">
+            {amendMode ? "Amend Commit Message" : "Commit Message"}
+          </label>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleAmendLastCommit}
+            disabled={amendMode}
+          >
+            <History className="h-4 w-4 mr-1" />
+            Amend Last
+          </Button>
+        </div>
         <Textarea
           placeholder="Commit message..."
           value={commitMessage}
@@ -253,14 +379,27 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
           rows={3}
           className="resize-none"
         />
-        <Button
-          className="w-full"
-          onClick={handleCommit}
-          disabled={stagedFiles.length === 0 || committing}
-        >
-          {committing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Commit to {currentRepo ? 'main' : 'branch'}
-        </Button>
+        <div className="flex gap-2">
+          {amendMode && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setAmendMode(false)
+                setCommitMessage("")
+              }}
+            >
+              Cancel Amend
+            </Button>
+          )}
+          <Button
+            className="flex-1"
+            onClick={handleCommit}
+            disabled={stagedFiles.length === 0 || committing}
+          >
+            {committing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {amendMode ? "Amend Commit" : "Commit"}
+          </Button>
+        </div>
       </div>
     </div>
   )
