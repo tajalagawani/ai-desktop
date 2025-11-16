@@ -44,6 +44,12 @@ export const QUICK_ACCESS_ITEMS: QuickAccessItem[] = [
     path: "/",
   },
   {
+    id: "github",
+    name: "GitHub Repos",
+    icon: "GitBranch",
+    path: "/tmp/github",
+  },
+  {
     id: "ai-desktop",
     name: "AI Desktop",
     icon: "FolderOpen",
