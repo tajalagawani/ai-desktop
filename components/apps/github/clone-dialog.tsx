@@ -24,7 +24,7 @@ interface CloneDialogProps {
 
 export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialogProps) {
   const [cloneUrl, setCloneUrl] = useState("")
-  const [clonePath, setClonePath] = useState("/tmp/github/")
+  const [clonePath, setClonePath] = useState("/var/www/github/")
   const [authMethod, setAuthMethod] = useState<"https" | "ssh">("https")
   const [cloning, setCloning] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -91,7 +91,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
 
       // Reset form
       setCloneUrl("")
-      setClonePath("/var/www/")
+      setClonePath("/var/www/github/")
     } catch (error: any) {
       setError(error.message || "Failed to clone repository")
     } finally {
@@ -146,7 +146,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
             <div className="flex gap-2">
               <Input
                 id="clone-path"
-                placeholder="/var/www/"
+                placeholder="/var/www/github/"
                 value={clonePath}
                 onChange={(e) => setClonePath(e.target.value)}
               />
