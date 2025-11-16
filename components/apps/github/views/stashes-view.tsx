@@ -1,7 +1,7 @@
-import { toast } from "sonner"
 "use client"
 
 import { useState, useEffect } from "react"
+import { toast } from "sonner"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
