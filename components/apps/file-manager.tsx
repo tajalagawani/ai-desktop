@@ -84,13 +84,18 @@ export function FileManager() {
   }, [currentPath, showHidden, loadFiles])
 
   const handleOpenFolder = (folder: FileItem) => {
+    console.log('Opening folder:', folder.name, 'Path:', folder.path, 'Type:', folder.type)
     if (folder.type === 'folder') {
+      console.log('Setting current path to:', folder.path)
       setCurrentPath(folder.path)
       setSelectedFile(null)
+    } else {
+      console.log('Item is not a folder, type is:', folder.type)
     }
   }
 
   const handleBreadcrumbClick = (path: string) => {
+    console.log('Breadcrumb clicked, navigating to:', path)
     setCurrentPath(path)
     setSelectedFile(null)
   }
@@ -493,9 +498,16 @@ function FileGrid({ files, selectedFile, onSelectFile, onOpenFile, onDelete, loa
               className={`flex flex-col items-center p-2.5 rounded-md hover:bg-accent cursor-pointer group relative transition-colors ${
                 selectedFile?.id === item.id ? 'bg-accent' : ''
               }`}
-              onClick={() => onSelectFile(item)}
-              onDoubleClick={() => onOpenFile(item)}
+              onClick={() => {
+                console.log('Single click on:', item.name)
+                onSelectFile(item)
+              }}
+              onDoubleClick={() => {
+                console.log('Double click on:', item.name, 'Type:', item.type)
+                onOpenFile(item)
+              }}
               onContextMenu={(e) => {
+                console.log('Right click on:', item.name)
                 e.preventDefault()
                 onSelectFile(item)
               }}
