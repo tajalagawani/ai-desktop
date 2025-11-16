@@ -80,8 +80,13 @@ export function FileManager() {
   }, [])
 
   React.useEffect(() => {
+    console.log('=== FILE MANAGER: Loading files for path:', currentPath, 'showHidden:', showHidden)
     loadFiles(currentPath, showHidden)
   }, [currentPath, showHidden, loadFiles])
+
+  React.useEffect(() => {
+    console.log('=== FILE MANAGER: Files loaded, count:', files.length, 'Files:', files)
+  }, [files])
 
   const handleOpenFolder = (folder: FileItem) => {
     console.log('Opening folder:', folder.name, 'Path:', folder.path, 'Type:', folder.type)
