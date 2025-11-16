@@ -31,7 +31,9 @@ export function CodeEditorApp() {
 
       if (data.success && data.servers.length > 0) {
         const server = data.servers[0]
-        setServerUrl(server.url)
+        const hostname = window.location.hostname
+        const serverUrl = `http://${hostname}:${server.port}`
+        setServerUrl(serverUrl)
         setFolder(server.folder)
         setServerRunning(true)
       }
@@ -56,7 +58,10 @@ export function CodeEditorApp() {
       const data = await response.json()
 
       if (data.success) {
-        setServerUrl(data.url)
+        // Use current hostname instead of hardcoded localhost
+        const hostname = window.location.hostname
+        const serverUrl = `http://${hostname}:${data.port || 8080}`
+        setServerUrl(serverUrl)
         setServerRunning(true)
         toast.success("VS Code started successfully!")
       } else {

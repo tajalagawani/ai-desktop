@@ -1,100 +1,144 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { spawn, exec } from 'child_process'
+import { exec } from 'child_process'
 import { promisify } from 'util'
 
 const execAsync = promisify(exec)
 
-// Store running code-server processes
-const runningServers = new Map<string, any>()
+// Store running code-server processes (port -> folder mapping)
+const runningServers = new Map<number, string>()
 
 export async function POST(request: NextRequest) {
   try {
     const { action, folder, port } = await request.json()
 
     if (action === 'start') {
+      const serverPort = port || 8080
+      const targetFolder = folder || '/var/www'
+
       // Check if code-server is installed
       try {
         await execAsync('which code-server')
       } catch (error) {
         return NextResponse.json({
           success: false,
-          error: 'code-server not installed. Install with: curl -fsSL https://code-server.dev/install.sh | sh'
+          error: 'code-server not installed. Install with: curl -fsSL https://code-server.dev/install.sh | sh',
+          installInstructions: {
+            script: 'curl -fsSL https://code-server.dev/install.sh | sh',
+            homebrew: 'brew install code-server',
+            npm: 'npm install -g code-server'
+          }
         }, { status: 400 })
       }
 
-      const serverPort = port || 8080
-
-      // Check if server already running for this folder
-      if (runningServers.has(folder)) {
-        return NextResponse.json({
-          success: true,
-          url: `http://localhost:${serverPort}`,
-          message: 'Server already running'
-        })
+      // Check if port is already in use
+      try {
+        const { stdout } = await execAsync(`lsof -ti:${serverPort} || echo ""`)
+        if (stdout.trim()) {
+          return NextResponse.json({
+            success: true,
+            port: serverPort,
+            folder: runningServers.get(serverPort) || targetFolder,
+            message: 'code-server already running on this port'
+          })
+        }
+      } catch (error) {
+        // Port is free, continue
       }
 
-      // Start code-server
-      const server = spawn('code-server', [
-        folder || process.cwd(),
-        '--auth', 'none',
-        '--port', serverPort.toString(),
-        '--disable-telemetry',
-        '--disable-update-check',
-        '--bind-addr', `127.0.0.1:${serverPort}`
-      ])
+      // Start code-server in background
+      const startCommand = `nohup code-server "${targetFolder}" \
+        --auth none \
+        --port ${serverPort} \
+        --disable-telemetry \
+        --disable-update-check \
+        --bind-addr 0.0.0.0:${serverPort} \
+        > /tmp/code-server-${serverPort}.log 2>&1 &`
 
-      runningServers.set(folder, { process: server, port: serverPort })
+      try {
+        await execAsync(startCommand)
 
-      server.stdout?.on('data', (data) => {
-        console.log(`code-server: ${data}`)
-      })
+        // Wait for server to start
+        await new Promise(resolve => setTimeout(resolve, 3000))
 
-      server.stderr?.on('data', (data) => {
-        console.error(`code-server error: ${data}`)
-      })
+        // Verify it started
+        const { stdout } = await execAsync(`lsof -ti:${serverPort} || echo ""`)
+        if (!stdout.trim()) {
+          // Check logs for error
+          const { stdout: logs } = await execAsync(`tail -20 /tmp/code-server-${serverPort}.log`)
+          throw new Error(`Failed to start code-server. Logs: ${logs}`)
+        }
 
-      server.on('close', (code) => {
-        console.log(`code-server exited with code ${code}`)
-        runningServers.delete(folder)
-      })
+        runningServers.set(serverPort, targetFolder)
 
-      // Wait a bit for server to start
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      return NextResponse.json({
-        success: true,
-        url: `http://localhost:${serverPort}`,
-        message: 'code-server started successfully'
-      })
+        return NextResponse.json({
+          success: true,
+          port: serverPort,
+          folder: targetFolder,
+          message: 'code-server started successfully'
+        })
+      } catch (error: any) {
+        return NextResponse.json({
+          success: false,
+          error: `Failed to start code-server: ${error.message}`
+        }, { status: 500 })
+      }
     }
 
     if (action === 'stop') {
-      const serverInfo = runningServers.get(folder)
-      if (serverInfo) {
-        serverInfo.process.kill()
-        runningServers.delete(folder)
+      const serverPort = port || 8080
+
+      try {
+        // Find process on port and kill it
+        const { stdout } = await execAsync(`lsof -ti:${serverPort} || echo ""`)
+        const pid = stdout.trim()
+
+        if (pid) {
+          await execAsync(`kill ${pid}`)
+          runningServers.delete(serverPort)
+
+          return NextResponse.json({
+            success: true,
+            message: 'code-server stopped'
+          })
+        } else {
+          return NextResponse.json({
+            success: false,
+            error: 'No server running on this port'
+          }, { status: 404 })
+        }
+      } catch (error: any) {
         return NextResponse.json({
-          success: true,
-          message: 'Server stopped'
-        })
+          success: false,
+          error: `Failed to stop code-server: ${error.message}`
+        }, { status: 500 })
       }
-      return NextResponse.json({
-        success: false,
-        error: 'No server running for this folder'
-      }, { status: 404 })
     }
 
     if (action === 'status') {
-      return NextResponse.json({
-        success: true,
-        running: runningServers.has(folder),
-        servers: Array.from(runningServers.keys())
-      })
+      const serverPort = port || 8080
+
+      try {
+        const { stdout } = await execAsync(`lsof -ti:${serverPort} || echo ""`)
+        const isRunning = !!stdout.trim()
+
+        return NextResponse.json({
+          success: true,
+          running: isRunning,
+          port: serverPort,
+          folder: runningServers.get(serverPort)
+        })
+      } catch (error: any) {
+        return NextResponse.json({
+          success: true,
+          running: false,
+          port: serverPort
+        })
+      }
     }
 
     return NextResponse.json({
       success: false,
-      error: 'Invalid action'
+      error: 'Invalid action. Use: start, stop, or status'
     }, { status: 400 })
 
   } catch (error: any) {
@@ -106,14 +150,37 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
-  // Get list of running servers
-  return NextResponse.json({
-    success: true,
-    servers: Array.from(runningServers.entries()).map(([folder, info]) => ({
-      folder,
-      port: info.port,
-      url: `http://localhost:${info.port}`
-    }))
-  })
+export async function GET() {
+  try {
+    // Get all running code-server instances
+    const servers = []
+
+    for (const [port, folder] of runningServers.entries()) {
+      try {
+        const { stdout } = await execAsync(`lsof -ti:${port} || echo ""`)
+        if (stdout.trim()) {
+          servers.push({
+            port,
+            folder,
+            pid: stdout.trim()
+          })
+        } else {
+          // Clean up if process died
+          runningServers.delete(port)
+        }
+      } catch (error) {
+        runningServers.delete(port)
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      servers
+    })
+  } catch (error: any) {
+    return NextResponse.json({
+      success: false,
+      error: error.message
+    }, { status: 500 })
+  }
 }
