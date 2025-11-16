@@ -247,6 +247,8 @@ export function FileManager() {
           <DetailsPanel
             file={selectedFile}
             onClose={() => setSelectedFile(null)}
+            onOpenFolder={handleOpenFolder}
+            onDelete={handleDelete}
           />
         )}
       </div>
@@ -547,7 +549,17 @@ function FileGrid({ files, selectedFile, onSelectFile, onOpenFile, onDelete, loa
   )
 }
 // Details Panel Component
-function DetailsPanel({ file, onClose }: { file: FileItem; onClose: () => void }) {
+function DetailsPanel({
+  file,
+  onClose,
+  onOpenFolder,
+  onDelete
+}: {
+  file: FileItem;
+  onClose: () => void;
+  onOpenFolder: (file: FileItem) => void;
+  onDelete: (file: FileItem) => void;
+}) {
   const isFolder = file.type === 'folder'
   const IconComponent = isFolder ? Folder : File
 
@@ -633,7 +645,11 @@ function DetailsPanel({ file, onClose }: { file: FileItem; onClose: () => void }
               variant="outline"
               size="sm"
               className="w-full justify-start text-sm"
-              onClick={() => console.log('Open folder:', file.path)}
+              onClick={() => {
+                console.log('Opening folder from details panel:', file.path)
+                onOpenFolder(file)
+                onClose()
+              }}
             >
               <Folder className="h-4 w-4 mr-2" />
               Open Folder
@@ -652,7 +668,10 @@ function DetailsPanel({ file, onClose }: { file: FileItem; onClose: () => void }
             variant="outline"
             size="sm"
             className="w-full justify-start text-sm text-destructive hover:text-destructive"
-            disabled
+            onClick={() => {
+              onDelete(file)
+              onClose()
+            }}
           >
             <Trash2 className="h-4 w-4 mr-2" />
             Delete
