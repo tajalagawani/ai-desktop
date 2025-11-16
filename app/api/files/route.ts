@@ -54,8 +54,12 @@ export async function GET(request: NextRequest) {
           const fullPath = path.join(safePath, entry.name)
           const itemStats = await fs.stat(fullPath)
 
-          // Create relative path from SAFE_ROOT
-          const relativePath = fullPath.replace(SAFE_ROOT, '')
+          // Create relative path from SAFE_ROOT for display
+          let relativePath = fullPath.replace(SAFE_ROOT, '')
+          // Ensure path starts with /
+          if (!relativePath.startsWith('/')) {
+            relativePath = '/' + relativePath
+          }
 
           return {
             id: fullPath,
@@ -63,7 +67,7 @@ export async function GET(request: NextRequest) {
             type: entry.isDirectory() ? 'folder' : 'file',
             size: itemStats.size,
             modified: itemStats.mtime.toISOString(),
-            path: relativePath || '/'
+            path: relativePath
           }
         } catch {
           return null
