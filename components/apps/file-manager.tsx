@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronRight, ChevronsUpDown, Menu, RefreshCw, Plus, Trash2, FolderPlus, Eye, EyeOff } from "lucide-react"
+import { ChevronRight, ChevronsUpDown, Menu, RefreshCw, Plus, Trash2, FolderPlus, Eye, EyeOff, X, File, Folder } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import {
@@ -196,6 +196,7 @@ export function FileManager() {
             onNewFolder={() => setNewFolderMode(true)}
             showHidden={showHidden}
             onToggleHidden={() => setShowHidden(!showHidden)}
+            selectedFile={selectedFile}
           />
 
           {/* New Folder Input */}
@@ -240,6 +241,14 @@ export function FileManager() {
             loading={loading}
           />
         </div>
+
+        {/* Details Panel */}
+        {selectedFile && (
+          <DetailsPanel
+            file={selectedFile}
+            onClose={() => setSelectedFile(null)}
+          />
+        )}
       </div>
     </div>
   )
@@ -533,6 +542,122 @@ function FileGrid({ files, selectedFile, onSelectFile, onOpenFile, onDelete, loa
             </div>
           )
         })}
+      </div>
+    </div>
+  )
+}
+// Details Panel Component
+function DetailsPanel({ file, onClose }: { file: FileItem; onClose: () => void }) {
+  const isFolder = file.type === 'folder'
+  const IconComponent = isFolder ? Folder : File
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  return (
+    <div className="w-80 border-l bg-background flex-shrink-0 flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b">
+        <h3 className="text-sm font-semibold">Details</h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0"
+          onClick={onClose}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-auto p-4 space-y-6">
+        {/* Icon and Name */}
+        <div className="flex flex-col items-center gap-3 py-4">
+          <IconComponent className="h-16 w-16 text-blue-500" />
+          <div className="text-center">
+            <p className="text-sm font-medium break-all">{file.name}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {isFolder ? 'Folder' : 'File'}
+            </p>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* File Information */}
+        <div className="space-y-3">
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Type</p>
+            <p className="text-sm">{isFolder ? 'Folder' : file.name.split('.').pop()?.toUpperCase() || 'File'}</p>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Size</p>
+            <p className="text-sm">{isFolder ? '—' : formatBytes(file.size)}</p>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Modified</p>
+            <p className="text-sm">{formatDate(file.modified)}</p>
+          </div>
+
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">Path</p>
+            <p className="text-xs text-muted-foreground break-all font-mono">{file.path}</p>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Actions */}
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase mb-2">Actions</p>
+          {isFolder && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full justify-start text-sm"
+              onClick={() => console.log('Open folder:', file.path)}
+            >
+              <Folder className="h-4 w-4 mr-2" />
+              Open Folder
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full justify-start text-sm"
+            disabled
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Rename
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full justify-start text-sm text-destructive hover:text-destructive"
+            disabled
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete
+          </Button>
+        </div>
       </div>
     </div>
   )
