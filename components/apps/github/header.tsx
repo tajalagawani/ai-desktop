@@ -132,18 +132,28 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => console.log('Add button clicked')}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add
                   <ChevronDown className="h-3 w-3 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem onClick={() => setCloneOpen(true)}>
+              <DropdownMenuContent align="start" className="z-[10000]">
+                <DropdownMenuItem onClick={() => {
+                  console.log('Clone clicked')
+                  setCloneOpen(true)
+                }}>
                   <FolderGit2 className="h-4 w-4 mr-2" />
                   Clone Repository
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleAddExisting}>
+                <DropdownMenuItem onClick={() => {
+                  console.log('Add existing clicked')
+                  handleAddExisting()
+                }}>
                   <FolderPlus className="h-4 w-4 mr-2" />
                   Add Existing Repository
                 </DropdownMenuItem>

@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Security: Validate repo path (must be under /var/www or safe directory)
-    const SAFE_PATHS = ['/var/www', '/root', '/home']
+    const SAFE_PATHS = ['/var/www', '/root', '/home', '/tmp']
     const isSafePath = SAFE_PATHS.some(safePath => repoPath.startsWith(safePath))
 
     if (!isSafePath) {

@@ -36,7 +36,6 @@ export function GitHubMainContent({
       {view === "changes" && (
         <ChangesView
           currentRepo={currentRepo}
-          selectedFile={selectedFile}
           onFileSelect={onFileSelect}
         />
       )}

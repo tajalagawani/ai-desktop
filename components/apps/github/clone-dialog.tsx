@@ -24,7 +24,7 @@ interface CloneDialogProps {
 
 export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialogProps) {
   const [cloneUrl, setCloneUrl] = useState("")
-  const [clonePath, setClonePath] = useState("/var/www/")
+  const [clonePath, setClonePath] = useState("/tmp/")
   const [authMethod, setAuthMethod] = useState<"https" | "ssh">("https")
   const [cloning, setCloning] = useState(false)
   const [error, setError] = useState<string | null>(null)
