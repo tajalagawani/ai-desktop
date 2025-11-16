@@ -248,9 +248,9 @@ function Sidebar({ isOpen, onNavigate }: any) {
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
               <CommandIcon className="size-4" />
             </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-normal">{USER_PROFILE.company}</span>
-              <span className="truncate text-xs">{USER_PROFILE.plan}</span>
+            <div className="grid flex-1 text-left text-xs leading-tight">
+              <span className="truncate font-medium">{USER_PROFILE.company}</span>
+              <span className="truncate text-[10px] text-muted-foreground">{USER_PROFILE.plan}</span>
             </div>
           </div>
         </div>
@@ -352,20 +352,20 @@ function Header({ onToggleSidebar, breadcrumbs, onBreadcrumbClick, onRefresh, on
 function QuickAccessSection({ items, onNavigate }: any) {
   return (
     <div className="px-3 py-2">
-      <h2 className="mb-2 px-2 text-lg font-normal tracking-tight">Quick Access</h2>
-      <div className="space-y-1">
+      <h2 className="mb-2 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Quick Access</h2>
+      <div className="space-y-0.5">
         {items.map((item: any) => {
           const Icon = getIcon(item.icon)
           return (
             <button
               key={item.id}
-              className="flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-muted-foreground hover:text-primary hover:bg-accent"
+              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               onClick={() => item.path && onNavigate(item.path)}
             >
-              <Icon {...getIconProps("sm")} />
+              <Icon className="h-4 w-4" />
               <span className="flex-1 text-left">{item.name}</span>
               {item.badge && (
-                <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded">
                   {item.badge}
                 </span>
               )}
@@ -426,19 +426,19 @@ function SecondaryNav({ items }: any) {
 // User Section
 function UserSection({ profile }: any) {
   return (
-    <div className="mt-auto border-t p-4">
+    <div className="mt-auto border-t p-3">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-accent">
-            <Avatar className="h-8 w-8">
+          <button className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent transition-colors">
+            <Avatar className="h-7 w-7">
               <AvatarImage src={profile.avatar} />
-              <AvatarFallback>{profile.initials}</AvatarFallback>
+              <AvatarFallback className="text-xs">{profile.initials}</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-normal">{profile.name}</span>
-              <span className="truncate text-xs">{profile.email}</span>
+            <div className="grid flex-1 text-left text-xs leading-tight">
+              <span className="truncate font-medium">{profile.name}</span>
+              <span className="truncate text-[10px] text-muted-foreground">{profile.email}</span>
             </div>
-            <ChevronsUpDown className="size-4" />
+            <ChevronsUpDown className="h-3 w-3 text-muted-foreground" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="start">
@@ -490,7 +490,7 @@ function FileGrid({ files, selectedFile, onSelectFile, onOpenFile, onDelete, loa
           return (
             <div
               key={item.id}
-              className={`flex flex-col items-center p-3 rounded-lg hover:bg-accent cursor-pointer group relative ${
+              className={`flex flex-col items-center p-2.5 rounded-md hover:bg-accent cursor-pointer group relative transition-colors ${
                 selectedFile?.id === item.id ? 'bg-accent' : ''
               }`}
               onClick={() => onSelectFile(item)}
@@ -500,8 +500,8 @@ function FileGrid({ files, selectedFile, onSelectFile, onOpenFile, onDelete, loa
                 onSelectFile(item)
               }}
             >
-              <Icon className={`w-12 h-12 mb-2 ${iconColor}`} />
-              <span className="text-xs text-center truncate w-full">{item.name}</span>
+              <Icon className={`w-10 h-10 mb-1.5 ${iconColor}`} />
+              <span className="text-[11px] text-center truncate w-full leading-tight">{item.name}</span>
 
               {/* Delete button on hover */}
               <button
