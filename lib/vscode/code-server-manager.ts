@@ -1,8 +1,5 @@
 import { spawn, ChildProcess, execSync } from 'child_process'
 import fs from 'fs'
-import path from 'path'
-
-const WORKSPACES_DIR = '/var/www/vscode-workspaces'
 
 export class CodeServerManager {
   private processes: Map<string, ChildProcess> = new Map()
@@ -16,36 +13,16 @@ export class CodeServerManager {
     port: number
   ): Promise<{ pid: number; port: number }> {
     const safeName = projectName.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()
-    const workspaceDir = path.join(WORKSPACES_DIR, safeName)
 
     console.log(`[code-server] ====================================`)
     console.log(`[code-server] Starting server for ${projectName}`)
     console.log(`[code-server] Repository Path: ${repoPath}`)
-    console.log(`[code-server] Workspace Directory: ${workspaceDir}`)
     console.log(`[code-server] Port: ${port}`)
-    console.log(`[code-server] WORKSPACES_DIR constant: ${WORKSPACES_DIR}`)
-    console.log(`[code-server] safeName: ${projectName.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()}`)
     console.log(`[code-server] ====================================")`)
 
-    // Create workspace directory if it doesn't exist
-    if (!fs.existsSync(workspaceDir)) {
-      fs.mkdirSync(workspaceDir, { recursive: true })
-      console.log(`[code-server] Created workspace directory: ${workspaceDir}`)
-    }
-
-    // Sync the repository to workspace if it exists
-    if (repoPath && fs.existsSync(repoPath)) {
-      try {
-        console.log(`[code-server] Syncing repository from ${repoPath} to ${workspaceDir}`)
-        const rsyncOutput = execSync(`rsync -av --delete "${repoPath}/" "${workspaceDir}/"`, { encoding: 'utf-8' })
-        console.log(`[code-server] Rsync output:`, rsyncOutput.split('\n').slice(0, 5).join('\n'))
-        console.log(`[code-server] Repository synced successfully`)
-      } catch (error: any) {
-        console.error(`[code-server] Failed to sync repository:`, error.message)
-        // Continue anyway, code-server will work with empty directory
-      }
-    } else {
-      console.warn(`[code-server] Repository path does not exist or is empty: ${repoPath}`)
+    // Verify repository path exists
+    if (!repoPath || !fs.existsSync(repoPath)) {
+      throw new Error(`Repository path does not exist: ${repoPath}`)
     }
 
     // Check if code-server is installed
@@ -55,31 +32,29 @@ export class CodeServerManager {
       throw new Error('code-server is not installed. Please install it first.')
     }
 
-    // Start code-server with explicit workspace directory
+    // Start code-server directly on the repository path (no copying/syncing)
     console.log(`[code-server] Spawning code-server with args:`, [
-      workspaceDir,
+      repoPath,
       '--bind-addr', `127.0.0.1:${port}`,
       '--auth', 'none',
       '--disable-telemetry',
       '--disable-update-check',
-      '--ignore-last-opened',
       '--disable-workspace-trust',
       '--user-data-dir', `/tmp/code-server-${safeName}`,
     ])
 
     const codeServer = spawn('code-server', [
-      workspaceDir,
+      repoPath,
       '--bind-addr', `127.0.0.1:${port}`,
       '--auth', 'none',
       '--disable-telemetry',
       '--disable-update-check',
-      '--ignore-last-opened',
       '--disable-workspace-trust',
       '--user-data-dir', `/tmp/code-server-${safeName}`,
     ], {
       detached: true,
       stdio: 'ignore',
-      cwd: workspaceDir,
+      cwd: repoPath,
       env: {
         ...process.env,
         DONT_PROMPT_WSL_INSTALL: '1',
