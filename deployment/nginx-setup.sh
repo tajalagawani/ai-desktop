@@ -20,7 +20,7 @@ fi
 echo -e "${YELLOW}[1/5] Installing Nginx...${NC}"
 # Install Nginx and netcat (for port checking)
 apt update
-apt install -y nginx netcat
+apt install -y nginx netcat-openbsd
 
 echo -e "${YELLOW}[2/5] Creating directories...${NC}"
 # Create directories for dynamic VS Code project configs
