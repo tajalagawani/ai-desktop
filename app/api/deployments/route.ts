@@ -4,7 +4,8 @@ import path from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { DeploymentConfig } from '@/lib/deployment/types'
-import { detectFramework, getFrameworkDisplayName } from '@/lib/deployment/detector'
+import { detectFramework } from '@/lib/deployment/detector'
+import { getFrameworkDisplayName } from '@/lib/deployment/utils'
 import { getRunningServices, generateEnvVarsFromServices } from '@/lib/deployment/services'
 
 const execAsync = promisify(exec)
