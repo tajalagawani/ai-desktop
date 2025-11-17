@@ -17,7 +17,7 @@ export const VSCODE_CONFIG = {
   NGINX_INCLUDE_PATH: '/etc/nginx/vscode-projects/*.conf',
 
   // URL paths
-  BASE_URL_PATH: '/vscode',
+  BASE_URL_PATH: '/vsc',
 
   // Timeouts
   STARTUP_TIMEOUT: 60000, // 60 seconds to wait for code-server to start (increased)
