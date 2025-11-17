@@ -23,6 +23,8 @@ export class CodeServerManager {
     console.log(`[code-server] Repository Path: ${repoPath}`)
     console.log(`[code-server] Workspace Directory: ${workspaceDir}`)
     console.log(`[code-server] Port: ${port}`)
+    console.log(`[code-server] WORKSPACES_DIR constant: ${WORKSPACES_DIR}`)
+    console.log(`[code-server] safeName: ${projectName.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()}`)
     console.log(`[code-server] ====================================")`)
 
     // Create workspace directory if it doesn't exist
@@ -53,7 +55,16 @@ export class CodeServerManager {
       throw new Error('code-server is not installed. Please install it first.')
     }
 
-    // Start code-server
+    // Start code-server with explicit workspace directory
+    console.log(`[code-server] Spawning code-server with args:`, [
+      workspaceDir,
+      '--bind-addr', `127.0.0.1:${port}`,
+      '--auth', 'none',
+      '--disable-telemetry',
+      '--disable-update-check',
+      '--ignore-last-opened',
+    ])
+
     const codeServer = spawn('code-server', [
       workspaceDir,
       '--bind-addr', `127.0.0.1:${port}`,
