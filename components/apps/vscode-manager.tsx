@@ -27,7 +27,8 @@ import {
   FilePlus,
   FileX,
   Plus,
-  ChevronDown
+  ChevronDown,
+  Trash2
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -37,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CloneDialog } from "./vscode/clone-dialog"
+import { DeleteDialog } from "./vscode/delete-dialog"
 import { cn } from "@/lib/utils"
 import type { VSCodeRepository } from "@/lib/vscode/types"
 
@@ -62,6 +64,8 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [fileDiff, setFileDiff] = useState<string>("")
   const [cloneOpen, setCloneOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [repoToDelete, setRepoToDelete] = useState<VSCodeRepository | null>(null)
   const { toast} = useToast()
 
   // Store last data to compare
@@ -446,15 +450,29 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
           {selectedRepo ? (
             // Repository Detail View
             <div className="flex flex-col flex-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mb-4 -ml-2 w-fit"
-                onClick={() => setSelectedRepo(null)}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to repositories
-              </Button>
+              <div className="flex items-center justify-between mb-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="-ml-2 w-fit"
+                  onClick={() => setSelectedRepo(null)}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to repositories
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-destructive hover:text-destructive"
+                  onClick={() => {
+                    setRepoToDelete(selectedRepo)
+                    setDeleteOpen(true)
+                  }}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete Repository
+                </Button>
+              </div>
 
               <div className="mb-4 flex items-start gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm flex-shrink-0">
@@ -820,6 +838,20 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
         onOpenChange={setCloneOpen}
         onCloneComplete={() => loadRepositories(false)}
       />
+
+      {repoToDelete && (
+        <DeleteDialog
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          onDeleteComplete={() => {
+            setSelectedRepo(null)
+            loadRepositories(false)
+          }}
+          repoId={repoToDelete.id}
+          repoName={repoToDelete.name}
+          repoPath={repoToDelete.path}
+        />
+      )}
     </div>
   )
 }
