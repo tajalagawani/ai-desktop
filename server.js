@@ -37,7 +37,7 @@ app.prepare().then(() => {
       const [request, socket, head] = args
       const { pathname } = parse(request.url, true)
 
-      if (pathname === '/api/terminal/ws' || pathname === '/api/services/logs/ws') {
+      if (pathname === '/api/terminal/ws' || pathname === '/api/services/logs/ws' || pathname === '/api/deployments/logs/ws') {
         console.log('[WebSocket] Intercepted upgrade for:', pathname)
 
         wss.handleUpgrade(request, socket, head, (ws) => {
@@ -56,8 +56,11 @@ app.prepare().then(() => {
   // Handle WebSocket connections
   wss.on('connection', (ws, request, pathname) => {
     if (pathname === '/api/services/logs/ws') {
-      console.log('[WebSocket] Routing to logs handler')
+      console.log('[WebSocket] Routing to service logs handler')
       handleLogsConnection(ws, request)
+    } else if (pathname === '/api/deployments/logs/ws') {
+      console.log('[WebSocket] Routing to deployment logs handler')
+      handleDeploymentLogsConnection(ws, request)
     } else {
       console.log('[WebSocket] Routing to terminal handler')
       handleTerminalConnection(ws)
@@ -227,11 +230,112 @@ app.prepare().then(() => {
     }))
   }
 
+  // Handle deployment logs WebSocket connections
+  function handleDeploymentLogsConnection(ws, request) {
+    console.log('[Deployment Logs] New WebSocket connection')
+
+    const { Tail } = require('tail')
+    const fs = require('fs')
+    const url = new URL(request.url, `http://${request.headers.host}`)
+    const deploymentId = url.searchParams.get('deploymentId')
+    const logType = url.searchParams.get('type') || 'build' // 'build' or 'runtime'
+
+    if (!deploymentId) {
+      ws.send(JSON.stringify({ type: 'error', message: 'Deployment ID required' }))
+      ws.close()
+      return
+    }
+
+    console.log(`[Deployment Logs] Streaming ${logType} logs for deployment: ${deploymentId}`)
+
+    let tail = null
+
+    try {
+      let logFile
+      if (logType === 'build') {
+        logFile = `/var/www/ai-desktop/logs/${deploymentId}.log`
+      } else {
+        // Runtime logs from PM2
+        logFile = `/var/www/ai-desktop/logs/${deploymentId}-out.log`
+      }
+
+      // Check if file exists
+      if (!fs.existsSync(logFile)) {
+        ws.send(JSON.stringify({ type: 'info', message: `Waiting for logs...` }))
+      }
+
+      // Send existing content first
+      if (fs.existsSync(logFile)) {
+        const existingContent = fs.readFileSync(logFile, 'utf-8')
+        if (existingContent) {
+          ws.send(JSON.stringify({ type: 'log', data: existingContent }))
+        }
+      }
+
+      // Start tailing the file
+      tail = new Tail(logFile, {
+        fromBeginning: false,
+        follow: true,
+        useWatchFile: true
+      })
+
+      tail.on('line', (data) => {
+        try {
+          if (ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: 'log', data: data + '\n' }))
+          }
+        } catch (error) {
+          console.error('[Deployment Logs] Error sending data:', error)
+        }
+      })
+
+      tail.on('error', (error) => {
+        console.error('[Deployment Logs] Tail error:', error)
+        try {
+          if (ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: 'error', message: error.message }))
+          }
+        } catch {}
+      })
+
+    } catch (error) {
+      console.error('[Deployment Logs] Setup error:', error)
+      try {
+        if (ws.readyState === 1) {
+          ws.send(JSON.stringify({ type: 'error', message: error.message }))
+        }
+      } catch {}
+    }
+
+    // Handle WebSocket close
+    ws.on('close', () => {
+      console.log('[Deployment Logs] WebSocket closed')
+      if (tail) {
+        tail.unwatch()
+      }
+    })
+
+    // Handle WebSocket errors
+    ws.on('error', (error) => {
+      console.error('[Deployment Logs] WebSocket error:', error)
+      if (tail) {
+        tail.unwatch()
+      }
+    })
+
+    // Send connection success
+    ws.send(JSON.stringify({
+      type: 'connected',
+      message: `Streaming ${logType} logs for ${deploymentId}`
+    }))
+  }
+
   server.listen(port, async (err) => {
     if (err) throw err
 
     console.log(`> Ready on http://${hostname}:${port}`)
     console.log(`> WebSocket terminal available on ws://${hostname}:${port}/api/terminal/ws`)
     console.log(`> WebSocket logs available on ws://${hostname}:${port}/api/services/logs/ws`)
+    console.log(`> WebSocket deployment logs available on ws://${hostname}:${port}/api/deployments/logs/ws`)
   })
 })

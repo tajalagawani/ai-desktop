@@ -28,7 +28,8 @@ import {
   FileX,
   Plus,
   ChevronDown,
-  Trash2
+  Trash2,
+  Rocket
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -39,8 +40,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { CloneDialog } from "./vscode/clone-dialog"
 import { DeleteDialog } from "./vscode/delete-dialog"
+import { DeployDialog } from "./vscode/deploy-dialog"
+import { DeploymentCard } from "./vscode/deployment-card"
 import { cn } from "@/lib/utils"
 import type { VSCodeRepository } from "@/lib/vscode/types"
+import type { DeploymentConfig } from "@/lib/deployment/types"
 
 interface VSCodeManagerProps {
   // Props for future use
@@ -66,6 +70,9 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
   const [cloneOpen, setCloneOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [repoToDelete, setRepoToDelete] = useState<VSCodeRepository | null>(null)
+  const [deployments, setDeployments] = useState<DeploymentConfig[]>([])
+  const [deployOpen, setDeployOpen] = useState(false)
+  const [repoToDeploy, setRepoToDeploy] = useState<VSCodeRepository | null>(null)
   const { toast} = useToast()
 
   // Store last data to compare
@@ -107,6 +114,18 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
     }
   }, [])
 
+  const loadDeployments = useCallback(async () => {
+    try {
+      const response = await fetch('/api/deployments')
+      const data = await response.json()
+      if (data.success) {
+        setDeployments(data.deployments || [])
+      }
+    } catch (error) {
+      console.error('Failed to load deployments:', error)
+    }
+  }, [])
+
   useEffect(() => {
     // Run cleanup on first mount
     fetch('/api/vscode/cleanup', { method: 'POST' })
@@ -119,12 +138,14 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       .catch(err => console.error('[VSCode] Cleanup failed:', err))
 
     loadRepositories(false)
+    loadDeployments()
     // Silent background refresh
     const interval = setInterval(() => {
       loadRepositories(true)
+      loadDeployments()
     }, 5000) // Refresh every 5 seconds
     return () => clearInterval(interval)
-  }, [loadRepositories])
+  }, [loadRepositories, loadDeployments])
 
   const handleStart = async (repoId: string) => {
     setActionLoading(repoId)
@@ -272,8 +293,10 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       running: repositories.filter(r => r.running).length,
       stopped: repositories.filter(r => !r.running).length,
       git: repositories.filter(r => r.type === 'git').length,
+      deployments: deployments.length,
+      deploymentsRunning: deployments.filter(d => d.status === 'running').length,
     }
-  }, [repositories])
+  }, [repositories, deployments])
 
   if (loading) {
     return (
@@ -430,6 +453,18 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
               >
                 Folders ({repositories.length - stats.git})
               </button>
+              <button
+                onClick={() => setSelectedCategory('deployments')}
+                className={cn(
+                  "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2",
+                  selectedCategory === 'deployments'
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
+              >
+                <Rocket className="h-4 w-4" />
+                <span>Deployments ({stats.deployments})</span>
+              </button>
             </div>
           </div>
 
@@ -447,7 +482,36 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
         {/* Right Panel - Main Content */}
         <div className="bg-background p-8 h-full overflow-auto">
-          {selectedRepo ? (
+          {selectedCategory === 'deployments' ? (
+            // Deployments View
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="mb-6 flex-shrink-0">
+                <h2 className="mb-2 text-lg font-normal">Active Deployments</h2>
+                <p className="text-sm text-muted-foreground">
+                  Manage deployed applications on your VPS
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {deployments.length === 0 ? (
+                  <Alert>
+                    <Rocket className="h-4 w-4" />
+                    <AlertDescription>
+                      No deployments yet. Select a repository and click Deploy to get started.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  deployments.map((deployment) => (
+                    <DeploymentCard
+                      key={deployment.id}
+                      deployment={deployment}
+                      onUpdate={loadDeployments}
+                    />
+                  ))
+                )}
+              </div>
+            </div>
+          ) : selectedRepo ? (
             // Repository Detail View
             <div className="flex flex-col flex-1">
               <div className="flex items-center justify-between mb-4">
@@ -543,6 +607,21 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                       ) : (
                         <Play className="h-3.5 w-3.5" />
                       )}
+                    </Button>
+                  )}
+                  {selectedRepo.type === 'git' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setRepoToDeploy(selectedRepo)
+                        setDeployOpen(true)
+                      }}
+                      title="Deploy to VPS"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    >
+                      <Rocket className="h-3.5 w-3.5 mr-1.5" />
+                      Deploy
                     </Button>
                   )}
                 </div>
@@ -850,6 +929,20 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
           repoId={repoToDelete.id}
           repoName={repoToDelete.name}
           repoPath={repoToDelete.path}
+        />
+      )}
+
+      {repoToDeploy && (
+        <DeployDialog
+          open={deployOpen}
+          onOpenChange={setDeployOpen}
+          onDeployComplete={() => {
+            loadDeployments()
+            setDeployOpen(false)
+          }}
+          repoId={repoToDeploy.id}
+          repoName={repoToDeploy.name}
+          repoPath={repoToDeploy.path}
         />
       )}
     </div>
