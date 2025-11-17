@@ -63,6 +63,8 @@ export class CodeServerManager {
       '--disable-telemetry',
       '--disable-update-check',
       '--ignore-last-opened',
+      '--disable-workspace-trust',
+      '--user-data-dir', `/tmp/code-server-${safeName}`,
     ])
 
     const codeServer = spawn('code-server', [
@@ -72,10 +74,16 @@ export class CodeServerManager {
       '--disable-telemetry',
       '--disable-update-check',
       '--ignore-last-opened',
+      '--disable-workspace-trust',
+      '--user-data-dir', `/tmp/code-server-${safeName}`,
     ], {
       detached: true,
       stdio: 'ignore',
-      cwd: workspaceDir  // Set working directory to workspace
+      cwd: workspaceDir,
+      env: {
+        ...process.env,
+        DONT_PROMPT_WSL_INSTALL: '1',
+      }
     })
 
     codeServer.unref()
