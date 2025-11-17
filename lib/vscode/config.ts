@@ -20,8 +20,8 @@ export const VSCODE_CONFIG = {
   BASE_URL_PATH: '/vscode',
 
   // Timeouts
-  STARTUP_TIMEOUT: 30000, // 30 seconds to wait for code-server to start
-  PORT_CHECK_INTERVAL: 500, // Check port every 500ms
+  STARTUP_TIMEOUT: 60000, // 60 seconds to wait for code-server to start (increased)
+  PORT_CHECK_INTERVAL: 1000, // Check port every 1 second
 
   // code-server settings
   CODE_SERVER_ARGS: [

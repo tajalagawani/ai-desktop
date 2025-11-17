@@ -347,6 +347,23 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
       }
     })
 
+    // Log stdout and stderr for debugging
+    codeServer.stdout?.on('data', (data) => {
+      console.log(`[VSCode][stdout] ${data.toString()}`)
+    })
+
+    codeServer.stderr?.on('data', (data) => {
+      console.error(`[VSCode][stderr] ${data.toString()}`)
+    })
+
+    codeServer.on('error', (error) => {
+      console.error(`[VSCode] Process error:`, error)
+    })
+
+    codeServer.on('exit', (code, signal) => {
+      console.log(`[VSCode] Process exited with code ${code}, signal ${signal}`)
+    })
+
     codeServer.unref()
 
     if (!codeServer.pid) {
