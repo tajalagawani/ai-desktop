@@ -88,10 +88,10 @@ export async function POST(request: NextRequest) {
     // Register instance in port manager
     portManager.registerInstance(repo.id, port, pid, repo.path)
 
-    // Generate and write Nginx config
+    // Generate and write Nginx config with repository path
     try {
-      nginxManager.writeConfig(repo.id, port)
-      console.log(`[API] Nginx config written for ${repo.id}`)
+      nginxManager.writeConfig(repo.id, port, repo.path)
+      console.log(`[API] Nginx config written for ${repo.id} with path ${repo.path}`)
     } catch (error: any) {
       // Rollback: stop code-server and release port
       codeServerManager.stopServer(repo.id, pid)

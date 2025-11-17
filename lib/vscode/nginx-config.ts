@@ -8,13 +8,19 @@ export class NginxConfigManager {
   /**
    * Generate Nginx location block configuration for a VS Code project
    */
-  generateConfig(projectName: string, port: number): string {
+  generateConfig(projectName: string, port: number, repoPath?: string): string {
     // Sanitize project name for use in URLs
     const safeName = projectName.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()
 
     return `# Auto-generated config for ${projectName}
 # Generated at: ${new Date().toISOString()}
+# Repository: ${repoPath || 'N/A'}
 location /vscode/${safeName}/ {
+    ${repoPath ? `# Automatically open the repository folder
+    if ($arg_folder = "") {
+        return 302 /vscode/${safeName}/?folder=${repoPath};
+    }
+    ` : ''}
     proxy_pass http://localhost:${port}/;
     proxy_http_version 1.1;
 
@@ -42,11 +48,11 @@ location /vscode/${safeName}/ {
   /**
    * Write Nginx configuration file for a project
    */
-  writeConfig(projectName: string, port: number): void {
+  writeConfig(projectName: string, port: number, repoPath?: string): void {
     try {
       const safeName = projectName.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()
       const configPath = path.join(NGINX_CONFIGS_DIR, `${safeName}.conf`)
-      const config = this.generateConfig(projectName, port)
+      const config = this.generateConfig(projectName, port, repoPath)
 
       // Ensure directory exists
       if (!fs.existsSync(NGINX_CONFIGS_DIR)) {
@@ -55,7 +61,7 @@ location /vscode/${safeName}/ {
       }
 
       fs.writeFileSync(configPath, config, 'utf-8')
-      console.log(`[Nginx] Config written: ${configPath}`)
+      console.log(`[Nginx] Config written: ${configPath} with folder=${repoPath}`)
     } catch (error) {
       console.error('[Nginx] Failed to write config:', error)
       throw error
