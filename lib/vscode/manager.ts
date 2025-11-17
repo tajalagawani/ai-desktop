@@ -350,6 +350,7 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
     ]
 
     console.log(`[VSCode] Starting code-server with args:`, args)
+    console.log(`[VSCode] Full command: code-server ${args.join(' ')}`)
 
     const codeServer = spawn('code-server', args, {
       detached: true,
@@ -358,7 +359,6 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
       env: {
         ...process.env,
         DONT_PROMPT_WSL_INSTALL: '1',
-        CODE_SERVER_BIND_ADDR: `127.0.0.1:${port}`, // Also set via env var
       }
     })
 
