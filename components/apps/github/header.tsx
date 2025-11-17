@@ -220,6 +220,22 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
       setRepositories(updatedRepos)
       localStorage.setItem("git-repositories", JSON.stringify(updatedRepos))
 
+      // Remove from centralized repository registry
+      try {
+        await fetch("/api/repositories", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "remove",
+            path: currentRepo
+          })
+        })
+        console.log(`Removed ${repoName} from centralized repository registry`)
+      } catch (error) {
+        console.error("Failed to remove from repository registry:", error)
+        // Continue anyway
+      }
+
       // Clear current repo selection
       onRepoChange(null)
       toast.success(`Repository "${repoName}" deleted successfully!`)

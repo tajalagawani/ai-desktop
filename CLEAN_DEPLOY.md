@@ -49,6 +49,12 @@ npm install
 npm run build
 mkdir -p logs
 
+# Setup Nginx for VS Code dynamic proxying
+bash deployment/nginx-setup.sh
+
+# Install code-server for VS Code Editor app
+curl -fsSL https://code-server.dev/install.sh | sh
+
 # Setup ACT Docker flows
 cd components/apps/act-docker
 pip3 install flask flask-cors requests

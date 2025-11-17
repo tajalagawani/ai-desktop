@@ -79,11 +79,29 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
         throw new Error(result.error || "Failed to clone repository")
       }
 
-      // Add to saved repositories
+      // Add to saved repositories (localStorage - kept for backward compatibility)
       const savedRepos = JSON.parse(localStorage.getItem("git-repositories") || "[]")
       if (!savedRepos.includes(fullPath)) {
         savedRepos.push(fullPath)
         localStorage.setItem("git-repositories", JSON.stringify(savedRepos))
+      }
+
+      // Add to centralized repository registry
+      try {
+        await fetch("/api/repositories", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "add",
+            name: repoName,
+            path: fullPath,
+            type: "git"
+          })
+        })
+        console.log(`Added ${repoName} to centralized repository registry`)
+      } catch (error) {
+        console.error("Failed to add to repository registry:", error)
+        // Continue anyway, localStorage backup exists
       }
 
       onCloneComplete(fullPath)
