@@ -29,18 +29,23 @@ export class VSCodeManager {
         const memory = parts[3]
         const command = parts.slice(10).join(' ')
 
-        // Extract port from command: --bind-addr 127.0.0.1:8880
-        let port = 0
-        const portMatch = command.match(/--bind-addr\s+[^:]+:(\d+)/)
-        if (portMatch) {
-          port = parseInt(portMatch[1], 10)
+        // Skip child processes (extensionHost, fileWatcher, etc)
+        if (command.includes('bootstrap-fork') || command.includes('entry')) {
+          continue
         }
 
-        // Extract repository path from command (first argument after code-server)
+        // Extract port from command: --bind-addr=127.0.0.1:8880
+        let port = 0
+        const portMatch = command.match(/--bind-addr[=\s]([^:]+):(\d+)/)
+        if (portMatch) {
+          port = parseInt(portMatch[2], 10)
+        }
+
+        // Extract repository path from command (last argument, should be the directory)
         let repoPath = ''
-        const pathMatch = command.match(/code-server\s+([^\s]+)/)
+        const pathMatch = command.match(/\/var\/www\/[^\s]+$/)
         if (pathMatch) {
-          repoPath = pathMatch[1]
+          repoPath = pathMatch[0]
         }
 
         // Try to match to a known repository
