@@ -950,20 +950,6 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
           repoPath={repoToDelete.path}
         />
       )}
-
-      {repoToDeploy && (
-        <DeployDialog
-          open={deployOpen}
-          onOpenChange={setDeployOpen}
-          onDeployComplete={() => {
-            loadDeployments()
-            setDeployOpen(false)
-          }}
-          repoId={repoToDeploy.id}
-          repoName={repoToDeploy.name}
-          repoPath={repoToDeploy.path}
-        />
-      )}
     </div>
   )
 }
