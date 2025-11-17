@@ -13,8 +13,8 @@ export const VSCODE_CONFIG = {
   MAX_INSTANCES: 20,
 
   // Nginx configuration
-  NGINX_CONFIG_DIR: '/etc/nginx/vscode-repos',
-  NGINX_INCLUDE_PATH: '/etc/nginx/vscode-repos/*.conf',
+  NGINX_CONFIG_DIR: '/etc/nginx/vscode-projects',
+  NGINX_INCLUDE_PATH: '/etc/nginx/vscode-projects/*.conf',
 
   // URL paths
   BASE_URL_PATH: '/vscode',
