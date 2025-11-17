@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/hooks/use-toast"
 import { getIcon } from "@/utils/icon-mapper"
 import {
@@ -30,6 +31,13 @@ interface VSCodeManagerProps {
   // Props for future use
 }
 
+interface GitChange {
+  path: string
+  status: 'modified' | 'added' | 'deleted' | 'renamed'
+  additions?: number
+  deletions?: number
+}
+
 export function VSCodeManager(_props: VSCodeManagerProps) {
   const [repositories, setRepositories] = useState<VSCodeRepository[]>([])
   const [loading, setLoading] = useState(true)
@@ -37,7 +45,10 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const { toast } = useToast()
+  const [gitChanges, setGitChanges] = useState<GitChange[]>([])
+  const [selectedFile, setSelectedFile] = useState<string | null>(null)
+  const [fileDiff, setFileDiff] = useState<string>("")
+  const { toast} = useToast()
 
   // Store last data to compare
   const lastDataRef = React.useRef<string>("")
@@ -173,6 +184,45 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       setActionLoading(null)
     }
   }
+
+  const loadGitChanges = useCallback(async (repoId: string) => {
+    try {
+      const response = await fetch(`/api/vscode/changes/${repoId}`)
+      const data = await response.json()
+      if (data.success) {
+        setGitChanges(data.changes || [])
+      }
+    } catch (error) {
+      console.error('Failed to load git changes:', error)
+    }
+  }, [])
+
+  const loadFileDiff = useCallback(async (repoId: string, filePath: string) => {
+    try {
+      const response = await fetch('/api/vscode/diff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ repoId, filePath })
+      })
+      const data = await response.json()
+      if (data.success) {
+        setFileDiff(data.diff || '')
+      }
+    } catch (error) {
+      console.error('Failed to load file diff:', error)
+    }
+  }, [])
+
+  // Load git changes when a repository is selected
+  useEffect(() => {
+    if (selectedRepo && selectedRepo.type === 'git') {
+      loadGitChanges(selectedRepo.id)
+      const interval = setInterval(() => loadGitChanges(selectedRepo.id), 3000)
+      return () => clearInterval(interval)
+    } else {
+      setGitChanges([])
+    }
+  }, [selectedRepo, loadGitChanges])
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -496,6 +546,84 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                   </div>
                 </div>
               </div>
+
+              {/* Live Git Changes */}
+              {selectedRepo.type === 'git' && (
+                <div className="p-4 bg-muted/50 rounded-lg space-y-3 mt-4">
+                  <h3 className="font-normal text-sm flex items-center gap-2">
+                    <FileEdit className="h-3.5 w-3.5" />
+                    Live Changes ({gitChanges.length})
+                  </h3>
+                  {gitChanges.length > 0 ? (
+                    <div className="space-y-2">
+                      {gitChanges.map((change) => {
+                        const Icon = change.status === 'added' ? FilePlus :
+                                   change.status === 'deleted' ? FileX :
+                                   FileEdit
+                        const statusColor = change.status === 'added' ? 'text-green-600' :
+                                          change.status === 'deleted' ? 'text-red-600' :
+                                          'text-amber-600'
+
+                        return (
+                          <div
+                            key={change.path}
+                            className="flex items-center justify-between text-sm p-2 rounded hover:bg-background cursor-pointer transition-colors"
+                            onClick={() => {
+                              setSelectedFile(change.path)
+                              loadFileDiff(selectedRepo.id, change.path)
+                            }}
+                          >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", statusColor)} />
+                              <span className="font-mono text-xs truncate">{change.path}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground flex-shrink-0">
+                              {change.additions !== undefined && change.additions > 0 && (
+                                <span className="text-green-600">+{change.additions}</span>
+                              )}
+                              {change.deletions !== undefined && change.deletions > 0 && (
+                                <span className="text-red-600">-{change.deletions}</span>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+
+                      {/* Diff Viewer */}
+                      {selectedFile && fileDiff && (
+                        <div className="mt-4 border-t pt-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-mono text-muted-foreground">{selectedFile}</span>
+                            <Button size="sm" variant="ghost" onClick={() => setSelectedFile(null)}>
+                              <span className="text-xs">Close</span>
+                            </Button>
+                          </div>
+                          <ScrollArea className="h-64 w-full rounded border bg-background p-3">
+                            <pre className="text-xs font-mono">
+                              {fileDiff.split('\n').map((line, i) => (
+                                <div
+                                  key={i}
+                                  className={cn(
+                                    "px-2 py-0.5",
+                                    line.startsWith('+') && !line.startsWith('+++') ? "bg-green-500/10 text-green-600" :
+                                    line.startsWith('-') && !line.startsWith('---') ? "bg-red-500/10 text-red-600" :
+                                    line.startsWith('@@') ? "bg-blue-500/10 text-blue-600" :
+                                    "text-muted-foreground"
+                                  )}
+                                >
+                                  {line || ' '}
+                                </div>
+                              ))}
+                            </pre>
+                          </ScrollArea>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">No uncommitted changes</p>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             // Repository List View
