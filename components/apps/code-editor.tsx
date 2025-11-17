@@ -37,8 +37,6 @@ export function CodeEditorApp() {
   const [showInstallDialog, setShowInstallDialog] = useState(false)
   const [installing, setInstalling] = useState(false)
   const [installMethod, setInstallMethod] = useState<'script' | 'homebrew' | 'npm'>('script')
-  const [serverUrl, setServerUrl] = useState<string | null>(null)
-  const [currentPort, setCurrentPort] = useState<number | null>(null)
 
   useEffect(() => {
     loadRepositories()
@@ -52,15 +50,6 @@ export function CodeEditorApp() {
 
       if (data.success) {
         setRepositories(data.repositories || [])
-
-        // Check if any repo is already running
-        const runningRepo = data.repositories.find((r: Repository) => r.vscodeRunning)
-        if (runningRepo) {
-          setSelectedRepo(runningRepo.id)
-          const hostname = window.location.hostname
-          setServerUrl(`http://${hostname}/vscode/${runningRepo.id}/`)
-          setCurrentPort(runningRepo.vscodePort || null)
-        }
       }
     } catch (error) {
       console.error("Failed to load repositories:", error)
@@ -89,12 +78,12 @@ export function CodeEditorApp() {
       if (data.success) {
         const hostname = window.location.hostname
         const fullUrl = `http://${hostname}${data.url}`
-        toast.success("VS Code started successfully!")
+        toast.success("VS Code started! Opening in new window...")
 
         // Reload repositories to update status
         await loadRepositories()
 
-        // Open in new window
+        // Open in new window immediately
         window.open(fullUrl, '_blank', 'width=1600,height=1000')
       } else {
         if (data.error?.includes('not installed')) {
@@ -124,8 +113,6 @@ export function CodeEditorApp() {
       const data = await response.json()
 
       if (data.success) {
-        setServerUrl(null)
-        setCurrentPort(null)
         toast.success("VS Code stopped")
 
         // Reload repositories to update status
@@ -179,8 +166,8 @@ export function CodeEditorApp() {
     )
   }
 
-  if (!serverUrl) {
-    return (
+  // Always show the card grid view - no embedded iframe
+  return (
       <div className="h-full w-full bg-background overflow-auto">
         <div className="max-w-6xl mx-auto p-6 space-y-6">
           {/* Header */}
@@ -428,98 +415,4 @@ export function CodeEditorApp() {
         </Dialog>
       </div>
     )
-  }
-
-  return (
-    <div className="h-full w-full flex flex-col bg-background">
-      {/* Control Bar */}
-      <div className="border-b border-border bg-muted/30 p-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 text-green-500 rounded-md text-sm">
-            <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse" />
-            Running {currentPort && `on port ${currentPort}`}
-          </div>
-          <span className="text-sm text-muted-foreground">
-            {selectedRepoData?.name || selectedRepo}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={stopServer}
-            className="text-destructive"
-            title="Stop server"
-          >
-            <Square className="h-4 w-4 mr-2" />
-            Stop Server
-          </Button>
-        </div>
-      </div>
-
-      {/* VS Code Access Info */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-muted/20">
-        <div className="max-w-md text-center space-y-6">
-          <div className="mx-auto w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mb-4">
-            <Terminal className="h-10 w-10 text-blue-500" />
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold">VS Code is Running!</h2>
-            <p className="text-muted-foreground">
-              Open VS Code in a new browser tab to start coding
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <Button
-              onClick={() => window.open(serverUrl, '_blank', 'width=1600,height=1000')}
-              size="lg"
-              className="w-full"
-            >
-              <ExternalLink className="mr-2 h-5 w-5" />
-              Open VS Code
-            </Button>
-
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={() => {
-                  navigator.clipboard.writeText(serverUrl || '')
-                  toast.success("URL copied to clipboard!")
-                }}
-              >
-                Copy URL
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1"
-                onClick={loadRepositories}
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-            </div>
-          </div>
-
-          <div className="pt-6 border-t">
-            <div className="bg-muted p-3 rounded-lg font-mono text-sm break-all">
-              {serverUrl}
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Access VS Code from any browser using this URL (no port visible!)
-            </p>
-          </div>
-
-          <div className="text-xs text-muted-foreground">
-            <p>💡 Tip: Bookmark the URL for quick access</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
 }
