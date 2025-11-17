@@ -97,10 +97,10 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
       if (data.success) {
         await loadRepositories(false)
-        // Open in new window
+        // Open in new tab
         if (data.url) {
           const hostname = window.location.hostname
-          window.open(`http://${hostname}${data.url}`, '_blank', 'width=1600,height=1000')
+          window.open(`http://${hostname}${data.url}`, '_blank')
         }
       } else {
         console.error('Failed to start:', data.error)
@@ -343,9 +343,9 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                         variant="outline"
                         onClick={() => {
                           const hostname = window.location.hostname
-                          window.open(`http://${hostname}${selectedRepo.url}`, '_blank', 'width=1600,height=1000')
+                          window.open(`http://${hostname}${selectedRepo.url}`, '_blank')
                         }}
-                        title="Open in new window"
+                        title="Open in new tab"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
                       </Button>
@@ -513,7 +513,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                                 size="sm"
                                 onClick={() => {
                                   const hostname = window.location.hostname
-                                  window.open(`http://${hostname}${repo.url}`, '_blank', 'width=1600,height=1000')
+                                  window.open(`http://${hostname}${repo.url}`, '_blank')
                                 }}
                               >
                                 <ExternalLink className="mr-2 h-3.5 w-3.5" />
