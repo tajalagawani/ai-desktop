@@ -330,12 +330,12 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
 
     // 6. Start code-server process
     const args = [
-      '--bind-addr', `127.0.0.1:${port}`,
-      '--auth', 'none',
+      repo.path,
+      '--auth=none',
       '--disable-telemetry',
       '--disable-update-check',
       '--disable-workspace-trust',
-      repo.path,
+      `--bind-addr=127.0.0.1:${port}`,
     ]
 
     console.log(`[VSCode] Starting code-server with args:`, args)
@@ -347,6 +347,7 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
       env: {
         ...process.env,
         DONT_PROMPT_WSL_INSTALL: '1',
+        CODE_SERVER_BIND_ADDR: `127.0.0.1:${port}`, // Also set via env var
       }
     })
 
