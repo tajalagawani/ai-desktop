@@ -22,7 +22,7 @@ rm -rf /root/.pm2
 ```bash
 apt update && apt upgrade -y
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-apt install -y nodejs git python3 python3-pip
+apt install -y nodejs git python3 python3-pip rsync
 npm install -g pm2
 
 # Install Docker

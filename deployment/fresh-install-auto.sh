@@ -41,8 +41,8 @@ npm install -g pm2
 echo -e "${GREEN}✓ Node.js installed${NC}"
 
 echo -e "${YELLOW}[4/10] Installing Nginx and utilities...${NC}"
-apt install -y nginx netcat-openbsd
-echo -e "${GREEN}✓ Nginx installed${NC}"
+apt install -y nginx netcat-openbsd rsync
+echo -e "${GREEN}✓ Nginx and utilities installed${NC}"
 
 echo -e "${YELLOW}[5/10] Installing Docker...${NC}"
 if ! command -v docker &> /dev/null; then

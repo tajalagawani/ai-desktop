@@ -8,9 +8,12 @@ echo ""
 echo "⚠️  WARNING: This will DELETE everything and start fresh!"
 echo ""
 
-# Check if running with --yes flag or piped (auto-confirm)
-if [[ "$1" == "--yes" ]] || [[ ! -t 0 ]]; then
+# Check if running with --yes flag or if STDIN is not a terminal (piped from curl)
+if [[ "$1" == "--yes" ]]; then
     echo "Auto-confirming installation..."
+elif [[ ! -t 0 ]]; then
+    # Script is piped from curl, auto-confirm
+    echo "Auto-confirming installation (piped from curl)..."
 else
     read -p "Are you sure you want to continue? (yes/no): " -r
     echo
@@ -54,8 +57,8 @@ npm install -g pm2
 echo -e "${GREEN}✓ Node.js installed${NC}"
 
 echo -e "${YELLOW}[4/10] Installing Nginx and utilities...${NC}"
-apt install -y nginx netcat-openbsd
-echo -e "${GREEN}✓ Nginx installed${NC}"
+apt install -y nginx netcat-openbsd rsync
+echo -e "${GREEN}✓ Nginx and utilities installed${NC}"
 
 echo -e "${YELLOW}[5/10] Installing Docker...${NC}"
 if ! command -v docker &> /dev/null; then
