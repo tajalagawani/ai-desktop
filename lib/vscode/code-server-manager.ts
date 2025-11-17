@@ -60,9 +60,11 @@ export class CodeServerManager {
       '--auth', 'none',
       '--disable-telemetry',
       '--disable-update-check',
+      '--ignore-last-opened',
     ], {
       detached: true,
-      stdio: 'ignore'
+      stdio: 'ignore',
+      cwd: workspaceDir  // Set working directory to workspace
     })
 
     codeServer.unref()
