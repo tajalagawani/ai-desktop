@@ -28,6 +28,8 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 echo -e "${YELLOW}[1/10] Stopping and removing old installations...${NC}"
+# Change to safe directory first to avoid "directory not found" errors
+cd /root
 pm2 delete all 2>/dev/null || true
 pm2 kill 2>/dev/null || true
 systemctl stop nginx 2>/dev/null || true
