@@ -16,13 +16,27 @@ export class CodeServerManager {
 
     console.log(`[code-server] ====================================`)
     console.log(`[code-server] Starting server for ${projectName}`)
-    console.log(`[code-server] Repository Path: ${repoPath}`)
+    console.log(`[code-server] Repository Path: "${repoPath}"`)
+    console.log(`[code-server] Repository Path Length: ${repoPath?.length || 0}`)
     console.log(`[code-server] Port: ${port}`)
     console.log(`[code-server] ====================================")`)
 
     // Verify repository path exists
     if (!repoPath || !fs.existsSync(repoPath)) {
       throw new Error(`Repository path does not exist: ${repoPath}`)
+    }
+
+    // Extra safety: verify this is not /var/www root
+    if (repoPath === '/var/www' || repoPath === '/var/www/') {
+      throw new Error(`Invalid repository path - cannot open /var/www root directory. Path must be a specific repository like /var/www/github/repo-name`)
+    }
+
+    // Log directory contents to verify we're opening the right folder
+    try {
+      const files = fs.readdirSync(repoPath).slice(0, 5)
+      console.log(`[code-server] First 5 files in ${repoPath}:`, files)
+    } catch (err) {
+      console.error(`[code-server] Could not read directory:`, err)
     }
 
     // Check if code-server is installed
