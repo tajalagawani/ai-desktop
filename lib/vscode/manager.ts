@@ -107,19 +107,37 @@ export class VSCodeManager {
   /**
    * Get git status for a repository
    */
-  private getGitStatus(repoPath: string): { changes: number; ahead: number; behind: number } | null {
+  private getGitStatus(repoPath: string): { changes: number; ahead: number; behind: number; added: number; modified: number; deleted: number } | null {
     try {
       if (!fs.existsSync(path.join(repoPath, '.git'))) {
         return null
       }
 
-      // Get number of changed files
+      // Get git status with file categorization
       const statusOutput = execSync('git status --porcelain', {
         cwd: repoPath,
         encoding: 'utf-8',
         stdio: ['pipe', 'pipe', 'ignore']
       })
-      const changes = statusOutput.trim().split('\n').filter(l => l.length > 0).length
+
+      const lines = statusOutput.trim().split('\n').filter(l => l.length > 0)
+      const changes = lines.length
+
+      // Count added, modified, deleted files
+      let added = 0
+      let modified = 0
+      let deleted = 0
+
+      for (const line of lines) {
+        const statusCode = line.substring(0, 2)
+        if (statusCode.includes('A') || statusCode.includes('?')) {
+          added++
+        } else if (statusCode.includes('D')) {
+          deleted++
+        } else if (statusCode.includes('M') || statusCode.includes('R')) {
+          modified++
+        }
+      }
 
       // Get ahead/behind counts
       let ahead = 0
@@ -137,7 +155,7 @@ export class VSCodeManager {
         // No upstream branch
       }
 
-      return { changes, ahead, behind }
+      return { changes, ahead, behind, added, modified, deleted }
     } catch {
       return null
     }
@@ -172,6 +190,9 @@ export class VSCodeManager {
         changes: gitStatus?.changes,
         ahead: gitStatus?.ahead,
         behind: gitStatus?.behind,
+        added: gitStatus?.added,
+        modified: gitStatus?.modified,
+        deleted: gitStatus?.deleted,
       }
     })
   }

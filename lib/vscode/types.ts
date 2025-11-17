@@ -21,6 +21,9 @@ export interface VSCodeRepository {
   changes?: number
   ahead?: number
   behind?: number
+  added?: number
+  modified?: number
+  deleted?: number
 }
 
 export interface RunningInstance {

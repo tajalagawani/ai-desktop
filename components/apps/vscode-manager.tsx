@@ -675,9 +675,22 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                               <p className="text-xs text-muted-foreground">
                                 Port {repo.port} • {repo.uptime}
                               </p>
-                              {(repo.changes !== undefined && repo.changes > 0) && (
-                                <span className="text-xs text-amber-600">
-                                  {repo.changes} change{repo.changes !== 1 ? 's' : ''}
+                              {(repo.added !== undefined && repo.added > 0) && (
+                                <span className="text-xs text-green-600 flex items-center gap-0.5">
+                                  <FilePlus className="h-3 w-3" />
+                                  {repo.added}
+                                </span>
+                              )}
+                              {(repo.modified !== undefined && repo.modified > 0) && (
+                                <span className="text-xs text-amber-600 flex items-center gap-0.5">
+                                  <FileEdit className="h-3 w-3" />
+                                  {repo.modified}
+                                </span>
+                              )}
+                              {(repo.deleted !== undefined && repo.deleted > 0) && (
+                                <span className="text-xs text-red-600 flex items-center gap-0.5">
+                                  <FileX className="h-3 w-3" />
+                                  {repo.deleted}
                                 </span>
                               )}
                               {repo.ahead !== undefined && repo.ahead > 0 && (
