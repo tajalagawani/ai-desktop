@@ -31,7 +31,6 @@ import { ServiceDetails } from "@/components/apps/service-details"
 import { DesktopSettings } from "@/components/apps/desktop-settings"
 import { WidgetWindow } from "@/components/apps/widget-window"
 import { GitHubApp } from "@/components/apps/github"
-import { CodeEditorApp } from "@/components/apps/code-editor"
 
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
@@ -73,7 +72,6 @@ const getAppComponent = (
     "system-widgets": <WidgetWindow />,
     "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
     "github-desktop": <GitHubApp />,
-    "code-editor": <CodeEditorApp />,
   }
   return componentMap[id] || null
 }

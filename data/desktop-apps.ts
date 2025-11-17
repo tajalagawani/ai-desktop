@@ -88,13 +88,6 @@ export const DOCK_APPS: AppConfig[] = [
     category: "development",
     description: "Manage your Git repositories with a beautiful interface"
   },
-  {
-    id: "code-editor",
-    name: "VS Code",
-    icon: "Code",
-    category: "development",
-    description: "Full VS Code editor powered by code-server"
-  },
 ]
 
 export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
@@ -167,17 +160,6 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     maximizable: true,
     minimizable: true,
     closable: true,
-  },
-  "code-editor": {
-    defaultWidth: 1600,
-    defaultHeight: 1000,
-    minWidth: 1200,
-    minHeight: 800,
-    resizable: true,
-    maximizable: true,
-    minimizable: true,
-    closable: true,
-    openMaximized: true,
   },
   default: {
     defaultWidth: 800,

@@ -294,7 +294,6 @@ export const appIcons: Record<string, string> = {
   
   // Development apps
   "github": "GitBranch",
-  "vscode": "Code",
   "docker": "Package",
   "database": "Database",
   

@@ -49,7 +49,6 @@ export class RepositoryManager {
       path: repoPath,
       type,
       addedAt: new Date().toISOString(),
-      vscodeRunning: false,
       branch
     }
 
@@ -89,21 +88,6 @@ export class RepositoryManager {
       this.saveRegistry(registry)
       console.log(`[RepositoryManager] Updated repository: ${id}`)
     }
-  }
-
-  markVSCodeRunning(id: string, port: number): void {
-    this.updateRepository(id, {
-      vscodePort: port,
-      vscodeRunning: true,
-      lastOpened: new Date().toISOString()
-    })
-  }
-
-  markVSCodeStopped(id: string): void {
-    this.updateRepository(id, {
-      vscodePort: undefined,
-      vscodeRunning: false
-    })
   }
 
   // Check if repository path still exists on filesystem
