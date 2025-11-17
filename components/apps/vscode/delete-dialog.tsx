@@ -127,7 +127,7 @@ export function DeleteDialog({
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 border rounded-lg p-3 hover:bg-muted/50 transition-colors border-destructive/50">
+              <div className="flex items-start space-x-3 border-2 border-destructive rounded-lg p-3 hover:bg-destructive/5 transition-colors">
                 <RadioGroupItem value="both" id="both" className="mt-1" />
                 <div className="flex-1">
                   <Label htmlFor="both" className="font-medium cursor-pointer text-destructive">
