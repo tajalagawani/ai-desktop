@@ -328,8 +328,15 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
 
     console.log(`[VSCode] Allocated port: ${port}`)
 
-    // 6. Create temporary config file to override default config
-    const tempConfigPath = `/tmp/code-server-config-${port}.yaml`
+    // 6. Create temporary config directory and file
+    const tempConfigDir = `/tmp/code-server-config-${port}`
+    const tempConfigPath = path.join(tempConfigDir, 'config.yaml')
+
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(tempConfigDir)) {
+      fs.mkdirSync(tempConfigDir, { recursive: true })
+    }
+
     const configContent = `bind-addr: 127.0.0.1:${port}
 auth: none
 disable-telemetry: true
@@ -443,10 +450,23 @@ disable-update-check: true
       console.error(`[VSCode] Error killing process:`, error.message)
     }
 
-    // 3. Remove Nginx config
+    // 3. Clean up temp config directory
+    if (status.port) {
+      const tempConfigDir = `/tmp/code-server-config-${status.port}`
+      try {
+        if (fs.existsSync(tempConfigDir)) {
+          fs.rmSync(tempConfigDir, { recursive: true, force: true })
+          console.log(`[VSCode] Removed temp config: ${tempConfigDir}`)
+        }
+      } catch (error: any) {
+        console.error(`[VSCode] Failed to remove temp config:`, error.message)
+      }
+    }
+
+    // 4. Remove Nginx config
     await this.removeNginxConfig(repoId)
 
-    // 4. Reload Nginx
+    // 5. Reload Nginx
     await this.reloadNginx()
 
     console.log(`[VSCode] Code server stopped successfully`)
