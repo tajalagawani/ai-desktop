@@ -352,14 +352,17 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
     console.log(`[VSCode] Starting code-server with args:`, args)
     console.log(`[VSCode] Full command: code-server ${args.join(' ')}`)
 
+    // Clean environment - remove any vars that might affect code-server
+    const cleanEnv = { ...process.env }
+    delete cleanEnv.CODE_SERVER_BIND_ADDR
+    delete cleanEnv.PORT
+    delete cleanEnv.VSCODE_PROXY_URI
+
     const codeServer = spawn('code-server', args, {
       detached: true,
       stdio: ['ignore', 'pipe', 'pipe'],
       cwd: repo.path,
-      env: {
-        ...process.env,
-        DONT_PROMPT_WSL_INSTALL: '1',
-      }
+      env: cleanEnv
     })
 
     // Log stdout and stderr for debugging

@@ -1,21 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "mcp__ide__getDiagnostics",
-      "Bash(find:*)",
-      "Bash(mkdir:*)",
-      "WebSearch",
-      "Bash(npm run build:*)",
-      "Bash(git commit:*)",
-      "Bash(git push:*)",
-      "Bash(git add:*)",
-      "WebFetch(domain:logspot.vercel.app)",
-      "WebFetch(domain:github.com)",
-      "Bash(npm install:*)",
-      "Bash(curl -L \"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Claude_AI_symbol.svg/2048px-Claude_AI_symbol.svg.png\" -o public/icons/claude.png)",
-      "Bash(curl:*)",
-      "Bash(all-services.ts)",
-      "Bash(sshpass -p 'rX10hh@1qyUU''''hznG3&D' ssh -o StrictHostKeyChecking=no root@92.112.181.127 'cd /var/www/ai-desktop && npm run build 2>&1')"
+      "Bash(SSHPASS='@yJ5Yy#2tW9Le(x16v1U' sshpass -e ssh -o StrictHostKeyChecking=no root@92.112.181.127 'curl -X POST http://localhost:3000/api/vscode/start -H \"\"Content-Type: application/json\"\" -d \"\"{\\\"\"repoId\\\"\":\\\"\"actmcp\\\"\"}\"\" 2>&1 &\nsleep 3\npm2 logs ai-desktop --lines 100 --nostream | grep -E \"\"(Full command|Starting code-server|stderr|exit)\"\" | tail -30')"
     ],
     "deny": [],
     "ask": []
