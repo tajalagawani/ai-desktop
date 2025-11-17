@@ -20,7 +20,7 @@ module.exports = {
       // Environment variables
       env: {
         NODE_ENV: 'production',
-        PORT: 80,
+        PORT: 3000, // Changed to 3000 - Nginx proxies from port 80 to 3000
       },
 
       // Logging

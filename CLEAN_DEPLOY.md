@@ -1,6 +1,6 @@
-# Clean Deployment - Port 80 Direct
+# Clean Deployment - With Nginx for VS Code
 
-App now runs directly on port 80 (no Nginx needed).
+App runs on port 3000, Nginx on port 80 proxies to the app and VS Code instances.
 
 ## Clean Install Commands
 
