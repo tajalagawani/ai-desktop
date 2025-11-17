@@ -4,11 +4,21 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2, Database, Server, Rocket } from "lucide-react"
+import { Loader2, Database, Server, Rocket, Settings2, Code2, Cpu, HardDrive, FileText, List } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card } from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
+import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface DeployConfigProps {
   repoId: string
@@ -39,8 +49,18 @@ export function DeployConfig({
   const [envVars, setEnvVars] = useState<Record<string, string>>({})
   const [newEnvKey, setNewEnvKey] = useState("")
   const [newEnvValue, setNewEnvValue] = useState("")
+  const [envTextContent, setEnvTextContent] = useState("")
   const [domain, setDomain] = useState("")
   const [loadingServices, setLoadingServices] = useState(true)
+
+  // Advanced settings
+  const [customPort, setCustomPort] = useState("")
+  const [customBuildCommand, setCustomBuildCommand] = useState("")
+  const [customStartCommand, setCustomStartCommand] = useState("")
+  const [instances, setInstances] = useState("1")
+  const [memoryLimit, setMemoryLimit] = useState("512")
+  const [autoRestart, setAutoRestart] = useState(true)
+  const [nodeEnv, setNodeEnv] = useState("production")
 
   // Load running services
   useEffect(() => {
@@ -84,6 +104,62 @@ export function DeployConfig({
       delete updated[key]
       return updated
     })
+  }
+
+  // Parse .env text content into envVars object
+  const parseEnvText = (text: string) => {
+    const lines = text.split('\n')
+    const parsed: Record<string, string> = {}
+
+    lines.forEach(line => {
+      // Skip empty lines and comments
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) return
+
+      // Parse KEY=VALUE format
+      const match = trimmed.match(/^([^=]+)=(.*)$/)
+      if (match) {
+        const key = match[1].trim()
+        let value = match[2].trim()
+
+        // Remove quotes if present
+        if ((value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1)
+        }
+
+        parsed[key] = value
+      }
+    })
+
+    return parsed
+  }
+
+  // Convert envVars object to .env text format
+  const envVarsToText = (vars: Record<string, string>) => {
+    return Object.entries(vars)
+      .map(([key, value]) => {
+        // Add quotes if value contains spaces or special characters
+        const needsQuotes = /[\s#]/.test(value)
+        return `${key}=${needsQuotes ? `"${value}"` : value}`
+      })
+      .join('\n')
+  }
+
+  // Sync text content with envVars when switching tabs
+  useEffect(() => {
+    setEnvTextContent(envVarsToText(envVars))
+  }, [envVars])
+
+  // Handle text editor changes
+  const handleEnvTextChange = (text: string) => {
+    setEnvTextContent(text)
+    try {
+      const parsed = parseEnvText(text)
+      setEnvVars(parsed)
+    } catch (error) {
+      console.error('Error parsing env text:', error)
+    }
   }
 
   const handleDeploy = async () => {
@@ -174,45 +250,78 @@ export function DeployConfig({
         <div className="space-y-2">
           <Label className="font-medium text-sm">Environment Variables</Label>
 
-          {Object.keys(envVars).length > 0 && (
-            <div className="space-y-1 border rounded-lg p-2 bg-muted/30 max-h-32 overflow-y-auto">
-              {Object.entries(envVars).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-2 text-xs">
-                  <code className="flex-1 px-2 py-1 bg-background rounded font-mono text-xs truncate">
-                    {key}={value}
-                  </code>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeEnvVar(key)}
-                    className="h-6 px-2 text-xs"
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
+          <Tabs defaultValue="editor" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="editor" className="text-xs">
+                <FileText className="h-3 w-3 mr-1.5" />
+                Text Editor
+              </TabsTrigger>
+              <TabsTrigger value="keyvalue" className="text-xs">
+                <List className="h-3 w-3 mr-1.5" />
+                Key-Value
+              </TabsTrigger>
+            </TabsList>
 
-          <div className="flex gap-2">
-            <Input
-              placeholder="KEY"
-              value={newEnvKey}
-              onChange={(e) => setNewEnvKey(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addEnvVar()}
-              className="font-mono text-xs h-8"
-            />
-            <Input
-              placeholder="value"
-              value={newEnvValue}
-              onChange={(e) => setNewEnvValue(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addEnvVar()}
-              className="font-mono text-xs h-8"
-            />
-            <Button variant="outline" size="sm" onClick={addEnvVar} disabled={!newEnvKey || !newEnvValue} className="h-8">
-              Add
-            </Button>
-          </div>
+            <TabsContent value="editor" className="mt-2 space-y-2">
+              <Textarea
+                placeholder="Paste your .env content here&#10;DATABASE_URL=postgresql://user:pass@localhost:5432/db&#10;API_KEY=your-api-key&#10;NODE_ENV=production"
+                value={envTextContent}
+                onChange={(e) => handleEnvTextChange(e.target.value)}
+                className="font-mono text-xs min-h-[200px] resize-y"
+                spellCheck={false}
+              />
+              <p className="text-xs text-muted-foreground">
+                Paste your .env file content. Supports KEY=VALUE format, comments (#), and quoted values.
+              </p>
+              {Object.keys(envVars).length > 0 && (
+                <div className="text-xs text-muted-foreground">
+                  {Object.keys(envVars).length} variable{Object.keys(envVars).length !== 1 ? 's' : ''} configured
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="keyvalue" className="mt-2 space-y-2">
+              {Object.keys(envVars).length > 0 && (
+                <div className="space-y-1 border rounded-lg p-2 bg-muted/30 max-h-40 overflow-y-auto">
+                  {Object.entries(envVars).map(([key, value]) => (
+                    <div key={key} className="flex items-center gap-2 text-xs">
+                      <code className="flex-1 px-2 py-1 bg-background rounded font-mono text-xs truncate">
+                        {key}={value}
+                      </code>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeEnvVar(key)}
+                        className="h-6 px-2 text-xs"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <Input
+                  placeholder="KEY"
+                  value={newEnvKey}
+                  onChange={(e) => setNewEnvKey(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && addEnvVar()}
+                  className="font-mono text-xs h-8"
+                />
+                <Input
+                  placeholder="value"
+                  value={newEnvValue}
+                  onChange={(e) => setNewEnvValue(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && addEnvVar()}
+                  className="font-mono text-xs h-8"
+                />
+                <Button variant="outline" size="sm" onClick={addEnvVar} disabled={!newEnvKey || !newEnvValue} className="h-8">
+                  Add
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Domain (Optional) */}

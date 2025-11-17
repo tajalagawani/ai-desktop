@@ -1,4 +1,4 @@
-# 🚀 VPS Deployment Checklist
+.# 🚀 VPS Deployment Checklist
 
 Complete guide to deploying AI Desktop on your VPS.
 
