@@ -328,14 +328,21 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
 
     console.log(`[VSCode] Allocated port: ${port}`)
 
-    // 6. Start code-server process
+    // 6. Create temporary config file to override default config
+    const tempConfigPath = `/tmp/code-server-config-${port}.yaml`
+    const configContent = `bind-addr: 127.0.0.1:${port}
+auth: none
+disable-telemetry: true
+disable-update-check: true
+`
+    fs.writeFileSync(tempConfigPath, configContent, 'utf-8')
+    console.log(`[VSCode] Wrote temp config: ${tempConfigPath}`)
+
+    // 7. Start code-server process with custom config
     const args = [
-      repo.path,
-      '--auth=none',
-      '--disable-telemetry',
-      '--disable-update-check',
+      `--config=${tempConfigPath}`,
       '--disable-workspace-trust',
-      `--bind-addr=127.0.0.1:${port}`,
+      repo.path,
     ]
 
     console.log(`[VSCode] Starting code-server with args:`, args)
