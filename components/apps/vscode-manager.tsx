@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useToast } from "@/hooks/use-toast"
 import { getIcon } from "@/utils/icon-mapper"
 import {
   Play,
@@ -36,6 +37,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState<string>("")
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const { toast } = useToast()
 
   // Store last data to compare
   const lastDataRef = React.useRef<string>("")
@@ -77,6 +79,16 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
   }, [])
 
   useEffect(() => {
+    // Run cleanup on first mount
+    fetch('/api/vscode/cleanup', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.cleaned > 0) {
+          console.log(`[VSCode] Cleaned up ${data.cleaned} orphaned processes`)
+        }
+      })
+      .catch(err => console.error('[VSCode] Cleanup failed:', err))
+
     loadRepositories(false)
     // Silent background refresh
     const interval = setInterval(() => {
@@ -87,6 +99,8 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
   const handleStart = async (repoId: string) => {
     setActionLoading(repoId)
+    const repo = repositories.find(r => r.id === repoId)
+
     try {
       const response = await fetch('/api/vscode/start', {
         method: 'POST',
@@ -96,6 +110,10 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       const data = await response.json()
 
       if (data.success) {
+        toast({
+          title: "VS Code Started",
+          description: `${repo?.name || repoId} is now running on port ${data.port}`,
+        })
         await loadRepositories(false)
         // Open in new tab
         if (data.url) {
@@ -103,10 +121,18 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
           window.open(`http://${hostname}${data.url}`, '_blank')
         }
       } else {
-        console.error('Failed to start:', data.error)
+        toast({
+          title: "Failed to Start",
+          description: data.error || "Could not start VS Code instance",
+          variant: "destructive"
+        })
       }
     } catch (error) {
-      console.error('Failed to start code-server:', error)
+      toast({
+        title: "Error",
+        description: "Network error starting VS Code",
+        variant: "destructive"
+      })
     } finally {
       setActionLoading(null)
     }
@@ -114,6 +140,8 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
   const handleStop = async (repoId: string) => {
     setActionLoading(repoId)
+    const repo = repositories.find(r => r.id === repoId)
+
     try {
       const response = await fetch('/api/vscode/stop', {
         method: 'POST',
@@ -123,12 +151,24 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       const data = await response.json()
 
       if (data.success) {
+        toast({
+          title: "VS Code Stopped",
+          description: `${repo?.name || repoId} has been stopped`,
+        })
         await loadRepositories(false)
       } else {
-        console.error('Failed to stop:', data.error)
+        toast({
+          title: "Failed to Stop",
+          description: data.error || "Could not stop VS Code instance",
+          variant: "destructive"
+        })
       }
     } catch (error) {
-      console.error('Failed to stop code-server:', error)
+      toast({
+        title: "Error",
+        description: "Network error stopping VS Code",
+        variant: "destructive"
+      })
     } finally {
       setActionLoading(null)
     }
