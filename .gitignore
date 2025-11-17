@@ -60,6 +60,10 @@ next-env.d.ts
 .turbo
 *.pem
 
+# Runtime data (repositories, config)
+/data/*.json
+!/data/.gitkeep
+
 # generated workflow files
 components/apps/act-docker/flows/*.flow
 **/temp-*.act
