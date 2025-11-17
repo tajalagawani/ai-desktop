@@ -149,15 +149,36 @@ export class CodeServerManager {
   }
 
   /**
-   * Wait for a port to become available
+   * Wait for a port to become available using Node.js net module
    */
   private async waitForPort(port: number, timeout: number): Promise<void> {
+    const net = require('net')
     const startTime = Date.now()
 
     while (Date.now() - startTime < timeout) {
       try {
-        // Try to connect to the port
-        execSync(`nc -z 127.0.0.1 ${port}`, { stdio: 'pipe' })
+        await new Promise<void>((resolve, reject) => {
+          const client = new net.Socket()
+          client.setTimeout(1000)
+
+          client.on('connect', () => {
+            client.destroy()
+            resolve()
+          })
+
+          client.on('timeout', () => {
+            client.destroy()
+            reject(new Error('Timeout'))
+          })
+
+          client.on('error', (err: any) => {
+            client.destroy()
+            reject(err)
+          })
+
+          client.connect(port, '127.0.0.1')
+        })
+
         console.log(`[code-server] Port ${port} is now open`)
         return // Port is open
       } catch {
