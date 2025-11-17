@@ -27,6 +27,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Repository not found' }, { status: 404 })
     }
 
+    console.log(`[API] Repository details:`, {
+      id: repo.id,
+      name: repo.name,
+      path: repo.path,
+      type: repo.type
+    })
+
     // Check if code-server is installed
     if (!codeServerManager.isInstalled()) {
       return NextResponse.json({

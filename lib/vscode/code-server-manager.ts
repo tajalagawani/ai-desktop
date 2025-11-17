@@ -18,9 +18,12 @@ export class CodeServerManager {
     const safeName = projectName.replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()
     const workspaceDir = path.join(WORKSPACES_DIR, safeName)
 
+    console.log(`[code-server] ====================================`)
     console.log(`[code-server] Starting server for ${projectName}`)
-    console.log(`[code-server] Workspace: ${workspaceDir}`)
+    console.log(`[code-server] Repository Path: ${repoPath}`)
+    console.log(`[code-server] Workspace Directory: ${workspaceDir}`)
     console.log(`[code-server] Port: ${port}`)
+    console.log(`[code-server] ====================================")`)
 
     // Create workspace directory if it doesn't exist
     if (!fs.existsSync(workspaceDir)) {
@@ -32,12 +35,15 @@ export class CodeServerManager {
     if (repoPath && fs.existsSync(repoPath)) {
       try {
         console.log(`[code-server] Syncing repository from ${repoPath} to ${workspaceDir}`)
-        execSync(`rsync -av --delete "${repoPath}/" "${workspaceDir}/"`, { stdio: 'pipe' })
+        const rsyncOutput = execSync(`rsync -av --delete "${repoPath}/" "${workspaceDir}/"`, { encoding: 'utf-8' })
+        console.log(`[code-server] Rsync output:`, rsyncOutput.split('\n').slice(0, 5).join('\n'))
         console.log(`[code-server] Repository synced successfully`)
       } catch (error: any) {
         console.error(`[code-server] Failed to sync repository:`, error.message)
         // Continue anyway, code-server will work with empty directory
       }
+    } else {
+      console.warn(`[code-server] Repository path does not exist or is empty: ${repoPath}`)
     }
 
     // Check if code-server is installed
