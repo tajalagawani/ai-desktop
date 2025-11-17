@@ -12,6 +12,11 @@ function validatePath(filePath: string): string {
 
   const normalizedPath = path.normalize(filePath)
 
+  // If the path is already absolute and starts with SAFE_ROOT, use it directly
+  if (path.isAbsolute(normalizedPath) && normalizedPath.startsWith(SAFE_ROOT)) {
+    return normalizedPath
+  }
+
   // Treat paths as relative to SAFE_ROOT by default
   // Strip leading slash and join with SAFE_ROOT
   const relativePath = normalizedPath.startsWith('/')
