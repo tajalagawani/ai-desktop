@@ -40,8 +40,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { CloneDialog } from "./vscode/clone-dialog"
 import { DeleteDialog } from "./vscode/delete-dialog"
-import { DeployDialog } from "./vscode/deploy-dialog"
+import { DeployConfig } from "./vscode/deploy-config"
 import { DeploymentCard } from "./vscode/deployment-card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import type { VSCodeRepository } from "@/lib/vscode/types"
 import type { DeploymentConfig } from "@/lib/deployment/types"
@@ -71,8 +72,6 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [repoToDelete, setRepoToDelete] = useState<VSCodeRepository | null>(null)
   const [deployments, setDeployments] = useState<DeploymentConfig[]>([])
-  const [deployOpen, setDeployOpen] = useState(false)
-  const [repoToDeploy, setRepoToDeploy] = useState<VSCodeRepository | null>(null)
   const { toast} = useToast()
 
   // Store last data to compare
@@ -609,177 +608,197 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                       )}
                     </Button>
                   )}
+                </div>
+              </div>
+
+              {/* Repository Detail Tabs */}
+              <Tabs defaultValue="overview" className="flex-1 flex flex-col mt-2 min-h-0">
+                <TabsList className="mb-2 justify-start w-auto flex-shrink-0">
+                  <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+                  <TabsTrigger value="deploy" className="text-xs">
+                    <Rocket className="h-3 w-3 mr-1" />
+                    Deploy
+                  </TabsTrigger>
                   {selectedRepo.type === 'git' && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setRepoToDeploy(selectedRepo)
-                        setDeployOpen(true)
-                      }}
-                      title="Deploy to VPS"
-                      className="bg-primary text-primary-foreground hover:bg-primary/90"
-                    >
-                      <Rocket className="h-3.5 w-3.5 mr-1.5" />
-                      Deploy
-                    </Button>
+                    <TabsTrigger value="changes" className="text-xs">
+                      <FileEdit className="h-3 w-3 mr-1" />
+                      Changes ({gitChanges.length})
+                    </TabsTrigger>
                   )}
-                </div>
-              </div>
+                </TabsList>
 
-              {/* Connection Info */}
-              {selectedRepo.running && (
-                <div className="p-4 bg-muted/50 rounded-lg space-y-3 mb-4">
-                  <h3 className="font-normal text-sm flex items-center gap-2">
-                    <Code className="h-3.5 w-3.5" />
-                    Access Information
-                  </h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Editor URL:</span>
-                      <div className="flex items-center gap-2">
-                        <code className="font-mono bg-background px-2 py-1 rounded text-xs">
-                          {selectedRepo.url}
-                        </code>
-                        <Button size="sm" variant="ghost" onClick={() => copyToClipboard(selectedRepo.url!)}>
-                          <Copy className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Port:</span>
-                      <div className="flex items-center gap-2">
-                        <code className="font-mono bg-background px-2 py-1 rounded text-xs">
-                          {selectedRepo.port}
-                        </code>
-                        <Button size="sm" variant="ghost" onClick={() => copyToClipboard(String(selectedRepo.port))}>
-                          <Copy className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Uptime:</span>
-                      <span className="text-xs">{selectedRepo.uptime}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Repository Info */}
-              <div className="p-4 bg-muted/50 rounded-lg space-y-3">
-                <h3 className="font-normal text-sm flex items-center gap-2">
-                  <FolderGit2 className="h-3.5 w-3.5" />
-                  Repository Information
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">Path:</span>
-                    <div className="flex items-center gap-2">
-                      <code className="font-mono bg-background px-2 py-1 rounded text-xs max-w-md truncate">
-                        {selectedRepo.path}
-                      </code>
-                      <Button size="sm" variant="ghost" onClick={() => copyToClipboard(selectedRepo.path)}>
-                        <Copy className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">Type:</span>
-                    <span className="text-xs">{selectedRepo.type === 'git' ? 'Git Repository' : 'Folder'}</span>
-                  </div>
-                  {selectedRepo.branch && (
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">Branch:</span>
-                      <div className="flex items-center gap-1">
-                        <GitBranch className="h-3 w-3" />
-                        <span className="text-xs">{selectedRepo.branch}</span>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-muted-foreground">Added:</span>
-                    <span className="text-xs">{new Date(selectedRepo.addedAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Live Git Changes */}
-              {selectedRepo.type === 'git' && (
-                <div className="p-4 bg-muted/50 rounded-lg space-y-3 mt-4">
-                  <h3 className="font-normal text-sm flex items-center gap-2">
-                    <FileEdit className="h-3.5 w-3.5" />
-                    Live Changes ({gitChanges.length})
-                  </h3>
-                  {gitChanges.length > 0 ? (
-                    <div className="space-y-2">
-                      {gitChanges.map((change) => {
-                        const Icon = change.status === 'added' ? FilePlus :
-                                   change.status === 'deleted' ? FileX :
-                                   FileEdit
-                        const statusColor = change.status === 'added' ? 'text-green-600' :
-                                          change.status === 'deleted' ? 'text-red-600' :
-                                          'text-amber-600'
-
-                        return (
-                          <div
-                            key={change.path}
-                            className="flex items-center justify-between text-sm p-2 rounded hover:bg-background cursor-pointer transition-colors"
-                            onClick={() => {
-                              setSelectedFile(change.path)
-                              loadFileDiff(selectedRepo.id, change.path)
-                            }}
-                          >
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", statusColor)} />
-                              <span className="font-mono text-xs truncate">{change.path}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground flex-shrink-0">
-                              {change.additions !== undefined && change.additions > 0 && (
-                                <span className="text-green-600">+{change.additions}</span>
-                              )}
-                              {change.deletions !== undefined && change.deletions > 0 && (
-                                <span className="text-red-600">-{change.deletions}</span>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      })}
-
-                      {/* Diff Viewer */}
-                      {selectedFile && fileDiff && (
-                        <div className="mt-4 border-t pt-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-mono text-muted-foreground">{selectedFile}</span>
-                            <Button size="sm" variant="ghost" onClick={() => setSelectedFile(null)}>
-                              <span className="text-xs">Close</span>
+                {/* Overview Tab */}
+                <TabsContent value="overview" className="flex-1 overflow-auto mt-0 min-h-0 space-y-4">
+                  {/* Connection Info */}
+                  {selectedRepo.running && (
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                      <h3 className="font-normal text-sm flex items-center gap-2">
+                        <Code className="h-3.5 w-3.5" />
+                        Access Information
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-muted-foreground">Editor URL:</span>
+                          <div className="flex items-center gap-2">
+                            <code className="font-mono bg-background px-2 py-1 rounded text-xs">
+                              {selectedRepo.url}
+                            </code>
+                            <Button size="sm" variant="ghost" onClick={() => copyToClipboard(selectedRepo.url!)}>
+                              <Copy className="h-3 w-3" />
                             </Button>
                           </div>
-                          <ScrollArea className="h-64 w-full rounded border bg-background p-3">
-                            <pre className="text-xs font-mono">
-                              {fileDiff.split('\n').map((line, i) => (
-                                <div
-                                  key={i}
-                                  className={cn(
-                                    "px-2 py-0.5",
-                                    line.startsWith('+') && !line.startsWith('+++') ? "bg-green-500/10 text-green-600" :
-                                    line.startsWith('-') && !line.startsWith('---') ? "bg-red-500/10 text-red-600" :
-                                    line.startsWith('@@') ? "bg-blue-500/10 text-blue-600" :
-                                    "text-muted-foreground"
-                                  )}
-                                >
-                                  {line || ' '}
-                                </div>
-                              ))}
-                            </pre>
-                          </ScrollArea>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-muted-foreground">Port:</span>
+                          <div className="flex items-center gap-2">
+                            <code className="font-mono bg-background px-2 py-1 rounded text-xs">
+                              {selectedRepo.port}
+                            </code>
+                            <Button size="sm" variant="ghost" onClick={() => copyToClipboard(String(selectedRepo.port))}>
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-muted-foreground">Uptime:</span>
+                          <span className="text-xs">{selectedRepo.uptime}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Repository Info */}
+                  <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                    <h3 className="font-normal text-sm flex items-center gap-2">
+                      <FolderGit2 className="h-3.5 w-3.5" />
+                      Repository Information
+                    </h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Path:</span>
+                        <div className="flex items-center gap-2">
+                          <code className="font-mono bg-background px-2 py-1 rounded text-xs max-w-md truncate">
+                            {selectedRepo.path}
+                          </code>
+                          <Button size="sm" variant="ghost" onClick={() => copyToClipboard(selectedRepo.path)}>
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Type:</span>
+                        <span className="text-xs">{selectedRepo.type === 'git' ? 'Git Repository' : 'Folder'}</span>
+                      </div>
+                      {selectedRepo.branch && (
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-muted-foreground">Branch:</span>
+                          <div className="flex items-center gap-1">
+                            <GitBranch className="h-3 w-3" />
+                            <span className="text-xs">{selectedRepo.branch}</span>
+                          </div>
                         </div>
                       )}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Added:</span>
+                        <span className="text-xs">{new Date(selectedRepo.addedAt).toLocaleDateString()}</span>
+                      </div>
                     </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">No uncommitted changes</p>
-                  )}
-                </div>
-              )}
+                  </div>
+                </TabsContent>
+
+                {/* Deploy Tab */}
+                <TabsContent value="deploy" className="flex-1 overflow-auto mt-0 min-h-0">
+                  <DeployConfig
+                    repoId={selectedRepo.id}
+                    repoName={selectedRepo.name}
+                    repoPath={selectedRepo.path}
+                    onDeployComplete={() => {
+                      loadDeployments()
+                      toast.success("Check the Deployments tab to monitor progress")
+                    }}
+                  />
+                </TabsContent>
+
+                {/* Git Changes Tab */}
+                {selectedRepo.type === 'git' && (
+                  <TabsContent value="changes" className="flex-1 overflow-auto mt-0 min-h-0">
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                      <h3 className="font-normal text-sm flex items-center gap-2">
+                        <FileEdit className="h-3.5 w-3.5" />
+                        Live Changes ({gitChanges.length})
+                      </h3>
+                      {gitChanges.length > 0 ? (
+                        <div className="space-y-2">
+                          {gitChanges.map((change) => {
+                            const Icon = change.status === 'added' ? FilePlus :
+                                       change.status === 'deleted' ? FileX :
+                                       FileEdit
+                            const statusColor = change.status === 'added' ? 'text-green-600' :
+                                              change.status === 'deleted' ? 'text-red-600' :
+                                              'text-amber-600'
+
+                            return (
+                              <div
+                                key={change.path}
+                                className="flex items-center justify-between text-sm p-2 rounded hover:bg-background cursor-pointer transition-colors"
+                                onClick={() => {
+                                  setSelectedFile(change.path)
+                                  loadFileDiff(selectedRepo.id, change.path)
+                                }}
+                              >
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                  <Icon className={cn("h-3.5 w-3.5 flex-shrink-0", statusColor)} />
+                                  <span className="font-mono text-xs truncate">{change.path}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground flex-shrink-0">
+                                  {change.additions !== undefined && change.additions > 0 && (
+                                    <span className="text-green-600">+{change.additions}</span>
+                                  )}
+                                  {change.deletions !== undefined && change.deletions > 0 && (
+                                    <span className="text-red-600">-{change.deletions}</span>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+
+                          {/* Diff Viewer */}
+                          {selectedFile && fileDiff && (
+                            <div className="mt-4 border-t pt-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-mono text-muted-foreground">{selectedFile}</span>
+                                <Button size="sm" variant="ghost" onClick={() => setSelectedFile(null)}>
+                                  <span className="text-xs">Close</span>
+                                </Button>
+                              </div>
+                              <ScrollArea className="h-64 w-full rounded border bg-background p-3">
+                                <pre className="text-xs font-mono">
+                                  {fileDiff.split('\n').map((line, i) => (
+                                    <div
+                                      key={i}
+                                      className={cn(
+                                        "px-2 py-0.5",
+                                        line.startsWith('+') && !line.startsWith('+++') ? "bg-green-500/10 text-green-600" :
+                                        line.startsWith('-') && !line.startsWith('---') ? "bg-red-500/10 text-red-600" :
+                                        line.startsWith('@@') ? "bg-blue-500/10 text-blue-600" :
+                                        "text-muted-foreground"
+                                      )}
+                                    >
+                                      {line || ' '}
+                                    </div>
+                                  ))}
+                                </pre>
+                              </ScrollArea>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">No uncommitted changes</p>
+                      )}
+                    </div>
+                  </TabsContent>
+                )}
+              </Tabs>
             </div>
           ) : (
             // Repository List View
