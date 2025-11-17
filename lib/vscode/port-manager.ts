@@ -15,13 +15,45 @@ export class PortManager {
         this.saveDatabase(initial)
         return initial
       }
-      return JSON.parse(fs.readFileSync(PORTS_FILE, 'utf-8'))
+
+      const data = JSON.parse(fs.readFileSync(PORTS_FILE, 'utf-8'))
+
+      // Validate and fix corrupted database
+      if (!data || typeof data !== 'object') {
+        console.warn('[PortManager] Invalid database format, resetting...')
+        const initial: PortDatabase = {
+          instances: {},
+          availablePorts: Array.from({ length: 12 }, (_, i) => 8888 + i)
+        }
+        this.saveDatabase(initial)
+        return initial
+      }
+
+      // Ensure instances is an object, not an array
+      if (!data.instances || typeof data.instances !== 'object' || Array.isArray(data.instances)) {
+        console.warn('[PortManager] Invalid instances format, resetting...')
+        data.instances = {}
+      }
+
+      // Ensure availablePorts exists and is an array
+      if (!data.availablePorts || !Array.isArray(data.availablePorts)) {
+        console.warn('[PortManager] Invalid availablePorts, regenerating...')
+        // Calculate which ports are actually free
+        const usedPorts = Object.values(data.instances).map((inst: any) => inst.port)
+        data.availablePorts = Array.from({ length: 12 }, (_, i) => 8888 + i)
+          .filter(port => !usedPorts.includes(port))
+          .sort((a, b) => a - b)
+      }
+
+      return data as PortDatabase
     } catch (error) {
-      console.error('[PortManager] Failed to load database:', error)
-      return {
+      console.error('[PortManager] Failed to load database, resetting:', error)
+      const initial: PortDatabase = {
         instances: {},
         availablePorts: Array.from({ length: 12 }, (_, i) => 8888 + i)
       }
+      this.saveDatabase(initial)
+      return initial
     }
   }
 
@@ -103,5 +135,18 @@ export class PortManager {
   isPortInUse(port: number): boolean {
     const db = this.loadDatabase()
     return Object.values(db.instances).some(inst => inst.port === port)
+  }
+
+  /**
+   * Reset the entire port database - use with caution!
+   * This will release all ports and clear all instances
+   */
+  resetDatabase(): void {
+    const initial: PortDatabase = {
+      instances: {},
+      availablePorts: Array.from({ length: 12 }, (_, i) => 8888 + i)
+    }
+    this.saveDatabase(initial)
+    console.log('[PortManager] Database reset - all ports released')
   }
 }

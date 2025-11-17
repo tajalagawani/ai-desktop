@@ -30,11 +30,8 @@ export async function POST(request: NextRequest) {
         console.error('[Cleanup] Failed to remove temp dirs:', error)
       }
 
-      // Clean up all port allocations
-      const instances = portManager.getAllInstances()
-      for (const instance of instances) {
-        portManager.releasePort(instance.projectName)
-      }
+      // Reset entire port database
+      portManager.resetDatabase()
 
       // Mark all repos as stopped
       const repos = repoManager.getAllRepositories()
