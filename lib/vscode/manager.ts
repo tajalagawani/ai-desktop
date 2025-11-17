@@ -330,9 +330,12 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
 
     // 6. Start code-server process
     const args = [
-      repo.path,
       '--bind-addr', `127.0.0.1:${port}`,
-      ...VSCODE_CONFIG.CODE_SERVER_ARGS,
+      '--auth', 'none',
+      '--disable-telemetry',
+      '--disable-update-check',
+      '--disable-workspace-trust',
+      repo.path,
     ]
 
     console.log(`[VSCode] Starting code-server with args:`, args)
