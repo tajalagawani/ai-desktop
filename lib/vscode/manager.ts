@@ -328,13 +328,14 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
 
     console.log(`[VSCode] Allocated port: ${port}`)
 
-    // 6. Create temporary config directory and file
-    const tempConfigDir = `/tmp/code-server-config-${port}`
-    const tempConfigPath = path.join(tempConfigDir, 'config.yaml')
+    // 6. Create isolated user-data-dir for this instance
+    const userDataDir = `/tmp/code-server-${repoId}-${port}`
+    const configDir = path.join(userDataDir, 'config')
+    const configPath = path.join(configDir, 'config.yaml')
 
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(tempConfigDir)) {
-      fs.mkdirSync(tempConfigDir, { recursive: true })
+    // Create directories
+    if (!fs.existsSync(configDir)) {
+      fs.mkdirSync(configDir, { recursive: true })
     }
 
     const configContent = `bind-addr: 127.0.0.1:${port}
@@ -342,12 +343,14 @@ auth: none
 disable-telemetry: true
 disable-update-check: true
 `
-    fs.writeFileSync(tempConfigPath, configContent, 'utf-8')
-    console.log(`[VSCode] Wrote temp config: ${tempConfigPath}`)
+    fs.writeFileSync(configPath, configContent, 'utf-8')
+    console.log(`[VSCode] Created isolated instance at: ${userDataDir}`)
+    console.log(`[VSCode] Config: ${configPath}`)
 
-    // 7. Start code-server process with custom config
+    // 7. Start code-server with isolated user-data-dir
     const args = [
-      `--config=${tempConfigPath}`,
+      `--user-data-dir=${userDataDir}`,
+      `--config=${configPath}`,
       '--disable-workspace-trust',
       repo.path,
     ]
@@ -450,16 +453,16 @@ disable-update-check: true
       console.error(`[VSCode] Error killing process:`, error.message)
     }
 
-    // 3. Clean up temp config directory
+    // 3. Clean up user-data-dir
     if (status.port) {
-      const tempConfigDir = `/tmp/code-server-config-${status.port}`
+      const userDataDir = `/tmp/code-server-${repoId}-${status.port}`
       try {
-        if (fs.existsSync(tempConfigDir)) {
-          fs.rmSync(tempConfigDir, { recursive: true, force: true })
-          console.log(`[VSCode] Removed temp config: ${tempConfigDir}`)
+        if (fs.existsSync(userDataDir)) {
+          fs.rmSync(userDataDir, { recursive: true, force: true })
+          console.log(`[VSCode] Removed user-data-dir: ${userDataDir}`)
         }
       } catch (error: any) {
-        console.error(`[VSCode] Failed to remove temp config:`, error.message)
+        console.error(`[VSCode] Failed to remove user-data-dir:`, error.message)
       }
     }
 
