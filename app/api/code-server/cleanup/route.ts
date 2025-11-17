@@ -21,6 +21,15 @@ export async function POST(request: NextRequest) {
         // Ignore error if no processes found
       }
 
+      // Clean up temporary directories
+      try {
+        execSync('rm -rf /tmp/code-server-*', { stdio: 'pipe' })
+        execSync('rm -rf /tmp/vscode-agent-*', { stdio: 'pipe' })
+        console.log('[Cleanup] Removed temporary directories')
+      } catch (error) {
+        console.error('[Cleanup] Failed to remove temp dirs:', error)
+      }
+
       // Clean up all port allocations
       const instances = portManager.getAllInstances()
       for (const instance of instances) {

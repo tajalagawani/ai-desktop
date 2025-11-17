@@ -38,11 +38,15 @@ export function CodeEditorApp() {
   const [installing, setInstalling] = useState(false)
   const [installMethod, setInstallMethod] = useState<'script' | 'homebrew' | 'npm'>('script')
   const [allProcesses, setAllProcesses] = useState<any[]>([])
-  const [showProcessManager, setShowProcessManager] = useState(false)
   const [loadingProcesses, setLoadingProcesses] = useState(false)
 
   useEffect(() => {
     loadRepositories()
+    loadProcesses()
+
+    // Auto-refresh processes every 5 seconds
+    const interval = setInterval(loadProcesses, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   const loadRepositories = async () => {
@@ -156,8 +160,6 @@ export function CodeEditorApp() {
     }
   }
 
-  const selectedRepoData = repositories.find(r => r.id === selectedRepo)
-
   const loadProcesses = async () => {
     setLoadingProcesses(true)
     try {
@@ -240,21 +242,10 @@ export function CodeEditorApp() {
             <div className="space-y-1">
               <h2 className="text-2xl font-bold">VS Code Editor</h2>
               <p className="text-sm text-muted-foreground">
-                Select a repository to open in VS Code
+                Manage code-server instances for your repositories
               </p>
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setShowProcessManager(true)
-                  loadProcesses()
-                }}
-              >
-                <Activity className="mr-2 h-4 w-4" />
-                Process Manager
-              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -264,6 +255,109 @@ export function CodeEditorApp() {
                 Refresh
               </Button>
             </div>
+          </div>
+
+          {/* Running Processes Section */}
+          <div className="border rounded-lg p-4 bg-card">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Activity className="h-4 w-4" />
+                  Running Code-Server Processes
+                  {!loadingProcesses && (
+                    <span className="text-xs font-normal text-muted-foreground">
+                      ({allProcesses.length} active)
+                    </span>
+                  )}
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">
+                  All code-server instances on the system • Auto-refreshes every 5s
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={loadProcesses}
+                  disabled={loadingProcesses}
+                >
+                  <RefreshCw className={`h-4 w-4 ${loadingProcesses ? 'animate-spin' : ''}`} />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={async () => {
+                    if (confirm('Kill ALL code-server processes?')) {
+                      await killAllProcesses()
+                    }
+                  }}
+                  disabled={loadingProcesses || allProcesses.length === 0}
+                >
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Kill All
+                </Button>
+              </div>
+            </div>
+
+            {loadingProcesses && allProcesses.length === 0 ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : allProcesses.length === 0 ? (
+              <div className="text-center py-6 text-sm text-muted-foreground">
+                No code-server processes running
+              </div>
+            ) : (
+              <div className="border rounded overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted">
+                    <tr>
+                      <th className="text-left p-2 font-medium">PID</th>
+                      <th className="text-left p-2 font-medium">CPU%</th>
+                      <th className="text-left p-2 font-medium">MEM%</th>
+                      <th className="text-left p-2 font-medium">Port</th>
+                      <th className="text-left p-2 font-medium">Command</th>
+                      <th className="text-left p-2 font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allProcesses.map((proc, idx) => (
+                      <tr key={idx} className="border-t hover:bg-muted/30">
+                        <td className="p-2 font-mono text-xs">{proc.pid}</td>
+                        <td className="p-2">{proc.cpu}</td>
+                        <td className="p-2">{proc.mem}</td>
+                        <td className="p-2 font-mono text-xs">
+                          {proc.port ? (
+                            <span className="bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded text-xs">
+                              {proc.port}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">-</span>
+                          )}
+                        </td>
+                        <td className="p-2 max-w-md truncate" title={proc.command}>
+                          <code className="text-xs">{proc.command}</code>
+                        </td>
+                        <td className="p-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-7"
+                            onClick={async () => {
+                              if (confirm(`Kill process ${proc.pid}?`)) {
+                                await killProcess(proc.pid)
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3 text-red-500" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {/* Repositories Grid */}
@@ -384,110 +478,6 @@ export function CodeEditorApp() {
             </div>
           )}
         </div>
-
-        {/* Process Manager Dialog */}
-        <Dialog open={showProcessManager} onOpenChange={setShowProcessManager}>
-          <DialogContent className="max-w-4xl max-h-[80vh]">
-            <DialogHeader>
-              <DialogTitle>Code-Server Process Manager</DialogTitle>
-              <DialogDescription>
-                View and manage all running code-server processes
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 py-4">
-              {/* Action Buttons */}
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={loadProcesses}
-                  disabled={loadingProcesses}
-                >
-                  <RefreshCw className={`mr-2 h-4 w-4 ${loadingProcesses ? 'animate-spin' : ''}`} />
-                  Refresh
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={async () => {
-                    if (confirm('Are you sure you want to kill ALL code-server processes? This will stop all running VS Code instances.')) {
-                      await killAllProcesses()
-                    }
-                  }}
-                  disabled={loadingProcesses || allProcesses.length === 0}
-                >
-                  <XCircle className="mr-2 h-4 w-4" />
-                  Kill All Processes
-                </Button>
-              </div>
-
-              {/* Process List */}
-              {loadingProcesses ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : allProcesses.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  No code-server processes running
-                </div>
-              ) : (
-                <div className="border rounded-lg overflow-hidden">
-                  <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted sticky top-0">
-                        <tr>
-                          <th className="text-left p-3 font-medium">PID</th>
-                          <th className="text-left p-3 font-medium">CPU %</th>
-                          <th className="text-left p-3 font-medium">Memory %</th>
-                          <th className="text-left p-3 font-medium">Port</th>
-                          <th className="text-left p-3 font-medium">Command</th>
-                          <th className="text-left p-3 font-medium">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {allProcesses.map((proc, idx) => (
-                          <tr key={idx} className="border-t hover:bg-muted/50">
-                            <td className="p-3 font-mono text-xs">{proc.pid}</td>
-                            <td className="p-3">{proc.cpu}</td>
-                            <td className="p-3">{proc.mem}</td>
-                            <td className="p-3 font-mono text-xs">
-                              {proc.port || <span className="text-muted-foreground">-</span>}
-                            </td>
-                            <td className="p-3 max-w-md truncate" title={proc.command}>
-                              <code className="text-xs">{proc.command}</code>
-                            </td>
-                            <td className="p-3">
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={async () => {
-                                  if (confirm(`Kill process ${proc.pid}?`)) {
-                                    await killProcess(proc.pid)
-                                  }
-                                }}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* Info */}
-              <div className="pt-4 border-t text-sm text-muted-foreground">
-                <p>
-                  This manager shows all running code-server processes on the system, including old or orphaned processes.
-                  Use this to clean up any stuck or unwanted VS Code instances.
-                </p>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
 
         {/* Install Instructions Dialog */}
         <Dialog open={showInstallDialog} onOpenChange={setShowInstallDialog}>
