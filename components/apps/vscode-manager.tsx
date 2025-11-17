@@ -500,9 +500,22 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                             {repo.branch && ` • ${repo.branch}`}
                           </p>
                           {repo.running && repo.port && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Port {repo.port} • {repo.uptime}
-                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <p className="text-xs text-muted-foreground">
+                                Port {repo.port} • {repo.uptime}
+                              </p>
+                              {(repo.changes !== undefined && repo.changes > 0) && (
+                                <span className="text-xs text-amber-600">
+                                  {repo.changes} change{repo.changes !== 1 ? 's' : ''}
+                                </span>
+                              )}
+                              {repo.ahead !== undefined && repo.ahead > 0 && (
+                                <span className="text-xs text-primary">↑{repo.ahead}</span>
+                              )}
+                              {repo.behind !== undefined && repo.behind > 0 && (
+                                <span className="text-xs text-destructive">↓{repo.behind}</span>
+                              )}
+                            </div>
                           )}
                         </div>
 

@@ -105,6 +105,45 @@ export class VSCodeManager {
   }
 
   /**
+   * Get git status for a repository
+   */
+  private getGitStatus(repoPath: string): { changes: number; ahead: number; behind: number } | null {
+    try {
+      if (!fs.existsSync(path.join(repoPath, '.git'))) {
+        return null
+      }
+
+      // Get number of changed files
+      const statusOutput = execSync('git status --porcelain', {
+        cwd: repoPath,
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'ignore']
+      })
+      const changes = statusOutput.trim().split('\n').filter(l => l.length > 0).length
+
+      // Get ahead/behind counts
+      let ahead = 0
+      let behind = 0
+      try {
+        const revOutput = execSync('git rev-list --left-right --count HEAD...@{u}', {
+          cwd: repoPath,
+          encoding: 'utf-8',
+          stdio: ['pipe', 'pipe', 'ignore']
+        })
+        const [aheadStr, behindStr] = revOutput.trim().split('\t')
+        ahead = parseInt(aheadStr, 10) || 0
+        behind = parseInt(behindStr, 10) || 0
+      } catch {
+        // No upstream branch
+      }
+
+      return { changes, ahead, behind }
+    } catch {
+      return null
+    }
+  }
+
+  /**
    * Get all repositories with their code-server status
    */
   async getAllRepositories(): Promise<VSCodeRepository[]> {
@@ -114,6 +153,9 @@ export class VSCodeManager {
     return repos.map(repo => {
       // Find if this repo has a running instance
       const instance = runningInstances.find(i => i.repoId === repo.id || i.repoPath === repo.path)
+
+      // Get git status
+      const gitStatus = this.getGitStatus(repo.path)
 
       return {
         id: repo.id,
@@ -127,6 +169,9 @@ export class VSCodeManager {
         pid: instance?.pid || null,
         url: instance ? `${VSCODE_CONFIG.BASE_URL_PATH}/${repo.id}/` : null,
         uptime: instance?.uptime || null,
+        changes: gitStatus?.changes,
+        ahead: gitStatus?.ahead,
+        behind: gitStatus?.behind,
       }
     })
   }

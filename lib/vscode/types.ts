@@ -16,6 +16,11 @@ export interface VSCodeRepository {
   pid: number | null
   url: string | null
   uptime: string | null
+
+  // Git status
+  changes?: number
+  ahead?: number
+  behind?: number
 }
 
 export interface RunningInstance {
