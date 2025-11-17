@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Loader2, Play, Square, RefreshCw, ExternalLink, Terminal, FolderGit2 } from "lucide-react"
+import { Loader2, Play, Square, RefreshCw, ExternalLink, Terminal, FolderGit2, Trash2, Activity, XCircle } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -37,6 +37,9 @@ export function CodeEditorApp() {
   const [showInstallDialog, setShowInstallDialog] = useState(false)
   const [installing, setInstalling] = useState(false)
   const [installMethod, setInstallMethod] = useState<'script' | 'homebrew' | 'npm'>('script')
+  const [allProcesses, setAllProcesses] = useState<any[]>([])
+  const [showProcessManager, setShowProcessManager] = useState(false)
+  const [loadingProcesses, setLoadingProcesses] = useState(false)
 
   useEffect(() => {
     loadRepositories()
@@ -155,6 +158,68 @@ export function CodeEditorApp() {
 
   const selectedRepoData = repositories.find(r => r.id === selectedRepo)
 
+  const loadProcesses = async () => {
+    setLoadingProcesses(true)
+    try {
+      const response = await fetch("/api/code-server/cleanup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "list-processes" })
+      })
+      const data = await response.json()
+      if (data.success) {
+        setAllProcesses(data.processes || [])
+      }
+    } catch (error) {
+      console.error("Failed to load processes:", error)
+      toast.error("Failed to load processes")
+    } finally {
+      setLoadingProcesses(false)
+    }
+  }
+
+  const killProcess = async (pid: number) => {
+    try {
+      const response = await fetch("/api/code-server/cleanup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "kill-pid", pid })
+      })
+      const data = await response.json()
+
+      if (data.success) {
+        toast.success(`Process ${pid} killed`)
+        await loadProcesses()
+        await loadRepositories()
+      } else {
+        toast.error(data.error || "Failed to kill process")
+      }
+    } catch (error: any) {
+      toast.error(`Failed to kill process: ${error.message}`)
+    }
+  }
+
+  const killAllProcesses = async () => {
+    try {
+      const response = await fetch("/api/code-server/cleanup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "kill-all" })
+      })
+      const data = await response.json()
+
+      if (data.success) {
+        toast.success("All code-server processes killed")
+        await loadProcesses()
+        await loadRepositories()
+      } else {
+        toast.error(data.error || "Failed to kill processes")
+      }
+    } catch (error: any) {
+      toast.error(`Failed to kill processes: ${error.message}`)
+    }
+  }
+
   if (loadingRepos) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-background">
@@ -178,14 +243,27 @@ export function CodeEditorApp() {
                 Select a repository to open in VS Code
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={loadRepositories}
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setShowProcessManager(true)
+                  loadProcesses()
+                }}
+              >
+                <Activity className="mr-2 h-4 w-4" />
+                Process Manager
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadRepositories}
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+            </div>
           </div>
 
           {/* Repositories Grid */}
@@ -306,6 +384,110 @@ export function CodeEditorApp() {
             </div>
           )}
         </div>
+
+        {/* Process Manager Dialog */}
+        <Dialog open={showProcessManager} onOpenChange={setShowProcessManager}>
+          <DialogContent className="max-w-4xl max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle>Code-Server Process Manager</DialogTitle>
+              <DialogDescription>
+                View and manage all running code-server processes
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              {/* Action Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={loadProcesses}
+                  disabled={loadingProcesses}
+                >
+                  <RefreshCw className={`mr-2 h-4 w-4 ${loadingProcesses ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={async () => {
+                    if (confirm('Are you sure you want to kill ALL code-server processes? This will stop all running VS Code instances.')) {
+                      await killAllProcesses()
+                    }
+                  }}
+                  disabled={loadingProcesses || allProcesses.length === 0}
+                >
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Kill All Processes
+                </Button>
+              </div>
+
+              {/* Process List */}
+              {loadingProcesses ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : allProcesses.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No code-server processes running
+                </div>
+              ) : (
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
+                    <table className="w-full text-sm">
+                      <thead className="bg-muted sticky top-0">
+                        <tr>
+                          <th className="text-left p-3 font-medium">PID</th>
+                          <th className="text-left p-3 font-medium">CPU %</th>
+                          <th className="text-left p-3 font-medium">Memory %</th>
+                          <th className="text-left p-3 font-medium">Port</th>
+                          <th className="text-left p-3 font-medium">Command</th>
+                          <th className="text-left p-3 font-medium">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allProcesses.map((proc, idx) => (
+                          <tr key={idx} className="border-t hover:bg-muted/50">
+                            <td className="p-3 font-mono text-xs">{proc.pid}</td>
+                            <td className="p-3">{proc.cpu}</td>
+                            <td className="p-3">{proc.mem}</td>
+                            <td className="p-3 font-mono text-xs">
+                              {proc.port || <span className="text-muted-foreground">-</span>}
+                            </td>
+                            <td className="p-3 max-w-md truncate" title={proc.command}>
+                              <code className="text-xs">{proc.command}</code>
+                            </td>
+                            <td className="p-3">
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={async () => {
+                                  if (confirm(`Kill process ${proc.pid}?`)) {
+                                    await killProcess(proc.pid)
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Info */}
+              <div className="pt-4 border-t text-sm text-muted-foreground">
+                <p>
+                  This manager shows all running code-server processes on the system, including old or orphaned processes.
+                  Use this to clean up any stuck or unwanted VS Code instances.
+                </p>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Install Instructions Dialog */}
         <Dialog open={showInstallDialog} onOpenChange={setShowInstallDialog}>
