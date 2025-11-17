@@ -89,12 +89,13 @@ export function CodeEditorApp() {
       if (data.success) {
         const hostname = window.location.hostname
         const fullUrl = `http://${hostname}${data.url}`
-        setServerUrl(fullUrl)
-        setCurrentPort(data.port)
         toast.success("VS Code started successfully!")
 
         // Reload repositories to update status
         await loadRepositories()
+
+        // Open in new window
+        window.open(fullUrl, '_blank', 'width=1600,height=1000')
       } else {
         if (data.error?.includes('not installed')) {
           setShowInstallDialog(true)
@@ -180,100 +181,143 @@ export function CodeEditorApp() {
 
   if (!serverUrl) {
     return (
-      <div className="h-full w-full flex items-center justify-center bg-background">
-        <div className="max-w-md w-full p-8 space-y-6">
-          <div className="text-center space-y-2">
-            <div className="mx-auto w-16 h-16 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4">
-              <Terminal className="h-8 w-8 text-blue-500" />
-            </div>
-            <h2 className="text-2xl font-bold">VS Code Editor</h2>
-            <p className="text-sm text-muted-foreground">
-              Run a full VS Code instance in your browser
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {repositories.length === 0 ? (
-              <div className="text-center py-8 border rounded-lg bg-muted/30">
-                <FolderGit2 className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-2">No repositories found</p>
-                <p className="text-xs text-muted-foreground">
-                  Clone a repository in GitHub Desktop to get started
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Select Repository</label>
-                  <Select value={selectedRepo || undefined} onValueChange={setSelectedRepo}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a repository..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {repositories.map((repo) => (
-                        <SelectItem key={repo.id} value={repo.id}>
-                          <div className="flex items-center gap-2">
-                            {repo.name}
-                            {repo.vscodeRunning && (
-                              <span className="text-xs text-green-500">● Running</span>
-                            )}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {selectedRepoData && (
-                    <p className="text-xs text-muted-foreground">
-                      {selectedRepoData.path}
-                    </p>
-                  )}
-                </div>
-
-                <Button
-                  onClick={startServer}
-                  disabled={loading || !selectedRepo}
-                  className="w-full"
-                  size="lg"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Starting VS Code...
-                    </>
-                  ) : (
-                    <>
-                      <Play className="mr-2 h-5 w-5" />
-                      Start VS Code
-                    </>
-                  )}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  onClick={loadRepositories}
-                  className="w-full"
-                  size="sm"
-                >
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Refresh Repositories
-                </Button>
-              </>
-            )}
-
-            <div className="pt-4 border-t">
-              <p className="text-xs text-muted-foreground text-center mb-2">
-                Features included:
+      <div className="h-full w-full bg-background overflow-auto">
+        <div className="max-w-6xl mx-auto p-6 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h2 className="text-2xl font-bold">VS Code Editor</h2>
+              <p className="text-sm text-muted-foreground">
+                Select a repository to open in VS Code
               </p>
-              <ul className="text-xs text-muted-foreground space-y-1">
-                <li>✅ Full VS Code UI and features</li>
-                <li>✅ Integrated terminal</li>
-                <li>✅ Git integration</li>
-                <li>✅ Extensions support</li>
-                <li>✅ IntelliSense & debugging</li>
-                <li>✅ Multiple themes</li>
-              </ul>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={loadRepositories}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
           </div>
+
+          {/* Repositories Grid */}
+          {repositories.length === 0 ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center space-y-4">
+                <div className="mx-auto w-20 h-20 bg-muted rounded-full flex items-center justify-center">
+                  <FolderGit2 className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-lg font-medium">No repositories found</p>
+                  <p className="text-sm text-muted-foreground max-w-sm">
+                    Clone a repository in GitHub Desktop to get started with VS Code
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {repositories.map((repo) => (
+                <div
+                  key={repo.id}
+                  className="border rounded-lg p-4 hover:border-primary/50 transition-colors bg-card"
+                >
+                  <div className="space-y-3">
+                    {/* Repository Header */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        <div className="mt-1">
+                          <FolderGit2 className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold truncate">{repo.name}</h3>
+                          <p className="text-xs text-muted-foreground truncate" title={repo.path}>
+                            {repo.path}
+                          </p>
+                        </div>
+                      </div>
+                      {repo.vscodeRunning && (
+                        <div className="flex items-center gap-1 text-xs text-green-500 bg-green-500/10 px-2 py-1 rounded">
+                          <div className="h-1.5 w-1.5 bg-green-500 rounded-full animate-pulse" />
+                          Running
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Terminal className="h-3 w-3" />
+                        {repo.type}
+                      </div>
+                      {repo.vscodePort && (
+                        <div className="flex items-center gap-1">
+                          Port {repo.vscodePort}
+                        </div>
+                      )}
+                      {repo.lastOpened && (
+                        <div className="flex items-center gap-1">
+                          Opened {new Date(repo.lastOpened).toLocaleDateString()}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-2">
+                      {repo.vscodeRunning ? (
+                        <>
+                          <Button
+                            size="sm"
+                            className="flex-1"
+                            onClick={() => {
+                              const hostname = window.location.hostname
+                              window.open(`http://${hostname}/vscode/${repo.id}/`, '_blank', 'width=1600,height=1000')
+                            }}
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            Open VS Code
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={async () => {
+                              setSelectedRepo(repo.id)
+                              await stopServer()
+                            }}
+                          >
+                            <Square className="h-4 w-4" />
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          size="sm"
+                          className="w-full"
+                          disabled={loading && selectedRepo === repo.id}
+                          onClick={async () => {
+                            setSelectedRepo(repo.id)
+                            await startServer()
+                          }}
+                        >
+                          {loading && selectedRepo === repo.id ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Starting...
+                            </>
+                          ) : (
+                            <>
+                              <Play className="mr-2 h-4 w-4" />
+                              Start VS Code
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Install Instructions Dialog */}
