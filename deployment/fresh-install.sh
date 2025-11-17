@@ -7,12 +7,18 @@ echo "========================================="
 echo ""
 echo "⚠️  WARNING: This will DELETE everything and start fresh!"
 echo ""
-read -p "Are you sure you want to continue? (yes/no): " -r
-echo
-if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]
-then
-    echo "Installation cancelled."
-    exit 1
+
+# Check if running with --yes flag or piped (auto-confirm)
+if [[ "$1" == "--yes" ]] || [[ ! -t 0 ]]; then
+    echo "Auto-confirming installation..."
+else
+    read -p "Are you sure you want to continue? (yes/no): " -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]
+    then
+        echo "Installation cancelled."
+        exit 1
+    fi
 fi
 
 # Colors for output
