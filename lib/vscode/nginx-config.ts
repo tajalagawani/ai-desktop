@@ -16,9 +16,17 @@ export class NginxConfigManager {
 # Generated at: ${new Date().toISOString()}
 # Repository: ${repoPath || 'N/A'}
 location /vscode/${safeName}/ {
-    ${repoPath ? `# Automatically open the repository folder
+    ${repoPath ? `# Automatically open the repository folder on initial access
+    # Only redirect if: no folder param AND no query string at all
+    set $redirect_needed 0;
     if ($arg_folder = "") {
-        return 302 /vscode/${safeName}/?folder=${repoPath};
+        set $redirect_needed 1;
+    }
+    if ($args != "") {
+        set $redirect_needed 0;
+    }
+    if ($redirect_needed = 1) {
+        return 302 $scheme://$http_host/vscode/${safeName}/?folder=${repoPath};
     }
     ` : ''}
     proxy_pass http://localhost:${port}/;

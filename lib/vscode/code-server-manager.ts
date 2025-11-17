@@ -47,6 +47,11 @@ export class CodeServerManager {
     }
 
     // Start code-server directly on the repository path (no copying/syncing)
+    const userDataDir = `/tmp/code-server-userdata-${safeName}-${port}`
+    const extensionsDir = `/tmp/code-server-extensions-${safeName}-${port}`
+
+    console.log(`[code-server] User data dir: ${userDataDir}`)
+    console.log(`[code-server] Extensions dir: ${extensionsDir}`)
     console.log(`[code-server] Spawning code-server with args:`, [
       repoPath,
       '--bind-addr', `127.0.0.1:${port}`,
@@ -54,7 +59,8 @@ export class CodeServerManager {
       '--disable-telemetry',
       '--disable-update-check',
       '--disable-workspace-trust',
-      '--user-data-dir', `/tmp/code-server-${safeName}`,
+      '--user-data-dir', userDataDir,
+      '--extensions-dir', extensionsDir,
     ])
 
     const codeServer = spawn('code-server', [
@@ -64,14 +70,16 @@ export class CodeServerManager {
       '--disable-telemetry',
       '--disable-update-check',
       '--disable-workspace-trust',
-      '--user-data-dir', `/tmp/code-server-${safeName}`,
+      '--user-data-dir', userDataDir,
+      '--extensions-dir', extensionsDir,
     ], {
       detached: true,
-      stdio: 'ignore',
+      stdio: ['ignore', 'pipe', 'pipe'],
       cwd: repoPath,
       env: {
         ...process.env,
         DONT_PROMPT_WSL_INSTALL: '1',
+        VSCODE_AGENT_FOLDER: `/tmp/vscode-agent-${safeName}-${port}`,
       }
     })
 
