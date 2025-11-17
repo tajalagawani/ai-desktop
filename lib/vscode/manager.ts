@@ -330,27 +330,21 @@ location ${VSCODE_CONFIG.BASE_URL_PATH}/${safeName}/ {
 
     // 6. Create isolated user-data-dir for this instance
     const userDataDir = `/tmp/code-server-${repoId}-${port}`
-    const configDir = path.join(userDataDir, 'config')
-    const configPath = path.join(configDir, 'config.yaml')
 
-    // Create directories
-    if (!fs.existsSync(configDir)) {
-      fs.mkdirSync(configDir, { recursive: true })
+    // Create directory
+    if (!fs.existsSync(userDataDir)) {
+      fs.mkdirSync(userDataDir, { recursive: true })
     }
 
-    const configContent = `bind-addr: 127.0.0.1:${port}
-auth: none
-disable-telemetry: true
-disable-update-check: true
-`
-    fs.writeFileSync(configPath, configContent, 'utf-8')
     console.log(`[VSCode] Created isolated instance at: ${userDataDir}`)
-    console.log(`[VSCode] Config: ${configPath}`)
 
-    // 7. Start code-server with isolated user-data-dir
+    // 7. Start code-server with command line args (highest priority, overrides config files)
     const args = [
       `--user-data-dir=${userDataDir}`,
-      `--config=${configPath}`,
+      `--bind-addr=127.0.0.1:${port}`,
+      '--auth=none',
+      '--disable-telemetry',
+      '--disable-update-check',
       '--disable-workspace-trust',
       repo.path,
     ]
