@@ -22,7 +22,10 @@ import {
   Copy,
   Search,
   Code,
-  GitBranch
+  GitBranch,
+  FileEdit,
+  FilePlus,
+  FileX
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { VSCodeRepository } from "@/lib/vscode/types"
