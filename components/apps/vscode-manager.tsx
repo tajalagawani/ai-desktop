@@ -25,8 +25,18 @@ import {
   GitBranch,
   FileEdit,
   FilePlus,
-  FileX
+  FileX,
+  Plus,
+  ChevronDown
 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { CloneDialog } from "./vscode/clone-dialog"
 import { cn } from "@/lib/utils"
 import type { VSCodeRepository } from "@/lib/vscode/types"
 
@@ -51,6 +61,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
   const [gitChanges, setGitChanges] = useState<GitChange[]>([])
   const [selectedFile, setSelectedFile] = useState<string | null>(null)
   const [fileDiff, setFileDiff] = useState<string>("")
+  const [cloneOpen, setCloneOpen] = useState(false)
   const { toast} = useToast()
 
   // Store last data to compare
@@ -292,7 +303,52 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
         {/* Left Panel - Sidebar */}
         <div className="border-r p-6 flex flex-col bg-muted/30">
           <div className="mb-6">
-            <h1 className="text-2xl font-normal mb-1">VS Code Manager</h1>
+            <div className="flex items-center justify-between mb-1">
+              <h1 className="text-2xl font-normal">VS Code Manager</h1>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add
+                    <ChevronDown className="h-3 w-3 ml-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setCloneOpen(true)}>
+                    <FolderGit2 className="h-4 w-4 mr-2" />
+                    Clone Repository
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    const path = prompt("Enter the path to an existing Git repository:")
+                    if (path) {
+                      fetch("/api/repositories", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          action: "add",
+                          name: path.split('/').pop(),
+                          path: path,
+                          type: "git"
+                        })
+                      }).then(() => {
+                        toast({ title: "Repository Added", description: "Successfully added existing repository" })
+                        loadRepositories(false)
+                      }).catch((err) => {
+                        toast({ title: "Error", description: err.message, variant: "destructive" })
+                      })
+                    }
+                  }}>
+                    <Folder className="h-4 w-4 mr-2" />
+                    Add Existing Repository
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => loadRepositories(false)}>
+                    <RotateCw className="h-4 w-4 mr-2" />
+                    Refresh Repository List
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             <p className="text-sm text-muted-foreground">Manage code editors for repositories</p>
           </div>
 
@@ -758,6 +814,12 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
           )}
         </div>
       </div>
+
+      <CloneDialog
+        open={cloneOpen}
+        onOpenChange={setCloneOpen}
+        onCloneComplete={() => loadRepositories(false)}
+      />
     </div>
   )
 }
