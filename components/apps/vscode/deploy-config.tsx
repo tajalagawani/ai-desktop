@@ -228,10 +228,7 @@ export function DeployConfig({
       toast.success(`Deployment started for ${repoName}!`)
       onDeployComplete()
 
-      // Reset form
-      setSelectedServices([])
-      setEnvVars({})
-      setDomain("")
+      // Keep form filled so user can see what was deployed and deploy again if needed
     } catch (error: any) {
       setError(error.message || "Failed to deploy")
       toast.error(error.message || "Failed to deploy")
