@@ -32,6 +32,7 @@ import { DesktopSettings } from "@/components/apps/desktop-settings"
 import { WidgetWindow } from "@/components/apps/widget-window"
 import { GitHubApp } from "@/components/apps/github"
 import { VSCodeManager } from "@/components/apps/vscode-manager"
+import { FlowBuilder } from "@/components/apps/flow-builder"
 
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
@@ -74,6 +75,7 @@ const getAppComponent = (
     "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
     "github-desktop": <GitHubApp />,
     "vscode-manager": <VSCodeManager />,
+    "flow-builder": <FlowBuilder />,
   }
   return componentMap[id] || null
 }

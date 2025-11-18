@@ -41,7 +41,7 @@ export function middleware(request: NextRequest) {
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: https:;
     font-src 'self' data:;
-    connect-src 'self' ws: wss: https://api.github.com;
+    connect-src 'self' ws: wss: https://api.github.com https://api.anthropic.com;
     frame-ancestors 'self';
     base-uri 'self';
     form-action 'self';

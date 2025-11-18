@@ -37,7 +37,7 @@ npm install
 # Run development server
 npm run dev
 
-# Open http://localhost:3000
+# Open http://localhost:3005
 ```
 
 ### Production Deployment
@@ -101,7 +101,7 @@ ai-desktop/
 Copy `.env.example` to `.env.local` and configure:
 
 ```env
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3005
 # Add more as you implement backend features
 ```
 

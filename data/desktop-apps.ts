@@ -95,6 +95,13 @@ export const DOCK_APPS: AppConfig[] = [
     category: "development",
     description: "Code editors for all your repositories"
   },
+  {
+    id: "flow-builder",
+    name: "Flow Builder",
+    icon: "Workflow",
+    category: "development",
+    description: "Generate ACT workflows using AI"
+  },
 ]
 
 export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
@@ -173,6 +180,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     defaultHeight: 1000,
     minWidth: 1200,
     minHeight: 800,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "flow-builder": {
+    defaultWidth: 1400,
+    defaultHeight: 900,
+    minWidth: 1000,
+    minHeight: 700,
     resizable: true,
     maximizable: true,
     minimizable: true,

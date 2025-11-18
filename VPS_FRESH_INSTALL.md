@@ -1,8 +1,24 @@
 # 🚀 Fresh VPS Installation - Clean Start
 
+## ⚠️ IMPORTANT: Use the New Installation Script
+
+**For AI Desktop with Flow Builder (ACT integration), use:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/tajalagawani/ai-desktop/main/deployment/vps-with-act-install.sh | bash
+```
+
+This installs:
+- ✅ AI Desktop (all features)
+- ✅ ACT Workflow Engine
+- ✅ MCP Server (150+ nodes)
+- ✅ Flow Builder integration
+- ✅ PM2 process management
+
+---
+
 ## ⚠️ Warning: This Will Delete Everything
 
-These commands will completely remove the old installation and start fresh.
+The installation script will completely remove old installations and start fresh.
 
 ---
 
@@ -127,7 +143,7 @@ pm2 status
 pm2 logs ai-desktop --lines 50
 
 # Check if app is responding
-curl http://localhost:3000
+curl http://localhost:3005
 
 # Check memory usage
 free -h
@@ -141,7 +157,7 @@ df -h
 ## 🌐 Access Your Application
 
 Once deployed, access at:
-- **Local**: `http://localhost:3000`
+- **Local**: `http://localhost:3005`
 - **Public**: `http://YOUR_VPS_IP` or `http://92.112.181.127`
 
 ---

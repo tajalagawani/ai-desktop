@@ -1,0 +1,72 @@
+[workflow]
+name = "GitHub to Slack Sync"
+description = "Syncs GitHub issues to Slack channel"
+start_node = "FetchGitHubIssues"
+
+[parameters]
+github_owner = "your-github-username"
+github_repo = "your-repo-name"
+slack_channel = "#general"
+github_token = "${GITHUB_TOKEN}"
+slack_token = "${SLACK_TOKEN}"
+
+[node:FetchGitHubIssues]
+type = "github"
+operation = "list_issues"
+label = "Fetch GitHub Issues"
+access_token = "{{.Parameter.github_token}}"
+owner = "{{.Parameter.github_owner}}"
+repo = "{{.Parameter.github_repo}}"
+state = "open"
+
+[node:FormatSlackMessage]
+type = "py"
+label = "Format Slack Message"
+code = """
+def format_message(**kwargs):
+    issues = kwargs.get('issues', [])
+
+    if not issues:
+        return {'result': {'text': 'No open issues found.'}}
+
+    # Format message with issue details
+    message_text = f"*GitHub Issues Summary*\\n\\n"
+    message_text += f"Found {len(issues)} open issue(s):\\n\\n"
+
+    for issue in issues[:5]:  # Limit to first 5 issues
+        title = issue.get('title', 'No title')
+        number = issue.get('number', 'N/A')
+        url = issue.get('html_url', '')
+        user = issue.get('user', {}).get('login', 'Unknown')
+
+        message_text += f"• #{number}: {title}\\n"
+        message_text += f"  Created by: {user}\\n"
+        message_text += f"  Link: {url}\\n\\n"
+
+    if len(issues) > 5:
+        message_text += f"...and {len(issues) - 5} more issue(s)"
+
+    return {'result': {'text': message_text}}
+"""
+function = "format_message"
+issues = "{{FetchGitHubIssues.result}}"
+
+[node:SendToSlack]
+type = "slack"
+operation = "post_message"
+label = "Send Message to Slack"
+token = "{{.Parameter.slack_token}}"
+channel = "{{.Parameter.slack_channel}}"
+text = "{{FormatSlackMessage.result.text}}"
+
+[edges]
+FetchGitHubIssues = "FormatSlackMessage"
+FormatSlackMessage = "SendToSlack"
+
+[configuration]
+agent_enabled = false
+
+[settings]
+retry_on_failure = true
+max_retries = 3
+retry_delay = 5

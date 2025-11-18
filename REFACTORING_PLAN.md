@@ -634,7 +634,7 @@ export const siteConfig = {
   version: '2.0.0',
   author: 'Taj Noah',
 
-  url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3005',
 
   links: {
     github: 'https://github.com/tajnoah/ai-desktop',
@@ -716,12 +716,12 @@ NODE_ENV=production
 PORT=3000
 
 # App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3005
 NEXT_PUBLIC_APP_NAME="AI Desktop"
 
 # Security
 SESSION_SECRET=your-secret-key-min-32-chars
-ALLOWED_ORIGINS=http://localhost:3000
+ALLOWED_ORIGINS=http://localhost:3005
 
 # Features (optional)
 ANTHROPIC_API_KEY=
@@ -774,7 +774,7 @@ import { describe, it, expect } from 'vitest'
 
 describe('Terminal API', () => {
   it('should create terminal session', async () => {
-    const response = await fetch('http://localhost:3000/api/v1/terminal', {
+    const response = await fetch('http://localhost:3005/api/v1/terminal', {
       method: 'POST',
     })
 

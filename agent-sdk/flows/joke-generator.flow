@@ -1,0 +1,34 @@
+[workflow]
+name = "Joke Generator"
+description = "Generate a funny joke using OpenAI's chat completion API"
+start_node = "GenerateJoke"
+
+[parameters]
+# No parameters needed - the joke will be generated automatically
+
+[node:GenerateJoke]
+type = "openai"
+operation = "chat_completion"
+label = "Generate a funny joke using OpenAI"
+model = "gpt-3.5-turbo"
+messages = [
+    { role = "system", content = "You are a professional comedian who tells clean, family-friendly jokes." },
+    { role = "user", content = "Tell me a funny, original joke. Make it clever and appropriate for all audiences." }
+]
+temperature = 0.9
+max_tokens = 150
+
+[edges]
+# No additional edges needed - single node workflow
+
+[configuration]
+# Basic configuration
+agent_enabled = false
+
+[settings]
+# Retry settings for reliability
+retry_count = 3
+timeout = 30
+
+# Note: This workflow requires OpenAI authentication
+# Run: act auth add openai --api-key YOUR_API_KEY

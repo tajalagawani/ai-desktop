@@ -2,11 +2,12 @@ const { createServer } = require('http')
 const { parse } = require('url')
 const next = require('next')
 const { WebSocketServer } = require('ws')
+const { Server } = require('socket.io')
 const { spawn } = require('node-pty')
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = 'localhost'
-const port = parseInt(process.env.PORT || '3000', 10)
+const port = parseInt(process.env.PORT || '3005', 10)
 
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
@@ -26,8 +27,65 @@ app.prepare().then(() => {
     }
   })
 
-  // Create WebSocket server
+  // Create WebSocket server for terminals
   const wss = new WebSocketServer({ noServer: true })
+
+  // Create Socket.IO server for Flow Builder
+  const io = new Server(server, {
+    cors: {
+      origin: process.env.NEXT_PUBLIC_APP_URL || `http://localhost:3005`,
+      methods: ['GET', 'POST'],
+    },
+    path: '/socket.io/'
+  })
+
+  // Initialize Flow Builder agent manager (will be created)
+  let flowAgentManager = null
+  try {
+    const { getFlowAgentManager } = require('./lib/flow-builder/agent-manager')
+    flowAgentManager = getFlowAgentManager()
+    console.log('[Flow Builder] Agent manager initialized')
+  } catch (error) {
+    console.log('[Flow Builder] Agent manager not yet available:', error.message)
+  }
+
+  // Handle Socket.IO connections for Flow Builder
+  io.on('connection', (socket) => {
+    console.log(`[Socket.IO] Flow Builder client connected: ${socket.id}`)
+
+    if (!flowAgentManager) {
+      socket.emit('error', {
+        message: 'Flow Builder agent manager not initialized',
+        code: 'INIT_ERROR',
+      })
+      return
+    }
+
+    // Handle agent start request
+    socket.on('agent:start', async ({ sessionId, request, conversationHistory, apiKey }) => {
+      console.log(`[Socket.IO] Starting agent for session ${sessionId}`)
+      console.log(`[Socket.IO] API key from client:`, apiKey ? apiKey.substring(0, 20) + '...' : 'NOT PROVIDED')
+      try {
+        await flowAgentManager.startAgent(sessionId, request, socket, conversationHistory, apiKey)
+      } catch (error) {
+        console.error('[Socket.IO] Error starting agent:', error)
+        socket.emit('error', {
+          message: error instanceof Error ? error.message : 'Failed to start agent',
+          code: 'START_ERROR',
+        })
+      }
+    })
+
+    // Handle agent stop request
+    socket.on('agent:stop', ({ sessionId }) => {
+      console.log(`[Socket.IO] Stopping agent for session ${sessionId}`)
+      flowAgentManager.stopAgent(sessionId)
+    })
+
+    socket.on('disconnect', () => {
+      console.log(`[Socket.IO] Flow Builder client disconnected: ${socket.id}`)
+    })
+  })
 
   // CRITICAL: Override the upgrade event handler COMPLETELY
   // We need to handle it before Next.js's internal router sees it
@@ -343,6 +401,23 @@ app.prepare().then(() => {
     }))
   }
 
+  // Cleanup on process exit
+  process.on('SIGTERM', () => {
+    console.log('[Server] SIGTERM received, cleaning up...')
+    if (flowAgentManager) {
+      flowAgentManager.stopAll()
+    }
+    server.close()
+  })
+
+  process.on('SIGINT', () => {
+    console.log('[Server] SIGINT received, cleaning up...')
+    if (flowAgentManager) {
+      flowAgentManager.stopAll()
+    }
+    process.exit(0)
+  })
+
   server.listen(port, async (err) => {
     if (err) throw err
 
@@ -350,5 +425,6 @@ app.prepare().then(() => {
     console.log(`> WebSocket terminal available on ws://${hostname}:${port}/api/terminal/ws`)
     console.log(`> WebSocket logs available on ws://${hostname}:${port}/api/services/logs/ws`)
     console.log(`> WebSocket deployment logs available on ws://${hostname}:${port}/api/deployments/logs/ws`)
+    console.log(`> Socket.IO Flow Builder available on http://${hostname}:${port}/socket.io/`)
   })
 })
