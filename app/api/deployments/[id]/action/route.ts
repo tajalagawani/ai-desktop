@@ -99,6 +99,14 @@ export async function POST(
           }
         }
 
+        // Close firewall port
+        try {
+          await execAsync(`ufw delete allow ${deployment.port}/tcp`)
+          console.log(`Closed firewall port ${deployment.port}`)
+        } catch (error) {
+          console.error('Error closing firewall port:', error)
+        }
+
         // Remove from deployments
         const index = deployments.findIndex(d => d.id === id)
         if (index !== -1) {

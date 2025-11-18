@@ -254,6 +254,15 @@ async function deployApp(deployment: DeploymentConfig) {
     // Save PM2 config
     await execAsync('pm2 save')
 
+    // Open firewall port
+    await logStream.writeFile(`\n[${new Date().toISOString()}] Opening firewall port ${deployment.port}...\n`)
+    try {
+      await execAsync(`ufw allow ${deployment.port}/tcp`)
+      await logStream.writeFile(`[${new Date().toISOString()}] ✓ Port ${deployment.port} opened in firewall\n`)
+    } catch (error: any) {
+      await logStream.writeFile(`[${new Date().toISOString()}] ⚠ Warning: Could not open firewall port: ${error.message}\n`)
+    }
+
     // Update deployment status
     const deployments = await loadDeployments()
     const index = deployments.findIndex(d => d.id === deployment.id)
