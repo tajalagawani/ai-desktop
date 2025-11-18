@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(SSHPASS='@yJ5Yy#2tW9Le(x16v1U' sshpass -e ssh -o StrictHostKeyChecking=no root@92.112.181.127 'curl -X POST http://localhost:3000/api/vscode/start -H \"\"Content-Type: application/json\"\" -d \"\"{\\\"\"repoId\\\"\":\\\"\"actmcp\\\"\"}\"\" 2>&1 &\nsleep 3\npm2 logs ai-desktop --lines 100 --nostream | grep -E \"\"(Full command|Starting code-server|stderr|exit)\"\" | tail -30')"
+      "Bash(sshpass -p '@yJ5Yy#2tW9Le(x16v1U' ssh -o StrictHostKeyChecking=no root@92.112.181.127 'cd /var/www/ai-desktop && git pull && npm run build && pm2 restart ai-desktop')"
     ],
     "deny": [],
     "ask": []

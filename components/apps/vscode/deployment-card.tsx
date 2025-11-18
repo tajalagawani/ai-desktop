@@ -194,20 +194,41 @@ export function DeploymentCard({ deployment, onUpdate }: DeploymentCardProps) {
           </div>
         </div>
 
+        {/* Access URL */}
+        {(deployment.status === 'running' || deployment.status === 'stopped') && (
+          <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-medium text-muted-foreground mb-1">Deployment URL</div>
+                <a
+                  href={accessUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-mono text-primary hover:underline flex items-center gap-2 truncate"
+                >
+                  <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" />
+                  {accessUrl}
+                </a>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  navigator.clipboard.writeText(accessUrl)
+                  toast.success("URL copied to clipboard")
+                }}
+                className="flex-shrink-0"
+              >
+                Copy
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Error Message */}
         {deployment.error && (
           <div className="p-2 bg-destructive/10 border border-destructive/20 rounded text-xs text-destructive">
             {deployment.error}
-          </div>
-        )}
-
-        {/* Access URL */}
-        {deployment.status === 'running' && (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Access:</span>
-            <code className="flex-1 px-2 py-1 bg-muted rounded text-xs">
-              {accessUrl}
-            </code>
           </div>
         )}
 
