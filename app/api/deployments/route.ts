@@ -228,6 +228,7 @@ async function deployApp(deployment: DeploymentConfig) {
         args: deployment.startCommand.split(' ').slice(1).join(' '),
         cwd: deployment.repoPath,
         env: deployment.envVars,
+        exec_mode: 'fork', // Use fork mode instead of cluster to avoid -0, -1 suffixes in log files
         instances: 1,
         autorestart: true,
         watch: false,
