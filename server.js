@@ -255,8 +255,21 @@ app.prepare().then(() => {
       if (logType === 'build') {
         logFile = `/var/www/ai-desktop/logs/${deploymentId}.log`
       } else {
-        // Runtime logs from PM2
-        logFile = `/var/www/ai-desktop/logs/${deploymentId}-out.log`
+        // Runtime logs from PM2 - handle both fork mode (-out.log) and cluster mode (-out-N.log)
+        const baseLogFile = `/var/www/ai-desktop/logs/${deploymentId}-out.log`
+        if (fs.existsSync(baseLogFile)) {
+          logFile = baseLogFile
+        } else {
+          // Check for cluster mode log files (-out-0.log, -out-1.log, etc.)
+          const logDir = '/var/www/ai-desktop/logs'
+          const files = fs.readdirSync(logDir)
+          const clusterLogFile = files.find(f => f.startsWith(`${deploymentId}-out-`) && f.endsWith('.log'))
+          if (clusterLogFile) {
+            logFile = `${logDir}/${clusterLogFile}`
+          } else {
+            logFile = baseLogFile // fallback
+          }
+        }
       }
 
       // Check if file exists
