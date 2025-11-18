@@ -72,7 +72,6 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [repoToDelete, setRepoToDelete] = useState<VSCodeRepository | null>(null)
   const [deployments, setDeployments] = useState<DeploymentConfig[]>([])
-  const { toast} = useToast()
 
   // Store last data to compare
   const lastDataRef = React.useRef<string>("")

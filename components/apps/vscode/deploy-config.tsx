@@ -67,6 +67,45 @@ export function DeployConfig({
     loadServices()
   }, [])
 
+  // Load saved config from localStorage on mount
+  useEffect(() => {
+    const savedConfig = localStorage.getItem(`deploy-config-${repoId}`)
+    if (savedConfig) {
+      try {
+        const config = JSON.parse(savedConfig)
+        setSelectedServices(config.selectedServices || [])
+        setEnvVars(config.envVars || {})
+        setDomain(config.domain || "")
+        setCustomPort(config.customPort || "")
+        setCustomBuildCommand(config.customBuildCommand || "")
+        setCustomStartCommand(config.customStartCommand || "")
+        setInstances(config.instances || "1")
+        setMemoryLimit(config.memoryLimit || "512")
+        setAutoRestart(config.autoRestart !== undefined ? config.autoRestart : true)
+        setNodeEnv(config.nodeEnv || "production")
+      } catch (error) {
+        console.error('Error loading saved config:', error)
+      }
+    }
+  }, [repoId])
+
+  // Save config to localStorage whenever it changes
+  useEffect(() => {
+    const config = {
+      selectedServices,
+      envVars,
+      domain,
+      customPort,
+      customBuildCommand,
+      customStartCommand,
+      instances,
+      memoryLimit,
+      autoRestart,
+      nodeEnv
+    }
+    localStorage.setItem(`deploy-config-${repoId}`, JSON.stringify(config))
+  }, [repoId, selectedServices, envVars, domain, customPort, customBuildCommand, customStartCommand, instances, memoryLimit, autoRestart, nodeEnv])
+
   const loadServices = async () => {
     setLoadingServices(true)
     try {
