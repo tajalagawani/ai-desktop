@@ -706,16 +706,37 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                 </TabsContent>
 
                 {/* Deploy Tab */}
-                <TabsContent value="deploy" className="flex-1 overflow-auto mt-0 min-h-0">
-                  <DeployConfig
-                    repoId={selectedRepo.id}
-                    repoName={selectedRepo.name}
-                    repoPath={selectedRepo.path}
-                    onDeployComplete={() => {
-                      loadDeployments()
-                      toast.success("Check the Deployments tab to monitor progress")
-                    }}
-                  />
+                <TabsContent value="deploy" className="flex-1 overflow-auto mt-0 min-h-0 space-y-4">
+                  {/* Existing Deployments for this repo */}
+                  {deployments.filter(d => d.repoId === selectedRepo.id).length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium">Active Deployments</h3>
+                      {deployments
+                        .filter(d => d.repoId === selectedRepo.id)
+                        .map(deployment => (
+                          <DeploymentCard
+                            key={deployment.id}
+                            deployment={deployment}
+                            onUpdate={loadDeployments}
+                          />
+                        ))
+                      }
+                    </div>
+                  )}
+
+                  {/* Deployment Form */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">New Deployment</h3>
+                    <DeployConfig
+                      repoId={selectedRepo.id}
+                      repoName={selectedRepo.name}
+                      repoPath={selectedRepo.path}
+                      onDeployComplete={() => {
+                        loadDeployments()
+                        toast.success("Deployment started! Monitor progress below.")
+                      }}
+                    />
+                  </div>
                 </TabsContent>
 
                 {/* Git Changes Tab */}
