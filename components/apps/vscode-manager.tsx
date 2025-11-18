@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { useToast } from "@/hooks/use-toast"
 import { toast } from "sonner"
 import { getIcon } from "@/utils/icon-mapper"
 import {
