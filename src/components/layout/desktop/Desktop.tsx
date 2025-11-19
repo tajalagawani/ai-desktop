@@ -21,15 +21,10 @@ import {
   Activity as ProcessIcon,
 } from "lucide-react"
 import { SystemMonitor } from "@/components/features/system-monitor/SystemMonitor"
-import { ChatInterface } from "@/components/features/chat/ChatInterface"
 import { Terminal } from "@/components/features/terminal/Terminal"
-import { ClaudeCLI } from "@/components/features/chat/ClaudeCLI"
-import { Changelog } from "@/components/features/chat/Changelog"
 import { FileManager } from "@/components/features/file-manager/FileManager"
 import { ServiceManager } from "@/components/features/service-manager/ServiceManager"
 import { ServiceDetails } from "@/components/features/service-manager/ServiceDetails"
-import { DesktopSettings } from "@/components/features/chat/DesktopSettings"
-import { WidgetWindow } from "@/components/features/chat/WidgetWindow"
 import { GitHubApp } from "@/components/features/github/GitHub"
 import { VSCodeManager } from "@/components/features/vscode/VSCodeManager"
 import { FlowBuilder } from "@/components/features/flow-builder/FlowBuilder"
@@ -38,7 +33,7 @@ import MCPHub from "@/components/features/mcp-hub/MCPHub"
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
 import { SystemControlMenu } from "./SystemControlMenu"
-import { FloatingDock as FloatingDockDemo } from "./FloatingDock"
+import { FloatingDockDemo } from "./FloatingDock"
 import { TopDock } from "./TopDock"
 import { DesktopContextMenu } from "./DesktopContextMenu"
 import { ServiceIconContextMenu } from "./ServiceIconContextMenu"
@@ -68,13 +63,9 @@ const getAppComponent = (
 ): React.ReactNode => {
   const componentMap: Record<string, React.ReactNode> = {
     "terminal": <Terminal />,
-    "claude-cli": <ClaudeCLI />,
-    "changelog": <Changelog />,
     "monitor": <SystemMonitor />,
     "file-manager": <FileManager />,
     "service-manager": <ServiceManager openWindow={openWindowFn} toggleMaximizeWindow={toggleMaximizeFn} bringToFront={bringToFrontFn} />,
-    "system-widgets": <WidgetWindow />,
-    "desktop-settings": <DesktopSettings currentBackground={currentBackground || 'image-abstract'} onBackgroundChange={onBackgroundChange || (() => {})} />,
     "github-desktop": <GitHubApp />,
     "vscode-manager": <VSCodeManager />,
     "flow-builder": <FlowBuilder />,
@@ -114,7 +105,6 @@ const BACKGROUNDS: Record<string, { light: string; dark: string; type: 'gradient
 
 export function Desktop() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isChatOpen, setIsChatOpen] = useState(false)
   const [systemStats, setSystemStats] = useState<SystemStats | null>(null)
   const [currentBackground, setCurrentBackground] = useState<string>('image-abstract')
 
@@ -309,7 +299,6 @@ export function Desktop() {
         ))}
 
         {/* Chat Interface */}
-        <ChatInterface isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
 
         {/* Floating Dock */}
         <div className="absolute bottom-[35px] left-1/2 transform -translate-x-1/2 pointer-events-auto z-20">
