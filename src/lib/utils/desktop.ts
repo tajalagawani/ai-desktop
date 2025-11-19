@@ -1,4 +1,4 @@
-import { WindowState } from "@/hooks/use-desktop"
+import { WindowState } from "@/lib/hooks/features/use-desktop"
 import { WINDOW_CONFIGS, WindowConfig } from "@/data/desktop-apps"
 
 export interface Position {
@@ -148,11 +148,11 @@ export const calculateResizedWindow = (
 
 export const getAppComponent = async (appId: string) => {
   const componentMap: Record<string, () => Promise<any>> = {
-    "app-store": () => import("@/components/apps/mac-app-store"),
-    "installed": () => import("@/components/apps/installed-apps"),
-    "terminal": () => import("@/components/apps/terminal"),
-    "monitor": () => import("@/components/apps/system-monitor"),
-    "file-manager": () => import("@/components/apps/file-manager"),
+    "app-store": () => import("@/components/features/app-store/MacAppStore"),
+    "installed": () => import("@/components/features/app-store/InstalledApps"),
+    "terminal": () => import("@/components/features/terminal/Terminal"),
+    "monitor": () => import("@/components/features/system-monitor/SystemMonitor"),
+    "file-manager": () => import("@/components/features/file-manager/FileManager"),
   }
 
   if (componentMap[appId]) {
