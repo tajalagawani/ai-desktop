@@ -60,17 +60,14 @@ next-env.d.ts
 .turbo
 *.pem
 
-# Runtime data (repositories, config)
-/data/*.json
-/data/*.db
-/data/*.db-shm
-/data/*.db-wal
-!/data/.gitkeep
-
-# Backend runtime data
-/backend/data/*.json
-!/backend/data/.gitkeep
+# Runtime data (NEW: storage directory)
+/storage/data/*.json
+/storage/data/*.db
+/storage/data/*.db-shm
+/storage/data/*.db-wal
+/storage/logs/*.log
+/storage/flows/*.flow
+!/storage/**/.gitkeep
 
 # generated workflow files
-components/apps/act-docker/flows/*.flow
 **/temp-*.act

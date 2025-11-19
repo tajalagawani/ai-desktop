@@ -1,9 +1,0 @@
-I can see you have a `flows/` directory with some existing .flow files. **The daily AI reports workflow from the previous session was NOT saved to a file** - it was only generated as output.
-
-**Would you like me to:**
-
-1. **Save the daily AI reports workflow** to a file (e.g., `flows/daily-ai-reports.flow`)?
-2. **Regenerate and save** an improved version of the daily AI reports workflow?
-3. **Explain where the workflow saves its generated reports** (it saves to a `reports/` directory)?
-
-Please clarify what you need, and I'll help you right away!
