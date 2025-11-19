@@ -24,7 +24,7 @@ interface CloneDialogProps {
 
 export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialogProps) {
   const [cloneUrl, setCloneUrl] = useState("")
-  const [clonePath, setClonePath] = useState(`${process.env.HOME || '/Users/tajnoah'}/repositories/`)
+  const [clonePath, setClonePath] = useState('/var/www/repositories/')
   const [authMethod, setAuthMethod] = useState<"https" | "ssh">("https")
   const [cloning, setCloning] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -149,7 +149,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
 
       // Reset form
       setCloneUrl("")
-      setClonePath(`${process.env.HOME || '/Users/tajnoah'}/repositories/`)
+      setClonePath('/var/www/repositories/')
     } catch (error: any) {
       setError(error.message || "Failed to clone repository")
     } finally {
@@ -204,7 +204,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
             <div className="flex gap-2">
               <Input
                 id="clone-path"
-                placeholder={`${process.env.HOME || '/Users/tajnoah'}/repositories/`}
+                placeholder="/var/www/repositories/"
                 value={clonePath}
                 onChange={(e) => setClonePath(e.target.value)}
               />
