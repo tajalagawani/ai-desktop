@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
 
     // Load from data/mcp-servers.json
     try {
-      const dataConfigPath = path.join(__dirname, '../../../data/mcp-servers.json')
+      const dataConfigPath = path.join(__dirname, '../../data/mcp-servers.json')
       const content = await fs.readFile(dataConfigPath, 'utf-8')
       const dataConfig = JSON.parse(content)
 
