@@ -43,13 +43,31 @@ router.get('/', async (req, res) => {
     const deployments = await getDeployments()
     const repositories = await getRepositories()
 
-    // Enrich deployments with repository info
+    // Enrich deployments with repository info and transform for frontend
     const enrichedDeployments = deployments.map(d => {
       const repo = repositories.find(r => r.id === d.repositoryId)
       return {
-        ...d,
-        repositoryName: repo?.name || 'Unknown',
-        repositoryPath: repo?.path || null,
+        id: d.id.toString(),
+        repoId: d.repositoryId.toString(),
+        repoName: repo?.name || 'Unknown',
+        repoPath: repo?.path || null,
+        name: d.name,
+        port: d.port,
+        domain: d.domain || undefined,
+        status: d.status,
+        mode: d.mode,
+        instances: d.instances,
+        pid: d.pid,
+        createdAt: d.createdAt,
+        updatedAt: d.updatedAt,
+        // Add placeholder values for frontend requirements
+        framework: 'nextjs',
+        buildCommand: null,
+        startCommand: 'npm start',
+        services: [],
+        envVars: {},
+        pm2Name: `deploy-${d.id}-${d.name.replace(/[^a-zA-Z0-9]/g, '-')}`,
+        deployedAt: d.createdAt,
       }
     })
 
