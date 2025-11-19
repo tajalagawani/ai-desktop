@@ -33,7 +33,7 @@ interface SettingsState {
 
 const defaultSettings: FlowBuilderSettings = {
   // ACT Configuration
-  actRoot: process.env.NEXT_PUBLIC_ACT_ROOT || '/Users/tajnoah/act',
+  actRoot: process.env.NEXT_PUBLIC_ACT_ROOT || '/var/www/act',
   agentScriptPath: process.env.NEXT_PUBLIC_ACT_AGENT_SCRIPT || '',
 
   // API Configuration

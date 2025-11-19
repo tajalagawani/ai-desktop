@@ -100,7 +100,7 @@ export function FlowBuilderSettings() {
                     id="actRoot"
                     value={localSettings.actRoot}
                     onChange={(e) => updateLocal('actRoot', e.target.value)}
-                    placeholder="/Users/tajnoah/act"
+                    placeholder="/var/www/act"
                     className="font-mono text-sm"
                   />
                   <p className="text-xs text-muted-foreground">
@@ -124,8 +124,8 @@ export function FlowBuilderSettings() {
 
                 <Alert>
                   <AlertDescription className="text-xs">
-                    <strong>Default:</strong> If ACT Root is <code className="font-mono bg-muted px-1 py-0.5 rounded">/Users/tajnoah/act</code>,
-                    the script will be at <code className="font-mono bg-muted px-1 py-0.5 rounded">/Users/tajnoah/act/agent-sdk/debug-run.sh</code>
+                    <strong>Default:</strong> If ACT Root is <code className="font-mono bg-muted px-1 py-0.5 rounded">/var/www/act</code>,
+                    the script will be at <code className="font-mono bg-muted px-1 py-0.5 rounded">/var/www/act/agent-sdk/debug-run.sh</code>
                   </AlertDescription>
                 </Alert>
               </div>
