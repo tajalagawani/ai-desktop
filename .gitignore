@@ -67,6 +67,10 @@ next-env.d.ts
 /data/*.db-wal
 !/data/.gitkeep
 
+# Backend runtime data
+/backend/data/*.json
+!/backend/data/.gitkeep
+
 # generated workflow files
 components/apps/act-docker/flows/*.flow
 **/temp-*.act

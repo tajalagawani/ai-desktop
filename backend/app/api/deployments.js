@@ -230,7 +230,8 @@ router.post('/:id/action', async (req, res) => {
       try {
         // Check if package.json exists
         const fs = require('fs').promises
-        const packageJsonPath = `${repo.path}/package.json`
+        const path = require('path')
+        const packageJsonPath = path.join(repo.path, 'package.json')
 
         try {
           await fs.access(packageJsonPath)
@@ -238,9 +239,49 @@ router.post('/:id/action', async (req, res) => {
           throw new Error('package.json not found in repository')
         }
 
-        // Read package.json to get start script
+        // Read package.json for framework detection
         const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'))
-        const startScript = packageJson.scripts?.start || 'node index.js'
+        const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
+
+        // Detect framework and get commands
+        let installCommand = 'npm install'
+        let buildCommand = null
+        let startScript = packageJson.scripts?.start || 'node index.js'
+
+        // Next.js detection
+        if (deps.next) {
+          buildCommand = 'npm run build'
+          startScript = 'npm start'
+          console.log('[Deployments] Detected Next.js app')
+        }
+        // Nuxt detection
+        else if (deps.nuxt) {
+          buildCommand = 'npm run build'
+          startScript = 'npm start'
+          console.log('[Deployments] Detected Nuxt.js app')
+        }
+        // Vite apps
+        else if (deps.vite) {
+          buildCommand = 'npm run build'
+          startScript = 'npx serve -s dist -l ' + deployment.port
+          console.log('[Deployments] Detected Vite app')
+        }
+        // NestJS
+        else if (deps['@nestjs/core']) {
+          buildCommand = 'npm run build'
+          startScript = 'npm run start:prod'
+          console.log('[Deployments] Detected NestJS app')
+        }
+
+        // Run install command
+        console.log(`[Deployments] Running: ${installCommand}`)
+        await execAsync(installCommand, { cwd: repo.path, timeout: 300000 })
+
+        // Run build command if needed
+        if (buildCommand) {
+          console.log(`[Deployments] Running: ${buildCommand}`)
+          await execAsync(buildCommand, { cwd: repo.path, timeout: 600000 })
+        }
 
         // Build PM2 ecosystem config
         const pm2Config = {
