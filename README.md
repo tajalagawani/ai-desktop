@@ -4,26 +4,54 @@ A lightweight, web-based AI desktop environment with integrated development tool
 
 ## 🚀 Quick Start (VPS Installation)
 
-Install AI Desktop on your VPS with a single command:
+### Prerequisites
+- Ubuntu/Debian VPS
+- Root or sudo access
+- Node.js 18+ (installation steps below)
+
+### Installation Steps
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tajalagawani/ai-desktop/lightweight-client/install-vps-complete.sh | bash
+# 1. Install system dependencies
+apt update && apt install -y curl git nginx
+
+# 2. Install Node.js 18
+curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+apt install -y nodejs
+
+# 3. Install PM2 and code-server
+npm install -g pm2
+curl -fsSL https://code-server.dev/install.sh | sh
+
+# 4. Clone repository
+cd /root
+git clone -b lightweight-client https://github.com/tajalagawani/ai-desktop.git
+cd ai-desktop
+
+# 5. Install backend dependencies
+cd backend
+npm install --production
+cd ..
+
+# 6. Install frontend dependencies and build
+npm install
+npm run build
+
+# 7. Configure environment variables (edit as needed)
+# Backend: backend/.env
+# Frontend: .env
+
+# 8. Create data directories
+mkdir -p /var/www/repositories /var/www/github /var/www/ai-desktop/{data,logs}
+
+# 9. Start services
+cd backend && pm2 start server.js --name ai-desktop-backend
+cd .. && pm2 start npm --name ai-desktop-frontend -- start
+pm2 save
+pm2 startup
+
+# 10. Configure Nginx (see Nginx Configuration section below)
 ```
-
-Or download and run manually:
-
-```bash
-wget https://raw.githubusercontent.com/tajalagawani/ai-desktop/lightweight-client/install-vps-complete.sh
-chmod +x install-vps-complete.sh
-./install-vps-complete.sh
-```
-
-The installation script will:
-- ✅ Install all dependencies (Node.js, PM2, Nginx, code-server)
-- ✅ Set up the application with proper VPS paths
-- ✅ Configure Nginx reverse proxy
-- ✅ Start services with PM2
-- ✅ Enable auto-start on reboot
 
 After installation, access AI Desktop at: `http://YOUR_VPS_IP`
 
