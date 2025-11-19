@@ -26,6 +26,180 @@ async function saveRepositories(repositories) {
 }
 
 /**
+ * Find available port for code-server
+ * Port range: 8880-8980
+ */
+async function findAvailablePort() {
+  const { execSync } = require('child_process')
+  const PORT_RANGE_START = 8880
+  const PORT_RANGE_END = 8980
+
+  // Get all currently used ports from running code-server instances
+  const repositories = await getRepositories()
+  const usedPorts = repositories.filter(r => r.port).map(r => r.port)
+
+  // Find first available port in range
+  for (let port = PORT_RANGE_START; port <= PORT_RANGE_END; port++) {
+    if (!usedPorts.includes(port)) {
+      // Double-check port is not in use by system
+      try {
+        execSync(`lsof -i:${port}`, { stdio: 'pipe' })
+        // Port is in use, continue to next
+      } catch {
+        // Port is free
+        return port
+      }
+    }
+  }
+
+  throw new Error('No available ports in range 8880-8980')
+}
+
+/**
+ * Wait for port to become available
+ */
+async function waitForPort(port, timeout = 10000) {
+  const net = require('net')
+  const startTime = Date.now()
+  const interval = 500
+
+  while (Date.now() - startTime < timeout) {
+    try {
+      await new Promise((resolve, reject) => {
+        const client = new net.Socket()
+        client.setTimeout(1000)
+
+        client.on('connect', () => {
+          client.destroy()
+          resolve()
+        })
+
+        client.on('timeout', () => {
+          client.destroy()
+          reject(new Error('Timeout'))
+        })
+
+        client.on('error', (err) => {
+          client.destroy()
+          reject(err)
+        })
+
+        client.connect(port, '127.0.0.1')
+      })
+
+      console.log(`[VSCode] Port ${port} is now open`)
+      return true
+    } catch {
+      // Port not ready, wait and retry
+      await new Promise(resolve => setTimeout(resolve, interval))
+    }
+  }
+
+  throw new Error(`Timeout waiting for port ${port} after ${timeout}ms`)
+}
+
+/**
+ * Generate Nginx configuration for a repository
+ */
+function generateNginxConfig(repoId, port, repoPath) {
+  const safeName = repoId.toString().replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()
+
+  return `# Auto-generated config for repository: ${repoId}
+# Generated at: ${new Date().toISOString()}
+# Port: ${port}
+# Path: ${repoPath}
+
+location /vsc/${safeName}/ {
+    proxy_pass http://127.0.0.1:${port}/;
+    proxy_http_version 1.1;
+
+    # WebSocket support (CRITICAL for VS Code)
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_cache_bypass $http_upgrade;
+
+    # Headers
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Timeouts for long-running operations
+    proxy_read_timeout 86400s;
+    proxy_send_timeout 86400s;
+
+    # Allow large file uploads
+    client_max_body_size 500M;
+}
+`
+}
+
+/**
+ * Write Nginx configuration file
+ */
+async function writeNginxConfig(repoId, config) {
+  const fs = require('fs').promises
+  const fsSync = require('fs')
+  const path = require('path')
+  const { execSync } = require('child_process')
+
+  const NGINX_CONFIG_DIR = '/etc/nginx/vscode-projects'
+  const safeName = repoId.toString().replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()
+  const configPath = path.join(NGINX_CONFIG_DIR, `${safeName}.conf`)
+
+  try {
+    // Ensure directory exists
+    if (!fsSync.existsSync(NGINX_CONFIG_DIR)) {
+      console.log(`[VSCode] Creating Nginx config directory: ${NGINX_CONFIG_DIR}`)
+      fsSync.mkdirSync(NGINX_CONFIG_DIR, { recursive: true })
+    }
+
+    // Write config file
+    await fs.writeFile(configPath, config, 'utf-8')
+    console.log(`[VSCode] Nginx config written: ${configPath}`)
+
+    // Test Nginx configuration
+    execSync('nginx -t', { stdio: 'pipe' })
+    console.log('[VSCode] Nginx config test passed')
+
+    // Reload Nginx
+    execSync('systemctl reload nginx', { stdio: 'pipe' })
+    console.log('[VSCode] Nginx reloaded successfully')
+  } catch (error) {
+    console.error('[VSCode] Failed to write/reload Nginx config:', error)
+    throw error
+  }
+}
+
+/**
+ * Remove Nginx configuration file
+ */
+async function removeNginxConfig(repoId) {
+  const fsSync = require('fs')
+  const path = require('path')
+  const { execSync } = require('child_process')
+
+  const NGINX_CONFIG_DIR = '/etc/nginx/vscode-projects'
+  const safeName = repoId.toString().replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()
+  const configPath = path.join(NGINX_CONFIG_DIR, `${safeName}.conf`)
+
+  try {
+    if (fsSync.existsSync(configPath)) {
+      fsSync.unlinkSync(configPath)
+      console.log(`[VSCode] Nginx config removed: ${configPath}`)
+
+      // Reload Nginx
+      execSync('nginx -t', { stdio: 'pipe' })
+      execSync('systemctl reload nginx', { stdio: 'pipe' })
+      console.log('[VSCode] Nginx reloaded successfully')
+    }
+  } catch (error) {
+    console.error('[VSCode] Failed to remove Nginx config:', error)
+    throw error
+  }
+}
+
+/**
  * GET /api/vscode/status
  * Get status of all code-server instances
  */
@@ -97,7 +271,9 @@ router.post('/start', async (req, res) => {
       }
     }
 
-    console.log(`[VSCode] Starting code-server for ${repo.name} on port ${repo.port}`)
+    // Find available port
+    const port = await findAvailablePort()
+    console.log(`[VSCode] Allocated port ${port} for ${repo.name}`)
     console.log(`[VSCode] Repository path: ${repo.path}`)
 
     // Check if path exists
@@ -108,9 +284,17 @@ router.post('/start', async (req, res) => {
       throw new Error(`Repository path does not exist: ${repo.path}`)
     }
 
+    // Create isolated user-data-dir
+    const userDataDir = `/tmp/code-server-${repo.id}-${port}`
+    const fsSync = require('fs')
+    if (!fsSync.existsSync(userDataDir)) {
+      fsSync.mkdirSync(userDataDir, { recursive: true })
+    }
+
     // Start code-server with explicit config to override defaults
     const codeServer = spawn('code-server', [
-      '--bind-addr', `127.0.0.1:${repo.port}`,
+      `--user-data-dir=${userDataDir}`,
+      `--bind-addr=127.0.0.1:${port}`,
       '--auth', 'none',
       '--disable-telemetry',
       '--disable-update-check',
@@ -160,14 +344,20 @@ router.post('/start', async (req, res) => {
 
     codeServer.unref()
 
-    const url = `http://localhost:${repo.port}`
+    const url = `/vsc/${repo.id}/`
 
-    // Wait longer for server to start
-    await new Promise(resolve => setTimeout(resolve, 3000))
+    // Wait for port to be ready
+    console.log(`[VSCode] Waiting for port ${port} to open...`)
+    await waitForPort(port, 10000)
+
+    // Generate and write Nginx config
+    const nginxConfig = generateNginxConfig(repo.id, port, repo.path)
+    await writeNginxConfig(repo.id, nginxConfig)
 
     // Update JSON file
     repo.running = true
     repo.pid = codeServer.pid
+    repo.port = port
     repo.url = url
     repo.updated_at = new Date().toISOString()
 
@@ -176,14 +366,14 @@ router.post('/start', async (req, res) => {
 
     // Broadcast update via WebSocket
     if (global.socketIO && global.socketIO.io) {
-      global.socketIO.io.emit('vscode:updated', { repoId: parseInt(repoId), action: 'start', url, port: repo.port })
+      global.socketIO.io.emit('vscode:updated', { repoId: parseInt(repoId), action: 'start', url, port })
     }
 
     res.json({
       success: true,
-      message: `Code-server started on port ${repo.port}`,
+      message: `Code-server started on port ${port}`,
       url,
-      port: repo.port,
+      port,
       pid: codeServer.pid,
       repoId: parseInt(repoId)
     })
@@ -246,9 +436,27 @@ router.post('/stop', async (req, res) => {
       }
     }
 
+    // Clean up user-data-dir
+    if (repo.port) {
+      const userDataDir = `/tmp/code-server-${repo.id}-${repo.port}`
+      const fsSync = require('fs')
+      try {
+        if (fsSync.existsSync(userDataDir)) {
+          fsSync.rmSync(userDataDir, { recursive: true, force: true })
+          console.log(`[VSCode] Removed user-data-dir: ${userDataDir}`)
+        }
+      } catch (error) {
+        console.error(`[VSCode] Failed to remove user-data-dir:`, error)
+      }
+    }
+
+    // Remove Nginx config
+    await removeNginxConfig(repo.id)
+
     // Update JSON file
     repo.running = false
     repo.pid = null
+    repo.port = null
     repo.url = null
     repo.updated_at = new Date().toISOString()
 

@@ -173,6 +173,10 @@ echo -e "${GREEN}✓ Frontend started on port $FRONTEND_PORT${NC}"
 ################################################################################
 echo -e "${YELLOW}[10/10] Configuring Nginx...${NC}"
 
+# Create directory for dynamic VS Code configs
+mkdir -p /etc/nginx/vscode-projects
+chmod 755 /etc/nginx/vscode-projects
+
 cat > /etc/nginx/sites-available/ai-desktop << 'NGINX_EOF'
 server {
     listen 80;
@@ -217,6 +221,12 @@ server {
         proxy_pass http://localhost:3006;
         access_log off;
     }
+
+    # Include dynamic VS Code project configs
+    include /etc/nginx/vscode-projects/*.conf;
+
+    # Increase max body size for file uploads
+    client_max_body_size 500M;
 }
 NGINX_EOF
 
