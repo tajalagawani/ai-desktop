@@ -4,39 +4,421 @@
     "name": "MySQL 8.0",
     "category": "database",
     "icon": "/icons/services/mysql.svg",
+    "iconType": "image",
     "description": "Popular open-source relational database",
     "installMethod": "docker",
     "dockerImage": "mysql:8.0",
-    "ports": [3306]
+    "ports": [
+      3306
+    ],
+    "windowComponent": "MySQLManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "mysql57",
+    "name": "MySQL 5.7",
+    "category": "database",
+    "icon": "/icons/services/mysql.svg",
+    "iconType": "image",
+    "description": "MySQL 5.7 for legacy applications",
+    "installMethod": "docker",
+    "dockerImage": "mysql:5.7",
+    "ports": [
+      3307
+    ],
+    "windowComponent": "MySQLManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "mariadb",
+    "name": "MariaDB",
+    "category": "database",
+    "icon": "/icons/services/mariadb.svg",
+    "iconType": "image",
+    "description": "MySQL fork with enhanced features",
+    "installMethod": "docker",
+    "dockerImage": "mariadb:11",
+    "ports": [
+      3308
+    ],
+    "windowComponent": "MariaDBManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "neo4j",
+    "name": "Neo4j",
+    "category": "database",
+    "icon": "/icons/services/neo4j.svg",
+    "iconType": "image",
+    "description": "Graph database for connected data",
+    "installMethod": "docker",
+    "dockerImage": "neo4j:latest",
+    "ports": [
+      7474,
+      7687
+    ],
+    "windowComponent": "Neo4jBrowser",
+    "defaultWidth": 1400,
+    "defaultHeight": 900
   },
   {
     "id": "postgresql",
     "name": "PostgreSQL",
     "category": "database",
     "icon": "/icons/services/postgresql.svg",
-    "description": "Advanced relational database",
+    "iconType": "image",
+    "description": "Advanced open-source relational database",
     "installMethod": "docker",
     "dockerImage": "postgres:16",
-    "ports": [5432]
+    "ports": [
+      5432
+    ],
+    "windowComponent": "PostgreSQLManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "mssql",
+    "name": "Microsoft SQL Server",
+    "category": "database",
+    "icon": "/icons/services/mssql.svg",
+    "iconType": "image",
+    "description": "Microsoft SQL Server for Linux",
+    "installMethod": "docker",
+    "dockerImage": "mcr.microsoft.com/mssql/server:2022-latest",
+    "ports": [
+      1433
+    ],
+    "windowComponent": "MSSQLManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "cockroachdb",
+    "name": "CockroachDB",
+    "category": "database",
+    "icon": "/icons/services/cockroachdb.svg",
+    "iconType": "image",
+    "description": "Distributed SQL database",
+    "installMethod": "docker",
+    "dockerImage": "cockroachdb/cockroach:latest",
+    "ports": [
+      26257,
+      8080
+    ],
+    "windowComponent": "CockroachManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
   },
   {
     "id": "mongodb",
-    "name": "MongoDB",
+    "name": "MongoDB 7",
     "category": "database",
     "icon": "/icons/services/mongodb.svg",
+    "iconType": "image",
     "description": "NoSQL document database",
     "installMethod": "docker",
     "dockerImage": "mongo:7",
-    "ports": [27017]
+    "ports": [
+      27017
+    ],
+    "windowComponent": "MongoDBManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "couchdb",
+    "name": "CouchDB",
+    "category": "database",
+    "icon": "/icons/services/couchdb.svg",
+    "iconType": "image",
+    "description": "NoSQL document database with HTTP API",
+    "installMethod": "docker",
+    "dockerImage": "couchdb:latest",
+    "ports": [
+      5984
+    ],
+    "windowComponent": "CouchDBManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "arangodb",
+    "name": "ArangoDB",
+    "category": "database",
+    "icon": "/icons/services/arangodb.png",
+    "iconType": "image",
+    "description": "Multi-model database (document, graph, key-value)",
+    "installMethod": "docker",
+    "dockerImage": "arangodb:latest",
+    "ports": [
+      8529
+    ],
+    "windowComponent": "ArangoDBManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
   },
   {
     "id": "redis",
-    "name": "Redis",
+    "name": "Redis 7",
     "category": "database",
     "icon": "/icons/services/redis.svg",
-    "description": "In-memory data store",
+    "iconType": "image",
+    "description": "In-memory data structure store",
     "installMethod": "docker",
     "dockerImage": "redis:7-alpine",
-    "ports": [6379]
+    "ports": [
+      6379
+    ],
+    "windowComponent": "RedisManager",
+    "defaultWidth": 1000,
+    "defaultHeight": 600
+  },
+  {
+    "id": "memcached",
+    "name": "Memcached",
+    "category": "database",
+    "icon": "/icons/services/memcached.svg",
+    "iconType": "image",
+    "description": "High-performance distributed memory caching",
+    "installMethod": "docker",
+    "dockerImage": "memcached:alpine",
+    "ports": [
+      11211
+    ],
+    "windowComponent": "MemcachedManager",
+    "defaultWidth": 1000,
+    "defaultHeight": 600
+  },
+  {
+    "id": "keydb",
+    "name": "KeyDB",
+    "category": "database",
+    "icon": "/icons/services/keydb.svg",
+    "iconType": "image",
+    "description": "Redis fork with better performance",
+    "installMethod": "docker",
+    "dockerImage": "eqalpha/keydb:latest",
+    "ports": [
+      6380
+    ],
+    "windowComponent": "KeyDBManager",
+    "defaultWidth": 1000,
+    "defaultHeight": 600
+  },
+  {
+    "id": "influxdb",
+    "name": "InfluxDB",
+    "category": "database",
+    "icon": "/icons/services/influxdb.svg",
+    "iconType": "image",
+    "description": "Time series database",
+    "installMethod": "docker",
+    "dockerImage": "influxdb:2.7",
+    "ports": [
+      8086
+    ],
+    "windowComponent": "InfluxDBManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "timescaledb",
+    "name": "TimescaleDB",
+    "category": "database",
+    "icon": "/icons/services/timescaledb.svg",
+    "iconType": "image",
+    "description": "PostgreSQL extension for time-series",
+    "installMethod": "docker",
+    "dockerImage": "timescale/timescaledb:latest-pg16",
+    "ports": [
+      5433
+    ],
+    "windowComponent": "TimescaleDBManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "questdb",
+    "name": "QuestDB",
+    "category": "database",
+    "icon": "/icons/services/questdb.svg",
+    "iconType": "image",
+    "description": "Fast time-series database",
+    "installMethod": "docker",
+    "dockerImage": "questdb/questdb:latest",
+    "ports": [
+      9000,
+      8812
+    ],
+    "windowComponent": "QuestDBManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "victoriametrics",
+    "name": "VictoriaMetrics",
+    "category": "database",
+    "icon": "/icons/services/victoriametrics.png",
+    "iconType": "image",
+    "description": "Fast time-series database and monitoring",
+    "installMethod": "docker",
+    "dockerImage": "victoriametrics/victoria-metrics:latest",
+    "ports": [
+      8428
+    ],
+    "windowComponent": "VictoriaMetricsManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "cassandra",
+    "name": "Apache Cassandra",
+    "category": "database",
+    "icon": "/icons/services/cassandra.svg",
+    "iconType": "image",
+    "description": "Distributed NoSQL database",
+    "installMethod": "docker",
+    "dockerImage": "cassandra:latest",
+    "ports": [
+      9042
+    ],
+    "windowComponent": "CassandraManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "scylladb",
+    "name": "ScyllaDB",
+    "category": "database",
+    "icon": "/icons/services/scylladb.svg",
+    "iconType": "image",
+    "description": "Cassandra-compatible, faster",
+    "installMethod": "docker",
+    "dockerImage": "scylladb/scylla:latest",
+    "ports": [
+      9043
+    ],
+    "windowComponent": "ScyllaDBManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "clickhouse",
+    "name": "ClickHouse",
+    "category": "database",
+    "icon": "/icons/services/clickhouse.svg",
+    "iconType": "image",
+    "description": "Fast OLAP database for analytics",
+    "installMethod": "docker",
+    "dockerImage": "clickhouse/clickhouse-server:latest",
+    "ports": [
+      8123,
+      9000
+    ],
+    "windowComponent": "ClickHouseManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 700
+  },
+  {
+    "id": "nginx",
+    "name": "Nginx",
+    "category": "web-server",
+    "icon": "/icons/services/nginx.svg",
+    "iconType": "image",
+    "description": "High-performance web server",
+    "installMethod": "docker",
+    "dockerImage": "nginx:alpine",
+    "ports": [
+      8080
+    ],
+    "windowComponent": "NginxManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 800
+  },
+  {
+    "id": "php",
+    "name": "PHP-FPM",
+    "category": "runtime",
+    "icon": "/icons/services/php.svg",
+    "iconType": "image",
+    "description": "PHP FastCGI Process Manager",
+    "installMethod": "docker",
+    "dockerImage": "php:8.3-fpm",
+    "ports": [
+      9000
+    ],
+    "windowComponent": "PHPManager",
+    "defaultWidth": 1000,
+    "defaultHeight": 700
+  },
+  {
+    "id": "phpmyadmin",
+    "name": "phpMyAdmin",
+    "category": "tool",
+    "icon": "/icons/services/phpmyadmin.svg",
+    "iconType": "image",
+    "description": "MySQL web administration tool",
+    "installMethod": "docker",
+    "dockerImage": "phpmyadmin:latest",
+    "ports": [
+      8081
+    ],
+    "windowComponent": "PHPMyAdmin",
+    "defaultWidth": 1400,
+    "defaultHeight": 900
+  },
+  {
+    "id": "adminer",
+    "name": "Adminer",
+    "category": "tool",
+    "icon": "/icons/services/adminer.png",
+    "iconType": "image",
+    "description": "Database management in a single file",
+    "installMethod": "docker",
+    "dockerImage": "adminer:latest",
+    "ports": [
+      8082
+    ],
+    "windowComponent": "Adminer",
+    "defaultWidth": 1400,
+    "defaultHeight": 900
+  },
+  {
+    "id": "elasticsearch",
+    "name": "Elasticsearch",
+    "category": "search",
+    "icon": "/icons/services/elasticsearch.svg",
+    "iconType": "image",
+    "description": "Distributed search and analytics engine",
+    "installMethod": "docker",
+    "dockerImage": "elasticsearch:8.11.0",
+    "ports": [
+      9200,
+      9300
+    ],
+    "windowComponent": "ElasticsearchManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 800
+  },
+  {
+    "id": "rabbitmq",
+    "name": "RabbitMQ",
+    "category": "queue",
+    "icon": "/icons/services/rabbitmq.svg",
+    "iconType": "image",
+    "description": "Message broker for distributed systems",
+    "installMethod": "docker",
+    "dockerImage": "rabbitmq:3-management",
+    "ports": [
+      5672,
+      15672
+    ],
+    "windowComponent": "RabbitMQManager",
+    "defaultWidth": 1200,
+    "defaultHeight": 800
   }
 ]
