@@ -100,8 +100,8 @@ function detectNodeFramework(packageJson) {
     return {
       type: 'nextjs',
       version: deps.next,
-      buildCommand: 'npm run build',
-      startCommand: 'npm start',
+      buildCommand: '', // Skip build for dev mode
+      startCommand: 'npm run dev',
       installCommand: 'npm install',
       outputDir: '.next',
       port: 3000
