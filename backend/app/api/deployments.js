@@ -304,6 +304,14 @@ router.post('/:id/action', async (req, res) => {
         const { stdout, stderr } = await execAsync(`pm2 start ${configPath}`)
         console.log(`[Deployments] PM2 start output:`, stdout)
 
+        // Open firewall port for the deployment
+        try {
+          await execAsync(`ufw allow ${deployment.port}/tcp comment 'Deployment: ${deployment.name}'`)
+          console.log(`[Deployments] Opened firewall port ${deployment.port}`)
+        } catch (error) {
+          console.warn(`[Deployments] Could not open firewall port ${deployment.port}:`, error.message)
+        }
+
         // Get process info
         const { stdout: processInfo } = await execAsync(`pm2 jlist`)
         const processes = JSON.parse(processInfo)
