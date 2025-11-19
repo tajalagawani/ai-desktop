@@ -495,3 +495,117 @@ echo -e "  And restart: ${GREEN}pm2 restart ai-desktop-frontend${NC}"
 echo ""
 echo -e "${GREEN}🎉 Enjoy AI Desktop!${NC}"
 echo ""
+
+################################################################################
+# Optional: Install Flow Builder (ACT)
+################################################################################
+echo ""
+echo -e "${YELLOW}═══════════════════════════════════════════════════════════${NC}"
+echo -e "${YELLOW}Optional: Flow Builder Installation${NC}"
+echo -e "${YELLOW}═══════════════════════════════════════════════════════════${NC}"
+echo ""
+echo -e "${BLUE}Flow Builder provides:${NC}"
+echo "  • Visual workflow automation with Claude AI"
+echo "  • 150+ workflow nodes for integrations, databases, APIs"
+echo "  • ACT workflow engine"
+echo ""
+read -p "Do you want to install Flow Builder? (yes/no): " -r INSTALL_ACT
+
+if [[ $INSTALL_ACT == "yes" ]]; then
+    echo ""
+    echo -e "${YELLOW}[OPTIONAL] Installing Flow Builder with ACT...${NC}"
+
+    ACT_REPO_URL="https://github.com/tajalagawani/actservice.git"
+    ACT_DIR="/var/www/act"
+
+    if [ ! -d "$ACT_DIR" ]; then
+        echo "  → Cloning ACT repository..."
+        mkdir -p /var/www
+        cd /var/www
+        git clone $ACT_REPO_URL act > /dev/null 2>&1
+
+        if [ -d "$ACT_DIR" ]; then
+            # Install MCP dependencies
+            echo "  → Installing MCP dependencies..."
+            if [ -d "$ACT_DIR/mcp" ]; then
+                cd $ACT_DIR/mcp
+                npm install > /dev/null 2>&1
+            fi
+
+            # Install Agent SDK dependencies
+            echo "  → Installing Agent SDK dependencies..."
+            if [ -d "$ACT_DIR/agent-sdk" ]; then
+                cd $ACT_DIR/agent-sdk
+                npm install > /dev/null 2>&1
+            fi
+
+            # Install Python dependencies
+            echo "  → Installing Python dependencies..."
+            python3 -m pip install --quiet --break-system-packages anthropic python-dotenv requests aiohttp 2>/dev/null || \
+            pip3 install anthropic python-dotenv requests aiohttp > /dev/null 2>&1
+
+            # Create necessary directories
+            mkdir -p $ACT_DIR/flows
+            mkdir -p $ACT_DIR/mcp/signatures
+
+            # Configure ACT environment
+            echo "  → Configuring ACT..."
+            cat > $ACT_DIR/agent-sdk/.env << 'ACT_ENV'
+ACT_ROOT=/var/www/act
+MCP_SERVER_PATH=/var/www/act/mcp/index.js
+FLOWS_DIR=/var/www/act/flows
+SIGNATURE_PATH=/var/www/act/mcp/signatures/user.act.sig
+DEFAULT_MODEL=claude-sonnet-4-5-20250929
+VERBOSE=true
+STREAM_MODE=true
+ALLOW_SANDBOX_BYPASS=true
+IS_SANDBOX=true
+ACT_ENV
+
+            # Update AI Desktop .env to include ACT paths
+            echo "  → Linking ACT to AI Desktop..."
+            cat >> /root/ai-desktop/.env << ACT_DESKTOP_ENV
+
+# Flow Builder / ACT Integration (Installed)
+AGENT_SDK_PATH=/var/www/act/agent-sdk
+ACT_ROOT=/var/www/act
+ALLOW_SANDBOX_BYPASS=true
+ACT_DESKTOP_ENV
+
+            # Restart frontend to load new env vars
+            pm2 restart ai-desktop-frontend > /dev/null 2>&1
+
+            echo -e "${GREEN}✓ Flow Builder with ACT installed${NC}"
+            echo -e "${BLUE}  ACT Location: /var/www/act${NC}"
+            echo -e "${BLUE}  Flows Directory: /var/www/act/flows${NC}"
+        else
+            echo -e "${YELLOW}⚠ ACT clone failed, continuing without Flow Builder${NC}"
+        fi
+    else
+        echo -e "${GREEN}✓ ACT already installed${NC}"
+
+        # Still configure the link
+        cat >> /root/ai-desktop/.env << ACT_DESKTOP_ENV
+
+# Flow Builder / ACT Integration
+AGENT_SDK_PATH=/var/www/act/agent-sdk
+ACT_ROOT=/var/www/act
+ALLOW_SANDBOX_BYPASS=true
+ACT_DESKTOP_ENV
+
+        # Restart frontend
+        pm2 restart ai-desktop-frontend > /dev/null 2>&1
+    fi
+    
+    echo ""
+    echo -e "${GREEN}═══════════════════════════════════════════════════════════${NC}"
+    echo -e "${GREEN}✓ Flow Builder Installation Complete${NC}"
+    echo -e "${GREEN}═══════════════════════════════════════════════════════════${NC}"
+else
+    echo -e "${BLUE}✓ Skipping Flow Builder installation${NC}"
+    echo -e "${YELLOW}  You can install it later by running this script again${NC}"
+fi
+
+echo ""
+echo -e "${GREEN}🎉 All installations complete!${NC}"
+echo ""
