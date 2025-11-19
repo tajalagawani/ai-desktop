@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { MCPServer, MCPServerStatus } from "@/lib/mcp-hub/types"
-import { MCPDetail } from "./mcp/mcp-detail"
+import { MCPDetail } from "./mcp-detail"
 
 export default function MCPHub() {
   const [servers, setServers] = useState<MCPServer[]>([])

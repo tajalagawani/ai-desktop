@@ -37,14 +37,14 @@ import MCPHub from "@/components/features/mcp-hub/MCPHub"
 
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
-import { SystemControlMenu } from "@/components/layout/desktop/system-control-menu"
-import { FloatingDockDemo } from "@/components/layout/desktop/floating-dock-demo"
-import { TopDock } from "@/components/layout/navigation/top-dock"
-import { DesktopContextMenu } from "@/components/layout/desktop/DesktopContextMenu"
-import { ServiceIconContextMenu } from "@/components/layout/desktop/service-icon-context-menu"
-import { Taskbar } from "@/components/layout/navigation/taskbar"
-import { Window } from "@/components/shared/window"
-import { Widget } from "@/components/shared/widget"
+import { SystemControlMenu } from "./SystemControlMenu"
+import { FloatingDock as FloatingDockDemo } from "./FloatingDock"
+import { TopDock } from "./TopDock"
+import { DesktopContextMenu } from "./DesktopContextMenu"
+import { ServiceIconContextMenu } from "./ServiceIconContextMenu"
+import { Taskbar } from "./Taskbar"
+import { Window } from "./Window"
+import { Widget } from "./Widget"
 import type { SystemStats } from "@/lib/system-stats"
 
 // Import data and utilities
@@ -53,9 +53,9 @@ import {
   SYSTEM_STATUS,
   RECENT_ACTIVITY
 } from "@/data/desktop-apps"
-import { useDesktop, useMouseActivity, useTheme, useDockApps } from "@/hooks/use-desktop"
-import { useServicesSync } from "@/lib/hooks/use-services-sync"
-import { getIcon, getIconProps } from "@/utils/icon-mapper"
+import { useDesktop, useMouseActivity, useTheme, useDockApps } from "@/lib/hooks/features/use-desktop"
+import { useServicesSync } from "@/lib/hooks/features/use-services-sync"
+import { getIcon, getIconProps } from "@/lib/utils/icon-mapper"
 
 // Component map for dynamic loading
 const getAppComponent = (

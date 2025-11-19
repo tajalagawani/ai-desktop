@@ -7,8 +7,8 @@ import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { SERVICE_CATEGORIES, ServiceConfig } from "@/data/installable-services"
-import { useServicesSync } from "@/lib/hooks/use-services-sync"
-import { getIcon } from "@/utils/icon-mapper"
+import { useServicesSync } from "@/lib/hooks/features/use-services-sync"
+import { getIcon } from "@/lib/utils/icon-mapper"
 import {
   Play,
   Square,

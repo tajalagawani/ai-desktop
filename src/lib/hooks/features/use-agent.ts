@@ -2,11 +2,11 @@
 
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { useChatStore } from '@/lib/flow-builder/stores/chat-store';
-import { useMetricsStore } from '@/lib/flow-builder/stores/metrics-store';
-import { useSessionStore } from '@/lib/flow-builder/stores/session-store';
-import { useFlowSettingsStore } from '@/lib/flow-builder/stores/settings-store';
-import { parseAgentLog, groupLogs, type ParsedLogData } from '@/lib/flow-builder/utils/log-parser';
+import { useChatStore } from '@/lib/stores/chat-store';
+import { useMetricsStore } from '@/lib/stores/metrics-store';
+import { useSessionStore } from '@/lib/stores/session-store';
+import { useFlowSettingsStore } from '@/lib/stores/settings-store';
+import { parseAgentLog, groupLogs, type ParsedLogData } from '@/lib/utils/log-parser';
 import { generateUUID } from '@/lib/utils';
 
 // Helper to save message to database

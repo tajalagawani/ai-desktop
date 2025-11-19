@@ -1,6 +1,6 @@
 "use client"
 
-import { ChatInterface } from "@/components/flow-builder/ChatInterface"
+import { ChatInterface } from "./ChatInterface"
 
 export function FlowBuilder() {
   return (

@@ -36,7 +36,7 @@ import {
   FILE_TYPE_ICONS,
   USER_PROFILE,
 } from "@/data/file-manager-data"
-import { getIcon, getIconProps } from "@/utils/icon-mapper"
+import { getIcon, getIconProps } from "@/lib/utils/icon-mapper"
 
 interface FileItem {
   id: string

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { XTermConsole, type XTermConsoleHandle } from "@/components/shared/xterm-console"
+import { XTermConsole, type XTermConsoleHandle } from "./XTermConsole"
 
 export function Terminal() {
   const consoleRef = useRef<XTermConsoleHandle>(null)

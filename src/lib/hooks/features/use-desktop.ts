@@ -6,7 +6,7 @@ import {
   calculateResizedWindow,
   DragState,
   Size,
-} from "@/utils/desktop-utils"
+} from "@/lib/utils/desktop"
 import { AppConfig, DesktopFolder } from "@/data/desktop-apps"
 
 export interface WindowState {

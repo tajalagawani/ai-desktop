@@ -1,6 +1,6 @@
 'use client';
 
-import { useMetricsStore } from '@/lib/flow-builder/stores/metrics-store';
+import { useMetricsStore } from '@/lib/stores/metrics-store';
 
 export function ChatHeader() {
   const { metrics } = useMetricsStore();

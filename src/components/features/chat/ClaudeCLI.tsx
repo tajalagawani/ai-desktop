@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { XTermConsole, type XTermConsoleHandle } from "@/components/shared/xterm-console"
+import { XTermConsole, type XTermConsoleHandle } from "@/components/features/terminal/XTermConsole"
 
 export function ClaudeCLI() {
   const consoleRef = useRef<XTermConsoleHandle>(null)

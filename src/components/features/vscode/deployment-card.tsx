@@ -19,7 +19,7 @@ import {
 import { DeploymentConfig } from "@/lib/deployment/types"
 import { DeploymentLogs } from "./deployment-logs"
 import { cn } from "@/lib/utils"
-import { getFrameworkDisplayName } from "@/lib/deployment/utils"
+import { getFrameworkDisplayName } from "@/lib/services/deployment/utils"
 import { toast } from "sonner"
 
 interface DeploymentCardProps {

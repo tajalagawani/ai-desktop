@@ -4,7 +4,7 @@ import { useState } from 'react';
 import type { Message, ToolStatus } from '@/lib/flow-builder/types/chat';
 import { formatDate } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { useSessionStore } from '@/lib/flow-builder/stores/session-store';
+import { useSessionStore } from '@/lib/stores/session-store';
 import { TodoList } from './TodoList';
 import { NodeApprovalPrompt } from './NodeApprovalPrompt';
 

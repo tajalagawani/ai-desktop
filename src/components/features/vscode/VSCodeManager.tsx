@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from "sonner"
-import { getIcon } from "@/utils/icon-mapper"
+import { getIcon } from "@/lib/utils/icon-mapper"
 import {
   Play,
   Square,
@@ -39,10 +39,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { CloneDialog } from "./vscode/clone-dialog"
-import { DeleteDialog } from "./vscode/delete-dialog"
-import { DeployConfig } from "./vscode/deploy-config"
-import { DeploymentCard } from "./vscode/deployment-card"
+import { CloneDialog } from "./clone-dialog"
+import { DeleteDialog } from "./delete-dialog"
+import { DeployConfig } from "./deploy-config"
+import { DeploymentCard } from "./deployment-card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import type { VSCodeRepository } from "@/lib/vscode/types"

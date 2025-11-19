@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useChatStore } from '@/lib/flow-builder/stores/chat-store';
-import { useMetricsStore } from '@/lib/flow-builder/stores/metrics-store';
-import { useAgent } from '@/lib/flow-builder/hooks/use-agent';
+import { useChatStore } from '@/lib/stores/chat-store';
+import { useMetricsStore } from '@/lib/stores/metrics-store';
+import { useAgent } from '@/lib/hooks/features/use-agent';
 import { generateUUID } from '@/lib/utils';
 
 interface ChatInputProps {

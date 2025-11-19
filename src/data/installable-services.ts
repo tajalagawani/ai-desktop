@@ -567,7 +567,7 @@ export const INSTALLABLE_SERVICES: ServiceConfig[] = [
 ]
 
 // Import additional services
-import { ALL_SERVICES } from './all-services'
+import { ALL_SERVICES } from './services'
 
 // Merge base services with additional services
 INSTALLABLE_SERVICES.push(...ALL_SERVICES)

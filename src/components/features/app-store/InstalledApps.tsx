@@ -58,7 +58,7 @@ import {
   type ViewMode,
 } from "@/data/installed-apps-data"
 import { useInstalledApps } from "@/hooks/use-installed-apps"
-import { getIcon, getIconProps } from "@/utils/icon-mapper"
+import { getIcon, getIconProps } from "@/lib/utils/icon-mapper"
 
 export function InstalledApps() {
   const {

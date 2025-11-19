@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { Toaster } from "sonner"
-import { GitHubHeader } from "./github/header"
-import { GitHubSidebar } from "./github/sidebar"
-import { GitHubMainContent } from "./github/main-content"
-import { GitHubDiffPanel } from "./github/diff-panel"
+import { GitHubHeader } from "./header"
+import { GitHubSidebar } from "./sidebar"
+import { GitHubMainContent } from "./main-content"
+import { GitHubDiffPanel } from "./diff-panel"
 
 export type GitHubView = "changes" | "history" | "branches" | "pull-requests" | "stashes"
 
