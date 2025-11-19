@@ -33,6 +33,7 @@ import { WidgetWindow } from "@/components/apps/widget-window"
 import { GitHubApp } from "@/components/apps/github"
 import { VSCodeManager } from "@/components/apps/vscode-manager"
 import { FlowBuilder } from "@/components/apps/flow-builder"
+import MCPHub from "@/components/apps/mcp-hub"
 
 import { BackgroundBeams } from "@/components/ui/background-beams"
 import { TwoFactorAuth } from "@/components/auth/two-factor-auth"
@@ -76,6 +77,7 @@ const getAppComponent = (
     "github-desktop": <GitHubApp />,
     "vscode-manager": <VSCodeManager />,
     "flow-builder": <FlowBuilder />,
+    "mcp-hub": <MCPHub />,
   }
   return componentMap[id] || null
 }

@@ -102,6 +102,13 @@ export const DOCK_APPS: AppConfig[] = [
     category: "development",
     description: "Generate ACT workflows using AI"
   },
+  {
+    id: "mcp-hub",
+    name: "MCP Hub",
+    icon: "Server",
+    category: "development",
+    description: "Manage and test MCP servers"
+  },
 ]
 
 export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
@@ -186,6 +193,16 @@ export const WINDOW_CONFIGS: Record<string, WindowConfig> = {
     closable: true,
   },
   "flow-builder": {
+    defaultWidth: 1400,
+    defaultHeight: 900,
+    minWidth: 1000,
+    minHeight: 700,
+    resizable: true,
+    maximizable: true,
+    minimizable: true,
+    closable: true,
+  },
+  "mcp-hub": {
     defaultWidth: 1400,
     defaultHeight: 900,
     minWidth: 1000,
