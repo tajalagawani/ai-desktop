@@ -71,13 +71,13 @@ router.get('/', async (req, res) => {
  */
 router.post('/', async (req, res) => {
   try {
-    const { name, path, type, port, url, branch } = req.body
+    const { name, path, type, url, branch } = req.body
 
     // Validation
-    if (!name || !path || !type || !port) {
+    if (!name || !path || !type) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: name, path, type, port'
+        error: 'Missing required fields: name, path, type'
       })
     }
 
@@ -90,27 +90,18 @@ router.post('/', async (req, res) => {
 
     const repositories = await getRepositories()
 
-    // Check if port is already in use
-    const portInUse = repositories.find(r => r.port === port)
-    if (portInUse) {
-      return res.status(400).json({
-        success: false,
-        error: `Port ${port} is already in use`
-      })
-    }
-
     // Generate new ID
     const newId = repositories.length > 0
       ? Math.max(...repositories.map(r => r.id)) + 1
       : 1
 
-    // Create repository
+    // Create repository (port assigned when starting code-server)
     const repository = {
       id: newId,
       name,
       path,
       type,
-      port,
+      port: null,
       url: url || null,
       branch: branch || null,
       running: false,
