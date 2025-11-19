@@ -34,6 +34,14 @@ cat << "EOF"
 EOF
 echo -e "${NC}"
 
+# Ask about Flow Builder
+echo -e "${YELLOW}Do you want to install Flow Builder (ACT integration)?${NC}"
+echo "  1) No  - Core features only (recommended for most users)"
+echo "  2) Yes - Include Flow Builder with ACT workflow engine"
+read -p "Choice (1-2) [1]: " -n 1 -r INSTALL_FLOW_BUILDER
+echo ""
+INSTALL_FLOW_BUILDER=${INSTALL_FLOW_BUILDER:-1}
+
 ################################################################################
 # Step 1: Clean Up Old Installation
 ################################################################################
@@ -214,6 +222,58 @@ echo -e "${GREEN}✓ Nginx configured${NC}"
 echo -e "${YELLOW}Setting up PM2 auto-start...${NC}"
 pm2 startup systemd -u root --hp /root > /dev/null 2>&1 || true
 pm2 save > /dev/null 2>&1
+
+################################################################################
+# Optional: Install Flow Builder
+################################################################################
+if [ "$INSTALL_FLOW_BUILDER" == "2" ]; then
+    echo -e "${YELLOW}[OPTIONAL] Installing Flow Builder with ACT...${NC}"
+
+    # Check if ACT repo exists
+    ACT_REPO_URL="https://github.com/tajalagawani/actwith-mcp.git"
+    ACT_DIR="/var/www/act"
+
+    if [ ! -d "$ACT_DIR" ]; then
+        echo "Cloning ACT repository..."
+        cd /var/www
+        git clone $ACT_REPO_URL act 2>/dev/null || echo "ACT repo not found, skipping..."
+
+        if [ -d "$ACT_DIR" ]; then
+            # Install ACT dependencies
+            echo "Installing ACT dependencies..."
+            cd $ACT_DIR
+
+            # Install MCP server dependencies
+            if [ -d "mcp" ]; then
+                cd mcp
+                npm install > /dev/null 2>&1
+                cd ..
+            fi
+
+            # Install Python dependencies if requirements.txt exists
+            if [ -f "requirements.txt" ]; then
+                pip3 install -r requirements.txt > /dev/null 2>&1 || echo "Python dependencies skipped"
+            fi
+
+            # Create necessary directories
+            mkdir -p flows
+            mkdir -p mcp/signatures
+
+            # Configure environment in AI Desktop
+            echo "Configuring ACT integration..."
+            cat >> $APP_DIR/.env << EOF
+
+# Flow Builder / ACT Integration
+AGENT_SDK_PATH=$ACT_DIR/agent-sdk
+ACT_ROOT=$ACT_DIR
+EOF
+
+            echo -e "${GREEN}✓ Flow Builder installed${NC}"
+        fi
+    else
+        echo -e "${GREEN}✓ ACT already installed${NC}"
+    fi
+fi
 
 ################################################################################
 # Installation Complete
