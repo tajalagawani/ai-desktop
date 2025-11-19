@@ -50,6 +50,7 @@ pm2 delete all 2>/dev/null || true
 pm2 kill 2>/dev/null || true
 rm -rf $APP_DIR
 rm -rf /root/.pm2
+rm -rf /root/.config/code-server
 echo -e "${GREEN}✓ Cleanup complete${NC}"
 
 ################################################################################
@@ -69,10 +70,19 @@ fi
 # Install PM2
 npm install -g pm2 > /dev/null 2>&1
 
+# Install code-server
+if ! command -v code-server &> /dev/null; then
+    echo "Installing code-server..."
+    curl -fsSL https://code-server.dev/install.sh | sh > /dev/null 2>&1
+fi
+
 echo -e "${GREEN}✓ Dependencies installed${NC}"
 echo "  Node: $(node --version)"
 echo "  NPM: $(npm --version)"
 echo "  PM2: $(pm2 --version)"
+if command -v code-server &> /dev/null; then
+    echo "  code-server: $(code-server --version | head -n 1)"
+fi
 
 ################################################################################
 # Step 3: Clone Repository
@@ -229,49 +239,78 @@ pm2 save > /dev/null 2>&1
 if [ "$INSTALL_FLOW_BUILDER" == "2" ]; then
     echo -e "${YELLOW}[OPTIONAL] Installing Flow Builder with ACT...${NC}"
 
-    # Check if ACT repo exists
-    ACT_REPO_URL="https://github.com/tajalagawani/actwith-mcp.git"
+    ACT_REPO_URL="https://github.com/tajalagawani/actservice.git"
     ACT_DIR="/var/www/act"
 
     if [ ! -d "$ACT_DIR" ]; then
         echo "Cloning ACT repository..."
+        mkdir -p /var/www
         cd /var/www
-        git clone $ACT_REPO_URL act 2>/dev/null || echo "ACT repo not found, skipping..."
+        git clone $ACT_REPO_URL act > /dev/null 2>&1
 
         if [ -d "$ACT_DIR" ]; then
-            # Install ACT dependencies
-            echo "Installing ACT dependencies..."
-            cd $ACT_DIR
-
-            # Install MCP server dependencies
-            if [ -d "mcp" ]; then
-                cd mcp
+            # Install MCP dependencies
+            echo "Installing MCP dependencies..."
+            if [ -d "$ACT_DIR/mcp" ]; then
+                cd $ACT_DIR/mcp
                 npm install > /dev/null 2>&1
-                cd ..
             fi
 
-            # Install Python dependencies if requirements.txt exists
-            if [ -f "requirements.txt" ]; then
-                pip3 install -r requirements.txt > /dev/null 2>&1 || echo "Python dependencies skipped"
+            # Install Agent SDK dependencies
+            echo "Installing Agent SDK dependencies..."
+            if [ -d "$ACT_DIR/agent-sdk" ]; then
+                cd $ACT_DIR/agent-sdk
+                npm install > /dev/null 2>&1
             fi
+
+            # Install Python dependencies
+            echo "Installing Python dependencies..."
+            python3 -m pip install --quiet --break-system-packages anthropic python-dotenv requests aiohttp 2>/dev/null || \
+            pip3 install anthropic python-dotenv requests aiohttp > /dev/null 2>&1
 
             # Create necessary directories
-            mkdir -p flows
-            mkdir -p mcp/signatures
+            mkdir -p $ACT_DIR/flows
+            mkdir -p $ACT_DIR/mcp/signatures
 
-            # Configure environment in AI Desktop
-            echo "Configuring ACT integration..."
-            cat >> $APP_DIR/.env << EOF
+            # Configure ACT environment
+            echo "Configuring ACT..."
+            cat > $ACT_DIR/agent-sdk/.env << 'ACT_ENV'
+ACT_ROOT=/var/www/act
+MCP_SERVER_PATH=/var/www/act/mcp/index.js
+FLOWS_DIR=/var/www/act/flows
+SIGNATURE_PATH=/var/www/act/mcp/signatures/user.act.sig
+DEFAULT_MODEL=claude-sonnet-4-5-20250929
+VERBOSE=true
+STREAM_MODE=true
+ALLOW_SANDBOX_BYPASS=true
+IS_SANDBOX=true
+ACT_ENV
+
+            # Configure AI Desktop to use ACT
+            echo "Linking ACT to AI Desktop..."
+            cat >> $APP_DIR/.env << ACT_DESKTOP_ENV
 
 # Flow Builder / ACT Integration
-AGENT_SDK_PATH=$ACT_DIR/agent-sdk
-ACT_ROOT=$ACT_DIR
-EOF
+AGENT_SDK_PATH=/var/www/act/agent-sdk
+ACT_ROOT=/var/www/act
+ALLOW_SANDBOX_BYPASS=true
+ACT_DESKTOP_ENV
 
-            echo -e "${GREEN}✓ Flow Builder installed${NC}"
+            echo -e "${GREEN}✓ Flow Builder with ACT installed${NC}"
+        else
+            echo -e "${YELLOW}⚠ ACT clone failed, continuing without Flow Builder${NC}"
         fi
     else
         echo -e "${GREEN}✓ ACT already installed${NC}"
+
+        # Still configure the link
+        cat >> $APP_DIR/.env << ACT_DESKTOP_ENV
+
+# Flow Builder / ACT Integration
+AGENT_SDK_PATH=/var/www/act/agent-sdk
+ACT_ROOT=/var/www/act
+ALLOW_SANDBOX_BYPASS=true
+ACT_DESKTOP_ENV
     fi
 fi
 
