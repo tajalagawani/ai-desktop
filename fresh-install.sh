@@ -135,6 +135,9 @@ cat > storage/data/mcp-tokens.json << 'EOF'
 {}
 EOF
 
+# Copy installable services from source
+cp src/data/installable-services.json storage/data/installable-services.json
+
 chmod -R 755 storage/
 echo -e "${SUCCESS}  ✓${RESET} Storage initialized"
 
