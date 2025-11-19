@@ -1,0 +1,50 @@
+{
+  "sessions": [
+    {
+      "id": 1,
+      "status": "idle",
+      "prompt": "Create a weather tracking API",
+      "output": null,
+      "messages": [
+        {
+          "id": "5fd1db10-3ab7-4338-84dd-076ab80dd691",
+          "sessionId": 1,
+          "role": "USER",
+          "content": "Create a weather tracking API",
+          "toolResults": [],
+          "createdAt": "2025-11-19T19:21:14.073Z"
+        },
+        {
+          "id": "5fd1db10-3ab7-4338-84dd-076ab80dd691",
+          "sessionId": 1,
+          "role": "USER",
+          "content": "Create a weather tracking API",
+          "toolResults": [],
+          "createdAt": "2025-11-19T19:21:14.077Z"
+        },
+        {
+          "id": "c47f27f6-cde8-457c-994d-ece0be40d657",
+          "sessionId": 1,
+          "role": "SYSTEM",
+          "content": "Flow Architect Agent Starting",
+          "toolResults": [],
+          "createdAt": "2025-11-19T19:21:14.220Z"
+        },
+        {
+          "id": "8e4003e1-8c90-45ba-a5c3-2bd80325881e",
+          "sessionId": 1,
+          "role": "SYSTEM",
+          "content": "Analyzing requirements...",
+          "toolResults": [],
+          "createdAt": "2025-11-19T19:21:14.224Z"
+        }
+      ],
+      "userId": "default-user",
+      "createdAt": "2025-11-19T19:21:14.067Z",
+      "updatedAt": "2025-11-19T19:21:14.224Z"
+    }
+  ]
+}"
+    }
+  ]
+}

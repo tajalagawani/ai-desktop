@@ -1,0 +1,30 @@
+{
+  "repositories": [
+    {
+      "id": 1,
+      "name": "actmcp",
+      "path": "/Users/tajnoah/repositories/actmcp",
+      "type": "git",
+      "port": 8100,
+      "url": "http://localhost:8100",
+      "branch": "main",
+      "running": true,
+      "pid": 11248,
+      "created_at": "2025-11-19T19:00:07.227Z",
+      "updated_at": "2025-11-19T19:00:19.699Z"
+    },
+    {
+      "id": 2,
+      "name": "reart",
+      "path": "/Users/tajnoah/repositories/reart",
+      "type": "git",
+      "port": 8101,
+      "url": "http://localhost:8101",
+      "branch": "main",
+      "running": true,
+      "pid": 16053,
+      "created_at": "2025-11-19T19:14:29.070Z",
+      "updated_at": "2025-11-19T19:14:39.284Z"
+    }
+  ]
+}

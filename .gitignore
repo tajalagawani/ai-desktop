@@ -70,6 +70,3 @@ next-env.d.ts
 # generated workflow files
 components/apps/act-docker/flows/*.flow
 **/temp-*.act
-
-# Backend (separate deployment)
-/backend
