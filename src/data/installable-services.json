@@ -1,0 +1,42 @@
+[
+  {
+    "id": "mysql",
+    "name": "MySQL 8.0",
+    "category": "database",
+    "icon": "/icons/services/mysql.svg",
+    "description": "Popular open-source relational database",
+    "installMethod": "docker",
+    "dockerImage": "mysql:8.0",
+    "ports": [3306]
+  },
+  {
+    "id": "postgresql",
+    "name": "PostgreSQL",
+    "category": "database",
+    "icon": "/icons/services/postgresql.svg",
+    "description": "Advanced relational database",
+    "installMethod": "docker",
+    "dockerImage": "postgres:16",
+    "ports": [5432]
+  },
+  {
+    "id": "mongodb",
+    "name": "MongoDB",
+    "category": "database",
+    "icon": "/icons/services/mongodb.svg",
+    "description": "NoSQL document database",
+    "installMethod": "docker",
+    "dockerImage": "mongo:7",
+    "ports": [27017]
+  },
+  {
+    "id": "redis",
+    "name": "Redis",
+    "category": "database",
+    "icon": "/icons/services/redis.svg",
+    "description": "In-memory data store",
+    "installMethod": "docker",
+    "dockerImage": "redis:7-alpine",
+    "ports": [6379]
+  }
+]
