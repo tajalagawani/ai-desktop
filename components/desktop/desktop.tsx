@@ -54,6 +54,7 @@ import {
   RECENT_ACTIVITY
 } from "@/data/desktop-apps"
 import { useDesktop, useMouseActivity, useTheme, useDockApps } from "@/hooks/use-desktop"
+import { useServicesSync } from "@/lib/hooks/use-services-sync"
 import { getIcon, getIconProps } from "@/utils/icon-mapper"
 
 // Component map for dynamic loading
@@ -89,6 +90,7 @@ interface InstalledService {
   iconType?: 'lucide' | 'image'
   ports?: number[]
   status: string
+  installed: boolean
 }
 
 // Background configurations
@@ -114,7 +116,6 @@ export function Desktop() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [systemStats, setSystemStats] = useState<SystemStats | null>(null)
-  const [installedServices, setInstalledServices] = useState<InstalledService[]>([])
   const [currentBackground, setCurrentBackground] = useState<string>('image-abstract')
 
   // Custom hooks for clean state management
@@ -138,6 +139,10 @@ export function Desktop() {
   const { isDarkMode, toggleTheme } = useTheme()
   const { dockApps, addToDock, removeFromDock } = useDockApps(DOCK_APPS)
   const isMouseActive = useMouseActivity(3000)
+
+  // Real-time services sync
+  const { services: allServices, connected: servicesConnected } = useServicesSync()
+  const installedServices = allServices.filter(s => s.installed === true)
 
   // Load background from localStorage
   useEffect(() => {
@@ -182,30 +187,12 @@ export function Desktop() {
     }
   }, [isAuthenticated])
 
-  // Fetch installed services
+  // Log WebSocket connection status
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetch('/api/services')
-        if (response.ok) {
-          const data = await response.json()
-          const installed = data.services?.filter((s: InstalledService) =>
-            s.status !== 'not-installed' && s.ports && s.ports.length > 0
-          ) || []
-          setInstalledServices(installed)
-        }
-      } catch (error) {
-        console.error('Error fetching services:', error)
-      }
-    }
-
     if (isAuthenticated) {
-      fetchServices()
-      // Update every 2 seconds for faster UI updates
-      const interval = setInterval(fetchServices, 2000)
-      return () => clearInterval(interval)
+      console.log('[Desktop] Services WebSocket:', servicesConnected ? 'Connected ✅' : 'Disconnected ❌')
     }
-  }, [isAuthenticated])
+  }, [servicesConnected, isAuthenticated])
 
   // Handle window operations
   const handleOpenWindow = useCallback((id: string, title: string) => {

@@ -35,7 +35,7 @@ export function GitHubDiffPanel({ file, currentRepo, onClose }: GitHubDiffPanelP
 
       const result = await response.json()
       if (result.success) {
-        setDiff(result.output || "No changes")
+        setDiff(result.stdout || result.output || "No changes")
       }
     } catch (error) {
       console.error("Failed to load diff:", error)

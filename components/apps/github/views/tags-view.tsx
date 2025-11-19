@@ -50,8 +50,9 @@ export function TagsView({ currentRepo }: TagsViewProps) {
       })
 
       const result = await response.json()
-      if (result.success && result.output) {
-        const parsedTags = result.output.split('\n')
+      const output = result.stdout || result.output || ''
+      if (result.success && output) {
+        const parsedTags = output.split('\n')
           .filter((line: string) => line.trim())
           .map((line: string) => {
             const [name, commit] = line.split('|||')

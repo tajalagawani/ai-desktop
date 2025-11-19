@@ -52,8 +52,9 @@ export function HistoryView({ currentRepo }: HistoryViewProps) {
       })
 
       const result = await response.json()
-      if (result.success && result.output) {
-        const parsedCommits = result.output.split('\n').filter((line: string) => line.trim()).map((line: string) => {
+      const output = result.stdout || result.output || ''
+      if (result.success && output) {
+        const parsedCommits = output.split('\n').filter((line: string) => line.trim()).map((line: string) => {
           const [hash, author, date, message] = line.split('|||')
           return { hash, author, date, message }
         })
@@ -81,8 +82,9 @@ export function HistoryView({ currentRepo }: HistoryViewProps) {
       })
 
       const result = await response.json()
-      if (result.success && result.output) {
-        const lines = result.output.trim().split('\n')
+      const output = result.stdout || result.output || ''
+      if (result.success && output) {
+        const lines = output.trim().split('\n')
         const files: CommitStats['files'] = []
         let totalInsertions = 0
         let totalDeletions = 0

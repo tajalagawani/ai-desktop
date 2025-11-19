@@ -42,8 +42,9 @@ export function StashesView({ currentRepo }: StashesViewProps) {
       })
 
       const result = await response.json()
-      if (result.success && result.output) {
-        const parsedStashes = result.output.split('\n')
+      const output = result.stdout || result.output || ''
+      if (result.success && output) {
+        const parsedStashes = output.split('\n')
           .filter((line: string) => line.trim())
           .map((line: string, index: number) => {
             // Format: stash@{0}: WIP on branch: message

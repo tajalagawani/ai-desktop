@@ -174,29 +174,17 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       const data = await response.json()
 
       if (data.success) {
-        toast({
-          title: "VS Code Started",
-          description: `${repo?.name || repoId} is now running on port ${data.port}`,
-        })
+        toast.success(`${repo?.name || repoId} is now running on port ${data.port}`)
         await loadRepositories(false)
         // Open in new tab
         if (data.url) {
-          const hostname = window.location.hostname
-          window.open(`http://${hostname}${data.url}`, '_blank')
+          window.open(data.url, '_blank')
         }
       } else {
-        toast({
-          title: "Failed to Start",
-          description: data.error || "Could not start VS Code instance",
-          variant: "destructive"
-        })
+        toast.error(data.error || "Could not start VS Code instance")
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Network error starting VS Code",
-        variant: "destructive"
-      })
+      toast.error("Network error starting VS Code")
     } finally {
       setActionLoading(null)
     }
@@ -215,24 +203,13 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       const data = await response.json()
 
       if (data.success) {
-        toast({
-          title: "VS Code Stopped",
-          description: `${repo?.name || repoId} has been stopped`,
-        })
+        toast.success(`${repo?.name || repoId} has been stopped`)
         await loadRepositories(false)
       } else {
-        toast({
-          title: "Failed to Stop",
-          description: data.error || "Could not stop VS Code instance",
-          variant: "destructive"
-        })
+        toast.error(data.error || "Could not stop VS Code instance")
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Network error stopping VS Code",
-        variant: "destructive"
-      })
+      toast.error("Network error stopping VS Code")
     } finally {
       setActionLoading(null)
     }
@@ -243,7 +220,15 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       const response = await fetch(`/api/vscode/changes/${repoId}`)
       const data = await response.json()
       if (data.success) {
-        setGitChanges(data.changes || [])
+        // Convert changes object to array format
+        const changes = data.changes || {}
+        const changesList: GitChange[] = [
+          ...(changes.modified || []).map((path: string) => ({ path, status: 'modified' as const })),
+          ...(changes.added || []).map((path: string) => ({ path, status: 'added' as const })),
+          ...(changes.deleted || []).map((path: string) => ({ path, status: 'deleted' as const })),
+          ...(changes.untracked || []).map((path: string) => ({ path, status: 'added' as const })) // Treat untracked as added
+        ]
+        setGitChanges(changesList)
       }
     } catch (error) {
       console.error('Failed to load git changes:', error)
@@ -255,7 +240,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       const response = await fetch('/api/vscode/diff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ repoId, filePath })
+        body: JSON.stringify({ repoId, file: filePath }) // Backend expects 'file' not 'filePath'
       })
       const data = await response.json()
       if (data.success) {
@@ -373,10 +358,10 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                           type: "git"
                         })
                       }).then(() => {
-                        toast({ title: "Repository Added", description: "Successfully added existing repository" })
+                        toast.success("Successfully added existing repository")
                         loadRepositories(false)
                       }).catch((err) => {
-                        toast({ title: "Error", description: err.message, variant: "destructive" })
+                        toast.error(err.message)
                       })
                     }
                   }}>
@@ -559,8 +544,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                               const runningRepo = repositories.find(r => r.running)
                               if (runningRepo) {
                                 // Open flow in the running editor
-                                const hostname = window.location.hostname
-                                window.open(`http://${hostname}${runningRepo.url}?folder=/var/www/ai-desktop/flows&file=${flow.name}`, '_blank')
+                                window.open(`${runningRepo.url}?folder=/var/www/ai-desktop/flows&file=${flow.name}`, '_blank')
                               } else {
                                 toast.error('No VS Code editor is running. Start a repository first.')
                               }
@@ -687,8 +671,9 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                         size="sm"
                         variant="outline"
                         onClick={() => {
-                          const hostname = window.location.hostname
-                          window.open(`http://${hostname}${selectedRepo.url}`, '_blank')
+                          if (selectedRepo.url) {
+                            window.open(selectedRepo.url, '_blank')
+                          }
                         }}
                         title="Open in new tab"
                       >
@@ -1017,8 +1002,9 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                               <Button
                                 size="sm"
                                 onClick={() => {
-                                  const hostname = window.location.hostname
-                                  window.open(`http://${hostname}${repo.url}`, '_blank')
+                                  if (repo.url) {
+                                    window.open(repo.url, '_blank')
+                                  }
                                 }}
                               >
                                 <ExternalLink className="mr-2 h-3.5 w-3.5" />

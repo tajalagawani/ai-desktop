@@ -101,8 +101,9 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
       })
 
       const result = await response.json()
-      if (result.success && result.output) {
-        setCurrentBranch(result.output.trim())
+      const output = result.stdout || result.output || ''
+      if (result.success && output) {
+        setCurrentBranch(output.trim())
       }
     } catch (error) {
       console.error("Failed to fetch current branch:", error)

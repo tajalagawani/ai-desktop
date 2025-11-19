@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { SERVICE_CATEGORIES, ServiceConfig } from "@/data/installable-services"
+import { useServicesSync } from "@/lib/hooks/use-services-sync"
 import { getIcon } from "@/utils/icon-mapper"
 import {
   Play,
@@ -39,9 +40,10 @@ interface ServiceManagerProps {
 
 // Main Component
 export function ServiceManager(_props: ServiceManagerProps) {
+  // Use real-time services sync
+  const { services: syncedServices, dockerInstalled, loading: servicesLoading, connected } = useServicesSync()
   const [services, setServices] = useState<ServiceWithStatus[]>([])
   const [loading, setLoading] = useState(true)
-  const [dockerInstalled, setDockerInstalled] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedService, setSelectedService] = useState<ServiceWithStatus | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -50,54 +52,16 @@ export function ServiceManager(_props: ServiceManagerProps) {
   const [logsWs, setLogsWs] = useState<WebSocket | null>(null)
   const [searchQuery, setSearchQuery] = useState<string>("")
 
-  // Store last services data to compare
-  const lastServicesDataRef = React.useRef<string>("")
-
-  const loadServices = useCallback(async (silent = false) => {
-    if (!silent) {
-      setLoading(true)
-    }
-    try {
-      const response = await fetch('/api/services', {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      })
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to load services')
-      }
-
-      // Only update if data actually changed
-      const newDataString = JSON.stringify(data.services)
-      const hasChanged = newDataString !== lastServicesDataRef.current
-
-      if (hasChanged || !silent) {
-        lastServicesDataRef.current = newDataString
-        setDockerInstalled(data.dockerInstalled)
-        setServices(data.services || [])
-        if (!silent) {
-          setLoading(false)
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load services:', error)
-      if (!silent) {
-        setLoading(false)
-      }
-    }
-  }, [])
-
+  // Update services when synced data changes
   useEffect(() => {
-    loadServices(false)
-    // Silent background refresh - reduced frequency to avoid scroll interruption
-    const interval = setInterval(() => {
-      loadServices(true) // Silent refresh to avoid flashing
-    }, 30000) // Refresh every 30 seconds
-    return () => clearInterval(interval)
-  }, [loadServices])
+    setServices(syncedServices as ServiceWithStatus[])
+    setLoading(servicesLoading)
+  }, [syncedServices, servicesLoading])
+
+  // Log connection status
+  useEffect(() => {
+    console.log('[ServiceManager] WebSocket:', connected ? 'Connected ✅' : 'Disconnected ❌')
+  }, [connected])
 
   const handleServiceAction = async (serviceId: string, action: string) => {
     setActionLoading(serviceId)
@@ -114,10 +78,11 @@ export function ServiceManager(_props: ServiceManagerProps) {
         throw new Error(data.error || 'Service action failed')
       }
 
-      // Don't reload - just show spinner briefly
+      // WebSocket will automatically update services in real-time
+      // Just clear the loading state after a brief delay
       setTimeout(() => {
         setActionLoading(null)
-      }, 1000)
+      }, 500)
     } catch (error: any) {
       console.error('Service action error:', error)
       alert(error.message || 'Failed to perform action')
@@ -368,13 +333,16 @@ export function ServiceManager(_props: ServiceManagerProps) {
 
           <div className="flex-1" />
 
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => loadServices(false)} className="flex-1 bg-transparent">
-              <RotateCw className="h-3 w-3" />
-            </Button>
-            <Button size="sm" className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
-              <span>→</span>
-            </Button>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg">
+              <div className={cn(
+                "w-2 h-2 rounded-full",
+                connected ? "bg-green-500 animate-pulse" : "bg-red-500"
+              )} />
+              <span className="text-xs text-muted-foreground">
+                {connected ? 'Live' : 'Offline'}
+              </span>
+            </div>
           </div>
         </div>
 

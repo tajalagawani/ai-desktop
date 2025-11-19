@@ -4,10 +4,12 @@ const next = require('next')
 const { WebSocketServer } = require('ws')
 const { Server } = require('socket.io')
 const { spawn } = require('node-pty')
+const http = require('http')
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = 'localhost'
 const port = parseInt(process.env.PORT || '3005', 10)
+const backendPort = parseInt(process.env.NEXT_PUBLIC_API_URL?.split(':')[2] || '3006', 10)
 
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
@@ -15,10 +17,40 @@ const handle = app.getRequestHandler()
 // Store active terminal sessions
 const terminals = new Map()
 
+// Proxy API requests to backend
+function proxyToBackend(req, res) {
+  const options = {
+    hostname: 'localhost',
+    port: backendPort,
+    path: req.url,
+    method: req.method,
+    headers: req.headers,
+  }
+
+  const proxy = http.request(options, (proxyRes) => {
+    res.writeHead(proxyRes.statusCode, proxyRes.headers)
+    proxyRes.pipe(res, { end: true })
+  })
+
+  req.pipe(proxy, { end: true })
+
+  proxy.on('error', (err) => {
+    console.error('Proxy error:', err)
+    res.statusCode = 502
+    res.end('Bad Gateway')
+  })
+}
+
 app.prepare().then(() => {
   const server = createServer(async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true)
+
+      // Proxy all /api/* requests to backend on port 3006
+      if (req.url.startsWith('/api/')) {
+        return proxyToBackend(req, res)
+      }
+
       await handle(req, res, parsedUrl)
     } catch (err) {
       console.error('Error occurred handling', req.url, err)

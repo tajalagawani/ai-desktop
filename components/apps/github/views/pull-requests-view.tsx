@@ -71,8 +71,9 @@ export function PullRequestsView({ currentRepo }: PullRequestsViewProps) {
       })
 
       const result = await response.json()
-      if (result.success && result.output) {
-        const branchList = result.output.split('\n')
+      const output = result.stdout || result.output || ''
+      if (result.success && output) {
+        const branchList = output.split('\n')
           .filter((line: string) => line.trim())
           .map((line: string) => line.replace('* ', '').replace('remotes/origin/', '').trim())
           .filter((branch: string) => !branch.includes('HEAD'))

@@ -54,7 +54,9 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
 
       const result = await response.json()
       if (result.success) {
-        const parsedFiles = parseGitStatus(result.output)
+        // Backend returns stdout, not output
+        const output = result.stdout || result.output || ''
+        const parsedFiles = parseGitStatus(output)
         setFiles(parsedFiles)
       }
     } catch (error) {
@@ -235,8 +237,9 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
       })
 
       const result = await response.json()
+      const output = result.stdout || result.output || ''
       if (result.success) {
-        setCommitMessage(result.output.trim())
+        setCommitMessage(output.trim())
         setAmendMode(true)
         toast.success("Ready to amend last commit")
       }

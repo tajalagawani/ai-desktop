@@ -24,7 +24,7 @@ interface CloneDialogProps {
 
 export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialogProps) {
   const [cloneUrl, setCloneUrl] = useState("")
-  const [clonePath, setClonePath] = useState("/var/www/github/")
+  const [clonePath, setClonePath] = useState(`${process.env.HOME || '/Users/tajnoah'}/repositories/`)
   const [authMethod, setAuthMethod] = useState<"https" | "ssh">("https")
   const [cloning, setCloning] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -38,8 +38,31 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
       const repoName = cloneUrl.split('/').pop()?.replace('.git', '') || 'repo'
       const fullPath = `${clonePath}${repoName}`
 
+      // First, ensure the parent directory exists
+      const parentDir = clonePath.endsWith('/') ? clonePath.slice(0, -1) : clonePath
+      try {
+        const mkdirResponse = await fetch("/api/files", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "create-folder",
+            path: parentDir,
+          }),
+        })
+
+        const mkdirResult = await mkdirResponse.json()
+        // Ignore error if directory already exists
+        if (!mkdirResponse.ok && !mkdirResult.error?.includes('exists')) {
+          console.warn('Failed to create directory:', mkdirResult.error)
+          // Continue anyway, maybe it already exists
+        }
+      } catch (mkdirError) {
+        console.warn('Failed to create directory:', mkdirError)
+        // Continue anyway
+      }
+
       // Prepare clone command
-      let command = `git clone ${cloneUrl} ${fullPath}`
+      let command = `clone ${cloneUrl} ${fullPath}`
 
       // If using HTTPS, try to use stored token
       if (authMethod === "https") {
@@ -52,7 +75,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
               'https://',
               `https://${parsed.githubToken}@`
             )
-            command = `git clone ${urlWithToken} ${fullPath}`
+            command = `clone ${urlWithToken} ${fullPath}`
             console.log('Using GitHub token for authentication')
           } else {
             setError("GitHub token not found in settings. Please add your token in Settings.")
@@ -88,17 +111,34 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
 
       // Add to centralized repository registry
       try {
-        await fetch("/api/repositories", {
+        // Find an available port starting from 8100
+        const portResponse = await fetch("/api/repositories")
+        const portData = await portResponse.json()
+        const usedPorts = portData.repositories?.map((r: any) => r.port) || []
+        let port = 8100
+        while (usedPorts.includes(port)) {
+          port++
+        }
+
+        const repoResponse = await fetch("/api/repositories", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            action: "add",
             name: repoName,
             path: fullPath,
-            type: "git"
+            type: "git",
+            port: port,
+            url: cloneUrl,
+            branch: "main"
           })
         })
-        console.log(`Added ${repoName} to centralized repository registry`)
+
+        const repoResult = await repoResponse.json()
+        if (repoResult.success) {
+          console.log(`Added ${repoName} to centralized repository registry (port ${port})`)
+        } else {
+          console.error("Failed to add to repository registry:", repoResult.error)
+        }
       } catch (error) {
         console.error("Failed to add to repository registry:", error)
         // Continue anyway, localStorage backup exists
@@ -109,7 +149,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
 
       // Reset form
       setCloneUrl("")
-      setClonePath("/var/www/github/")
+      setClonePath(`${process.env.HOME || '/Users/tajnoah'}/repositories/`)
     } catch (error: any) {
       setError(error.message || "Failed to clone repository")
     } finally {
@@ -164,7 +204,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
             <div className="flex gap-2">
               <Input
                 id="clone-path"
-                placeholder="/var/www/github/"
+                placeholder={`${process.env.HOME || '/Users/tajnoah'}/repositories/`}
                 value={clonePath}
                 onChange={(e) => setClonePath(e.target.value)}
               />
