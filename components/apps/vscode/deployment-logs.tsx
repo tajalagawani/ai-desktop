@@ -113,7 +113,7 @@ export function DeploymentLogs({ deploymentId, type, onClose }: DeploymentLogsPr
       </div>
 
       <div className="flex-1 min-h-0 bg-black overflow-hidden">
-        <pre className="h-full w-full p-3 text-green-400 font-mono text-xs overflow-y-auto overflow-x-hidden whitespace-pre-wrap break-words scrollbar-thin">
+        <pre className="h-full w-full px-3 pt-3 pb-1 text-green-400 font-mono text-xs overflow-y-auto overflow-x-hidden whitespace-pre-wrap break-words scrollbar-thin">
           {logs || (connected ? 'Waiting for logs...' : 'Connecting...')}
           {error && <div className="text-red-400">[ERROR] {error}</div>}
           <div ref={logsEndRef} />
