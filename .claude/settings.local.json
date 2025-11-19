@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install:*)"
+      "Bash(sshpass -p \"h.9KD5HfDUCL5CR(sY''L\" ssh -o StrictHostKeyChecking=no root@92.112.181.127 'sudo systemctl start nginx && sudo systemctl enable nginx && sudo systemctl status nginx')"
     ],
     "deny": [],
     "ask": []

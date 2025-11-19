@@ -29,7 +29,8 @@ import {
   Plus,
   ChevronDown,
   Trash2,
-  Rocket
+  Rocket,
+  Workflow
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -72,6 +73,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [repoToDelete, setRepoToDelete] = useState<VSCodeRepository | null>(null)
   const [deployments, setDeployments] = useState<DeploymentConfig[]>([])
+  const [flows, setFlows] = useState<Array<{ name: string; path: string; size: number; modifiedAt: string }>>([])
 
   // Store last data to compare
   const lastDataRef = React.useRef<string>("")
@@ -124,6 +126,18 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
     }
   }, [])
 
+  const loadFlows = useCallback(async () => {
+    try {
+      const response = await fetch('/api/files?path=flows&pattern=*.flow')
+      const data = await response.json()
+      if (data.success) {
+        setFlows(data.files || [])
+      }
+    } catch (error) {
+      console.error('Failed to load flows:', error)
+    }
+  }, [])
+
   useEffect(() => {
     // Run cleanup on first mount
     fetch('/api/vscode/cleanup', { method: 'POST' })
@@ -137,13 +151,15 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
     loadRepositories(false)
     loadDeployments()
+    loadFlows()
     // Silent background refresh
     const interval = setInterval(() => {
       loadRepositories(true)
       loadDeployments()
+      loadFlows()
     }, 5000) // Refresh every 5 seconds
     return () => clearInterval(interval)
-  }, [loadRepositories, loadDeployments])
+  }, [loadRepositories, loadDeployments, loadFlows])
 
   const handleStart = async (repoId: string) => {
     setActionLoading(repoId)
@@ -293,8 +309,9 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       git: repositories.filter(r => r.type === 'git').length,
       deployments: deployments.length,
       deploymentsRunning: deployments.filter(d => d.status === 'running').length,
+      flows: flows.length,
     }
-  }, [repositories, deployments])
+  }, [repositories, deployments, flows])
 
   if (loading) {
     return (
@@ -463,6 +480,18 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                 <Rocket className="h-4 w-4" />
                 <span>Deployments ({stats.deployments})</span>
               </button>
+              <button
+                onClick={() => setSelectedCategory('flows')}
+                className={cn(
+                  "w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2",
+                  selectedCategory === 'flows'
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
+              >
+                <Workflow className="h-4 w-4" />
+                <span>Flows ({stats.flows})</span>
+              </button>
             </div>
           </div>
 
@@ -480,7 +509,94 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
         {/* Right Panel - Main Content */}
         <div className="bg-background p-8 h-full overflow-auto">
-          {selectedCategory === 'deployments' ? (
+          {selectedCategory === 'flows' ? (
+            // Flows View
+            <div className="flex flex-col flex-1 min-h-0">
+              <div className="mb-6 flex-shrink-0">
+                <h2 className="mb-2 text-lg font-normal">ACT Workflow Flows</h2>
+                <p className="text-sm text-muted-foreground">
+                  Generated workflow files that can be opened in VS Code
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {flows.length === 0 ? (
+                  <Alert>
+                    <Workflow className="h-4 w-4" />
+                    <AlertDescription>
+                      No flows found. Create flows in Flow Builder to see them here.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  flows.map((flow) => (
+                    <div
+                      key={flow.path}
+                      className="border rounded-lg p-4 hover:border-primary/50 transition-colors bg-card"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex-shrink-0">
+                          <Workflow className="h-6 w-6 text-primary" />
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium truncate">{flow.name}</h3>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {flow.path}
+                          </p>
+                          <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                            <span>{(flow.size / 1024).toFixed(1)} KB</span>
+                            <span>Modified: {new Date(flow.modifiedAt).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 flex-shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={async (e) => {
+                              e.stopPropagation()
+                              // Find a running repository or start a new one
+                              const runningRepo = repositories.find(r => r.running)
+                              if (runningRepo) {
+                                // Open flow in the running editor
+                                const hostname = window.location.hostname
+                                window.open(`http://${hostname}${runningRepo.url}?folder=/var/www/ai-desktop/flows&file=${flow.name}`, '_blank')
+                              } else {
+                                toast.error('No VS Code editor is running. Start a repository first.')
+                              }
+                            }}
+                          >
+                            <Code className="mr-2 h-3.5 w-3.5" />
+                            Open in VS Code
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={async (e) => {
+                              e.stopPropagation()
+                              // Read and display flow content
+                              try {
+                                const response = await fetch(`/api/files?path=${flow.path}&read=true`)
+                                const data = await response.json()
+                                if (data.success) {
+                                  navigator.clipboard.writeText(data.content)
+                                  toast.success('Flow content copied to clipboard')
+                                }
+                              } catch (error) {
+                                toast.error('Failed to copy flow content')
+                              }
+                            }}
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          ) : selectedCategory === 'deployments' ? (
             // Deployments View
             <div className="flex flex-col flex-1 min-h-0">
               <div className="mb-6 flex-shrink-0">
