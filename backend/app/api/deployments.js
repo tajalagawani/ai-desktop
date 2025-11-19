@@ -1,27 +1,32 @@
 /**
- * Deployments API Routes - Complete Deployment System
- * Handles PM2 deployments with framework detection, build process, and WebSocket logs
- * Restored from original comprehensive deployment system
+ * Deployments API Routes - EXACT replica of old Next.js deployment system
+ * Converted from app/api/deployments/route.ts
  */
 
 const express = require('express')
 const router = express.Router()
-const { readJSON, writeJSON, getDataPath } = require('../../lib/json-storage')
-const { exec } = require('child_process')
-const { promisify } = require('util')
 const fs = require('fs').promises
 const fsSync = require('fs')
 const path = require('path')
+const { exec } = require('child_process')
+const { promisify } = require('util')
 
 const execAsync = promisify(exec)
 
-const DEPLOYMENTS_FILE = getDataPath('deployments.json')
-const LOGS_DIR = path.join(__dirname, '../../../logs')
+const DEPLOYMENTS_FILE = '/var/www/ai-desktop/data/deployments.json'
+const LOGS_DIR = '/var/www/ai-desktop/logs'
 const PORT_RANGE_START = 3050
 const PORT_RANGE_END = 3999
 
-// Ensure directories exist
-async function ensureDirs() {
+// Ensure data directory exists
+async function ensureDataDir() {
+  const dataDir = path.dirname(DEPLOYMENTS_FILE)
+  try {
+    await fs.access(dataDir)
+  } catch {
+    await fs.mkdir(dataDir, { recursive: true })
+  }
+
   try {
     await fs.access(LOGS_DIR)
   } catch {
@@ -29,24 +34,29 @@ async function ensureDirs() {
   }
 }
 
-/**
- * Load deployments from JSON file
- */
+// Load deployments from file
 async function loadDeployments() {
-  const data = await readJSON(DEPLOYMENTS_FILE)
-  return data?.deployments || []
+  await ensureDataDir()
+  try {
+    const data = await fs.readFile(DEPLOYMENTS_FILE, 'utf-8')
+    const parsed = JSON.parse(data)
+    return parsed.deployments || []
+  } catch {
+    return []
+  }
 }
 
-/**
- * Save deployments to JSON file
- */
+// Save deployments to file
 async function saveDeployments(deployments) {
-  await writeJSON(DEPLOYMENTS_FILE, { deployments })
+  await ensureDataDir()
+  await fs.writeFile(
+    DEPLOYMENTS_FILE,
+    JSON.stringify({ deployments }, null, 2),
+    'utf-8'
+  )
 }
 
-/**
- * Find available port in range
- */
+// Find available port
 async function findAvailablePort(deployments) {
   const usedPorts = new Set(deployments.map(d => d.port))
   for (let port = PORT_RANGE_START; port <= PORT_RANGE_END; port++) {
@@ -54,157 +64,280 @@ async function findAvailablePort(deployments) {
       return port
     }
   }
-  throw new Error(`No available ports in range ${PORT_RANGE_START}-${PORT_RANGE_END}`)
+  throw new Error('No available ports in range 3050-3999')
 }
 
-/**
- * Detect framework from package.json
- */
+// Framework detection (from lib/deployment/detector.ts)
 async function detectFramework(repoPath) {
   try {
+    // Check for package.json (Node.js projects)
     const packageJsonPath = path.join(repoPath, 'package.json')
-    const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'))
-    const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
-
-    // Next.js
-    if (deps.next) {
-      return {
-        type: 'nextjs',
-        buildCommand: 'npm run build',
-        startCommand: 'npm start',
-        installCommand: 'npm install'
-      }
+    if (await fileExists(packageJsonPath)) {
+      const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'))
+      return detectNodeFramework(packageJson)
     }
 
-    // Nuxt
-    if (deps.nuxt) {
-      return {
-        type: 'nuxt',
-        buildCommand: 'npm run build',
-        startCommand: 'npm start',
-        installCommand: 'npm install'
-      }
+    // Default to Node.js
+    return {
+      type: 'node',
+      buildCommand: null,
+      startCommand: 'npm start',
+      installCommand: 'npm install',
+      port: 3000
     }
+  } catch (error) {
+    console.error('Error detecting framework:', error)
+    throw new Error('Failed to detect project framework')
+  }
+}
 
-    // Vite (React, Vue, etc.)
-    if (deps.vite) {
+function detectNodeFramework(packageJson) {
+  const deps = { ...packageJson.dependencies, ...packageJson.devDependencies }
+  const scripts = packageJson.scripts || {}
+
+  // Next.js
+  if (deps.next) {
+    return {
+      type: 'nextjs',
+      version: deps.next,
+      buildCommand: 'npm run build',
+      startCommand: 'npm start',
+      installCommand: 'npm install',
+      outputDir: '.next',
+      port: 3000
+    }
+  }
+
+  // Nuxt.js
+  if (deps.nuxt) {
+    return {
+      type: 'nuxt',
+      version: deps.nuxt,
+      buildCommand: 'npm run build',
+      startCommand: 'npm start',
+      installCommand: 'npm install',
+      outputDir: '.nuxt',
+      port: 3000
+    }
+  }
+
+  // Vite (React, Vue, Svelte)
+  if (deps.vite) {
+    if (deps.react) {
       return {
         type: 'react-vite',
         buildCommand: 'npm run build',
-        startCommand: 'npx serve -s dist',
-        installCommand: 'npm install'
+        startCommand: 'npx serve -s dist -l 3000',
+        installCommand: 'npm install',
+        outputDir: 'dist',
+        port: 3000
       }
     }
-
-    // NestJS
-    if (deps['@nestjs/core']) {
+    if (deps.vue) {
       return {
-        type: 'nestjs',
+        type: 'vue',
         buildCommand: 'npm run build',
-        startCommand: 'npm run start:prod',
-        installCommand: 'npm install'
+        startCommand: 'npx serve -s dist -l 3000',
+        installCommand: 'npm install',
+        outputDir: 'dist',
+        port: 3000
       }
     }
-
-    // Express
-    if (deps.express) {
+    if (deps.svelte) {
       return {
-        type: 'express',
-        buildCommand: null,
-        startCommand: packageJson.scripts?.start || 'node index.js',
-        installCommand: 'npm install'
+        type: 'svelte',
+        buildCommand: 'npm run build',
+        startCommand: 'npx serve -s dist -l 3000',
+        installCommand: 'npm install',
+        outputDir: 'dist',
+        port: 3000
       }
     }
+  }
 
-    // Default Node.js
+  // Create React App
+  if (deps['react-scripts']) {
     return {
-      type: 'node',
-      buildCommand: null,
-      startCommand: packageJson.scripts?.start || 'node index.js',
-      installCommand: 'npm install'
+      type: 'react-cra',
+      buildCommand: 'npm run build',
+      startCommand: 'npx serve -s build -l 3000',
+      installCommand: 'npm install',
+      outputDir: 'build',
+      port: 3000
     }
-  } catch (error) {
-    console.error('[Framework Detection] Error:', error)
+  }
+
+  // Angular
+  if (deps['@angular/core']) {
     return {
-      type: 'node',
-      buildCommand: null,
-      startCommand: 'node index.js',
-      installCommand: 'npm install'
+      type: 'angular',
+      buildCommand: 'npm run build',
+      startCommand: 'npx serve -s dist -l 3000',
+      installCommand: 'npm install',
+      outputDir: 'dist',
+      port: 3000
     }
+  }
+
+  // Astro
+  if (deps.astro) {
+    return {
+      type: 'astro',
+      buildCommand: 'npm run build',
+      startCommand: 'npm start',
+      installCommand: 'npm install',
+      outputDir: 'dist',
+      port: 3000
+    }
+  }
+
+  // NestJS
+  if (deps['@nestjs/core']) {
+    return {
+      type: 'nestjs',
+      buildCommand: 'npm run build',
+      startCommand: 'npm run start:prod',
+      installCommand: 'npm install',
+      outputDir: 'dist',
+      port: 3000
+    }
+  }
+
+  // Express
+  if (deps.express) {
+    return {
+      type: 'express',
+      buildCommand: null,
+      startCommand: scripts.start || 'node server.js',
+      installCommand: 'npm install',
+      port: 3000
+    }
+  }
+
+  // Generic Node.js
+  return {
+    type: 'node',
+    buildCommand: scripts.build || null,
+    startCommand: scripts.start || 'node index.js',
+    installCommand: 'npm install',
+    port: 3000
   }
 }
 
-/**
- * Get running Docker services
- */
-async function getRunningServices() {
-  const services = []
+async function fileExists(filePath) {
   try {
-    const { stdout } = await execAsync('docker ps --format "{{.Names}}\\t{{.Ports}}\\t{{.Image}}"')
-    const lines = stdout.trim().split('\n').filter(line => line)
+    await fs.access(filePath)
+    return true
+  } catch {
+    return false
+  }
+}
 
-    for (const line of lines) {
-      const [name, ports, image] = line.split('\t')
-      let port = null
-      if (ports) {
-        const portMatch = ports.match(/0\.0\.0\.0:(\d+)/)
-        if (portMatch) {
-          port = parseInt(portMatch[1])
-        }
-      }
+function getFrameworkDisplayName(type) {
+  const names = {
+    nextjs: 'Next.js',
+    'react-vite': 'React (Vite)',
+    'react-cra': 'React (CRA)',
+    vue: 'Vue.js',
+    nuxt: 'Nuxt.js',
+    angular: 'Angular',
+    svelte: 'Svelte',
+    astro: 'Astro',
+    node: 'Node.js',
+    express: 'Express',
+    nestjs: 'NestJS'
+  }
+  return names[type] || type
+}
 
-      let type = 'unknown'
-      let connectionString = ''
+// Get running Docker services (from lib/deployment/services.ts)
+async function getRunningServices() {
+  try {
+    const { stdout } = await execAsync(
+      'docker ps --filter "label=ai-desktop-service=true" --format "{{.Names}}|{{.Ports}}" || docker ps --format "{{.Names}}|{{.Ports}}"'
+    )
 
-      if (image.includes('postgres')) {
-        type = 'postgresql'
-        connectionString = `postgresql://localhost:${port}/db`
-      } else if (image.includes('mysql')) {
-        type = 'mysql'
-        connectionString = `mysql://localhost:${port}/db`
-      } else if (image.includes('mongo')) {
-        type = 'mongodb'
-        connectionString = `mongodb://localhost:${port}/db`
-      } else if (image.includes('redis')) {
-        type = 'redis'
-        connectionString = `redis://localhost:${port}`
-      }
+    if (!stdout.trim()) {
+      return []
+    }
+
+    const services = []
+
+    for (const line of stdout.trim().split('\n')) {
+      const [containerName, ports] = line.split('|')
+      const serviceId = containerName.replace('ai-desktop-', '')
+
+      // Extract port number
+      const portMatch = ports.match(/0\.0\.0\.0:(\d+)/)
+      const port = portMatch ? parseInt(portMatch[1]) : 0
+
+      if (!port) continue
+
+      // Generate connection string
+      const connectionString = generateConnectionString(serviceId, port)
 
       services.push({
-        id: name,
-        name,
-        containerName: name,
+        id: serviceId,
+        name: serviceId,
+        containerName,
         port,
-        type,
+        type: 'database',
+        category: 'database',
         connectionString
       })
     }
+
+    return services
   } catch (error) {
-    console.log('[Services] No Docker services found')
+    console.error('Error getting running services:', error)
+    return []
   }
-  return services
 }
 
-/**
- * Generate environment variables from selected services
- */
+function generateConnectionString(serviceId, port) {
+  const host = 'localhost'
+
+  if (serviceId.includes('mysql') || serviceId.includes('mariadb')) {
+    return `mysql://root@${host}:${port}/`
+  } else if (serviceId.includes('postgres') || serviceId.includes('timescale')) {
+    return `postgresql://root@${host}:${port}/postgres`
+  } else if (serviceId.includes('mongo')) {
+    return `mongodb://${host}:${port}`
+  } else if (serviceId.includes('redis') || serviceId.includes('keydb')) {
+    return `redis://${host}:${port}`
+  } else if (serviceId.includes('neo4j')) {
+    return `bolt://${host}:${port}`
+  }
+
+  return `http://${host}:${port}`
+}
+
 function generateEnvVarsFromServices(services, customEnvVars = {}) {
   const envVars = { ...customEnvVars }
 
   for (const service of services) {
-    const prefix = service.type.toUpperCase().replace('-', '_')
+    const prefix = getEnvPrefix(service.id)
+
     envVars[`${prefix}_URL`] = service.connectionString
-    if (service.port) {
-      envVars[`${prefix}_PORT`] = service.port.toString()
-    }
+    envVars[`${prefix}_HOST`] = 'localhost'
+    envVars[`${prefix}_PORT`] = service.port.toString()
   }
 
   return envVars
 }
 
+function getEnvPrefix(serviceId) {
+  if (serviceId.includes('mysql') || serviceId.includes('mariadb')) return 'MYSQL'
+  if (serviceId.includes('postgres') || serviceId.includes('timescale')) return 'POSTGRES'
+  if (serviceId.includes('mongo')) return 'MONGO'
+  if (serviceId.includes('redis') || serviceId.includes('keydb')) return 'REDIS'
+  if (serviceId.includes('neo4j')) return 'NEO4J'
+  return serviceId.toUpperCase().replace(/-/g, '_')
+}
+
 /**
  * GET /api/deployments
- * List all deployments with current PM2 status
+ * List all deployments with PM2 status
  */
 router.get('/', async (req, res) => {
   try {
@@ -224,7 +357,7 @@ router.get('/', async (req, res) => {
         }
       }
     } catch (error) {
-      console.error('[Deployments] Error getting PM2 status:', error)
+      console.error('Error getting PM2 status:', error)
     }
 
     await saveDeployments(deployments)
@@ -234,22 +367,20 @@ router.get('/', async (req, res) => {
       deployments
     })
   } catch (error) {
-    console.error('[API Deployments GET] Error:', error)
+    console.error('Error listing deployments:', error)
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message || 'Failed to list deployments'
     })
   }
 })
 
 /**
  * POST /api/deployments
- * Create new deployment with full build process
+ * Create new deployment - EXACT replica of old POST handler
  */
 router.post('/', async (req, res) => {
   try {
-    await ensureDirs()
-
     const {
       repoId,
       repoName,
@@ -259,11 +390,9 @@ router.post('/', async (req, res) => {
       domain
     } = req.body
 
-    console.log(`[Deployments] Creating deployment for ${repoName} at ${repoPath}`)
-
     // Detect framework
     const framework = await detectFramework(repoPath)
-    console.log(`[Deployments] Detected framework: ${framework.type}`)
+    console.log(`Detected framework: ${getFrameworkDisplayName(framework.type)}`)
 
     // Get running services
     const runningServices = await getRunningServices()
@@ -312,7 +441,7 @@ router.post('/', async (req, res) => {
 
     // Start deployment process (async - don't wait)
     deployApp(deployment).catch(error => {
-      console.error('[Deployments] Deployment error:', error)
+      console.error('Deployment error:', error)
     })
 
     res.json({
@@ -321,45 +450,37 @@ router.post('/', async (req, res) => {
       message: 'Deployment started'
     })
   } catch (error) {
-    console.error('[API Deployments POST] Error:', error)
+    console.error('Error creating deployment:', error)
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message || 'Failed to create deployment'
     })
   }
 })
 
 /**
- * Deploy app (async background process)
+ * Deploy app - EXACT replica of old deployApp function
  */
 async function deployApp(deployment) {
-  let logStream
+  const logStream = await fs.open(deployment.buildLogs, 'w')
+
   try {
-    logStream = await fs.open(deployment.buildLogs, 'w')
-
-    const log = async (message) => {
-      const timestamp = new Date().toISOString()
-      await logStream.writeFile(`[${timestamp}] ${message}\n`)
-    }
-
-    await log(`Starting deployment for ${deployment.repoName}`)
-    await log(`Framework: ${deployment.framework}`)
-    await log(`Port: ${deployment.port}`)
-    await log('')
+    await logStream.writeFile(`[${new Date().toISOString()}] Starting deployment for ${deployment.repoName}\n`)
+    await logStream.writeFile(`[${new Date().toISOString()}] Framework: ${getFrameworkDisplayName(deployment.framework)}\n`)
+    await logStream.writeFile(`[${new Date().toISOString()}] Port: ${deployment.port}\n\n`)
 
     // Install dependencies
-    await log('Installing dependencies...')
+    await logStream.writeFile(`[${new Date().toISOString()}] Installing dependencies...\n`)
     const { stdout: installOutput, stderr: installError } = await execAsync(
       'npm install',
-      { cwd: deployment.repoPath, timeout: 600000 }
+      { cwd: deployment.repoPath, timeout: 600000 } // 10 min timeout
     )
     await logStream.writeFile(installOutput)
     if (installError) await logStream.writeFile(installError)
 
     // Build if needed
     if (deployment.buildCommand) {
-      await log('')
-      await log('Building application...')
+      await logStream.writeFile(`\n[${new Date().toISOString()}] Building application...\n`)
       const { stdout: buildOutput, stderr: buildError } = await execAsync(
         deployment.buildCommand,
         { cwd: deployment.repoPath, timeout: 600000 }
@@ -401,8 +522,7 @@ async function deployApp(deployment) {
     )
 
     // Start with PM2
-    await log('')
-    await log('Starting application with PM2...')
+    await logStream.writeFile(`\n[${new Date().toISOString()}] Starting application with PM2...\n`)
     const { stdout: pm2Output } = await execAsync(
       `pm2 start ${ecosystemPath}`,
       { cwd: deployment.repoPath }
@@ -413,13 +533,12 @@ async function deployApp(deployment) {
     await execAsync('pm2 save')
 
     // Open firewall port
-    await log('')
-    await log(`Opening firewall port ${deployment.port}...`)
+    await logStream.writeFile(`\n[${new Date().toISOString()}] Opening firewall port ${deployment.port}...\n`)
     try {
       await execAsync(`ufw allow ${deployment.port}/tcp comment 'Deployment: ${deployment.repoName}'`)
-      await log(`✓ Port ${deployment.port} opened in firewall`)
+      await logStream.writeFile(`[${new Date().toISOString()}] ✓ Port ${deployment.port} opened in firewall\n`)
     } catch (error) {
-      await log(`⚠ Warning: Could not open firewall port: ${error.message}`)
+      await logStream.writeFile(`[${new Date().toISOString()}] ⚠ Warning: Could not open firewall port: ${error.message}\n`)
     }
 
     // Update deployment status
@@ -431,16 +550,12 @@ async function deployApp(deployment) {
       await saveDeployments(deployments)
     }
 
-    await log('')
-    await log('✅ Deployment completed successfully!')
-    await log(`Application running on http://localhost:${deployment.port}`)
+    await logStream.writeFile(`\n[${new Date().toISOString()}] ✅ Deployment completed successfully!\n`)
+    await logStream.writeFile(`[${new Date().toISOString()}] Application running on http://localhost:${deployment.port}\n`)
 
   } catch (error) {
-    if (logStream) {
-      const timestamp = new Date().toISOString()
-      await logStream.writeFile(`\n[${timestamp}] ❌ Deployment failed: ${error.message}\n`)
-      await logStream.writeFile(error.stack || '')
-    }
+    await logStream.writeFile(`\n[${new Date().toISOString()}] ❌ Deployment failed: ${error.message}\n`)
+    await logStream.writeFile(error.stack || '')
 
     // Update deployment status to failed
     const deployments = await loadDeployments()
@@ -451,15 +566,13 @@ async function deployApp(deployment) {
       await saveDeployments(deployments)
     }
   } finally {
-    if (logStream) {
-      await logStream.close()
-    }
+    await logStream.close()
   }
 }
 
 /**
  * POST /api/deployments/:id/action
- * Perform actions on deployment (start, stop, restart, delete, rebuild)
+ * Deployment actions (start, stop, restart, delete, rebuild)
  */
 router.post('/:id/action', async (req, res) => {
   try {
@@ -476,64 +589,43 @@ router.post('/:id/action', async (req, res) => {
       })
     }
 
-    console.log(`[Deployments] Action: ${action} for deployment ${id}`)
-
     switch (action) {
       case 'start':
         await execAsync(`pm2 start ${deployment.pm2Name}`)
         deployment.status = 'running'
         await saveDeployments(deployments)
-        return res.json({
-          success: true,
-          message: `${deployment.repoName} started`
-        })
+        return res.json({ success: true, message: `${deployment.repoName} started` })
 
       case 'stop':
         await execAsync(`pm2 stop ${deployment.pm2Name}`)
         deployment.status = 'stopped'
         await saveDeployments(deployments)
-        return res.json({
-          success: true,
-          message: `${deployment.repoName} stopped`
-        })
+        return res.json({ success: true, message: `${deployment.repoName} stopped` })
 
       case 'restart':
         await execAsync(`pm2 restart ${deployment.pm2Name}`)
         deployment.status = 'running'
         await saveDeployments(deployments)
-        return res.json({
-          success: true,
-          message: `${deployment.repoName} restarted`
-        })
+        return res.json({ success: true, message: `${deployment.repoName} restarted` })
 
       case 'delete':
-        // Stop and delete from PM2
+        // Stop and delete PM2 process
         try {
           await execAsync(`pm2 delete ${deployment.pm2Name}`)
           await execAsync('pm2 save')
-        } catch (error) {
-          console.error('[Deployments] Error deleting from PM2:', error)
-        }
+        } catch {}
 
         // Delete ecosystem config
         try {
           const ecosystemPath = path.join(deployment.repoPath, `ecosystem.${deployment.id}.config.js`)
           await fs.unlink(ecosystemPath)
-        } catch (error) {
-          console.error('[Deployments] Error deleting ecosystem config:', error)
-        }
+        } catch {}
 
-        // Remove from deployments
-        const index = deployments.findIndex(d => d.id === id)
-        if (index !== -1) {
-          deployments.splice(index, 1)
-          await saveDeployments(deployments)
-        }
+        // Remove from deployments array
+        const newDeployments = deployments.filter(d => d.id !== id)
+        await saveDeployments(newDeployments)
 
-        return res.json({
-          success: true,
-          message: `${deployment.repoName} deployment deleted`
-        })
+        return res.json({ success: true, message: `${deployment.repoName} deployment deleted` })
 
       case 'rebuild':
         // Stop current deployment
@@ -546,32 +638,37 @@ router.post('/:id/action', async (req, res) => {
 
         // Trigger rebuild
         deployApp(deployment).catch(error => {
-          console.error('[Deployments] Rebuild error:', error)
+          console.error('Rebuild error:', error)
         })
 
-        return res.json({
-          success: true,
-          message: `${deployment.repoName} rebuild started`
-        })
+        return res.json({ success: true, message: `${deployment.repoName} rebuild started` })
 
       default:
-        return res.status(400).json({
-          success: false,
-          error: 'Invalid action'
-        })
+        return res.status(400).json({ success: false, error: 'Invalid action' })
     }
   } catch (error) {
-    console.error('[API Deployments ACTION] Error:', error)
-    res.status(500).json({
-      success: false,
-      error: error.message
-    })
+    console.error('Deployment action error:', error)
+    res.status(500).json({ success: false, error: error.message })
+  }
+})
+
+/**
+ * GET /api/deployments/services
+ * Get running Docker services
+ */
+router.get('/services', async (req, res) => {
+  try {
+    const services = await getRunningServices()
+    res.json({ success: true, services })
+  } catch (error) {
+    console.error('Error getting services:', error)
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
 /**
  * GET /api/deployments/:id/logs
- * Get deployment logs (for non-WebSocket clients)
+ * Get deployment logs
  */
 router.get('/:id/logs', async (req, res) => {
   try {
@@ -582,10 +679,7 @@ router.get('/:id/logs', async (req, res) => {
     const deployment = deployments.find(d => d.id === id)
 
     if (!deployment) {
-      return res.status(404).json({
-        success: false,
-        error: 'Deployment not found'
-      })
+      return res.status(404).json({ success: false, error: 'Deployment not found' })
     }
 
     let logFile
@@ -599,50 +693,17 @@ router.get('/:id/logs', async (req, res) => {
       if (fsSync.existsSync(logFile)) {
         const content = await fs.readFile(logFile, 'utf-8')
         const logLines = content.split('\n')
-        const lastLines = logLines.slice(-lines).join('\n')
-
-        res.json({
-          success: true,
-          logs: lastLines
-        })
+        const recentLogs = logLines.slice(-lines).join('\n')
+        res.json({ success: true, logs: recentLogs })
       } else {
-        res.json({
-          success: true,
-          logs: 'No logs available yet'
-        })
+        res.json({ success: true, logs: 'No logs available yet' })
       }
-    } catch (error) {
-      res.json({
-        success: true,
-        logs: `Error reading logs: ${error.message}`
-      })
+    } catch {
+      res.json({ success: true, logs: 'No logs available yet' })
     }
   } catch (error) {
-    console.error('[API Deployments Logs] Error:', error)
-    res.status(500).json({
-      success: false,
-      error: error.message
-    })
-  }
-})
-
-/**
- * GET /api/deployments/services
- * Get running Docker services available for deployment configuration
- */
-router.get('/services', async (req, res) => {
-  try {
-    const services = await getRunningServices()
-    res.json({
-      success: true,
-      services
-    })
-  } catch (error) {
-    console.error('[API Deployments Services] Error:', error)
-    res.status(500).json({
-      success: false,
-      error: error.message
-    })
+    console.error('Error getting logs:', error)
+    res.status(500).json({ success: false, error: error.message })
   }
 })
 
