@@ -14,7 +14,7 @@ const path = require('path')
 const execAsync = promisify(exec)
 
 // Load installable services from JSON file
-const DATA_FILE = path.join(__dirname, '../../data/installable-services.json')
+const DATA_FILE = path.join(__dirname, '../../../src/data/installable-services.json')
 
 async function getInstallableServices() {
   try {
