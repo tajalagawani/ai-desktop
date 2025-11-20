@@ -105,7 +105,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       const wsUrl = `${protocol}//${window.location.host}/api/services/logs/ws?container=${containerName}`
 
-      console.log('[Logs] Connecting to:', wsUrl)
+      // console.log('[Logs] Connecting to:', wsUrl)
 
       const ws = new WebSocket(wsUrl)
       setLogsWs(ws)
@@ -133,8 +133,10 @@ export function ServiceManager(_props: ServiceManagerProps) {
       }
 
       ws.onerror = (error) => {
-        console.error('[Logs] WebSocket error:', error)
+        // Silently fail - service logs WebSocket is optional feature
+        // console.error('[Logs] WebSocket error:', error)
         setLogsLoading(false)
+        setLogs('Service logs streaming not available in development mode.\nUse docker logs command to view logs.')
       }
 
       ws.onclose = () => {

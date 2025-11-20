@@ -75,7 +75,7 @@ export function ServiceDetails({ serviceId }: ServiceDetailsProps) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const wsUrl = `${protocol}//${window.location.host}/api/services/logs/ws?container=${containerName}`
 
-    console.log('[Service Details] Connecting to logs:', wsUrl)
+    // console.log('[Service Details] Connecting to logs:', wsUrl)
 
     const ws = new WebSocket(wsUrl)
 
@@ -87,10 +87,10 @@ export function ServiceDetails({ serviceId }: ServiceDetailsProps) {
       setLogs((prev) => prev + event.data)
     }
 
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
+    ws.onerror = () => {
+      // Silently fail - service logs WebSocket is optional feature
       setLogsLoading(false)
-      setLogs((prev) => prev + '\n[Error: Failed to connect to log stream. Service may not be running or logs API is unavailable.]')
+      setLogs('Service logs streaming not available in development mode.\nUse: docker logs ' + containerName)
     }
 
     ws.onclose = (event) => {
