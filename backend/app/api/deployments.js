@@ -8,10 +8,58 @@ const router = express.Router()
 const fs = require('fs').promises
 const fsSync = require('fs')
 const path = require('path')
-const { exec } = require('child_process')
+const { exec, spawn } = require('child_process')
 const { promisify } = require('util')
 
 const execAsync = promisify(exec)
+
+// Helper to emit logs to WebSocket
+function emitLog(deploymentId, message) {
+  if (global.socketIO && global.socketIO.emitToDeployment) {
+    global.socketIO.emitToDeployment(deploymentId, 'log', { data: message })
+  }
+}
+
+// Helper to run command with real-time output
+function runCommandWithLogs(command, options, deploymentId) {
+  return new Promise((resolve, reject) => {
+    const parts = command.split(' ')
+    const cmd = parts[0]
+    const args = parts.slice(1)
+
+    const process = spawn(cmd, args, {
+      ...options,
+      shell: true
+    })
+
+    let stdout = ''
+    let stderr = ''
+
+    process.stdout.on('data', (data) => {
+      const text = data.toString()
+      stdout += text
+      emitLog(deploymentId, text)
+    })
+
+    process.stderr.on('data', (data) => {
+      const text = data.toString()
+      stderr += text
+      emitLog(deploymentId, text)
+    })
+
+    process.on('close', (code) => {
+      if (code === 0) {
+        resolve({ stdout, stderr })
+      } else {
+        reject(new Error(`Command failed with code ${code}: ${stderr}`))
+      }
+    })
+
+    process.on('error', (error) => {
+      reject(error)
+    })
+  })
+}
 
 const DEPLOYMENTS_FILE = '/var/www/ai-desktop/data/deployments.json'
 const LOGS_DIR = '/var/www/ai-desktop/logs'
@@ -459,34 +507,38 @@ router.post('/', async (req, res) => {
 })
 
 /**
- * Deploy app - EXACT replica of old deployApp function
+ * Deploy app - Real-time streaming via WebSocket
  */
 async function deployApp(deployment) {
   const logStream = await fs.open(deployment.buildLogs, 'w')
 
+  // Helper to log both to file and WebSocket
+  async function log(message) {
+    await logStream.writeFile(message)
+    emitLog(deployment.id, message)
+  }
+
   try {
-    await logStream.writeFile(`[${new Date().toISOString()}] Starting deployment for ${deployment.repoName}\n`)
-    await logStream.writeFile(`[${new Date().toISOString()}] Framework: ${getFrameworkDisplayName(deployment.framework)}\n`)
-    await logStream.writeFile(`[${new Date().toISOString()}] Port: ${deployment.port}\n\n`)
+    await log(`[${new Date().toISOString()}] Starting deployment for ${deployment.repoName}\n`)
+    await log(`[${new Date().toISOString()}] Framework: ${getFrameworkDisplayName(deployment.framework)}\n`)
+    await log(`[${new Date().toISOString()}] Port: ${deployment.port}\n\n`)
 
     // Install dependencies
-    await logStream.writeFile(`[${new Date().toISOString()}] Installing dependencies...\n`)
-    const { stdout: installOutput, stderr: installError } = await execAsync(
+    await log(`[${new Date().toISOString()}] Installing dependencies...\n`)
+    await runCommandWithLogs(
       'npm install',
-      { cwd: deployment.repoPath, timeout: 600000 } // 10 min timeout
+      { cwd: deployment.repoPath, timeout: 600000 },
+      deployment.id
     )
-    await logStream.writeFile(installOutput)
-    if (installError) await logStream.writeFile(installError)
 
     // Build if needed
     if (deployment.buildCommand) {
-      await logStream.writeFile(`\n[${new Date().toISOString()}] Building application...\n`)
-      const { stdout: buildOutput, stderr: buildError } = await execAsync(
+      await log(`\n[${new Date().toISOString()}] Building application...\n`)
+      await runCommandWithLogs(
         deployment.buildCommand,
-        { cwd: deployment.repoPath, timeout: 600000 }
+        { cwd: deployment.repoPath, timeout: 600000 },
+        deployment.id
       )
-      await logStream.writeFile(buildOutput)
-      if (buildError) await logStream.writeFile(buildError)
     }
 
     // Create .env file
@@ -522,23 +574,23 @@ async function deployApp(deployment) {
     )
 
     // Start with PM2
-    await logStream.writeFile(`\n[${new Date().toISOString()}] Starting application with PM2...\n`)
-    const { stdout: pm2Output } = await execAsync(
+    await log(`\n[${new Date().toISOString()}] Starting application with PM2...\n`)
+    await runCommandWithLogs(
       `pm2 start ${ecosystemPath}`,
-      { cwd: deployment.repoPath }
+      { cwd: deployment.repoPath },
+      deployment.id
     )
-    await logStream.writeFile(pm2Output)
 
     // Save PM2 config
     await execAsync('pm2 save')
 
     // Open firewall port
-    await logStream.writeFile(`\n[${new Date().toISOString()}] Opening firewall port ${deployment.port}...\n`)
+    await log(`\n[${new Date().toISOString()}] Opening firewall port ${deployment.port}...\n`)
     try {
       await execAsync(`ufw allow ${deployment.port}/tcp comment 'Deployment: ${deployment.repoName}'`)
-      await logStream.writeFile(`[${new Date().toISOString()}] ✓ Port ${deployment.port} opened in firewall\n`)
+      await log(`[${new Date().toISOString()}] ✓ Port ${deployment.port} opened in firewall\n`)
     } catch (error) {
-      await logStream.writeFile(`[${new Date().toISOString()}] ⚠ Warning: Could not open firewall port: ${error.message}\n`)
+      await log(`[${new Date().toISOString()}] ⚠ Warning: Could not open firewall port: ${error.message}\n`)
     }
 
     // Update deployment status
@@ -550,12 +602,12 @@ async function deployApp(deployment) {
       await saveDeployments(deployments)
     }
 
-    await logStream.writeFile(`\n[${new Date().toISOString()}] ✅ Deployment completed successfully!\n`)
-    await logStream.writeFile(`[${new Date().toISOString()}] Application running on http://localhost:${deployment.port}\n`)
+    await log(`\n[${new Date().toISOString()}] ✅ Deployment completed successfully!\n`)
+    await log(`[${new Date().toISOString()}] Application running on http://localhost:${deployment.port}\n`)
 
   } catch (error) {
-    await logStream.writeFile(`\n[${new Date().toISOString()}] ❌ Deployment failed: ${error.message}\n`)
-    await logStream.writeFile(error.stack || '')
+    await log(`\n[${new Date().toISOString()}] ❌ Deployment failed: ${error.message}\n`)
+    await log(error.stack || '')
 
     // Update deployment status to failed
     const deployments = await loadDeployments()
