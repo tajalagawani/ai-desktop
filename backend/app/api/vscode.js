@@ -143,6 +143,13 @@ async function writeNginxConfig(repoId, config) {
   const path = require('path')
   const { execSync } = require('child_process')
 
+  // Skip nginx config on Mac (development environment)
+  const isMac = process.platform === 'darwin'
+  if (isMac) {
+    console.log('[VSCode] Skipping Nginx config on Mac (development mode)')
+    return
+  }
+
   const NGINX_CONFIG_DIR = '/etc/nginx/vscode-projects'
   const safeName = repoId.toString().replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()
   const configPath = path.join(NGINX_CONFIG_DIR, `${safeName}.conf`)
@@ -178,6 +185,13 @@ async function removeNginxConfig(repoId) {
   const fsSync = require('fs')
   const path = require('path')
   const { execSync } = require('child_process')
+
+  // Skip nginx config on Mac (development environment)
+  const isMac = process.platform === 'darwin'
+  if (isMac) {
+    console.log('[VSCode] Skipping Nginx config removal on Mac (development mode)')
+    return
+  }
 
   const NGINX_CONFIG_DIR = '/etc/nginx/vscode-projects'
   const safeName = repoId.toString().replace(/[^a-zA-Z0-9-_]/g, '-').toLowerCase()
