@@ -1,11 +1,10 @@
 /**
- * Backend Server - Express + Socket.IO
- * Handles all API routes and real-time WebSocket connections
+ * Backend Server - Express REST API
+ * Handles all API routes. WebSocket communications delegated to standalone WS server (port 3007)
  */
 
 const express = require('express')
 const { createServer} = require('http')
-const { Server } = require('socket.io')
 const cors = require('cors')
 const path = require('path')
 require('dotenv').config()
@@ -18,15 +17,6 @@ const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3005'
 // Initialize Express app
 const app = express()
 const httpServer = createServer(app)
-
-// Initialize Socket.IO
-const io = new Server(httpServer, {
-  cors: {
-    origin: [CLIENT_URL, 'http://92.112.181.127', 'http://localhost:3005', 'http://localhost:3001'],
-    credentials: true,
-  },
-  transports: ['websocket', 'polling'],
-})
 
 // Middleware
 app.use(cors({
@@ -54,6 +44,12 @@ app.get('/health', (req, res) => {
   })
 })
 
+// WebSocket client for communicating with standalone WS server
+const wsClient = require('./lib/ws-client')
+
+// Export WebSocket client for use in API routes (replaces old global.socketIO)
+global.socketIO = wsClient
+
 // API root endpoint
 app.get('/api', (req, res) => {
   res.json({
@@ -79,14 +75,23 @@ app.get('/api', (req, res) => {
 })
 
 // API status endpoint
-app.get('/api/status', (req, res) => {
+app.get('/api/status', async (req, res) => {
+  // Get WebSocket server health
+  let wsHealth = { connections: 0 }
+  try {
+    wsHealth = await wsClient.checkWSHealth()
+  } catch (error) {
+    // WebSocket server not available
+  }
+
   res.json({
     success: true,
     data: {
       status: 'running',
       version: '1.0.0',
       environment: NODE_ENV,
-      socketConnections: io.engine.clientsCount,
+      websocketServer: wsHealth.success ? 'connected' : 'disconnected',
+      websocketConnections: wsHealth.connections || 0,
     },
   })
 })
@@ -115,110 +120,6 @@ app.use('/api/git', gitRoutes)
 app.use('/api/git-config', gitConfigRoutes)
 app.use('/api/system-stats', systemStatsRoutes)
 app.use('/api/files', filesRoutes)
-
-// Socket.IO connection handling
-io.on('connection', (socket) => {
-  const clientId = socket.id
-  console.log(`[WS] Client connected: ${clientId}`)
-
-  // Join room for specific agent
-  socket.on('agent:join', (agentId) => {
-    socket.join(`agent:${agentId}`)
-    console.log(`[WS] Client ${clientId} joined agent room: ${agentId}`)
-  })
-
-  // Leave agent room
-  socket.on('agent:leave', (agentId) => {
-    socket.leave(`agent:${agentId}`)
-    console.log(`[WS] Client ${clientId} left agent room: ${agentId}`)
-  })
-
-  // Join MCP server room
-  socket.on('mcp:join', (serverId) => {
-    socket.join(`mcp:${serverId}`)
-    console.log(`[WS] Client ${clientId} joined MCP room: ${serverId}`)
-  })
-
-  // Leave MCP server room
-  socket.on('mcp:leave', (serverId) => {
-    socket.leave(`mcp:${serverId}`)
-    console.log(`[WS] Client ${clientId} left MCP room: ${serverId}`)
-  })
-
-  // Join service room
-  socket.on('service:join', (serviceId) => {
-    socket.join(`service:${serviceId}`)
-    console.log(`[WS] Client ${clientId} joined service room: ${serviceId}`)
-  })
-
-  // Leave service room
-  socket.on('service:leave', (serviceId) => {
-    socket.leave(`service:${serviceId}`)
-    console.log(`[WS] Client ${clientId} left service room: ${serviceId}`)
-  })
-
-  // Join deployment room
-  socket.on('deployment:join', (deploymentId) => {
-    socket.join(`deployment:${deploymentId}`)
-    console.log(`[WS] Client ${clientId} joined deployment room: ${deploymentId}`)
-  })
-
-  // Leave deployment room
-  socket.on('deployment:leave', (deploymentId) => {
-    socket.leave(`deployment:${deploymentId}`)
-    console.log(`[WS] Client ${clientId} left deployment room: ${deploymentId}`)
-  })
-
-  // Handle disconnection
-  socket.on('disconnect', (reason) => {
-    console.log(`[WS] Client disconnected: ${clientId} (${reason})`)
-  })
-
-  // Handle errors
-  socket.on('error', (error) => {
-    console.error(`[WS] Socket error for ${clientId}:`, error)
-  })
-})
-
-// Utility function to emit to specific rooms
-const emitToAgent = (agentId, event, data) => {
-  io.to(`agent:${agentId}`).emit(`agent:${agentId}:${event}`, data)
-}
-
-const emitToMCP = (serverId, event, data) => {
-  io.to(`mcp:${serverId}`).emit(`mcp:${serverId}:${event}`, data)
-}
-
-const emitToService = (serviceId, event, data) => {
-  io.to(`service:${serviceId}`).emit(`service:${serviceId}:${event}`, data)
-}
-
-const emitToDeployment = (deploymentId, event, data) => {
-  io.to(`deployment:${deploymentId}`).emit(`deployment:${deploymentId}:${event}`, data)
-}
-
-// Export emit functions for use in API routes
-global.socketIO = {
-  io,
-  emitToAgent,
-  emitToMCP,
-  emitToService,
-  emitToDeployment,
-}
-
-// WebSocket Routes - Commented out to avoid conflict with Socket.IO
-// These routes used express-ws which conflicts with socket.io on the same HTTP server
-// TODO: Convert these to Socket.IO namespaces if needed
-// const { handleDeploymentLogsConnection } = require('./app/websocket/deployment-logs')
-// const { handleServiceLogsConnection } = require('./app/websocket/service-logs')
-
-// app.ws('/api/deployments/logs/ws', (ws, req) => {
-//   handleDeploymentLogsConnection(ws, req)
-// })
-
-// app.ws('/api/services/logs/ws', (ws, req) => {
-//   handleServiceLogsConnection(ws, req)
-// })
 
 // Error handling middleware
 app.use((err, req, res, next) => {

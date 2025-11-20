@@ -12,16 +12,44 @@ const path = require('path')
 
 // Configuration
 const WS_PORT = process.env.WS_PORT || 3007
+const NODE_ENV = process.env.NODE_ENV || 'development'
+const IS_MAC = process.platform === 'darwin'
+const IS_VPS = NODE_ENV === 'production' && !IS_MAC
+
+// Dynamic CORS configuration based on environment
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3005'
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3006'
+const VPS_IP = process.env.VPS_IP || ''
+
+// Build CORS origins array
+const corsOrigins = [
+  CLIENT_URL,
+  BACKEND_URL,
+  'http://localhost:3005',
+  'http://localhost:3006',
+]
+
+// Add VPS origins if in production
+if (IS_VPS && VPS_IP) {
+  corsOrigins.push(
+    `http://${VPS_IP}`,
+    `http://${VPS_IP}:80`,
+    `http://${VPS_IP}:3005`,
+    `http://${VPS_IP}:3006`
+  )
+}
+
+console.log(`[WS Server] Environment: ${NODE_ENV}`)
+console.log(`[WS Server] Platform: ${process.platform} (${IS_MAC ? 'Mac' : 'VPS'})`)
+console.log(`[WS Server] CORS Origins:`, corsOrigins)
 
 // Create HTTP server for Socket.IO
 const httpServer = createServer()
 
-// Initialize Socket.IO
+// Initialize Socket.IO with dynamic CORS
 const io = new Server(httpServer, {
   cors: {
-    origin: [CLIENT_URL, BACKEND_URL, 'http://localhost:3005', 'http://localhost:3006', 'http://92.112.181.127'],
+    origin: corsOrigins,
     credentials: true,
     methods: ['GET', 'POST']
   },

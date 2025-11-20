@@ -203,18 +203,19 @@ echo -e "${SUCCESS}  ✓${RESET} Frontend built"
 # Step 11: Start Services with PM2
 ################################################################################
 echo -e "${MUTED}[11/12]${RESET} Starting services..."
-cd /root/ai-desktop/backend
-pm2 start server.js --name ai-desktop-backend --time
-pm2 save > /dev/null 2>&1
 
+# Start all services using PM2 ecosystem config
 cd /root/ai-desktop
-pm2 start npm --name ai-desktop-frontend -- start --time
+pm2 start ecosystem.config.js
 pm2 save > /dev/null 2>&1
 
 pm2 startup systemd -u root --hp /root > /dev/null 2>&1 || true
 pm2 save > /dev/null 2>&1
-sleep 3
+sleep 5
 echo -e "${SUCCESS}  ✓${RESET} Services running"
+echo -e "${DIM}    • WebSocket Server (port 3007)${RESET}"
+echo -e "${DIM}    • Backend API (port 3006)${RESET}"
+echo -e "${DIM}    • Frontend (port 3005)${RESET}"
 
 ################################################################################
 # Step 12: Configure Nginx
@@ -254,7 +255,7 @@ server {
     }
 
     location /socket.io/ {
-        proxy_pass http://localhost:3006;
+        proxy_pass http://localhost:3007;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -262,6 +263,8 @@ server {
         proxy_cache_bypass $http_upgrade;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 300s;
     }
 
     location /health {
