@@ -4,8 +4,9 @@
  */
 
 const express = require('express')
-const { createServer } = require('http')
+const { createServer} = require('http')
 const { Server } = require('socket.io')
+const expressWs = require('express-ws')
 const cors = require('cors')
 const path = require('path')
 require('dotenv').config()
@@ -18,6 +19,9 @@ const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3001'
 // Initialize Express app
 const app = express()
 const httpServer = createServer(app)
+
+// Initialize express-ws for WebSocket routes
+expressWs(app, httpServer)
 
 // Initialize Socket.IO
 const io = new Server(httpServer, {
@@ -205,6 +209,18 @@ global.socketIO = {
   emitToService,
   emitToDeployment,
 }
+
+// WebSocket Routes
+const { handleDeploymentLogsConnection } = require('./app/websocket/deployment-logs')
+const { handleServiceLogsConnection } = require('./app/websocket/service-logs')
+
+app.ws('/api/deployments/logs/ws', (ws, req) => {
+  handleDeploymentLogsConnection(ws, req)
+})
+
+app.ws('/api/services/logs/ws', (ws, req) => {
+  handleServiceLogsConnection(ws, req)
+})
 
 // Error handling middleware
 app.use((err, req, res, next) => {
