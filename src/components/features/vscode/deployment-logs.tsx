@@ -30,8 +30,11 @@ export function DeploymentLogs({ deploymentId, type, onClose }: DeploymentLogsPr
   }, [deploymentId, type])
 
   const connectWebSocket = () => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const wsUrl = `${protocol}//${window.location.host}/api/deployments/logs/ws?deploymentId=${deploymentId}&type=${type}`
+    // Use the WebSocket server URL (port 3007) instead of frontend URL
+    const wsServerUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3007'
+    const protocol = wsServerUrl.startsWith('https') ? 'wss:' : 'ws:'
+    const host = wsServerUrl.replace(/^https?:\/\//, '')
+    const wsUrl = `${protocol}//${host}/api/deployments/logs/ws?deploymentId=${deploymentId}&type=${type}`
 
     console.log('[Deployment Logs] Connecting to:', wsUrl)
 

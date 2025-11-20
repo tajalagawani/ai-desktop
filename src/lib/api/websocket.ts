@@ -27,9 +27,9 @@ class WSClient {
   constructor(options: WSClientOptions = {}) {
     // Determine WebSocket URL based on environment
     if (typeof window !== 'undefined') {
-      this.baseURL = process.env.NEXT_PUBLIC_WS_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3006'
+      this.baseURL = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3007'
     } else {
-      this.baseURL = process.env.WS_URL || 'http://localhost:3006'
+      this.baseURL = process.env.WS_SERVER_URL || 'http://localhost:3007'
     }
 
     // Initialize socket if autoConnect is true

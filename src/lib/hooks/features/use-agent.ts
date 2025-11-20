@@ -917,7 +917,7 @@ export function useAgent(sessionId: string) {
   // WEBSOCKET CONNECTION
   // ============================================================================
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3006'
+    const apiUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3007'
     const socket = io(apiUrl, {
       path: '/socket.io',
     });

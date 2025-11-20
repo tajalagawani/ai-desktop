@@ -74,11 +74,11 @@ export function useServicesSync() {
 
   // Initialize WebSocket connection
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3006'
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3007'
 
-    console.log('[ServicesSync] Connecting to:', apiUrl)
+    console.log('[ServicesSync] Connecting to:', wsUrl)
 
-    const socket = io(apiUrl, {
+    const socket = io(wsUrl, {
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 10,

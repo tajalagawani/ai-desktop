@@ -34,8 +34,11 @@ export function Terminal() {
   const connectWebSocket = () => {
     try {
       console.log('[Terminal] Connecting to WebSocket...')
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const wsUrl = `${protocol}//${window.location.host}/api/terminal/ws`
+      // Use the WebSocket server URL (port 3007) instead of frontend URL
+      const wsServerUrl = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:3007'
+      const protocol = wsServerUrl.startsWith('https') ? 'wss:' : 'ws:'
+      const host = wsServerUrl.replace(/^https?:\/\//, '')
+      const wsUrl = `${protocol}//${host}/api/terminal/ws`
 
       const ws = new WebSocket(wsUrl)
       wsRef.current = ws
