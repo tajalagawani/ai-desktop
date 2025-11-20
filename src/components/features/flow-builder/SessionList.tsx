@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { SessionItem } from './SessionItem';
 import type { ChatSession } from '@prisma/client';
+import { apiFetch } from "@/lib/utils/api"
 
 interface SessionWithMetrics extends ChatSession {
   _count?: {
@@ -43,7 +44,7 @@ export function SessionList({ currentSessionId, onSelectSession, onNewSession }:
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/flow-builder/sessions?userId=default-user&limit=50');
+      const response = await apiFetch('/api/flow-builder/sessions?userId=default-user&limit=50');
       if (!response.ok) throw new Error('Failed to fetch sessions');
 
       const data = await response.json();

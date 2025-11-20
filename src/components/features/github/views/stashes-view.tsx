@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Archive, Play, Trash2, Loader2 } from "lucide-react"
+import { apiFetch } from "@/lib/utils/api"
 
 interface StashesViewProps {
   currentRepo: string
@@ -32,7 +33,7 @@ export function StashesView({ currentRepo }: StashesViewProps) {
 
     setLoading(true)
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -71,7 +72,7 @@ export function StashesView({ currentRepo }: StashesViewProps) {
         ? `git stash push -m "${stashMessage}"`
         : "git stash"
 
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -96,7 +97,7 @@ export function StashesView({ currentRepo }: StashesViewProps) {
 
   const handleApplyStash = async (stashName: string) => {
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -118,7 +119,7 @@ export function StashesView({ currentRepo }: StashesViewProps) {
 
   const handlePopStash = async (stashName: string) => {
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -145,7 +146,7 @@ export function StashesView({ currentRepo }: StashesViewProps) {
     }
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

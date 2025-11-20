@@ -16,6 +16,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { GitBranch, FolderOpen, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { toast } from "sonner"
+import { apiFetch } from "@/lib/utils/api"
 
 interface CloneDialogProps {
   open: boolean
@@ -67,7 +68,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
         }
       }
 
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -84,7 +85,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
 
       // Add to centralized repository registry
       try {
-        const addResponse = await fetch("/api/repositories", {
+        const addResponse = await apiFetch("/api/repositories", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { GitBranch, FolderOpen, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { apiFetch } from "@/lib/utils/api"
 
 interface CloneDialogProps {
   open: boolean
@@ -41,7 +42,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
       // First, ensure the parent directory exists
       const parentDir = clonePath.endsWith('/') ? clonePath.slice(0, -1) : clonePath
       try {
-        const mkdirResponse = await fetch("/api/files", {
+        const mkdirResponse = await apiFetch("/api/files", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -87,7 +88,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
         }
       }
 
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -112,7 +113,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
       // Add to centralized repository registry
       try {
         // Find an available port starting from 8100
-        const portResponse = await fetch("/api/repositories")
+        const portResponse = await apiFetch("/api/repositories")
         const portData = await portResponse.json()
         const usedPorts = portData.repositories?.map((r: any) => r.port) || []
         let port = 8100
@@ -120,7 +121,7 @@ export function CloneDialog({ open, onOpenChange, onCloneComplete }: CloneDialog
           port++
         }
 
-        const repoResponse = await fetch("/api/repositories", {
+        const repoResponse = await apiFetch("/api/repositories", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

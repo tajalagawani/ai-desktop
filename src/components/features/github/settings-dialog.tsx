@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { Settings, User, Key, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { apiFetch } from "@/lib/utils/api"
 
 interface GitSettingsDialogProps {
   open: boolean
@@ -94,7 +95,7 @@ export function GitSettingsDialog({ open, onOpenChange }: GitSettingsDialogProps
 
       // Set git config if user name and email are provided
       if (gitUserName && gitUserEmail) {
-        const configResponse = await fetch("/api/git-config", {
+        const configResponse = await apiFetch("/api/git-config", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

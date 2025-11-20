@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { useSessionStore } from '@/lib/stores/session-store';
 import { TodoList } from './TodoList';
 import { NodeApprovalPrompt } from './NodeApprovalPrompt';
+import { apiFetch } from "@/lib/utils/api"
 
 interface ChatMessageProps {
   message: Message;
@@ -186,7 +187,7 @@ function renderMessageContent(
       console.log('[ChatMessage] User approved node:', nodeType);
       // Call MCP tool to add unauthenticated node
       try {
-        const response = await fetch('/api/mcp/add-unauthenticated-node', {
+        const response = await apiFetch('/api/mcp/add-unauthenticated-node', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

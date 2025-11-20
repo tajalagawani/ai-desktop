@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useRef, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
+import { apiFetch } from '@/lib/utils/api'
 
 interface Service {
   id: string
@@ -48,7 +49,7 @@ export function useServicesSync() {
     }
 
     try {
-      const response = await fetch('/api/services', {
+      const response = await apiFetch('/api/services', {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache'

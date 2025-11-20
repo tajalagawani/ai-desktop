@@ -5,6 +5,7 @@ import { useChatStore } from '@/lib/stores/chat-store';
 import { useMetricsStore } from '@/lib/stores/metrics-store';
 import { useAgent } from '@/lib/hooks/features/use-agent';
 import { generateUUID } from '@/lib/utils';
+import { apiFetch } from "@/lib/utils/api"
 
 interface ChatInputProps {
   examplePrompt?: string | null;
@@ -56,7 +57,7 @@ export function ChatInput({ examplePrompt, onPromptSent }: ChatInputProps) {
       const title = generateTitle(userMessage);
 
       // Create session in database
-      const response = await fetch('/api/flow-builder/sessions', {
+      const response = await apiFetch('/api/flow-builder/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -103,7 +104,7 @@ export function ChatInput({ examplePrompt, onPromptSent }: ChatInputProps) {
 
     // Save user message to database
     try {
-      await fetch('/api/flow-builder/messages', {
+      await apiFetch('/api/flow-builder/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

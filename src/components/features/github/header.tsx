@@ -20,6 +20,7 @@ import {
 import { ChevronDown, Plus, GitBranch, Download, Upload, RefreshCw, Settings, FolderPlus, FolderGit2, Trash2 } from "lucide-react"
 import { GitSettingsDialog } from "./settings-dialog"
 import { CloneDialog } from "./clone-dialog"
+import { apiFetch } from "@/lib/utils/api"
 
 interface GitHubHeaderProps {
   currentRepo: string | null
@@ -43,7 +44,7 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
         const validRepos = []
         for (const repo of repos) {
           try {
-            const response = await fetch("/api/git", {
+            const response = await apiFetch("/api/git", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -91,7 +92,7 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
     if (!currentRepo) return
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -136,7 +137,7 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
 
     for (const repo of repos) {
       try {
-        const response = await fetch("/api/git", {
+        const response = await apiFetch("/api/git", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -172,7 +173,7 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
     if (!currentRepo) return
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -202,7 +203,7 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
 
     try {
       // Delete the repository directory using the files API
-      const response = await fetch("/api/files", {
+      const response = await apiFetch("/api/files", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -223,7 +224,7 @@ export function GitHubHeader({ currentRepo, onRepoChange }: GitHubHeaderProps) {
 
       // Remove from centralized repository registry
       try {
-        await fetch("/api/repositories", {
+        await apiFetch("/api/repositories", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

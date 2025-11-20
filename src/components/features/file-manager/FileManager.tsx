@@ -37,6 +37,7 @@ import {
   USER_PROFILE,
 } from "@/data/file-manager-data"
 import { getIcon, getIconProps } from "@/lib/utils/icon-mapper"
+import { apiFetch } from "@/lib/utils/api"
 
 interface FileItem {
   id: string
@@ -109,7 +110,7 @@ export function FileManager() {
     if (!newFolderName.trim()) return
 
     try {
-      const response = await fetch('/api/files', {
+      const response = await apiFetch('/api/files', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -137,7 +138,7 @@ export function FileManager() {
   const handleDelete = async (item: FileItem) => {
     if (confirm(`Are you sure you want to delete ${item.name}?`)) {
       try {
-        const response = await fetch('/api/files', {
+        const response = await apiFetch('/api/files', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

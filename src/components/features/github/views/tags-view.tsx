@@ -40,7 +40,7 @@ export function TagsView({ currentRepo }: TagsViewProps) {
 
     setLoading(true)
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -78,7 +78,7 @@ export function TagsView({ currentRepo }: TagsViewProps) {
         ? `git tag -a "${newTagName}" -m "${tagMessage}"`
         : `git tag "${newTagName}"`
 
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -108,7 +108,7 @@ export function TagsView({ currentRepo }: TagsViewProps) {
     }
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -131,7 +131,7 @@ export function TagsView({ currentRepo }: TagsViewProps) {
 
   const handlePushTag = async (tagName: string) => {
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -153,7 +153,7 @@ export function TagsView({ currentRepo }: TagsViewProps) {
 
   const handlePushAllTags = async () => {
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

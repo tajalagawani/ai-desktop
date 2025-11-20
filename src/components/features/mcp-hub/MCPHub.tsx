@@ -31,6 +31,7 @@ import {
 import { cn } from "@/lib/utils"
 import { MCPServer, MCPServerStatus } from "@/lib/mcp-hub/types"
 import { MCPDetail } from "./mcp-detail"
+import { apiFetch } from "@/lib/utils/api"
 
 export default function MCPHub() {
   const [servers, setServers] = useState<MCPServer[]>([])
@@ -48,7 +49,7 @@ export default function MCPHub() {
       setLoading(true)
     }
     try {
-      const response = await fetch('/api/mcp', {
+      const response = await apiFetch('/api/mcp', {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache'

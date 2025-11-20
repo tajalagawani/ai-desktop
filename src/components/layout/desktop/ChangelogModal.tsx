@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, GitCommit, Clock, User, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { apiFetch } from "@/lib/utils/api"
 
 interface ChangelogEntry {
   sha: string
@@ -33,7 +34,7 @@ export function ChangelogModal({ isOpen, onClose }: ChangelogModalProps) {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch('/api/changelog')
+      const response = await apiFetch('/api/changelog')
       const data = await response.json()
 
       if (data.success) {

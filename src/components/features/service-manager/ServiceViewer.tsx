@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Copy, ExternalLink, Terminal, Database, Key, Globe } from "lucide-react"
 import { ServiceConfig } from "@/data/installable-services"
+import { apiFetch } from "@/lib/utils/api"
 
 interface ServiceViewerProps {
   service: ServiceConfig & {
@@ -24,7 +25,7 @@ export function ServiceViewer({ service }: ServiceViewerProps) {
   const loadLogs = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/services', {
+      const response = await apiFetch('/api/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'logs', serviceId: service.id })

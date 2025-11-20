@@ -21,6 +21,7 @@ import { DeploymentLogs } from "./deployment-logs"
 import { cn } from "@/lib/utils"
 import { getFrameworkDisplayName } from "@/lib/services/deployment/utils"
 import { toast } from "sonner"
+import { apiFetch } from "@/lib/utils/api"
 
 interface DeploymentCardProps {
   deployment: DeploymentConfig

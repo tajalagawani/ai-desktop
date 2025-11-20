@@ -43,7 +43,7 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
     setLoading(true)
     try {
       // Get status
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -93,7 +93,7 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
         ? `git restore --staged "${file.path}"`
         : `git add "${file.path}"`
 
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -112,7 +112,7 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
 
   const stageAll = async () => {
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -141,7 +141,7 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
         ? `git commit --amend -m "${commitMessage.replace(/"/g, '\\"')}"`
         : `git commit -m "${commitMessage.replace(/"/g, '\\"')}"`
 
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -176,7 +176,7 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
         ? `rm "${file.path}"`
         : `git restore "${file.path}"`
 
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -203,7 +203,7 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
     }
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -227,7 +227,7 @@ export function ChangesView({ currentRepo, onFileSelect }: ChangesViewProps) {
   const handleAmendLastCommit = async () => {
     try {
       // Get last commit message
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

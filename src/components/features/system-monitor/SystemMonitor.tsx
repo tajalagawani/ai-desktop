@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Cpu, MemoryStick as Memory, HardDrive, Activity, Clock, CheckCircle, XCircle, AlertCircle, RefreshCw } from "lucide-react"
 import type { SystemStats } from "@/lib/system-stats"
+import { apiFetch } from "@/lib/utils/api"
 
 export function SystemMonitor() {
   const [stats, setStats] = useState<SystemStats | null>(null)
@@ -30,7 +31,7 @@ export function SystemMonitor() {
     try {
       setLoading(true)
       setError(null)
-      const response = await fetch('/api/system-stats')
+      const response = await apiFetch('/api/system-stats')
       if (!response.ok) {
         throw new Error('Failed to fetch system stats')
       }

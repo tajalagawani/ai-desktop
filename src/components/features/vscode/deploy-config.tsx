@@ -19,6 +19,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { apiFetch } from "@/lib/utils/api"
 
 interface DeployConfigProps {
   repoId: string
@@ -109,7 +110,7 @@ export function DeployConfig({
   const loadServices = async () => {
     setLoadingServices(true)
     try {
-      const response = await fetch('/api/deployments/services')
+      const response = await apiFetch('/api/deployments/services')
       const data = await response.json()
       if (data.success) {
         setServices(data.services || [])
@@ -206,7 +207,7 @@ export function DeployConfig({
     setError(null)
 
     try {
-      const response = await fetch("/api/deployments", {
+      const response = await apiFetch("/api/deployments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

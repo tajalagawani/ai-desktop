@@ -7,6 +7,7 @@ import { ChatInput } from './ChatInput';
 import { ChatSidebar } from './ChatSidebar';
 import { FlowBuilderSettings } from './FlowBuilderSettings';
 import { Settings, MessageSquare } from 'lucide-react';
+import { apiFetch } from "@/lib/utils/api"
 
 export function ChatInterface() {
 
@@ -42,7 +43,7 @@ export function ChatInterface() {
       clearMessages();
 
       // Create new session via API
-      const response = await fetch('/api/flow-builder/sessions', {
+      const response = await apiFetch('/api/flow-builder/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

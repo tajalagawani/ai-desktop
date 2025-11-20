@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Environment variables - hardcode defaults since .env files aren't loading properly
+  env: {
+    NEXT_PUBLIC_API_URL: 'http://localhost:3006',
+    NEXT_PUBLIC_WS_URL: 'http://localhost:3006',
+  },
+
   // Enable strict mode for better development experience
   reactStrictMode: true,
 

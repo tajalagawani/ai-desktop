@@ -27,6 +27,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { apiFetch } from "@/lib/utils/api"
 
 interface ServiceWithStatus extends ServiceConfig {
   installed: boolean
@@ -66,7 +67,7 @@ export function ServiceManager(_props: ServiceManagerProps) {
   const handleServiceAction = async (serviceId: string, action: string) => {
     setActionLoading(serviceId)
     try {
-      const response = await fetch('/api/services', {
+      const response = await apiFetch('/api/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, serviceId })

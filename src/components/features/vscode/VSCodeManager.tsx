@@ -45,6 +45,7 @@ import { DeployConfig } from "./deploy-config"
 import { DeploymentCard } from "./deployment-card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
+import { apiFetch } from "@/lib/utils/api"
 import type { VSCodeRepository } from "@/lib/vscode/types"
 import type { DeploymentConfig } from "@/lib/deployment/types"
 
@@ -83,7 +84,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
       setLoading(true)
     }
     try {
-      const response = await fetch('/api/vscode/list', {
+      const response = await apiFetch('/api/vscode/list', {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache'
@@ -116,7 +117,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
   const loadDeployments = useCallback(async () => {
     try {
-      const response = await fetch('/api/deployments')
+      const response = await apiFetch('/api/deployments')
       const data = await response.json()
       if (data.success) {
         setDeployments(data.deployments || [])
@@ -128,7 +129,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
   const loadFlows = useCallback(async () => {
     try {
-      const response = await fetch('/api/files?path=flows&pattern=*.flow')
+      const response = await apiFetch('/api/files?path=flows&pattern=*.flow')
       const data = await response.json()
       if (data.success) {
         setFlows(data.files || [])
@@ -140,7 +141,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
   useEffect(() => {
     // Run cleanup on first mount
-    fetch('/api/vscode/cleanup', { method: 'POST' })
+    apiFetch('/api/vscode/cleanup', { method: 'POST' })
       .then(res => res.json())
       .then(data => {
         if (data.cleaned > 0) {
@@ -166,7 +167,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
     const repo = repositories.find(r => r.id === repoId)
 
     try {
-      const response = await fetch('/api/vscode/start', {
+      const response = await apiFetch('/api/vscode/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ repoId })
@@ -195,7 +196,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
     const repo = repositories.find(r => r.id === repoId)
 
     try {
-      const response = await fetch('/api/vscode/stop', {
+      const response = await apiFetch('/api/vscode/stop', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ repoId })
@@ -237,7 +238,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
 
   const loadFileDiff = useCallback(async (repoId: string, filePath: string) => {
     try {
-      const response = await fetch('/api/vscode/diff', {
+      const response = await apiFetch('/api/vscode/diff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ repoId, file: filePath }) // Backend expects 'file' not 'filePath'
@@ -348,7 +349,7 @@ export function VSCodeManager(_props: VSCodeManagerProps) {
                   <DropdownMenuItem onClick={() => {
                     const path = prompt("Enter the path to an existing Git repository:")
                     if (path) {
-                      fetch("/api/repositories", {
+                      apiFetch("/api/repositories", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { X, Loader2 } from "lucide-react"
+import { apiFetch } from "@/lib/utils/api"
 
 interface GitHubDiffPanelProps {
   file: string
@@ -24,7 +25,7 @@ export function GitHubDiffPanel({ file, currentRepo, onClose }: GitHubDiffPanelP
 
     setLoading(true)
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

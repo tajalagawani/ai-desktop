@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/utils"
 import { getIcon } from "@/lib/utils/icon-mapper"
 import { SERVICE_CATEGORIES } from "@/data/installable-services"
+import { apiFetch } from "@/lib/utils/api"
 
 interface ServiceDetailsProps {
   serviceId: string
@@ -38,7 +39,7 @@ export function ServiceDetails({ serviceId }: ServiceDetailsProps) {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await fetch('/api/services')
+        const response = await apiFetch('/api/services')
         if (response.ok) {
           const data = await response.json()
           const foundService = data.services?.find((s: any) => s.id === serviceId)
@@ -128,7 +129,7 @@ export function ServiceDetails({ serviceId }: ServiceDetailsProps) {
   const handleServiceAction = async (action: string) => {
     setActionLoading(true)
     try {
-      await fetch('/api/services', {
+      await apiFetch('/api/services', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, serviceId: service.id })

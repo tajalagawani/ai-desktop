@@ -6,27 +6,23 @@
 const express = require('express')
 const { createServer} = require('http')
 const { Server } = require('socket.io')
-const expressWs = require('express-ws')
 const cors = require('cors')
 const path = require('path')
 require('dotenv').config()
 
 // Environment configuration
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3006
 const NODE_ENV = process.env.NODE_ENV || 'development'
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3001'
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3005'
 
 // Initialize Express app
 const app = express()
 const httpServer = createServer(app)
 
-// Initialize express-ws for WebSocket routes
-expressWs(app, httpServer)
-
 // Initialize Socket.IO
 const io = new Server(httpServer, {
   cors: {
-    origin: [CLIENT_URL, 'http://92.112.181.127', 'http://localhost:3001'],
+    origin: [CLIENT_URL, 'http://92.112.181.127', 'http://localhost:3005', 'http://localhost:3001'],
     credentials: true,
   },
   transports: ['websocket', 'polling'],
@@ -34,7 +30,7 @@ const io = new Server(httpServer, {
 
 // Middleware
 app.use(cors({
-  origin: [CLIENT_URL, 'http://92.112.181.127', 'http://localhost:3001'],
+  origin: [CLIENT_URL, 'http://92.112.181.127', 'http://localhost:3005', 'http://localhost:3001'],
   credentials: true,
 }))
 app.use(express.json({ limit: '50mb' }))
@@ -210,17 +206,19 @@ global.socketIO = {
   emitToDeployment,
 }
 
-// WebSocket Routes
-const { handleDeploymentLogsConnection } = require('./app/websocket/deployment-logs')
-const { handleServiceLogsConnection } = require('./app/websocket/service-logs')
+// WebSocket Routes - Commented out to avoid conflict with Socket.IO
+// These routes used express-ws which conflicts with socket.io on the same HTTP server
+// TODO: Convert these to Socket.IO namespaces if needed
+// const { handleDeploymentLogsConnection } = require('./app/websocket/deployment-logs')
+// const { handleServiceLogsConnection } = require('./app/websocket/service-logs')
 
-app.ws('/api/deployments/logs/ws', (ws, req) => {
-  handleDeploymentLogsConnection(ws, req)
-})
+// app.ws('/api/deployments/logs/ws', (ws, req) => {
+//   handleDeploymentLogsConnection(ws, req)
+// })
 
-app.ws('/api/services/logs/ws', (ws, req) => {
-  handleServiceLogsConnection(ws, req)
-})
+// app.ws('/api/services/logs/ws', (ws, req) => {
+//   handleServiceLogsConnection(ws, req)
+// })
 
 // Error handling middleware
 app.use((err, req, res, next) => {

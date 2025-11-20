@@ -35,13 +35,18 @@ export function middleware(request: NextRequest) {
   )
 
   // Content Security Policy (CSP)
+  // Allow connections to backend (localhost or configured URL)
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3006'
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  const isLocalhost = backendUrl.includes('localhost') || backendUrl.includes('127.0.0.1')
+
   const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline';
     style-src 'self' 'unsafe-inline';
     img-src 'self' data: https:;
     font-src 'self' data:;
-    connect-src 'self' ws: wss: https://api.github.com https://api.anthropic.com;
+    connect-src 'self' ${(isDevelopment || isLocalhost) ? backendUrl + ' ' + backendUrl.replace('http:', 'ws:') : ''} ws: wss: https://api.github.com https://api.anthropic.com;
     frame-ancestors 'self';
     base-uri 'self';
     form-action 'self';

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
+import { apiFetch } from "@/lib/utils/api"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -59,7 +60,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
 
     setLoading(true)
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -94,7 +95,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
 
     setCreating(true)
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -119,7 +120,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
 
   const handleCheckoutBranch = async (branchName: string) => {
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -150,7 +151,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
     }
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -166,7 +167,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
         // Try force delete
         const confirmForce = confirm(`Branch has unmerged changes. Force delete?`)
         if (confirmForce) {
-          const forceResponse = await fetch("/api/git", {
+          const forceResponse = await apiFetch("/api/git", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -192,7 +193,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
     }
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -226,7 +227,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
     }
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -260,7 +261,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
     }
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -285,7 +286,7 @@ export function BranchesView({ currentRepo }: BranchesViewProps) {
 
   const handlePushBranch = async (branchName: string) => {
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

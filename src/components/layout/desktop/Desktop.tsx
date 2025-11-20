@@ -51,6 +51,7 @@ import {
 import { useDesktop, useMouseActivity, useTheme, useDockApps } from "@/lib/hooks/features/use-desktop"
 import { useServicesSync } from "@/lib/hooks/features/use-services-sync"
 import { getIcon, getIconProps } from "@/lib/utils/icon-mapper"
+import { apiFetch } from "@/lib/utils/api"
 
 // Component map for dynamic loading
 const getAppComponent = (
@@ -159,7 +160,7 @@ export function Desktop() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/system-stats')
+        const response = await apiFetch('/api/system-stats')
         if (response.ok) {
           const data = await response.json()
           setSystemStats(data)
@@ -371,21 +372,21 @@ function DesktopIcons({
         }
       },
       start: async () => {
-        await fetch('/api/services', {
+        await apiFetch('/api/services', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'start', serviceId: service.id })
         })
       },
       stop: async () => {
-        await fetch('/api/services', {
+        await apiFetch('/api/services', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'stop', serviceId: service.id })
         })
       },
       restart: async () => {
-        await fetch('/api/services', {
+        await apiFetch('/api/services', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'restart', serviceId: service.id })
@@ -393,7 +394,7 @@ function DesktopIcons({
       },
       remove: async () => {
         if (confirm(`Delete ${service.name}?\n\nThis will:\n• Stop and remove the container\n• Delete all volumes\n• Delete Docker images\n• Close firewall ports\n\nThis action cannot be undone.`)) {
-          await fetch('/api/services', {
+          await apiFetch('/api/services', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'remove', serviceId: service.id })

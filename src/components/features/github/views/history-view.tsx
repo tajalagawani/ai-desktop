@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { GitCommit, User, Calendar, Loader2, FileText, Plus, Minus, ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { apiFetch } from "@/lib/utils/api"
 
 interface HistoryViewProps {
   currentRepo: string
@@ -42,7 +43,7 @@ export function HistoryView({ currentRepo }: HistoryViewProps) {
 
     setLoading(true)
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -72,7 +73,7 @@ export function HistoryView({ currentRepo }: HistoryViewProps) {
 
     try {
       // Get commit stats
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

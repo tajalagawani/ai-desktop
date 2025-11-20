@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { GitPullRequest, GitMerge, Plus, Loader2, MessageSquare, Check, X, GitBranch } from "lucide-react"
+import { apiFetch } from "@/lib/utils/api"
 
 interface PullRequestsViewProps {
   currentRepo: string
@@ -61,7 +62,7 @@ export function PullRequestsView({ currentRepo }: PullRequestsViewProps) {
     if (!currentRepo) return
 
     try {
-      const response = await fetch("/api/git", {
+      const response = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -90,7 +91,7 @@ export function PullRequestsView({ currentRepo }: PullRequestsViewProps) {
     setLoading(true)
     try {
       // Get GitHub remote URL
-      const remoteResponse = await fetch("/api/git", {
+      const remoteResponse = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -172,7 +173,7 @@ export function PullRequestsView({ currentRepo }: PullRequestsViewProps) {
 
     try {
       // Get GitHub remote URL
-      const remoteResponse = await fetch("/api/git", {
+      const remoteResponse = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -243,7 +244,7 @@ export function PullRequestsView({ currentRepo }: PullRequestsViewProps) {
     }
 
     try {
-      const remoteResponse = await fetch("/api/git", {
+      const remoteResponse = await apiFetch("/api/git", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

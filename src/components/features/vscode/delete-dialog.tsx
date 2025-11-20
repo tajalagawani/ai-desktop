@@ -15,6 +15,7 @@ import { Loader2, AlertTriangle } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { toast } from "sonner"
+import { apiFetch } from "@/lib/utils/api"
 
 interface DeleteDialogProps {
   open: boolean
@@ -44,7 +45,7 @@ export function DeleteDialog({
     try {
       // If deleting both, delete the files first
       if (deleteOption === "both") {
-        const deleteResponse = await fetch("/api/files", {
+        const deleteResponse = await apiFetch("/api/files", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -60,7 +61,7 @@ export function DeleteDialog({
       }
 
       // Remove from registry
-      const registryResponse = await fetch("/api/repositories", {
+      const registryResponse = await apiFetch("/api/repositories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
